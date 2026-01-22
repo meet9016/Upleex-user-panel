@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+    --color-upleex-blue: #0ea5e9;
+    --color-upleex-purple: #6366f1;
+    --color-upleex-dark: #0f172a;
+}
+
+/* Custom Utilities if needed */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
