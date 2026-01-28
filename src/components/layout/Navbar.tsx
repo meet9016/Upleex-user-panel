@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Search, MapPin, ChevronDown, Smartphone, ShoppingCart } from 'lucide-react';
+import Image from 'next/image';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,6 +24,13 @@ export const Navbar: React.FC = () => {
               <span className="bg-upleex-purple h-8 w-8 rounded mr-1 flex items-center justify-center text-white text-xl">U</span>
               <span className="text-upleex-blue">pleex</span>
             </span>
+             {/* <Image
+                className="dark:hidden"
+                src="/images/upleex-logo-dark.png"
+                alt="Logo"
+                width={150}
+                height={40}
+              /> */}
           </Link>
 
           {/* Search & Location Bar */}

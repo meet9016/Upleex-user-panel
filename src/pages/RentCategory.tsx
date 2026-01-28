@@ -9,6 +9,7 @@ import { Button } from '../components/ui/Button';
 
 export const RentCategory: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+
   
   // Initialize filter based on URL slug or default to 'all'
   const [activeFilter, setActiveFilter] = useState(slug || 'all');
