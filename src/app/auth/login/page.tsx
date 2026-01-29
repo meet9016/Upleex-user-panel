@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 
-export default function LoginPage() {
+const LoginPage = () => {
   return (
     <div className="flex-grow flex">
       {/* Left Side - Hero Image */}
@@ -110,4 +110,5 @@ export default function LoginPage() {
       </div>
     </div>
   );
-}
+};
+export default LoginPage;
