@@ -13,6 +13,7 @@ export default function RentCategoryPage() {
   const params = useParams();
   const slug = params?.slug as string;
 
+  
   // Initialize filter based on URL slug or default to 'all'
   const [activeFilter, setActiveFilter] = useState(slug || 'all');
 
