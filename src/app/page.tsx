@@ -26,7 +26,7 @@ export default function Home() {
      useEffect(() => {
       const fetchCategories = async () => {
             try {
-                const res = await api.post(endPointApi.home, {});
+                const res = await api.post(endPointApi.home);
                 // if (res?.data?.data) {
                     setCategoryList(res.data.data);
                 // }
