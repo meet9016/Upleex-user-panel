@@ -1,11 +1,13 @@
 import axios from 'axios'
 
 const apiAdminInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL,
+  // baseURL: process.env.NEXT_PUBLIC_APP_URL,
+  baseURL: "https://upleex.2min.cloud/"
   // headers: {
   //   'Content-Type': 'multipart/form-data'
   // }
 })
+console.log("process.env.NEXT_PUBLIC_APP_URL",process.env.NEXT_PUBLIC_APP_URL);
 
 export const api = apiAdminInstance;
 
