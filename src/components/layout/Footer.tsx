@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Linkedin, Heart } from 'lucide-react';
+import Image from 'next/image';
 
 export const Footer: React.FC = () => {
   return (
@@ -10,9 +11,16 @@ export const Footer: React.FC = () => {
           
           {/* Brand Column */}
           <div className="space-y-4">
-            <Link href="/" className="text-2xl font-bold tracking-tight">
-              up<span className="text-upleex-blue">leex</span>
-            </Link>
+            <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+            <Image
+              src="/image/upleex-logo-light.webp"
+              alt="Upleex Logo"
+              width={150}
+              height={40}
+              priority
+            />
+          </Link>
+
             <p className="text-gray-400 text-sm leading-relaxed">
               The smartest way to rent everything you need. Quality products, flexible terms, and hassle-free experience.
             </p>
