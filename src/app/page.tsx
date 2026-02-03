@@ -79,10 +79,10 @@ export default function Home() {
       <FloatingParticles />
 
       <main className="flex-grow">
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50/40 min-h-screen flex items-center">
+        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50/40 min-h- flex items-center">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50/50 -z-10" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 md:pt-32 md:pb-32">
-            <div className="text-center md:text-left md:flex md:items-center md:justify-between">
+            <div className="text-center md:text-left md:flex md:items-center md:justify-between md:gap-16">
               <div className="md:w-1/2 space-y-6">
                 <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-upleex-blue text-sm font-semibold mb-2">
                   <span className="relative flex h-3 w-3 mr-2">
@@ -91,13 +91,21 @@ export default function Home() {
                   </span>
                   #1 Rental Marketplace in India
                 </div>
-                <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                  Don't Buy. <span className="text-transparent bg-clip-text bg-gradient-to-r from-upleex-purple to-upleex-blue">Just Rent It.</span>
+
+                <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-snug md:leading-tight">
+                  Don't Buy.{' '}
+                  <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-upleex-purple to-upleex-blue animate-gradient-x">
+                    Just Rent It.
+                    <span className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 opacity-30 blur-xl rounded-lg mix-blend-overlay"></span>
+                  </span>
                 </h1>
+
+
                 <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto md:mx-0">
                   Access premium lifestyle products without the commitment. From furniture to fitness, rent everything you need at a fraction of the cost.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-4">
+
+                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-6">
                   <Button size="lg" className="rounded-full px-8 shadow-blue-500/20 shadow-xl">
                     Explore Products
                   </Button>
@@ -106,12 +114,13 @@ export default function Home() {
                   </Button>
                 </div>
 
-                <div className="pt-8 flex items-center justify-center md:justify-start gap-8 text-slate-500 text-sm font-medium">
+                <div className="pt-8 flex flex-wrap items-center justify-center md:justify-start gap-6 text-slate-500 text-sm font-medium">
                   <div className="flex items-center gap-2"><CheckCircle size={18} className="text-green-500" /> Verified Products</div>
                   <div className="flex items-center gap-2"><CheckCircle size={18} className="text-green-500" /> Free Delivery</div>
                 </div>
               </div>
 
+              {/* Right */}
               <div className="mt-12 md:mt-0 md:w-1/2 relative">
                 <div className="relative z-10 w-full rounded-2xl bg-white shadow-2xl p-4 md:p-6 transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
                   <img
@@ -127,6 +136,7 @@ export default function Home() {
                     <Button size="sm">Rent @ ₹2499/mo</Button>
                   </div>
                 </div>
+
                 {/* Decorative blobs */}
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
                 <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
@@ -135,9 +145,10 @@ export default function Home() {
           </div>
         </section>
 
+
         {/* Enhanced Categories Section */}
-        <section className="py-24 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent"></div>
+        <section className="py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+          {/* <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent"></div> */}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -158,12 +169,12 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-8">
               {categoryList?.all_categories?.map((cat, index) => (
                 <motion.div
-                key={`${cat.id}-${index}`}
+                  key={`${cat.id}-${index}`}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.05 }}
+                  // whileHover={{ y: -8, scale: 1.05 }}
                   onMouseEnter={() => setActiveCategory(cat.id)}
                   onMouseLeave={() => setActiveCategory(null)}
                 >
@@ -198,7 +209,7 @@ export default function Home() {
         </section>
 
         {/* Enhanced Featured Products */}
-        <section className="py-24 bg-gradient-to-b from-gray-50 to-white relative">
+        <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative">
           <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-gray-50 to-transparent"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -304,19 +315,17 @@ export default function Home() {
                 className="flex flex-col items-center"
               >
                 <motion.div
-                  animate={{
-                    rotate: [0, 5, -5, 5, 0],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    ease: "easeInOut"
-                  }}
                   className="w-16 h-16 rounded-2xl bg-purple-50 text-upleex-purple flex items-center justify-center mb-6 shadow-lg"
                 >
-                  <Clock size={32} />
+                  <motion.div
+                    whileHover={{ rotate: 360, scale: 1.1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 10 }}
+                    style={{ originX: 0.5, originY: 0.5 }}
+                  >
+                    <Clock size={32} />
+                  </motion.div>
                 </motion.div>
+
                 <motion.h3
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
@@ -347,19 +356,14 @@ export default function Home() {
                 className="flex flex-col items-center"
               >
                 <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    ease: "easeInOut"
-                  }}
+                  whileHover={{ rotate: 360, scale: 1.1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 10 }}
                   className="w-16 h-16 rounded-2xl bg-green-50 text-green-600 flex items-center justify-center mb-6 shadow-lg"
+                  style={{ originX: 0.5, originY: 0.5 }} // ensure rotation happens from center
                 >
                   <Activity size={32} />
                 </motion.div>
+
                 <motion.h3
                   initial={{ opacity: 0 }}
                   whileInView={{ opacity: 1 }}
@@ -382,83 +386,83 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
-       {/* CTA Section */}
-       <section className="py-24">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
-      className="relative overflow-hidden rounded-3xl
+        {/* CTA Section */}
+        <section className="py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className="relative overflow-hidden rounded-3xl
                  bg-gradient-to-br from-upleex-dark via-slate-900 to-slate-800
                  px-8 py-14 md:px-16 md:py-20
                  text-center text-white shadow-2xl"
-    >
-      {/* Decorative glow */}
-      <div className="absolute -top-32 -right-32 w-96 h-96 bg-upleex-blue/20 rounded-full blur-3xl" />
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-upleex-purple/20 rounded-full blur-3xl" />
+            >
+              {/* Decorative glow */}
+              <div className="absolute -top-30 -right-32 w-96 h-96 bg-upleex-blue/20 rounded-full blur-3xl" />
+              <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-upleex-purple/20 rounded-full blur-3xl" />
 
-      <motion.div
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true }}
-        variants={{
-          hidden: {},
-          show: {
-            transition: { staggerChildren: 0.15 },
-          },
-        }}
-        className="relative z-10 max-w-3xl mx-auto space-y-6"
-      >
-        {/* Heading */}
-        <motion.h2
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            show: { opacity: 1, y: 0 },
-          }}
-          className="text-3xl md:text-5xl font-bold leading-tight"
-        >
-          Ready to upgrade your lifestyle?
-        </motion.h2>
+              <motion.div
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true }}
+                variants={{
+                  hidden: {},
+                  show: {
+                    transition: { staggerChildren: 0.15 },
+                  },
+                }}
+                className="relative z-10 max-w-3xl mx-auto space-y-6"
+              >
+                {/* Heading */}
+                <motion.h2
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    show: { opacity: 1, y: 0 },
+                  }}
+                  className="text-3xl md:text-5xl font-bold leading-tight"
+                >
+                  Ready to upgrade your lifestyle?
+                </motion.h2>
 
-        {/* Description */}
-        <motion.p
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            show: { opacity: 1, y: 0 },
-          }}
-          className="text-lg md:text-xl text-slate-300"
-        >
-          Join thousands of happy customers renting their favorite products on{" "}
-          <span className="text-white font-semibold">Upleex</span>.
-        </motion.p>
+                {/* Description */}
+                <motion.p
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    show: { opacity: 1, y: 0 },
+                  }}
+                  className="text-lg md:text-xl text-slate-300"
+                >
+                  Join thousands of happy customers renting their favorite products on{" "}
+                  <span className="text-white font-semibold">Upleex</span>.
+                </motion.p>
 
-        {/* CTA */}
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            show: { opacity: 1, y: 0 },
-          }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.96 }}
-          className="pt-6"
-        >
-          <Button
-            size="lg"
-            className="rounded-full px-10 py-6
+                {/* CTA */}
+                <motion.div
+                  variants={{
+                    hidden: { opacity: 0, y: 20 },
+                    show: { opacity: 1, y: 0 },
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.96 }}
+                  className="pt-6"
+                >
+                  <Button
+                    size="lg"
+                    className="rounded-full px-10 py-6
                        bg-white text-slate-900 text-lg
                        hover:bg-slate-100
                        shadow-xl transition-all"
-          >
-            Start Renting Now
-          </Button>
-        </motion.div>
+                  >
+                    Start Renting Now
+                  </Button>
+                </motion.div>
 
-      </motion.div>
-    </motion.div>
-  </div>
-</section>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
 
       </main>
 

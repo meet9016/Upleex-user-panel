@@ -4,16 +4,17 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { ProductCard } from '@/components/features/ProductCard';
 import { featuredProducts, categories } from '@/data/mockData';
-import { ChevronDown } from 'lucide-react';
+import { ArrowDown, ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 
 export default function RentCategoryPage() {
   const params = useParams();
   const slug = params?.slug as string;
 
-  
+
   // Initialize filter based on URL slug or default to 'all'
   const [activeFilter, setActiveFilter] = useState(slug || 'all');
 
@@ -51,18 +52,18 @@ export default function RentCategoryPage() {
       fetchCategories();
     }
   }, [slug]);
-  
+
   // Fetch products based on selected subcategory filter
   useEffect(() => {
     const fetchProducts = async () => {
       const formData = new FormData();
       formData.append("category_id", slug);
-      
+
       // If "All" is selected, don't pass sub_category_id, otherwise pass the selected filter
       if (activeFilter !== 'all') {
         formData.append("sub_category_id", activeFilter);
       }
-      
+
       try {
         const res = await api.post(endPointApi.webCategoryProductList, formData);
         setProductList(res.data.data || []);
@@ -112,8 +113,8 @@ export default function RentCategoryPage() {
                   key={cat.slug}
                   onClick={() => handleFilterClick(cat.slug)}
                   className={`group flex items-center gap-2 whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 border-2 ${activeFilter === cat.slug
-                      ? 'bg-upleex-purple border-upleex-purple text-white shadow-lg shadow-purple-500/20 ring-2 ring-purple-100 ring-offset-2'
-                      : 'bg-white border-gray-100 text-slate-600 hover:border-upleex-purple/50 hover:bg-purple-50/50 hover:text-upleex-purple hover:shadow-md'
+                    ? 'bg-upleex-purple border-upleex-purple text-white shadow-lg shadow-purple-500/20 ring-2 ring-purple-100 ring-offset-2'
+                    : 'bg-white border-gray-100 text-slate-600 hover:border-upleex-purple/50 hover:bg-purple-50/50 hover:text-upleex-purple hover:shadow-md'
                     }`}
                 >
                   {Icon && <Icon size={18} className={activeFilter === cat.slug ? 'text-white' : 'text-slate-400 group-hover:text-upleex-purple transition-colors'} />}
@@ -159,16 +160,27 @@ export default function RentCategoryPage() {
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {filteredProducts.map((product, index) => (
+            <motion.div
+              key={product._id} // ✅ unique & stable
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <ProductCard product={product} />
+            </motion.div>
           ))}
         </div>
+
 
         {/* Load More Button */}
         {filteredProducts.length > 0 && (
           <div className="mt-12 text-center">
-            <Button variant="primary" size="lg" className="px-12 shadow-lg shadow-purple-500/20">
+            <Button
+ variant="primary" size="lg" className="px-12 shadow-lg shadow-purple-500/20">
               Load More Products
+              <ArrowRight className="w-5 h-5" />
             </Button>
           </div>
         )}

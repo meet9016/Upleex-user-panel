@@ -9,6 +9,8 @@ export interface EndPointApi {
     webCategoryProductList: string;
     webSingleProductList: string;
 
+    //Product details
+    webGetQuote: string;
 }
 
 // Define and export the API endpoint object
@@ -23,8 +25,8 @@ const endPointApi: EndPointApi = {
     webCategoryProductList: 'web-category-product-list',
     webSingleProductList: 'web-single-product-list',
 
-    //Category 
-
+    //Product details
+    webGetQuote: 'web-get-quote',
 };
 
 export default endPointApi;
