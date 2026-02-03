@@ -6,9 +6,10 @@ import { Button } from '../ui/Button';
 
 interface ProductCardProps {
   product: Product | any;
+  className?: string;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
   const productId = product.product_id || product.id;
   const productName = product.product_name || product.title;
   const productImage = product.product_main_image;
@@ -20,8 +21,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const productLocation = product.location || 'Surat';
 
   return (
-    <div className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300">
-      
+   <div
+  className={`group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ${className}`}
+>
       {/* IMAGE */}
       <div className="relative h-52 overflow-hidden">
         <img

@@ -6,6 +6,7 @@ interface CategoryCardProps {
   image: string;
   categories_id: string;
   product_count?: number;
+  className?: string;
 }
 
 export const CategoryCard: React.FC<CategoryCardProps> = ({
@@ -13,10 +14,11 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   image,
   categories_id,
   product_count,
+  className
 }) => {
   return (
     <Link href={`/rent-category/${categories_id}`} className="group block h-full">
-      <div className="relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-upleex-blue/40 to-purple-500/40 hover:from-upleex-blue hover:to-purple-600 transition-all duration-300">
+      <div className={`relative h-full rounded-2xl p-[1px] bg-gradient-to-br from-upleex-blue/40 to-purple-500/40 hover:from-upleex-blue hover:to-purple-600 transition-all duration-300 ${className}`}>
         <div className="h-full bg-white/90 backdrop-blur rounded-2xl px-4 py-6 flex flex-col items-center text-center shadow-sm group-hover:shadow-xl transition-all duration-300">
 
           {/* Product Count Badge */}
