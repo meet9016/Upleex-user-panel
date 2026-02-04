@@ -1,6 +1,6 @@
 export interface EndPointApi {
-    login: string;
-    register: string;
+    //Auth
+    webLoginRegister: string;
     logout: string;
 
     //Vendor
@@ -11,13 +11,12 @@ export interface EndPointApi {
 
     //Product details
     webGetQuote: string;
-     webLoginRegister: string;
 }
 
 // Define and export the API endpoint object
 const endPointApi: EndPointApi = {
-    login: 'vendor-login',
-    register: 'auth/register',
+    //Auth
+    webLoginRegister: 'web-login-register',
     logout: 'auth/logout',
 
     //Vendor
@@ -28,7 +27,6 @@ const endPointApi: EndPointApi = {
 
     //Product details
     webGetQuote: 'web-get-quote',
-    webLoginRegister: 'web-login-register',
 };
 
 

@@ -53,38 +53,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
           transition={{ duration: 0.4 }}
         />
 
-        {/* ❤️ Wishlist Heart */}
-      <motion.button
-  onClick={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setLiked(!liked);
-  }}
-  whileTap={{ scale: 0.85 }}
-  animate={liked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-  transition={{
-    duration: 0.35,
-    ease: 'easeOut',
-  }}
-  className="absolute top-3 right-3 z-10 bg-white/90 p-2 rounded-full shadow hover:shadow-md"
->
-  {liked && (
-    <motion.span
-      className="absolute inset-0 rounded-full bg-red-400/30"
-      initial={{ scale: 0, opacity: 0.6 }}
-      animate={{ scale: 1.8, opacity: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
-    />
-  )}
+        {/* Wishlist Heart */}
+        <motion.button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setLiked(!liked);
+          }}
+          whileTap={{ scale: 0.85 }}
+          animate={liked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+          transition={{
+            duration: 0.35,
+            ease: 'easeOut',
+          }}
+          className="absolute top-3 right-3 z-10 bg-white/90 p-2 rounded-full shadow hover:shadow-md"
+        >
+          {liked && (
+            <motion.span
+              className="absolute inset-0 rounded-full bg-red-400/30"
+              initial={{ scale: 0, opacity: 0.6 }}
+              animate={{ scale: 1.8, opacity: 0 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+            />
+          )}
 
-  <Heart
-    size={18}
-    className={`relative transition-colors ${
-      liked ? 'text-red-500' : 'text-slate-500'
-    }`}
-    fill={liked ? '#ef4444' : 'none'}
-  />
-</motion.button>
+          <Heart
+            size={18}
+            className={`relative transition-colors ${liked ? 'text-red-500' : 'text-slate-500'
+              }`}
+            fill={liked ? '#ef4444' : 'none'}
+          />
+        </motion.button>
 
 
         {/* Category */}
@@ -96,7 +95,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
         {/* Price */}
         <div className="absolute bottom-3 right-3 z-10 bg-gradient-to-r from-upleex-blue to-indigo-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
-          ₹{Number(productPrice || 0).toLocaleString()}/mo
+          ₹{Number(productPrice || 0).toLocaleString()}/ {product?.product_listing_type_name}
         </div>
       </div>
 

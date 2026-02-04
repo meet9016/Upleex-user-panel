@@ -3,17 +3,17 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { ProductCard } from '@/components/features/ProductCard';
-import { featuredProducts, categories } from '@/data/mockData';
-import { ArrowDown, ArrowRight, ChevronDown } from 'lucide-react';
+import { categories } from '@/data/mockData';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
-import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export default function RentCategoryPage() {
   const params = useParams();
   const slug = params?.slug as string;
-const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState('all');
 
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [productList, setProductList] = useState<any[]>([]);
@@ -83,12 +83,10 @@ const [activeFilter, setActiveFilter] = useState('all');
       {/* Header Section */}
       <div className="bg-white border-b border-gray-100 pt-8 pb-6">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-4">
-            <div className="text-sm text-slate-500 flex gap-2 mb-2">
-              <span className="hover:text-upleex-purple cursor-pointer">Home</span> / <span>Rent</span> / <span className="text-upleex-purple font-medium">{currentCategoryName}</span>
-            </div>
-            <h1 className="text-3xl font-bold text-slate-900">{currentCategoryName}</h1>
+          <div className="text-sm text-slate-500 flex gap-2 mb-2">
+            <span className="hover:text-upleex-purple cursor-pointer">Home</span> / <span>Rent</span> / <span className="text-upleex-purple font-medium">{currentCategoryName}</span>
           </div>
+          {/* <h1 className="text-3xl font-bold text-slate-900">{currentCategoryName}</h1> */}
         </div>
       </div>
 
@@ -170,7 +168,7 @@ const [activeFilter, setActiveFilter] = useState('all');
         {filteredProducts.length > 0 && (
           <div className="mt-12 text-center">
             <Button
- variant="primary" size="lg" className="px-12 shadow-lg shadow-purple-500/20">
+              variant="primary" size="lg" className="px-12 shadow-lg shadow-purple-500/20">
               Load More Products
               <ArrowRight className="w-5 h-5" />
             </Button>
