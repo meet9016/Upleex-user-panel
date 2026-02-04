@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Search, MapPin, ChevronDown, Smartphone, ShoppingCart } from 'lucide-react';
@@ -10,8 +10,22 @@ export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [currentLocations] = useState('Surat');
   const pathname = usePathname();
-
+  const [user, setUser] = useState<any>(null);
+  console.log("🚀 ~ Navbar ~ user:", user)
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+
+    if (!storedUser || storedUser === 'undefined') return;
+
+    try {
+      const parsedUser = JSON.parse(storedUser); // 👈 object
+      setUser(parsedUser);
+    } catch (error) {
+      localStorage.removeItem('user');
+    }
+  }, []);
+
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm">
@@ -70,10 +84,13 @@ export const Navbar: React.FC = () => {
             </Link>
 
             <div className="h-4 w-px bg-gray-300"></div>
-
-            <Link href="/auth/login" className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-upleex-purple to-upleex-blue text-white rounded hover:opacity-90 transition-all shadow-sm">
-              <span>Login / Sign Up</span>
-            </Link>
+            {user ? (
+              <span className="capitalize font-semibold">
+                Hi, {user.full_name}
+              </span>
+            ) : (
+              <Link href="/auth/login">Login / Sign Up</Link>
+            )}
 
             <div className="h-4 w-px bg-gray-300"></div>
 
@@ -116,8 +133,8 @@ export const Navbar: React.FC = () => {
                 <Link
                   href={`/rent-category/${item.slug}`}
                   className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 ${isActive
-                      ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
-                      : 'hover:bg-upleex-purple hover:text-white'
+                    ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
+                    : 'hover:bg-upleex-purple hover:text-white'
                     }`}
                 >
                   {item.name}
@@ -167,9 +184,15 @@ export const Navbar: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Link href="/auth/login" className="block w-full text-center py-2 bg-gradient-to-r from-upleex-purple to-upleex-blue text-white rounded font-medium" onClick={() => setIsMenuOpen(false)}>
-                Login / Sign Up
-              </Link>
+              {user ? (
+                <span className="capitalize font-semibold">
+                  Hi, {user.full_name}
+                </span>
+              ) : (
+                <Link href="/auth/login">Login / Sign Up</Link>
+              )}
+
+
               <Link href="/partner" className="block w-full text-center py-2 border border-gray-200 rounded text-slate-700 font-medium" onClick={() => setIsMenuOpen(false)}>
                 Partner With Us
               </Link>
