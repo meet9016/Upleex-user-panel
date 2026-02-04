@@ -23,28 +23,29 @@ interface CategoryResponse {
 
 // Add floating particles component
 const FloatingParticles = () => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 bg-blue-400/30 rounded-full"
-          initial={{
-            x: Math.random() * 100 + 'vw',
-            y: Math.random() * 100 + 'vh',
-          }}
-          animate={{
-            y: [null, -20, 20, -10, 10],
-            x: [null, 10, -10, 5, -5],
-          }}
-          transition={{
-            duration: 3 + Math.random() * 2,
-            repeat: Infinity,
-            repeatType: "reverse",
-            delay: i * 0.1,
-          }}
-        />
-      ))}
+      {[...Array(20)].map((_, i) => {
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+
+        return (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-blue-400/30 rounded-full"
+            initial={{ x: `${x}vw`, y: `${y}vh` }}
+            animate={{ y: ['0vh', '100vh'] }}
+          />
+        );
+      })}
     </div>
   );
 };
