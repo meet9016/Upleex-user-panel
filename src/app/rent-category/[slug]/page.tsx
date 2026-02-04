@@ -13,15 +13,7 @@ import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'fra
 export default function RentCategoryPage() {
   const params = useParams();
   const slug = params?.slug as string;
-
-
-  // Initialize filter based on URL slug or default to 'all'
-  const [activeFilter, setActiveFilter] = useState(slug || 'all');
-
-  // Update active filter when slug changes
-  useEffect(() => {
-    if (slug) setActiveFilter(slug);
-  }, [slug]);
+const [activeFilter, setActiveFilter] = useState('all');
 
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [productList, setProductList] = useState<any[]>([]);

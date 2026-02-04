@@ -41,7 +41,7 @@ export default function ProductDetailsPage() {
   }, [productDetails]);
 
   // Calculated values from API data
-  const monthlyPrice =
+  const monthlyPrice = (
     productDetails?.month_arrr?.[
       selectedDuration === 3
         ? 0
@@ -50,10 +50,11 @@ export default function ProductDetailsPage() {
           : selectedDuration === 9
             ? 2
             : 3
-    ]?.price || 0;
-  const dayPrice = productDetails?.price;
-  // const dailyPrice = Math.round(dayPrice / 30 * 1.5);
-  const totalPrice = activeTab === "monthly" ? monthlyPrice : dayPrice * days;
+    ]?.price || 0
+  ) * quantity; // Multiply by quantity
+  
+  const dayPrice = productDetails?.price || 0;
+  const totalPrice = activeTab === "monthly" ? monthlyPrice : dayPrice * days * quantity; // Include quantity in daily total
 
   const allImages = productDetails
     ? [
@@ -109,6 +110,17 @@ export default function ProductDetailsPage() {
       console.error("Error fetching product details", err);
     }
   };
+
+  useEffect(() => {
+  // Set default delivery date to 2 days from today
+  const today = new Date();
+  today.setDate(today.getDate() + 2); // add 2 days
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
+  const dd = String(today.getDate()).padStart(2, "0");
+  setDeliveryDate(`${yyyy}-${mm}-${dd}`);
+}, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
@@ -216,6 +228,7 @@ export default function ProductDetailsPage() {
                             {productDetails.month_arrr.map((monthData: any) => {
                               const active =
                                 selectedMonthId === monthData.product_months_id;
+                              const calculatedPrice = monthData.price * quantity;
 
                               return (
                                 <button
@@ -238,12 +251,12 @@ export default function ProductDetailsPage() {
 
                                   {monthData.cancel_price && (
                                     <div className="text-xs text-gray-400 line-through mt-0.5">
-                                      ₹{monthData.cancel_price}
+                                      ₹{(monthData.cancel_price * quantity).toLocaleString()}
                                     </div>
                                   )}
 
                                   <div className="text-xl font-extrabold text-gray-900 mt-1">
-                                    ₹{monthData.price}
+                                    ₹{calculatedPrice.toLocaleString()}
                                   </div>
 
                                   <div className="text-xs text-gray-500 mt-0.5">
@@ -305,7 +318,7 @@ export default function ProductDetailsPage() {
                           <div className="text-right">
                             <div className="text-sm text-gray-600">Total</div>
                             <div className="text-2xl font-extrabold text-blue-700">
-                              ₹{totalPrice.toLocaleString()}
+                              ₹{(dayPrice * days * quantity).toLocaleString()}
                             </div>
                           </div>
                         </div>
@@ -456,20 +469,6 @@ export default function ProductDetailsPage() {
                     Specifications
                   </h3>
                   {(() => {
-                    // Debug logging
-                    console.log(
-                      "Product Details Data:",
-                      productDetails?.product_details,
-                    );
-                    console.log(
-                      "Is Array?",
-                      Array.isArray(productDetails?.product_details),
-                    );
-                    console.log(
-                      "Length:",
-                      productDetails?.product_details?.length,
-                    );
-
                     if (
                       productDetails?.product_details &&
                       Array.isArray(productDetails.product_details) &&
@@ -479,7 +478,6 @@ export default function ProductDetailsPage() {
                         <div className="space-y-4">
                           {productDetails.product_details.map(
                             (spec: any, idx: number) => {
-                              // Get label from multiple possible fields
                               const label =
                                 spec.label ||
                                 spec.key ||

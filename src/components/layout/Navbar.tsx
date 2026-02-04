@@ -1,30 +1,102 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Menu, X, Search, MapPin, ChevronDown, Smartphone, ShoppingCart } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { 
+  Menu, 
+  X, 
+  Search, 
+  MapPin, 
+  ChevronDown, 
+  Smartphone, 
+  ShoppingCart,
+  LogOut
+} from 'lucide-react';
 import Image from 'next/image';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [currentLocations] = useState('Surat');
   const pathname = usePathname();
+  const router = useRouter();
   const [user, setUser] = useState<any>(null);
-  console.log("🚀 ~ Navbar ~ user:", user)
+  const [email, setEmail] = useState<string | null>(null);
+  const profileMenuRef = useRef<HTMLDivElement>(null);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+  const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen);
 
-    if (!storedUser || storedUser === 'undefined') return;
-
+  // Function to read and parse user data from localStorage
+  const readUserData = () => {
     try {
-      const parsedUser = JSON.parse(storedUser); // 👈 object
-      setUser(parsedUser);
+      const storedUser = localStorage.getItem('user');
+      const storedEmail = localStorage.getItem('email');
+      
+      if (storedUser && storedUser !== 'undefined') {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+      } else {
+        setUser(null);
+      }
+      
+      if (storedEmail && storedEmail !== 'undefined') {
+        try {
+          const parsedEmail = JSON.parse(storedEmail);
+          setEmail(parsedEmail);
+        } catch {
+          // If it's not JSON, use it as a plain string
+          setEmail(storedEmail);
+        }
+      } else {
+        setEmail(null);
+      }
     } catch (error) {
-      localStorage.removeItem('user');
+      console.error('Error reading localStorage:', error);
+      setUser(null);
+      setEmail(null);
     }
+  };
+
+  useEffect(() => {
+    readUserData();
+    const handleStorageChange = () => {
+      readUserData();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    // Poll for changes (as a fallback)
+    const intervalId = setInterval(readUserData, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(intervalId);
+    };
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    setUser(null);
+    setEmail(null);
+    setIsProfileMenuOpen(false);
+    setIsMenuOpen(false);
+    router.push('/login');
+    window.dispatchEvent(new Event('storage'));
+  };
 
 
   return (
@@ -85,11 +157,50 @@ export const Navbar: React.FC = () => {
 
             <div className="h-4 w-px bg-gray-300"></div>
             {user ? (
-              <span className="capitalize font-semibold">
-                Hi, {user.full_name}
-              </span>
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  onClick={toggleProfileMenu}
+                  className="flex items-center gap-2 hover:text-upleex-blue transition-colors group"
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
+                    {user?.full_name?.charAt(0) || email?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                  <span className="capitalize font-semibold">
+                    Hi, {user?.split(' ')[0] || 'User'}
+                  </span>
+                  <ChevronDown 
+                    size={16} 
+                    className={`text-gray-400 transition-transform duration-200 ${isProfileMenuOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {/* Profile Dropdown Menu - Only Email and Logout */}
+                {isProfileMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-200 z-50">
+                    {/* Email Display */}
+                    <div className="p-4 bg-gray-50 border-b">
+                      <p className="text-sm text-gray-500 mb-1">Logged in as</p>
+                      <p className="font-medium text-gray-900 truncate">{email}</p>
+                    </div>
+
+                    {/* Logout Button */}
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center justify-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 transition-colors group"
+                    >
+                      <LogOut size={18} className="group-hover:rotate-90 transition-transform" />
+                      <span className="font-semibold">Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
-              <Link href="/auth/login">Login / Sign Up</Link>
+              <Link 
+                href="/auth/login" 
+                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm hover:shadow"
+              >
+                Login / Sign Up
+              </Link>
             )}
 
             <div className="h-4 w-px bg-gray-300"></div>
@@ -166,7 +277,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-gray-100 absolute w-full shadow-lg">
+        <div className="lg:hidden bg-white border-b border-gray-100 absolute w-full shadow-lg z-50">
           <div className="px-4 pt-4 pb-6 space-y-4">
 
             {/* Mobile Search */}
@@ -183,13 +294,33 @@ export const Navbar: React.FC = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
+            {/* Mobile User Menu */}
+            <div className="space-y-3">
               {user ? (
-                <span className="capitalize font-semibold">
-                  Hi, {user.full_name}
-                </span>
+                <>
+                  {/* Email Display */}
+                  <div className="p-3 bg-gray-50 rounded-lg">
+                    <p className="text-sm text-gray-500 mb-1">Logged in as</p>
+                    <p className="font-medium text-gray-900 truncate">{email}</p>
+                  </div>
+
+                  {/* Logout Button */}
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center justify-center gap-3 w-full py-2 px-3 text-red-600 hover:bg-red-50 rounded border border-red-100"
+                  >
+                    <LogOut size={18} />
+                    <span className="font-semibold">Logout</span>
+                  </button>
+                </>
               ) : (
-                <Link href="/auth/login">Login / Sign Up</Link>
+                <Link 
+                  href="/auth/login" 
+                  className="block w-full text-center py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Login / Sign Up
+                </Link>
               )}
 
 

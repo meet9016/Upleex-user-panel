@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/Button';
 import { ArrowRight, Phone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import endPointApi from '@/utils/endPointApi';
+import { api } from '@/utils/axiosInstance';
 
 const LoginPage = () => {
   const [number, setNumber] = useState('');
@@ -23,15 +25,12 @@ const LoginPage = () => {
       formData.append('number', number);
       formData.append('country_id', '91');
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL}web-login-register`,
-        {
-          method: 'POST',
-          body: formData
-        }
+      const res = await api.post(
+        endPointApi.webLoginRegister,
+        formData
       );
 
-      const result = await res.json();
+      const result = res.data;
 
       if (result?.status === 200 || result?.success === true) {
         toast.success('OTP sent successfully 📩');
@@ -40,8 +39,8 @@ const LoginPage = () => {
       } else {
         toast.error(result?.message || 'Failed to send OTP');
       }
-
     } catch (error) {
+      console.error(error);
       toast.error('Something went wrong');
     }
   };
@@ -58,24 +57,25 @@ const LoginPage = () => {
         formData.append('email', form.email);
       }
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_APP_URL}web-login-register`,
-        {
-          method: 'POST',
-          body: formData
-        }
+      const res = await api.post(
+        endPointApi.webLoginRegister,
+        formData
       );
 
-      const result = await res.json();
+      const result = res.data;
+      console.log("🚀 ~ handleVerifyOtp ~ result:", result)
 
       if (result?.status === 200 || result?.success === true) {
         localStorage.setItem('token', result.data.token);
-localStorage.setItem(
-  'user',
-  JSON.stringify(result.data.user.full_name)
-);
-;
-        console.log(result.data.user);
+        localStorage.setItem(
+          'user',
+          JSON.stringify(result.data.user.full_name)
+        );
+          localStorage.setItem(
+          'email',
+          JSON.stringify(result.data.user.email)
+        );
+
         toast.success(result.message || 'Login successful');
         router.push('/');
       } else {
@@ -84,6 +84,7 @@ localStorage.setItem(
 
 
     } catch (error) {
+      console.error(error);
       toast.error('Something went wrong');
     }
   };

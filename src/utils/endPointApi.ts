@@ -11,6 +11,7 @@ export interface EndPointApi {
 
     //Product details
     webGetQuote: string;
+     webLoginRegister: string;
 }
 
 // Define and export the API endpoint object
@@ -27,6 +28,9 @@ const endPointApi: EndPointApi = {
 
     //Product details
     webGetQuote: 'web-get-quote',
+    webLoginRegister: 'web-login-register',
 };
+
+
 
 export default endPointApi;
