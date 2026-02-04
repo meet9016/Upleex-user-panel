@@ -36,7 +36,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
         <motion.img
           src={
             productImage ||
-            'https://images.ctfassets.net/hrltx12pl8hq/28ECAQiPJZ78hxatLTa7Ts/2f695d869736ae3b0de3e56ceaca3958/free-nature-images.jpg'
+            'https://upleex.2min.cloud/upload/product_main_images/2026/01/2026-01-29/ce145a2a7c6ba13df4baceb3ac7843fd.jpg'
           }
           alt={productName}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
