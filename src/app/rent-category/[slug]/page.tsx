@@ -126,10 +126,9 @@ export default function RentCategoryPage() {
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" /></svg>
             </div>
             <select className="w-full sm:w-64 appearance-none pl-12 pr-10 py-3 bg-white border-2 border-gray-100 rounded-full text-sm font-semibold text-slate-700 hover:border-upleex-purple/50 hover:shadow-md focus:outline-none focus:border-upleex-purple focus:ring-4 focus:ring-purple-500/10 cursor-pointer transition-all">
-              <option>Sort by: Recommended</option>
-              <option>Price: Low to High</option>
-              <option>Price: High to Low</option>
-              <option>Newest First</option>
+              <option>Sort by</option>
+              <option>Low to High</option>
+              <option>High to Low</option>
             </select>
             <ChevronDown className="absolute right-5 top-4 text-gray-400 pointer-events-none group-hover:text-upleex-purple transition-colors" size={16} />
           </div>
@@ -140,9 +139,9 @@ export default function RentCategoryPage() {
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>
             </div>
             <select className="w-full sm:w-64 appearance-none pl-12 pr-10 py-3 bg-white border-2 border-gray-100 rounded-full text-sm font-semibold text-slate-700 hover:border-upleex-purple/50 hover:shadow-md focus:outline-none focus:border-upleex-purple focus:ring-4 focus:ring-purple-500/10 cursor-pointer transition-all">
-              <option>Tenure: 3 Months</option>
-              <option>Tenure: 6 Months</option>
-              <option>Tenure: 12 Months</option>
+              <option>Select Tenure</option>
+              <option>Days</option>
+              <option>Months</option>
             </select>
             <ChevronDown className="absolute right-5 top-4 text-gray-400 pointer-events-none group-hover:text-upleex-purple transition-colors" size={16} />
           </div>

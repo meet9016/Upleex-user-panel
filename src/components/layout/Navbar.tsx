@@ -269,9 +269,9 @@ export const Navbar: React.FC = () => {
               </div>
             );
           })}
-          <Link href="/rent-category/all" className="ml-auto px-4 py-2 text-upleex-blue hover:text-upleex-purple transition-colors font-semibold flex items-center">
+          {/* <Link href="/rent-category/all" className="ml-auto px-4 py-2 text-upleex-blue hover:text-upleex-purple transition-colors font-semibold flex items-center">
             All Categories <ChevronDown size={14} className="ml-1 rotate-[-90deg]" />
-          </Link>
+          </Link> */}
         </div>
       </div>
 
