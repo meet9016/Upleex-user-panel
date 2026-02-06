@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { DatePicker } from "@/components/ui/DatePicker";
 import {
   MapPin,
   Shield,
@@ -12,6 +13,8 @@ import {
   Minus,
   Plus,
   ArrowRight,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import endPointApi from "@/utils/endPointApi";
 import { api } from "@/utils/axiosInstance";
@@ -33,6 +36,20 @@ export default function ProductDetailsPage() {
 
   const [selectedImage, setSelectedImage] = useState<string>(""); // For image gallery
   const [productDetails, setProductDetails] = useState<any>(null);
+  
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const { current } = scrollContainerRef;
+      const scrollAmount = 200;
+      if (direction === "left") {
+        current.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+      } else {
+        current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
+    }
+  };
 
   useEffect(() => {
     if (productDetails?.month_arrr?.length) {
@@ -111,15 +128,19 @@ export default function ProductDetailsPage() {
     }
   };
 
+  const [minDate, setMinDate] = useState("");
+
   useEffect(() => {
-  // Set default delivery date to 2 days from today
-  const today = new Date();
-  today.setDate(today.getDate() + 2); // add 2 days
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
-  const dd = String(today.getDate()).padStart(2, "0");
-  setDeliveryDate(`${yyyy}-${mm}-${dd}`);
-}, []);
+    // Set default delivery date to 2 days from today
+    const today = new Date();
+    today.setDate(today.getDate() + 2); // add 2 days
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
+    const dd = String(today.getDate()).padStart(2, "0");
+    const formattedDate = `${yyyy}-${mm}-${dd}`;
+    setDeliveryDate(formattedDate);
+    setMinDate(formattedDate);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
@@ -224,55 +245,121 @@ export default function ProductDetailsPage() {
                           <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-3">
                             Select Duration
                           </label>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-                            {productDetails.month_arrr.map((monthData: any) => {
-                              const active =
-                                selectedMonthId === monthData.product_months_id;
-                              const calculatedPrice = monthData.price * quantity;
+                          
+                          <div className="relative group/scroll">
+                            {/* Left Scroll Button */}
+                            <button 
+                              onClick={() => scroll("left")}
+                              className="absolute left-0 top-1/2 -translate-y-1/2 -ml-3 z-10 p-1.5 rounded-full bg-white shadow-md border border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-600 transition-all opacity-0 group-hover/scroll:opacity-100 hidden sm:flex items-center justify-center"
+                              aria-label="Scroll left"
+                            >
+                              <ChevronLeft size={18} />
+                            </button>
 
-                              return (
-                                <button
-                                  key={monthData.product_months_id}
-                                  onClick={() =>
-                                    setSelectedMonthId(
-                                      monthData.product_months_id,
-                                    )
-                                  }
-                                  className={clsx(
-                                    "group relative rounded-xl border p-4 text-center transition-all duration-200",
-                                    active
-                                      ? "border-red-200 bg-red-50/60 shadow-sm"
-                                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm",
-                                  )}
-                                >
-                                  <div className="text-base font-bold text-gray-900">
-                                    {monthData.month_name}
-                                  </div>
+                            <div 
+                              ref={scrollContainerRef}
+                              className="flex overflow-x-auto gap-3.5 pb-4 pt-3 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
+                            >
+                              {productDetails.month_arrr.map((monthData: any) => {
+                                const active =
+                                  selectedMonthId === monthData.product_months_id;
+                                // Show unit price, not multiplied by quantity
+                                const unitPrice = monthData.price;
 
-                                  {monthData.cancel_price && (
-                                    <div className="text-xs text-gray-400 line-through mt-0.5">
-                                      ₹{(monthData.cancel_price * quantity).toLocaleString()}
+                                return (
+                                  <button
+                                    key={monthData.product_months_id}
+                                    onClick={() =>
+                                      setSelectedMonthId(
+                                        monthData.product_months_id,
+                                      )
+                                    }
+                                    className={clsx(
+                                      "group relative min-w-[140px] flex-shrink-0 rounded-xl border p-4 text-center transition-all duration-200",
+                                      active
+                                        ? "border-blue-600 bg-blue-50/60 shadow-md ring-1 ring-blue-600"
+                                        : "border-gray-200 hover:border-gray-300 hover:shadow-sm bg-white",
+                                    )}
+                                  >
+                                    <div className="text-base font-bold text-gray-900">
+                                      {monthData.month_name}
                                     </div>
-                                  )}
 
-                                  <div className="text-xl font-extrabold text-gray-900 mt-1">
-                                    ₹{calculatedPrice.toLocaleString()}
-                                  </div>
+                                    {monthData.cancel_price && (
+                                      <div className="text-xs text-gray-400 line-through mt-0.5">
+                                        ₹{(monthData.cancel_price).toLocaleString()}
+                                      </div>
+                                    )}
 
-                                  <div className="text-xs text-gray-500 mt-0.5">
-                                    per month
-                                  </div>
-
-                                  {active && (
-                                    <div className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                                      Selected
+                                    <div className="text-xl font-extrabold text-gray-900 mt-1">
+                                      ₹{unitPrice.toLocaleString()}
                                     </div>
-                                  )}
-                                </button>
-                              );
-                            })}
+
+                                    <div className="text-xs text-gray-500 mt-0.5">
+                                      per month
+                                    </div>
+
+                                    {active && (
+                                      <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                                        Selected
+                                      </div>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+
+                            {/* Right Scroll Button */}
+                            <button 
+                              onClick={() => scroll("right")}
+                              className="absolute right-0 top-1/2 -translate-y-1/2 -mr-3 z-10 p-1.5 rounded-full bg-white shadow-md border border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-600 transition-all opacity-0 group-hover/scroll:opacity-100 hidden sm:flex items-center justify-center"
+                              aria-label="Scroll right"
+                            >
+                              <ChevronRight size={18} />
+                            </button>
                           </div>
                         </div>
+
+                        {/* Summary Section for Monthly */}
+                        {selectedMonthId && (() => {
+                          const selectedMonthData = productDetails.month_arrr.find(
+                            (m: any) => m.product_months_id === selectedMonthId
+                          );
+                          if (!selectedMonthData) return null;
+                          
+                          return (
+                            <div className="p-5 border border-gray-200 rounded-xl bg-gray-50/50">
+                              <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                                <span className="w-1 h-4 bg-blue-600 rounded-full"></span>
+                                Payment Breakdown
+                              </h3>
+                              <div className="space-y-3">
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-600">Plan Duration</span>
+                                  <span className="font-medium text-gray-900">{selectedMonthData.month_name}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-600">Monthly Price</span>
+                                  <span className="font-medium text-gray-900">₹{selectedMonthData.price.toLocaleString()}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                  <span className="text-gray-600">Quantity</span>
+                                  <span className="font-medium text-gray-900">{quantity} Units</span>
+                                </div>
+                                
+                                <div className="border-t border-gray-200 pt-3 flex justify-between items-center mt-2">
+                                  <div className="flex flex-col">
+                                    <span className="font-bold text-gray-900">Total Amount</span>
+                                    <span className="text-[10px] text-gray-500 font-normal">(Price × Qty)</span>
+                                  </div>
+                                  <span className="text-2xl font-extrabold text-blue-700">
+                                    ₹{(selectedMonthData.price * quantity).toLocaleString()}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </>
                     ) : (
                       <div className="py-10 text-center text-gray-500">
@@ -292,7 +379,8 @@ export default function ProductDetailsPage() {
                           <div className="flex items-center bg-white border rounded-lg shadow-sm">
                             <button
                               onClick={() => setDays(Math.max(1, days - 1))}
-                              className="px-3 py-2.5 text-gray-600 hover:bg-gray-50"
+                              className="px-3 py-2.5 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={days <= 1}
                             >
                               <Minus size={16} />
                             </button>
@@ -300,23 +388,42 @@ export default function ProductDetailsPage() {
                               {days}
                             </span>
                             <button
-                              onClick={() => setDays(days + 1)}
-                              className="px-3 py-2.5 text-gray-600 hover:bg-gray-50"
+                              onClick={() => setDays(Math.min(31, days + 1))}
+                              className="px-3 py-2.5 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              disabled={days >= 31}
                             >
                               <Plus size={16} />
                             </button>
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4 pt-4 border-t">
-                          <div>
-                            <div className="text-sm text-gray-600">Per Day</div>
-                            <div className="text-xl font-bold">
+                        <div className="space-y-3 pt-4 border-t border-gray-200">
+                          <div className="flex justify-between items-center bg-blue-50/80 p-3 rounded-lg border border-blue-100">
+                            <span className="text-sm font-semibold text-blue-900">
+                              Per Day Price
+                            </span>
+                            <span className="font-bold text-lg text-blue-900">
                               ₹{dayPrice.toLocaleString()}
-                            </div>
+                            </span>
                           </div>
-                          <div className="text-right">
-                            <div className="text-sm text-gray-600">Total</div>
+                          <div className="flex justify-between text-sm text-gray-600 px-1">
+                            <span>Rental Duration</span>
+                            <span className="font-medium">{days} Days</span>
+                          </div>
+                          <div className="flex justify-between text-sm text-gray-600 px-1">
+                            <span>Quantity</span>
+                            <span className="font-medium">{quantity} Units</span>
+                          </div>
+
+                          <div className="flex justify-between items-center pt-3 border-t border-gray-200 mt-2 px-1">
+                            <div className="flex flex-col">
+                              <span className="text-sm text-gray-600">
+                                Total Amount
+                              </span>
+                              <span className="text-[10px] text-gray-400 font-normal">
+                                (Price × Days × Qty)
+                              </span>
+                            </div>
                             <div className="text-2xl font-extrabold text-blue-700">
                               ₹{(dayPrice * days * quantity).toLocaleString()}
                             </div>
@@ -338,7 +445,8 @@ export default function ProductDetailsPage() {
                     <div className="flex items-center">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-1.5"
+                        className="p-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={quantity <= 1}
                       >
                         <Minus size={16} />
                       </button>
@@ -346,26 +454,21 @@ export default function ProductDetailsPage() {
                         {quantity}
                       </span>
                       <button
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="p-1.5"
+                        onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                        className="p-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={quantity >= 10}
                       >
                         <Plus size={16} />
                       </button>
                     </div>
                   </div>
 
-                  <div className="relative">
-                    <input
-                      type="date"
-                      value={deliveryDate}
-                      onChange={(e) => setDeliveryDate(e.target.value)}
-                      className="w-full h-12 pl-4 pr-10 border rounded-lg shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition"
-                    />
-                    <Calendar
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-                      size={18}
-                    />
-                  </div>
+                  <DatePicker
+                    label="Delivery Date"
+                    value={deliveryDate}
+                    onChange={setDeliveryDate}
+                    min={minDate}
+                  />
                 </div>
 
                 {/* CTAs */}
