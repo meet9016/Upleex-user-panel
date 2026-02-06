@@ -94,7 +94,7 @@ export const Navbar: React.FC = () => {
     setEmail(null);
     setIsProfileMenuOpen(false);
     setIsMenuOpen(false);
-    router.push('/login');
+    router.push('/auth/login');
     window.dispatchEvent(new Event('storage'));
   };
 
