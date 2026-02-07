@@ -37,11 +37,11 @@ export const DownloadAppPopup: React.FC<DownloadAppPopupProps> = ({ isOpen, onCl
           <div className="bg-white p-3 rounded-xl shrink-0">
             <div className="w-32 h-32 relative">
                {/* Using a placeholder QR code that points to Upleex website */}
-               <img 
-                 src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://upleex.com" 
-                 alt="Download App QR Code" 
-                 className="w-full h-full object-contain"
-               />
+                <img 
+                  src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://upleex.com" 
+                  alt="Download App QR Code" 
+                  className="w-full h-full object-contain"
+                />
             </div>
           </div>
 
@@ -92,9 +92,9 @@ export const DownloadAppPopup: React.FC<DownloadAppPopupProps> = ({ isOpen, onCl
           </button>
 
           <button className="flex items-center gap-3 bg-black text-white px-5 py-2.5 rounded-xl hover:bg-gray-900 transition-colors border border-gray-800 shadow-lg min-w-[160px]">
-             <svg viewBox="0 0 24 24" className="w-8 h-8">
+             {/* <svg viewBox="0 0 24 24" className="w-8 h-8">
                 <path fill="currentColor" d="M3.609 1.814L13.792 12 3.61 22.186c-.185-.196-.347-.489-.469-.88-.124-.391-.165-.899-.124-1.523l.004-15.535c-.041-.624 0-1.132.124-1.523.122-.391.284-.684.464-.911zM14.869 13.077l3.704 3.704-3.134 1.789-5.502-5.502 4.932.009zM19.98 15.428l.942-.538c.675-.386.996-1.018.996-1.789 0-.771-.321-1.403-.996-1.789l-.942-.538-4.232 4.232 4.232 4.422zM14.869 10.923L9.937 10.932l5.502-5.502 3.134 1.789-3.704 3.704z" />
-             </svg>
+             </svg> */}
             <div className="flex flex-col items-start leading-none">
               <span className="text-[10px] font-medium opacity-80">GET IT ON</span>
               <span className="text-lg font-bold">Google Play</span>

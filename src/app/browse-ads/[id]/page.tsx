@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { DatePicker } from "@/components/ui/DatePicker";
 import {
@@ -27,6 +27,7 @@ import { RelatedProducts } from "@/components/features/RelatedProducts";
 
 export default function ProductDetailsPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params?.id as string;
 
   const [activeTab, setActiveTab] = useState<"monthly" | "daily">("monthly");
@@ -560,6 +561,7 @@ export default function ProductDetailsPage() {
                     size="lg"
                     variant="outline"
                     className="h-14 border-2 border-gray-200 hover:border-gray-800 text-gray-700 hover:text-gray-900 font-bold flex items-center gap-2 flex-1 rounded-xl bg-white"
+                    onClick={() => router.push('/cart')}
                   >
                     <MapPin size={18} className="text-orange-600" />
                     Enter City
