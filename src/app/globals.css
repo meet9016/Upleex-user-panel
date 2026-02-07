@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 @theme {
     --color-upleex-blue: #0ea5e9;
     --color-upleex-purple: #6366f1;

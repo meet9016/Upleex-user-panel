@@ -15,10 +15,15 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
+  CheckCircle,
 } from "lucide-react";
 import endPointApi from "@/utils/endPointApi";
 import { api } from "@/utils/axiosInstance";
 import clsx from "clsx";
+import { AuthModal } from "@/components/features/AuthModal";
+import { QuoteModal } from "@/components/features/QuoteModal";
+import { Modal } from "@/components/ui/Modal";
+import { RelatedProducts } from "@/components/features/RelatedProducts";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -36,6 +41,11 @@ export default function ProductDetailsPage() {
 
   const [selectedImage, setSelectedImage] = useState<string>(""); // For image gallery
   const [productDetails, setProductDetails] = useState<any>(null);
+  
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -104,8 +114,21 @@ export default function ProductDetailsPage() {
     if (id) fetchProductDetails();
   }, [id]);
 
-  const getQuote = async () => {
+  const handleGetQuoteClick = () => {
     const token = localStorage.getItem("token");
+    
+    if (!token) {
+      setIsAuthModalOpen(true);
+    } else {
+      setIsQuoteModalOpen(true);
+    }
+  };
+
+  const submitQuote = async (note: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setIsSubmitting(true);
     const formData = new FormData();
 
     formData.append("product_id", String(id));
@@ -113,19 +136,35 @@ export default function ProductDetailsPage() {
     formData.append("number_of_days", String(days));
     formData.append("months_id", selectedMonthId ?? "");
     formData.append("qty", String(quantity));
+    
+    if (note.trim()) {
+      formData.append("note", note.trim());
+    }
 
     try {
       const res = await api.post(endPointApi.webGetQuote, formData, {
         headers: {
-          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NzAxMjI3NDksImV4cCI6MTA0MTAxMjI3NDksImRhdGEiOnsidXNlcl9pZCI6IjEiLCJmdWxsX25hbWUiOiJiYWh1dGlrIiwiZW1haWwiOiJiaGF1dGlrLnNob3Bub0BnbWFpbC5jb20iLCJudW1iZXIiOiI3NjAwNjcwNzQ0IiwiaWF0IjoxNzcwMTIyNzQ5LCJleHAiOjE3NzAyMDkxNDl9fQ.YDQJLqiNCjU-wkiATURsFSOEbPkEmLFG18aO_Vqct7I`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
 
+      if (res.data?.status === 200 || res.data?.success === true) {
+        setIsQuoteModalOpen(false);
+        setIsSuccessModalOpen(true);
+      }
+      
       console.log("res00.....", res.data);
     } catch (err) {
       console.error("Error fetching product details", err);
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const handleLoginSuccess = () => {
+    setIsAuthModalOpen(false);
+    setIsQuoteModalOpen(true);
   };
 
   const [minDate, setMinDate] = useState("");
@@ -148,9 +187,9 @@ export default function ProductDetailsPage() {
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-0">
             {/* ─── Left: Gallery ──────────────────────────────────────── */}
-            <div className="bg-gray-50/70 p-5 lg:p-10 flex items-center justify-center border-r border-gray-100">
+            <div className="bg-white p-4 lg:p-6 flex items-start justify-center border-r border-gray-100">
               <div className="w-full max-w-[520px]">
-                <div className="relative rounded-2xl overflow-hidden shadow-lg bg-white border border-gray-200 aspect-[4/3.2]">
+                <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-gray-200/50 bg-white border border-gray-100 aspect-[4/3.2]">
                   <img
                     src={
                       selectedImage ||
@@ -183,6 +222,42 @@ export default function ProductDetailsPage() {
                     ))}
                   </div>
                 )}
+
+                {/* Trust Badges */}
+                <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-200">
+                  <div className="flex flex-col items-center text-center gap-1.5">
+                    <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
+                      <Shield size={16} strokeWidth={2.5} />
+                    </div>
+                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                      KYC<br/>Verified
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center text-center gap-1.5">
+                    <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                      <Shield size={16} strokeWidth={2.5} />
+                    </div>
+                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                      Secure<br/>Payment
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center text-center gap-1.5">
+                    <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
+                      <Truck size={16} strokeWidth={2.5} />
+                    </div>
+                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                      Verified<br/>Product
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-center text-center gap-1.5">
+                    <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
+                      <ArrowRight size={16} strokeWidth={2.5} />
+                    </div>
+                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                      100%<br/>Refund
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -476,7 +551,7 @@ export default function ProductDetailsPage() {
                   <Button
                     size="lg"
                     className="bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white shadow-lg h-12 text-base font-semibold flex-1"
-                    onClick={() => getQuote()}
+                    onClick={handleGetQuoteClick}
                   >
                     Get Quote →
                   </Button>
@@ -484,48 +559,14 @@ export default function ProductDetailsPage() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="h-12 border-2 border-gray-300 hover:border-gray-400 text-gray-800 font-semibold flex items-center gap-2 flex-1"
+                    className="h-14 border-2 border-gray-200 hover:border-gray-800 text-gray-700 hover:text-gray-900 font-bold flex items-center gap-2 flex-1 rounded-xl bg-white"
                   >
                     <MapPin size={18} className="text-orange-600" />
                     Enter City
                   </Button>
                 </div>
 
-                {/* Trust Badges */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-10 pt-8 border-t border-gray-100">
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue">
-                      <Shield size={20} />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-900 uppercase">
-                      KYC Verified
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600">
-                      <Shield size={20} />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-900 uppercase">
-                      Secure Payment
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
-                      <Truck size={20} />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-900 uppercase">
-                      Verified Product
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
-                      <ArrowRight size={20} />
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-900 uppercase">
-                      100% Refundable
-                    </span>
-                  </div>
-                </div>
+
               </div>
             </div>
           </div>
@@ -633,7 +674,52 @@ export default function ProductDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Related Products Section */}
+        <RelatedProducts />
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+        onLoginSuccess={handleLoginSuccess}
+      />
+
+      {/* Quote Request Modal */}
+      <QuoteModal
+        isOpen={isQuoteModalOpen}
+        onClose={() => setIsQuoteModalOpen(false)}
+        onSubmit={submitQuote}
+        loading={isSubmitting}
+        productName={productDetails?.product_name}
+      />
+
+      {/* Success Modal */}
+      <Modal
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        className="max-w-md"
+        hideHeader
+        noPadding
+      >
+        <div className="flex flex-col items-center text-center p-8">
+          <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mb-6 ring-8 ring-green-50/50 animate-in zoom-in duration-300">
+            <CheckCircle size={40} strokeWidth={3} />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-3">Quote Requested!</h3>
+          <p className="text-gray-500 mb-8 leading-relaxed">
+            Thank you for your interest. Our team will contact you shortly with the best price.
+          </p>
+          <Button 
+            fullWidth 
+            onClick={() => setIsSuccessModalOpen(false)}
+            className="text-white font-bold py-3.5 rounded-xl shadow-lg shadow-gray-900/10"
+          >
+            Okay, Got it
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

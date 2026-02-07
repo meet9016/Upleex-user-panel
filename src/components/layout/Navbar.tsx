@@ -14,10 +14,12 @@ import {
   LogOut
 } from 'lucide-react';
 import Image from 'next/image';
+import { DownloadAppPopup } from '../features/DownloadAppPopup';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isDownloadPopupOpen, setIsDownloadPopupOpen] = useState(false);
   const [currentLocations] = useState('Surat');
   const pathname = usePathname();
   const router = useRouter();
@@ -94,10 +96,97 @@ export const Navbar: React.FC = () => {
     setEmail(null);
     setIsProfileMenuOpen(false);
     setIsMenuOpen(false);
-    router.push('/login');
+    router.push('/auth/login');
     window.dispatchEvent(new Event('storage'));
   };
 
+  // Partner Page Navbar
+  if (pathname === '/partner') {
+    return (
+      <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm h-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+          <div className="flex items-center justify-between h-full">
+            {/* Logo */}
+            <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+              <Image
+                src="/image/upleex-logo-dark.png"
+                alt="Upleex Logo"
+                width={150}
+                height={40}
+                priority
+              />
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
+              <Link href="#how-it-works" className="text-slate-600 font-medium hover:text-blue-600 transition-colors">
+                How it works
+              </Link>
+              <Link href="#benefits" className="text-slate-600 font-medium hover:text-blue-600 transition-colors">
+                Benefits
+              </Link>
+              <Link href="#categories" className="text-slate-600 font-medium hover:text-blue-600 transition-colors">
+                Categories
+              </Link>
+            </div>
+
+            {/* Auth Buttons */}
+            <div className="hidden md:flex items-center gap-4">
+               <Link 
+                href="/auth/login" 
+                className="px-6 py-2.5 text-slate-700 font-semibold border border-gray-300 rounded-lg hover:border-blue-600 hover:text-blue-600 transition-all"
+              >
+                Login
+              </Link>
+              <Link 
+                href="/auth/register" 
+                className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
+              >
+                Start Renting
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+             <div className="md:hidden flex items-center">
+                <button
+                  onClick={toggleMenu}
+                  className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:text-blue-600 focus:outline-none"
+                >
+                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </button>
+             </div>
+          </div>
+        </div>
+        
+        {/* Mobile Menu for Partner Page */}
+        {isMenuOpen && (
+           <div className="md:hidden bg-white border-b border-gray-100 absolute w-full shadow-lg z-50">
+             <div className="px-4 pt-4 pb-6 space-y-4">
+                <Link href="#how-it-works" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>How it works</Link>
+                <Link href="#benefits" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Benefits</Link>
+                <Link href="#categories" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Categories</Link>
+                <div className="pt-4 flex flex-col gap-3">
+                   <Link 
+                    href="/auth/login" 
+                    className="block w-full text-center py-3 border border-gray-300 rounded-lg text-slate-700 font-semibold"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    href="/auth/register" 
+                    className="block w-full text-center py-3 bg-blue-600 text-white rounded-lg font-semibold"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Start Renting
+                  </Link>
+                </div>
+             </div>
+           </div>
+        )}
+      </nav>
+    );
+  }
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm">
@@ -144,10 +233,13 @@ export const Navbar: React.FC = () => {
           {/* Right Section Actions */}
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-700">
 
-            <a href="#" className="flex items-center gap-2 hover:text-upleex-blue transition-colors group">
+            <button 
+              onClick={() => setIsDownloadPopupOpen(true)} 
+              className="flex items-center gap-2 hover:text-upleex-blue transition-colors group"
+            >
               <Smartphone size={18} className="text-gray-400 group-hover:text-upleex-blue" />
               <span>Download App</span>
-            </a>
+            </button>
 
             <div className="h-4 w-px bg-gray-300"></div>
 
@@ -342,6 +434,11 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
+
+      <DownloadAppPopup 
+        isOpen={isDownloadPopupOpen} 
+        onClose={() => setIsDownloadPopupOpen(false)} 
+      />
     </nav>
   );
 };
