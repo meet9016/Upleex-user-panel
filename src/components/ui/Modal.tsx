@@ -11,6 +11,8 @@ interface ModalProps {
   className?: string;
   hideHeader?: boolean;
   noPadding?: boolean;
+  align?: 'center' | 'top';
+  hideCloseButton?: boolean;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -21,6 +23,8 @@ export const Modal: React.FC<ModalProps> = ({
   className,
   hideHeader = false,
   noPadding = false,
+  align = 'center',
+  hideCloseButton = false,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -52,7 +56,10 @@ export const Modal: React.FC<ModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200"
+      className={clsx(
+        "fixed inset-0 z-50 flex justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200",
+        align === 'center' ? "items-center" : "items-start pt-20"
+      )}
       onClick={handleBackdropClick}
     >
       <div
@@ -74,7 +81,7 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
         )}
 
-        {hideHeader && (
+        {hideHeader && !hideCloseButton && (
           <button
             onClick={onClose}
             className="absolute top-4 right-4 z-10 p-1 bg-white/80 hover:bg-white rounded-full text-gray-500 hover:text-gray-700 transition-colors shadow-sm"

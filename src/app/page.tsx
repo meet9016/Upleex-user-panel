@@ -2,6 +2,9 @@
 import { Button } from '@/components/ui/Button';
 import { CategoryCard } from '@/components/features/CategoryCard';
 import { ProductCard } from '@/components/features/ProductCard';
+import { LatestBlogs } from '@/components/features/LatestBlogs';
+import { FAQSection } from '@/components/features/FAQSection';
+import { CorporateCustomers } from '@/components/features/CorporateCustomers';
 import { categories, featuredProducts } from '@/data/mockData';
 import { ArrowRight, CheckCircle, Shield, Clock, Activity, Sparkles, Zap, TrendingUp, Star, ChevronRight, ArrowUpRight, Heart, ShoppingBag } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
@@ -246,7 +249,7 @@ export default function Home() {
         </section>
 
         {/* Enhanced Featured Products */}
-        <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative">
+        {/* <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative">
           <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-gray-50 to-transparent"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -295,7 +298,7 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Value Props / Why Choose Us */}
         <section className="py-24 bg-white border-t border-gray-100">
@@ -423,6 +426,11 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
+
+        <LatestBlogs />
+        <FAQSection />
+        <CorporateCustomers />
+
         {/* CTA Section */}
         <section className="py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

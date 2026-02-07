@@ -23,6 +23,7 @@ import clsx from "clsx";
 import { AuthModal } from "@/components/features/AuthModal";
 import { QuoteModal } from "@/components/features/QuoteModal";
 import { Modal } from "@/components/ui/Modal";
+import { RelatedProducts } from "@/components/features/RelatedProducts";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -673,6 +674,9 @@ export default function ProductDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Related Products Section */}
+        <RelatedProducts />
       </div>
 
       {/* Auth Modal */}
