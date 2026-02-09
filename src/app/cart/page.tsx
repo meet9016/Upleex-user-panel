@@ -1,29 +1,44 @@
-'use client';
-
+  'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { 
-  ArrowRight, 
-  Info, 
-  Lock, 
-  MessageCircle, 
-  Trash2, 
-  Edit2, 
-  Check, 
-  Calendar, 
-  CreditCard, 
-  Wallet,
+import {
+  ArrowRight,
   ShoppingBag,
   MapPin,
   CreditCard as PaymentIcon,
-  Tag,
-  ChevronRight
+  Calendar,
+  Wallet,
+  ShieldCheck,
+  Lock,
+  ChevronRight,
+  Trash2,
+  Edit2,
+  Info,
+  Check,
+  X,
+  CreditCard,
+  MessageCircle,
 } from 'lucide-react';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 
+// ────────────────────────────────────────────────
+// Helper Components
+// ────────────────────────────────────────────────
+const AnimatedPrice = ({ value }: { value: number }) => (
+  <motion.span
+    key={value}
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -10 }}
+    transition={{ duration: 0.3 }}
+  >
+    ₹{value.toLocaleString('en-IN')}
+  </motion.span>
+);
+
+// ────────────────────────────────────────────────
 // Types
+// ────────────────────────────────────────────────
 type PaymentPlan = 'monthly' | 'full' | 'upfront';
 
 interface CartItem {
@@ -31,7 +46,7 @@ interface CartItem {
   name: string;
   image: string;
   monthlyRent: number;
-  tenure: number; // months
+  tenure: number;
   quantity: number;
   startDate: string;
   deposit: number;
@@ -39,16 +54,18 @@ interface CartItem {
   installationCharge: number;
 }
 
+// ────────────────────────────────────────────────
+// Main Component
+// ────────────────────────────────────────────────
 export default function CartPage() {
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan>('monthly');
-  const [couponCode, setCouponCode] = useState('');
-  
-  // Mock Cart Data
-  const [cartItems, setCartItems] = useState<CartItem[]>([
+  // const [couponCode, setCouponCode] = useState('');
+
+  const cartItems: CartItem[] = [
     {
       id: '1',
       name: '25 LTR Geyser',
-      image: '/Asset-32.webp', // Using actual asset
+      image: '/Asset-32.webp',
       monthlyRent: 900,
       tenure: 12,
       quantity: 1,
@@ -56,116 +73,126 @@ export default function CartPage() {
       deposit: 1000,
       deliveryCharge: 500,
       installationCharge: 300,
-    }
-  ]);
+    },
+  ];
 
-  // Calculations
+  const isEmpty = cartItems.length === 0;
   const item = cartItems[0];
-  const isEmpty = !item;
 
-  const calculateSummary = () => {
+  // ────────────────────────────────────────────────
+  // Summary Calculation
+  // ────────────────────────────────────────────────
+  const summary = (() => {
     if (!item) return null;
-    
+
     const rentPerMonth = item.monthlyRent * item.quantity;
     const totalRent = rentPerMonth * item.tenure;
     const taxRate = 0.18;
-    
-    // Base charges
+
     const delivery = item.deliveryCharge;
     const installation = item.installationCharge;
 
     if (selectedPlan === 'monthly') {
-      const tax = rentPerMonth * taxRate;
-      const totalDue = rentPerMonth + tax + delivery + installation + item.deposit;
+      const tax = Math.round(rentPerMonth * taxRate);
+      const dueToday = rentPerMonth + tax + delivery + installation + item.deposit;
+
       return {
-        mode: 'Monthly (With Deposit)',
+        mode: 'Monthly Rental + Deposit',
         rentLabel: 'Monthly Rent',
         rentAmount: rentPerMonth,
         tax,
         delivery,
         installation,
         deposit: item.deposit,
-        dueToday: totalDue,
-        totalAmount: null,
-        totalLabel: 'Due Today'
+        dueToday,
+        totalLabel: 'Due Today',
       };
     } else {
-      // Full or Upfront
-      const tax = totalRent * taxRate;
-      const totalAmount = totalRent + tax + delivery + installation;
+      const tax = Math.round(totalRent * taxRate);
+      const total = totalRent + tax + delivery + installation;
+
       return {
-        mode: selectedPlan === 'full' ? 'No Cost EMI' : 'Pay Upfront',
+        mode: selectedPlan === 'full' ? 'No Cost EMI' : 'Pay Upfront (Save More)',
         rentLabel: 'Total Rent',
         rentAmount: totalRent,
         tax,
         delivery,
         installation,
         deposit: 0,
-        dueToday: totalAmount,
-        totalAmount: totalAmount,
-        totalLabel: 'Total Amount'
+        dueToday: total,
+        totalLabel: 'Total Payable',
       };
     }
-  };
+  })();
 
-  const summary = calculateSummary();
-
-  // Animation variants
+  // ────────────────────────────────────────────────
+  // Animation Variants
+  // ────────────────────────────────────────────────
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { 
-      y: 0, 
-      opacity: 1,
-      transition: { type: "spring", stiffness: 300, damping: 24 }
-    }
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 50 } },
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      {/* <Navbar /> */}
-      
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        
-        {/* Progress Stepper */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-10"
-        >
-          <div className="flex items-center justify-center max-w-3xl mx-auto">
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen bg-gradient-to-b from-slate-50 to-white"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+
+        {/* Progress Bar */}
+        <motion.div variants={itemVariants} className="mb-10">
+          <div className="flex items-center justify-center gap-4 md:gap-12 max-w-md mx-auto">
             {[
-              { id: 1, label: 'Cart', icon: ShoppingBag, active: true, completed: false },
-              { id: 2, label: 'Address', icon: MapPin, active: false, completed: false },
-              { id: 3, label: 'Payment', icon: PaymentIcon, active: false, completed: false },
-            ].map((step, index) => (
-              <React.Fragment key={step.id}>
-                <div className="flex flex-col items-center relative z-10">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    step.active 
-                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110' 
-                      : step.completed 
-                        ? 'bg-green-500 text-white' 
-                        : 'bg-white text-gray-400 border border-gray-200'
-                  }`}>
-                    <step.icon size={18} />
-                  </div>
-                  <span className={`mt-2 text-xs font-semibold uppercase tracking-wider ${
-                    step.active ? 'text-blue-600' : 'text-gray-400'
-                  }`}>
+              { label: 'Cart', active: true },
+              { label: 'Address', active: false },
+              { label: 'Payment', active: false },
+            ].map((step, i) => (
+              <React.Fragment key={step.label}>
+                <motion.div 
+                  whileHover={{ scale: 1.05 }}
+                  className="flex flex-col items-center relative cursor-default"
+                >
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      backgroundColor: step.active ? '#2563eb' : '#f1f5f9',
+                      color: step.active ? '#ffffff' : '#64748b',
+                      scale: step.active ? 1.1 : 1
+                    }}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm z-10 transition-colors`}
+                  >
+                    {i + 1}
+                  </motion.div>
+                  <span
+                    className={`mt-2 text-xs font-semibold ${
+                      step.active ? 'text-blue-700' : 'text-slate-400'
+                    }`}
+                  >
                     {step.label}
                   </span>
-                </div>
-                {index < 2 && (
-                  <div className="h-[2px] w-24 md:w-48 bg-gray-200 -mt-6 mx-2 relative">
-                    <div className="absolute top-0 left-0 h-full bg-blue-600 transition-all duration-500" style={{ width: step.completed ? '100%' : '0%' }}></div>
+                </motion.div>
+                {i < 2 && (
+                  <div className="h-0.5 flex-1 max-w-[80px] bg-slate-200 rounded-full mt-5 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: step.active ? '100%' : '0%' }}
+                      transition={{ duration: 0.8, ease: "easeInOut" }}
+                      className="h-full bg-blue-600"
+                    />
                   </div>
                 )}
               </React.Fragment>
@@ -174,316 +201,344 @@ export default function CartPage() {
         </motion.div>
 
         {isEmpty ? (
-           <div className="text-center py-20">
-             <h2 className="text-2xl font-bold text-gray-800">Your Cart is Empty</h2>
-             <Link href="/" className="text-blue-600 hover:underline mt-4 inline-block">Continue Shopping</Link>
-           </div>
-        ) : (
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-col lg:flex-row gap-8"
-          >
-            {/* Left Column */}
-            <div className="flex-1 space-y-6">
-              
-              {/* Payment Plan Selection */}
-              <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/50">
-                  <div className="flex justify-between items-center mb-6">
-                      <h2 className="font-bold text-gray-800 text-lg flex items-center gap-2">
-                        <span className="w-1 h-6 bg-blue-600 rounded-full"></span>
-                        Select Payment Plan
-                      </h2>
-                      {/* <button className="text-xs text-blue-600 font-medium flex items-center gap-1 hover:bg-blue-50 px-2 py-1 rounded transition-colors">
-                          <Info size={14} /> How it works?
-                      </button> */}
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      {/* Pay Monthly */}
-                      <motion.div 
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => setSelectedPlan('monthly')}
-                          className={`relative cursor-pointer border rounded-xl p-3 transition-all duration-300 ${
-                              selectedPlan === 'monthly' 
-                              ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600/20' 
-                              : 'border-gray-100 hover:border-blue-200 hover:shadow-md'
-                          }`}
-                      >
-                          {selectedPlan === 'monthly' && (
-                              <motion.div 
-                                initial={{ scale: 0 }} animate={{ scale: 1 }}
-                                className="absolute -top-2 right-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-green-500/20 flex items-center gap-1"
-                              >
-                                <Check size={8} strokeWidth={4} /> POPULAR
-                              </motion.div>
-                          )}
-                          <div className="flex flex-row items-center gap-3">
-                              <div className={`p-2 rounded-full shrink-0 ${selectedPlan === 'monthly' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
-                                <Calendar size={18} />
-                              </div>
-                              <div className="text-left">
-                                  <div className={`font-bold text-sm ${selectedPlan === 'monthly' ? 'text-blue-900' : 'text-gray-700'}`}>Pay Monthly</div>
-                                  <div className="text-[10px] text-gray-500 font-medium leading-tight">With Security Deposit</div>
-                              </div>
-                          </div>
-                      </motion.div>
-
-                      {/* Pay Full */}
-                      <motion.div 
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => setSelectedPlan('full')}
-                          className={`relative cursor-pointer border rounded-xl p-3 transition-all duration-300 ${
-                              selectedPlan === 'full' 
-                              ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600/20' 
-                              : 'border-gray-100 hover:border-blue-200 hover:shadow-md'
-                          }`}
-                      >
-                          <div className="flex flex-row items-center gap-3">
-                              <div className={`p-2 rounded-full shrink-0 ${selectedPlan === 'full' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
-                                <CreditCard size={18} />
-                              </div>
-                              <div className="text-left">
-                                  <div className={`font-bold text-sm ${selectedPlan === 'full' ? 'text-blue-900' : 'text-gray-700'}`}>Pay Full</div>
-                                  <div className="text-[10px] text-gray-500 font-medium leading-tight">No Cost EMI Available</div>
-                              </div>
-                          </div>
-                      </motion.div>
-
-                      {/* Pay Upfront */}
-                      <motion.div 
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => setSelectedPlan('upfront')}
-                          className={`relative cursor-pointer border rounded-xl p-3 transition-all duration-300 ${
-                              selectedPlan === 'upfront' 
-                              ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600/20' 
-                              : 'border-gray-100 hover:border-blue-200 hover:shadow-md'
-                          }`}
-                      >
-                           {selectedPlan === 'upfront' && (
-                              <motion.div 
-                                initial={{ scale: 0 }} animate={{ scale: 1 }}
-                                className="absolute -top-2 right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-orange-500/20"
-                              >
-                                  SAVE MORE
-                              </motion.div>
-                          )}
-                          <div className="flex flex-row items-center gap-3">
-                              <div className={`p-2 rounded-full shrink-0 ${selectedPlan === 'upfront' ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
-                                <Wallet size={18} />
-                              </div>
-                              <div className="text-left">
-                                  <div className={`font-bold text-sm ${selectedPlan === 'upfront' ? 'text-blue-900' : 'text-gray-700'}`}>Pay Upfront</div>
-                                  <div className="text-[10px] text-gray-500 font-medium leading-tight">One-time payment</div>
-                              </div>
-                          </div>
-                      </motion.div>
-                  </div>
-              </motion.div>
-
-              {/* Cart Items */}
-              <motion.div variants={itemVariants} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100/50">
-                  <div className="flex justify-between items-center mb-4">
-                      <h2 className="font-bold text-gray-800 text-base flex items-center gap-2">
-                        <span className="w-1 h-5 bg-blue-600 rounded-full"></span>
-                        Cart Items
-                      </h2>
-                      <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">{cartItems.length} item</span>
-                  </div>
-
-                  {cartItems.map((item) => (
-                      <div key={item.id} className="group">
-                          <div className="flex flex-col sm:flex-row gap-4">
-                              {/* Product Image */}
-                              <div className="w-full sm:w-28 h-28 bg-gray-50 rounded-xl flex items-center justify-center p-2 relative shrink-0 overflow-hidden group-hover:shadow-md transition-all duration-300">
-                                  <img 
-                                      src={item.image} 
-                                      alt={item.name}
-                                      className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
-                                      onError={(e) => {
-                                          e.currentTarget.style.display = 'none';
-                                          e.currentTarget.parentElement!.innerText = 'No Image';
-                                      }}
-                                  />
-                              </div>
-
-                              {/* Details */}
-                              <div className="flex-1 flex flex-col justify-between py-0.5">
-                                  <div>
-                                      <div className="flex justify-between items-start">
-                                          <div>
-                                              <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">{item.name}</h3>
-                                              <div className="text-gray-500 text-xs mt-0.5">Premium Appliance</div>
-                                          </div>
-                                          <div className="text-right">
-                                              <div className="font-bold text-gray-900 text-lg">₹{item.monthlyRent.toFixed(2)}</div>
-                                              <div className="text-[10px] text-gray-500 font-medium">/Month</div>
-                                          </div>
-                                      </div>
-
-                                      <div className="flex flex-wrap gap-2 mt-2">
-                                          <div className="bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
-                                              <div className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Start Date</div>
-                                              <div className="text-xs font-semibold text-gray-700">{item.startDate}</div>
-                                          </div>
-                                          <div className="bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
-                                              <div className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Tenure</div>
-                                              <div className="text-xs font-semibold text-gray-700">{item.tenure} Months</div>
-                                          </div>
-                                          <div className="bg-gray-50 px-2 py-1 rounded-lg border border-gray-100">
-                                              <div className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Quantity</div>
-                                              <div className="text-xs font-semibold text-gray-700">{item.quantity}</div>
-                                          </div>
-                                      </div>
-                                  </div>
-
-                                  {/* Actions */}
-                                  <div className="flex justify-end gap-2 mt-2 pt-2 border-t border-gray-50">
-                                      <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
-                                          <Edit2 size={14} /> Edit
-                                      </button>
-                                      <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors">
-                                          <Trash2 size={14} /> Remove
-                                      </button>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  ))}
-              </motion.div>
-
-              {/* Coupons */}
-              <motion.div variants={itemVariants} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/50">
-                  <div className="flex justify-between items-center mb-4">
-                      <div className="flex items-center gap-2 font-bold text-gray-800">
-                          <Tag className="text-blue-600" size={20} />
-                          Apply Coupons
-                      </div>
-                      <button className="text-xs text-blue-600 font-bold hover:underline tracking-wide uppercase">View All</button>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <input 
-                            type="text" 
-                            placeholder="Enter coupon code"
-                            className="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm font-medium placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 transition-all"
-                            value={couponCode}
-                            onChange={(e) => setCouponCode(e.target.value)}
-                        />
-                      </div>
-                      <motion.button 
-                        whileTap={{ scale: 0.95 }}
-                        className="bg-gray-900 text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-black transition-colors shadow-lg shadow-gray-200"
-                      >
-                          APPLY
-                      </motion.button>
-                  </div>
-              </motion.div>
-
-            </div>
-
-            {/* Right Column - Order Summary */}
-            <div className="lg:w-[400px]">
-              <motion.div 
-                variants={itemVariants}
-                className="bg-white rounded-2xl shadow-xl shadow-gray-200/50 overflow-hidden sticky top-24 border border-gray-100"
+          <motion.div variants={itemVariants} className="text-center py-24">
+            <motion.div 
+              initial={{ rotate: -10, scale: 0.9 }}
+              animate={{ rotate: 0, scale: 1 }}
+              transition={{ type: "spring", stiffness: 100 }}
+            >
+              <ShoppingBag className="mx-auto h-24 w-24 text-slate-200" strokeWidth={1} />
+            </motion.div>
+            <h2 className="mt-6 text-2xl font-bold text-slate-800">Your cart is empty</h2>
+            <p className="mt-3 text-slate-500 max-w-md mx-auto">
+              Looks like you haven’t added anything yet.
+            </p>
+            <Link href="/">
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="mt-8 inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-xl font-medium hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
               >
-                  <div className="bg-gradient-to-r from-gray-900 to-slate-800 text-white p-6 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
-                      <h2 className="font-bold text-lg mb-1 relative z-10">Order Summary</h2>
-                      <div className="text-sm text-gray-400 flex items-center gap-2 relative z-10">
-                          {cartItems.length} item • <span className="text-gray-300 font-medium">{summary!.mode}</span>
-                      </div>
-                  </div>
+                Start Shopping <ArrowRight size={18} />
+              </motion.button>
+            </Link>
+          </motion.div>
+        ) : (
+          <div className="grid lg:grid-cols-3 gap-8 xl:gap-10">
 
-                  <div className="p-6">
-                      {/* Cost Breakdown */}
-                      <div className="space-y-4 text-sm">
-                          <div className="flex justify-between text-gray-600">
-                              <span>{summary!.rentLabel}</span>
-                              <span className="font-semibold text-gray-900">₹{summary!.rentAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
-                          </div>
-                          <div className="flex justify-between text-gray-600">
-                              <span>Tax (18%)</span>
-                              <span className="font-semibold text-gray-900">₹{summary!.tax.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
-                          </div>
-                          <div className="flex justify-between text-gray-600">
-                              <span>Shipping Charge</span>
-                              <span className="font-semibold text-green-600">{summary!.delivery === 0 ? 'FREE' : `₹${summary!.delivery}`}</span>
-                          </div>
-                          <div className="flex justify-between text-gray-600">
-                              <span>Installation Charge</span>
-                              <span className="font-semibold text-green-600">{summary!.installation === 0 ? 'FREE' : `₹${summary!.installation}`}</span>
-                          </div>
-                          
-                          <AnimatePresence>
-                            {summary!.deposit > 0 && (
-                                <motion.div 
-                                  initial={{ height: 0, opacity: 0 }}
-                                  animate={{ height: 'auto', opacity: 1 }}
-                                  exit={{ height: 0, opacity: 0 }}
-                                  className="flex justify-between text-gray-600 pt-3 border-t border-dashed border-gray-200"
-                                >
-                                    <span className="text-gray-800 font-medium">Security Deposit <span className="text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded ml-1">REFUNDABLE</span></span>
-                                    <span className="font-bold text-gray-900">₹{summary!.deposit.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
-                                </motion.div>
-                            )}
-                          </AnimatePresence>
-                      </div>
+            {/* ─── LEFT ─── Main Content ──────────────────────────────────────── */}
+            <div className="lg:col-span-2 space-y-7">
 
-                      <div className="border-t-2 border-gray-100 mt-6 pt-4">
-                          <div className="flex justify-between items-end mb-1">
-                              <span className="font-bold text-gray-700">{summary!.totalLabel}</span>
-                              <motion.span 
-                                key={summary!.dueToday}
-                                initial={{ scale: 1.2, color: '#2563EB' }}
-                                animate={{ scale: 1, color: '#111827' }}
-                                className="text-3xl font-extrabold text-gray-900"
-                              >
-                                ₹{summary!.dueToday.toLocaleString('en-IN', { minimumFractionDigits: 0 })}
-                              </motion.span>
-                          </div>
-                          <div className="text-right text-xs text-gray-500 font-medium">
-                              Inclusive of all taxes
-                          </div>
-                      </div>
+              {/* Cart Item Card */}
+              <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="p-6 pb-5 border-b border-slate-100 flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
+                    <ShoppingBag className="text-blue-600" size={22} />
+                    Your Items ({cartItems.length})
+                  </h2>
+                </div>
 
-                      <motion.button 
+                <div className="p-6">
+                  {cartItems.map((item) => (
+                    <motion.div 
+                      key={item.id} 
+                      layout
+                      className="flex flex-col sm:flex-row gap-6 group"
+                    >
+                      {/* Image */}
+                      <motion.div 
                         whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 rounded-xl mt-8 flex items-center justify-center gap-2 transition-all shadow-xl shadow-blue-500/30"
+                        className="w-full sm:w-44 h-44 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-4 overflow-hidden relative"
                       >
-                          Proceed to Checkout <ArrowRight size={20} strokeWidth={2.5} />
-                      </motion.button>
+                        <motion.img
+                          src={item.image}
+                          alt={item.name}
+                          whileHover={{ scale: 1.1, rotate: 2 }}
+                          transition={{ type: "spring", stiffness: 200 }}
+                          className="w-full h-full object-contain"
+                        />
+                      </motion.div>
 
-                      <div className="flex items-center justify-center gap-2 mt-6 text-xs text-gray-400 bg-gray-50 py-2 rounded-lg">
-                          <Lock size={12} /> 100% Secure Payment via Razorpay
+                      {/* Details */}
+                      <div className="flex-1 flex flex-col">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                          <div>
+                            <h3 className="font-semibold text-lg text-slate-900 group-hover:text-blue-700 transition-colors cursor-pointer">
+                              {item.name}
+                            </h3>
+                            <div className="mt-1.5 flex items-center gap-2 text-sm text-slate-500">
+                              <ShieldCheck size={16} className="text-green-500" />
+                              Verified Product
+                            </div>
+                          </div>
+
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-blue-700">
+                              ₹{item.monthlyRent.toLocaleString('en-IN')}
+                            </div>
+                            <div className="text-sm text-slate-500">per month</div>
+                          </div>
+                        </div>
+
+                        {/* Specs */}
+                        <div className="mt-5 grid grid-cols-3 gap-3 text-sm">
+                          {[
+                            { label: 'Start', value: item.startDate },
+                            { label: 'Tenure', value: `${item.tenure} mo` },
+                            { label: 'Qty', value: item.quantity },
+                          ].map((d) => (
+                            <motion.div
+                              whileHover={{ y: -2, backgroundColor: '#f8fafc' }}
+                              key={d.label}
+                              className="bg-slate-50 rounded-lg px-3 py-2.5 text-center border border-slate-100 cursor-default"
+                            >
+                              <div className="text-xs text-slate-500 uppercase tracking-wide font-medium">
+                                {d.label}
+                              </div>
+                              <div className="font-medium text-slate-800 mt-0.5">{d.value}</div>
+                            </motion.div>
+                          ))}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="mt-6 flex gap-3 justify-end">
+                          <motion.button 
+                            whileHover={{ scale: 1.05, color: '#2563eb' }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center gap-1.5 text-sm text-slate-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-blue-50"
+                          >
+                            <Edit2 size={16} /> Edit
+                          </motion.button>
+                          <motion.button 
+                            whileHover={{ scale: 1.05, color: '#dc2626' }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center gap-1.5 text-sm text-red-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
+                          >
+                            <Trash2 size={16} /> Remove
+                          </motion.button>
+                        </div>
                       </div>
-                  </div>
+                    </motion.div>
+                  ))}
+                </div>
               </motion.div>
 
-              {/* Help Section */}
-              <div className="mt-6 bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-between group cursor-pointer hover:border-blue-200 transition-colors">
-                  <div className="flex items-center gap-3">
-                      <div className="bg-green-100 p-2.5 rounded-full group-hover:scale-110 transition-transform">
-                           <MessageCircle className="text-green-600" size={20} />
+              {/* Payment Plan Selector */}
+              <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-slate-100">
+                  <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
+                    <PaymentIcon className="text-blue-600" size={22} />
+                    Payment Plan
+                  </h2>
+                </div>
+
+                <div className="p-6 grid sm:grid-cols-3 gap-4">
+                  <LayoutGroup>
+                  {[
+                    {
+                      id: 'monthly',
+                      title: 'Monthly',
+                      subtitle: '₹900/mo + deposit',
+                      badge: 'Popular',
+                      icon: Calendar,
+                      color: 'text-blue-700',
+                      bg: 'bg-blue-50',
+                    },
+                    {
+                      id: 'full',
+                      title: 'No Cost EMI',
+                      subtitle: 'Pay full amount',
+                      badge: null,
+                      icon: CreditCard,
+                      color: 'text-slate-700',
+                      bg: 'bg-slate-50',
+                    },
+                    {
+                      id: 'upfront',
+                      title: 'Upfront',
+                      subtitle: 'Best savings',
+                      badge: 'Save More',
+                      icon: Wallet,
+                      color: 'text-purple-700',
+                      bg: 'bg-purple-50',
+                    },
+                  ].map((plan) => {
+                    const isSelected = selectedPlan === plan.id;
+                    return (
+                    <motion.button
+                      key={plan.id}
+                      layout
+                      onClick={() => setSelectedPlan(plan.id as PaymentPlan)}
+                      whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`relative p-5 rounded-xl border-2 transition-all duration-300 text-left group h-full flex flex-col
+                        ${isSelected ? 'border-transparent bg-blue-50/30' : 'border-slate-100 hover:border-blue-200 bg-white'}`}
+                    >
+                      {isSelected && (
+                        <motion.div
+                          layoutId="active-plan-border"
+                          className="absolute -inset-[2px] border-2 border-blue-500 rounded-xl pointer-events-none"
+                          initial={false}
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                      
+                      {isSelected && (
+                        <motion.div 
+                          layoutId="selected-check"
+                          className="absolute -top-2.5 -right-2.5 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 z-10"
+                        >
+                          <Check size={12} strokeWidth={3} /> Selected
+                        </motion.div>
+                      )}
+
+                      {plan.badge && (
+                        <div
+                          className={`absolute -top-2.5 left-4 px-2.5 py-1 text-xs font-bold rounded-full shadow-sm z-10 ${
+                            plan.id === 'upfront' ? 'bg-purple-600 text-white' : 'bg-green-600 text-white'
+                          }`}
+                        >
+                          {plan.badge}
+                        </div>
+                      )}
+
+                      <div className={`p-3 rounded-lg inline-block mb-3 ${plan.bg} ${plan.color}`}>
+                        <plan.icon size={22} />
                       </div>
-                      <div>
-                          <div className="font-bold text-gray-900 text-sm">Need Help?</div>
-                          <div className="text-xs text-gray-500">Chat with our support</div>
-                      </div>
-                  </div>
-                  <ChevronRight size={18} className="text-gray-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
-              </div>
+
+                      <div className={`font-semibold ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>{plan.title}</div>
+                      <div className="text-sm text-slate-500 mt-1">{plan.subtitle}</div>
+                    </motion.button>
+                  )})} 
+                  </LayoutGroup>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
+
+            {/* ─── RIGHT ─── Sticky Summary ───────────────────────────────────── */}
+            <motion.div variants={itemVariants} className="lg:col-span-1">
+              <div className="sticky top-8 space-y-6">
+
+                <motion.div 
+                  className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden"
+                  whileHover={{ y: -5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <div className="p-6 bg-slate-50/50 border-b border-slate-100 backdrop-blur-sm">
+                    <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-3">
+                      <ShoppingBag size={22} className="text-blue-600" />
+                      Order Summary
+                    </h2>
+                  </div>
+
+                  <div className="p-6 space-y-4 text-sm">
+                    <div className="flex justify-between text-slate-700">
+                      <span>{summary?.rentLabel}</span>
+                      <span className="font-semibold flex items-center">
+                        <AnimatedPrice value={summary?.rentAmount || 0} />
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between text-slate-700">
+                      <span>GST (18%)</span>
+                      <span className="font-semibold flex items-center">
+                        <AnimatedPrice value={summary?.tax || 0} />
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between text-slate-700">
+                      <span>Delivery</span>
+                      <span className="text-green-600 font-medium">
+                        {summary?.delivery === 0 ? 'FREE' : `₹${summary?.delivery}`}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between text-slate-700">
+                      <span>Installation</span>
+                      <span className="text-green-600 font-medium">
+                        {summary?.installation === 0 ? 'FREE' : `₹${summary?.installation}`}
+                      </span>
+                    </div>
+
+                    <AnimatePresence mode="wait">
+                      {summary?.deposit > 0 && (
+                        <motion.div
+                          key="deposit-row"
+                          initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                          animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+                          exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                          className="pt-3 border-t border-dashed border-slate-200 flex justify-between items-start overflow-hidden"
+                        >
+                          <div>
+                            <div className="font-medium text-slate-800 flex items-center gap-1.5">
+                              Refundable Deposit
+                              <Info size={14} className="text-slate-400" />
+                            </div>
+                            <div className="text-xs text-blue-600">100% refund on return</div>
+                          </div>
+                          <span className="font-semibold">
+                            ₹{summary?.deposit.toLocaleString('en-IN')}
+                          </span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <div className="border-t-2 border-slate-100 pt-5 mt-5">
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-lg font-semibold text-slate-900">
+                          {summary?.totalLabel}
+                        </span>
+                        <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center">
+                          <AnimatedPrice value={summary?.dueToday || 0} />
+                        </div>
+                      </div>
+                      <div className="text-xs text-slate-500 mt-1 text-right">
+                        Inclusive of all taxes
+                      </div>
+                    </div>
+
+                    <motion.button 
+                      whileHover={{ scale: 1.02, boxShadow: "0 20px 25px -5px rgb(59 130 246 / 0.4)" }}
+                      whileTap={{ scale: 0.98 }}
+                      className="mt-6 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 relative overflow-hidden group"
+                    >
+                      <span className="relative z-10 flex items-center gap-2">
+                        Proceed to Checkout <ArrowRight size={20} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform" />
+                      </span>
+                      <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                    </motion.button>
+
+                    <div className="flex items-center justify-center gap-2 text-xs text-slate-500 mt-4">
+                      <Lock size={14} className="text-green-500" />
+                      Secure checkout via Razorpay
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Help card */}
+                <motion.div 
+                  whileHover={{ scale: 1.02 }}
+                  className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-100 flex items-center justify-between group cursor-pointer shadow-sm hover:shadow-md transition-all"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="bg-white p-3 rounded-full shadow-sm group-hover:scale-110 transition-transform">
+                      <MessageCircle className="text-blue-600" size={22} />
+                    </div>
+                    <div>
+                      <div className="font-medium text-slate-900">Need help?</div>
+                      <div className="text-xs text-slate-600">Chat with us</div>
+                    </div>
+                  </div>
+                  <ChevronRight
+                    className="text-blue-600 group-hover:translate-x-1 transition-transform"
+                    size={20}
+                  />
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

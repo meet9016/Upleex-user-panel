@@ -40,12 +40,12 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     >
       <div className="space-y-5">
         {productName && (
-          <div className="p-4 bg-orange-50/50 rounded-xl border border-orange-100 flex items-start gap-3">
-            <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0 text-orange-600">
+          <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100 flex items-start gap-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 text-blue-600">
                <MessageSquare size={20} />
             </div>
             <div>
-               <span className="text-xs text-orange-600 uppercase font-bold tracking-wider">Requesting For</span>
+               <span className="text-xs text-blue-600 uppercase font-bold tracking-wider">Requesting For</span>
                <p className="text-gray-900 font-bold text-base leading-tight mt-0.5">{productName}</p>
             </div>
           </div>
@@ -59,7 +59,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Any specific requirements? (e.g., Preferred delivery time, installation needed, etc.)"
-            className="w-full min-h-[140px] p-4 border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all resize-none text-sm placeholder:text-gray-400"
+            className="w-full min-h-[140px] p-4 border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-sm placeholder:text-gray-400"
           />
         </div>
 
@@ -68,7 +68,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
             fullWidth 
             onClick={handleSubmit} 
             disabled={loading}
-            className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold py-3.5 shadow-lg shadow-orange-500/20 rounded-xl"
+            className="bg-gradient-primary hover:from-blue-600 hover:to-blue-700 text-white font-bold py-3.5 shadow-lg shadow-blue-500/20 rounded-xl"
           >
             {loading ? 'Sending Request...' : 'Submit Quote Request'}
           </Button>

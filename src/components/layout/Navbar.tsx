@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { DownloadAppPopup } from '../features/DownloadAppPopup';
+import { Button } from '@/components/ui/Button';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -132,18 +133,19 @@ export const Navbar: React.FC = () => {
 
             {/* Auth Buttons */}
             <div className="hidden md:flex items-center gap-4">
-               <Link 
-                href="/auth/login" 
-                className="px-6 py-2.5 text-slate-700 font-semibold border border-gray-300 rounded-lg hover:border-blue-600 hover:text-blue-600 transition-all"
+              <Button 
+                variant="ghost"
+                onClick={() => router.push('/auth/login')}
+                className="px-6 border border-gray-300 text-slate-700 font-semibold hover:bg-transparent hover:border-blue-600 hover:text-blue-600"
               >
                 Login
-              </Link>
-              <Link 
-                href="/auth/register" 
-                className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-all shadow-md hover:shadow-lg"
+              </Button>
+              <Button 
+                onClick={() => router.push('/auth/register')}
+                className="px-6 shadow-md hover:shadow-lg"
               >
                 Start Renting
-              </Link>
+              </Button>
             </div>
 
             {/* Mobile Menu Button */}
@@ -257,9 +259,9 @@ export const Navbar: React.FC = () => {
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                     {user?.full_name?.charAt(0) || email?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
-                  <span className="capitalize font-semibold">
+                  {/* <span className="capitalize font-semibold">
                     Hi, {user?.split(' ')[0] || 'User'}
-                  </span>
+                  </span> */}
                   <ChevronDown 
                     size={16} 
                     className={`text-gray-400 transition-transform duration-200 ${isProfileMenuOpen ? 'rotate-180' : ''}`}

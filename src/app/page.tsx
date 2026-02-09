@@ -134,7 +134,7 @@ export default function Home() {
 
                 <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-snug md:leading-tight">
                   Don't Buy.{' '}
-                  <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-upleex-purple to-upleex-blue animate-gradient-x">
+                  <span className="relative inline-block text-gradient-primary animate-gradient-x">
                     Just Rent It.
                     <span className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 opacity-30 blur-xl rounded-lg mix-blend-overlay"></span>
                   </span>
@@ -201,7 +201,7 @@ export default function Home() {
                 Popular Categories
               </div>
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-                Explore Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-upleex-purple to-upleex-blue">Premium</span> Collection
+                Explore Our <span className="text-gradient-primary">Premium</span> Collection
               </h2>
               <p className="text-slate-500 max-w-2xl mx-auto text-lg">Find exactly what you are looking for from our wide range of rental categories.</p>
             </motion.div>
@@ -301,7 +301,7 @@ export default function Home() {
         </section> */}
 
         {/* Value Props / Why Choose Us */}
-        <section className="py-24 bg-white border-t border-gray-100">
+        <section className="py-10 mb-20 bg-white border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}

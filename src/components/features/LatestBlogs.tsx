@@ -35,10 +35,10 @@ const BLOGS = [
 
 export const LatestBlogs = () => {
   return (
-    <section className="py-20 bg-white">
+    <section className="py-10 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative mb-12 flex items-center justify-center">
-          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-upleex-purple to-upleex-blue bg-clip-text text-transparent text-center">Latest Blogs</h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary text-center pb-1">Latest Blogs</h2>
           <div className="absolute right-0 hidden md:block">
             <Button variant="outline" className="rounded-full px-6">
               View All
@@ -60,12 +60,12 @@ export const LatestBlogs = () => {
                 {/* Overlay Text similar to screenshot */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
                    <p className="text-white font-semibold text-sm">
-                      Why Is <span className="text-orange-400">{blog.category}</span> on Rent the Best Option
+                      Why Is <span className="font-bold text-gradient-primary">{blog.category}</span> on Rent the Best Option
                    </p>
                 </div>
               </div>
               
-              <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-orange-500 transition-colors line-clamp-2">
+              <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-gradient-primary transition-all line-clamp-2">
                 {blog.title}
               </h3>
               <p className="text-slate-500 text-sm leading-relaxed line-clamp-3">

@@ -10,6 +10,20 @@ html {
     --color-upleex-dark: #0f172a;
 }
 
+@layer utilities {
+  .text-gradient-primary {
+    background: linear-gradient(to right, var(--color-upleex-purple), var(--color-upleex-blue));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+  
+  .bg-gradient-primary {
+    background: linear-gradient(to right, var(--color-upleex-purple), var(--color-upleex-blue));
+  }
+}
+
 /* Custom Utilities if needed */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -29,6 +43,20 @@ html {
   animation: gradient 6s linear infinite;
 }
 
+@keyframes gradient-x {
+    0%, 100% {
+        background-size: 200% 200%;
+        background-position: left center;
+    }
+    50% {
+        background-size: 200% 200%;
+        background-position: right center;
+    }
+}
+.animate-gradient-x {
+    animation: gradient-x 3s ease infinite;
+}
+
 @keyframes blob {
   0%   { transform: translate(0px, 0px) scale(1); }
   33%  { transform: translate(30px, -40px) scale(1.1); }
@@ -42,3 +70,18 @@ html {
 
 /* Optional: perspective for 3D feel */
 .perspective-1000 { perspective: 1000px; }
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-25%); }
+}
+
+.animate-marquee {
+  animation: marquee 60s linear infinite;
+  will-change: transform; /* Performance optimization */
+}
+
+.marquee-group:hover .animate-marquee {
+  animation-play-state: paused;
+}

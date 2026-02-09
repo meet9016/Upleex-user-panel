@@ -72,10 +72,10 @@ export const FAQSection = () => {
   };
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-10 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-12">
-          <span className="bg-gradient-to-r from-upleex-purple to-upleex-blue bg-clip-text text-transparent">Got Questions?</span> We've Got Answers!
+        <h2 className="text-4xl md:text-5xl font-bold text-center text-slate-900 mb-12">
+          <span className="text-gradient-primary">Got Questions?</span> We've Got Answers!
         </h2>
         
         <div className="space-y-2">

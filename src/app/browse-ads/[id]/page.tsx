@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CheckCircle,
+  ImageOff,
 } from "lucide-react";
 import endPointApi from "@/utils/endPointApi";
 import { api } from "@/utils/axiosInstance";
@@ -191,17 +192,21 @@ export default function ProductDetailsPage() {
             <div className="bg-white p-4 lg:p-6 flex items-start justify-center border-r border-gray-100">
               <div className="w-full max-w-[520px]">
                 <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-gray-200/50 bg-white border border-gray-100 aspect-[4/3.2]">
-                  <img
-                    src={
-                      selectedImage ||
-                      "https://via.placeholder.com/720x540?text=Product"
-                    }
-                    alt={productDetails?.product_name}
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-                  />
+                  {allImages.length > 0 ? (
+                    <img
+                      src={selectedImage || allImages[0]}
+                      alt={productDetails?.product_name}
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-400">
+                      <ImageOff size={48} strokeWidth={1.5} className="mb-2 opacity-50" />
+                      <span className="text-sm font-medium">No Image Available</span>
+                    </div>
+                  )}
                 </div>
 
-                {allImages.length > 1 && (
+                {allImages.length > 0 ? (
                   <div className="mt-5 grid grid-cols-5 gap-3">
                     {allImages.slice(0, 5).map((img, i) => (
                       <button
@@ -209,7 +214,7 @@ export default function ProductDetailsPage() {
                         onClick={() => setSelectedImage(img)}
                         className={clsx(
                           "aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200",
-                          selectedImage === img
+                          selectedImage === img || (!selectedImage && i === 0)
                             ? "border-blue-600 shadow-md scale-105"
                             : "border-gray-200 hover:border-blue-400 hover:shadow-sm",
                         )}
@@ -221,6 +226,10 @@ export default function ProductDetailsPage() {
                         />
                       </button>
                     ))}
+                  </div>
+                ) : (
+                  <div className="mt-5 grid grid-cols-5 gap-3 invisible" aria-hidden="true">
+                    <div className="aspect-square"></div>
                   </div>
                 )}
 

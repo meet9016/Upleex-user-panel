@@ -134,7 +134,7 @@ export const CategorySEOContent = () => {
 
         {/* Footer Section */}
         <section className="pt-4 border-t border-gray-100">
-          <h3 className="text-lg font-bold bg-gradient-to-r from-upleex-purple to-upleex-blue bg-clip-text text-transparent mb-2">
+          <h3 className="text-lg font-bold text-gradient-primary mb-2">
            Upgrade Your Lifestyle Today!
           </h3>
 

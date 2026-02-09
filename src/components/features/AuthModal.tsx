@@ -185,7 +185,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={number}
                       onChange={(e) => setNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
                       placeholder="Enter Mobile Number"
-                      className="flex-1 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-gray-900 placeholder:text-gray-400 font-semibold shadow-sm"
+                      className="flex-1 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-900 placeholder:text-gray-400 font-semibold shadow-sm"
                       autoFocus
                     />
                   </div>
@@ -195,7 +195,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   fullWidth 
                   onClick={handleSendNumber} 
                   disabled={loading}
-                  className="bg-orange-600 hover:bg-orange-700 text-white h-12 text-base font-bold rounded-lg shadow-lg shadow-orange-500/20 transition-all transform active:scale-[0.98] tracking-wide"
+                  className="bg-gradient-primary hover:from-blue-600 hover:to-blue-700 text-white h-12 text-base font-bold rounded-lg shadow-lg shadow-blue-500/20 transition-all transform active:scale-[0.98] tracking-wide"
                 >
                   {loading ? 'Sending...' : 'CONTINUE'}
                 </Button>
@@ -206,7 +206,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         type="checkbox"
                         checked={agreed}
                         onChange={() => setAgreed(!agreed)}
-                        className="peer h-4 w-4 shrink-0 cursor-pointer appearance-none rounded-sm border border-gray-300 shadow-sm focus:border-orange-500 focus:ring-none checked:bg-orange-600 checked:border-orange-600 transition-all mt-0.5"
+                        className="peer h-4 w-4 shrink-0 cursor-pointer appearance-none rounded-sm border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-none checked:bg-blue-600 checked:border-blue-600 transition-all mt-0.5"
                       />
                       <Check 
                         size={12} 
@@ -215,7 +215,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       />
                    </div>
                   <p className="text-xs text-gray-500 leading-relaxed cursor-pointer" onClick={() => setAgreed(!agreed)}>
-                    By continuing, I agree to the <span className="text-orange-600 font-semibold hover:underline">Terms of Use</span> & <span className="text-orange-600 font-semibold hover:underline">Privacy Policy</span>
+                    By continuing, I agree to the <span className="text-blue-600 font-semibold hover:underline">Terms of Use</span> & <span className="text-blue-600 font-semibold hover:underline">Privacy Policy</span>
                   </p>
                 </div>
               </div>
@@ -258,7 +258,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={otp}
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
                     placeholder="Enter 6-digit OTP"
-                    className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-gray-900 placeholder:text-gray-400 font-bold tracking-[0.2em] text-lg shadow-sm"
+                    className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-900 placeholder:text-gray-400 font-bold tracking-[0.2em] text-lg shadow-sm"
                     autoFocus
                   />
                   <button 
@@ -275,14 +275,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       placeholder="Full Name"
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium"
+                      className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     />
                     <input
                       type="email"
                       placeholder="Email Address"
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all font-medium"
+                      className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
                     />
                   </div>
                 )}
@@ -291,7 +291,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   fullWidth 
                   onClick={handleVerifyOtp} 
                   disabled={loading}
-                  className="bg-orange-600 hover:bg-orange-700 text-white h-12 text-base font-bold rounded-lg shadow-lg shadow-orange-500/20 transition-all transform active:scale-[0.98] tracking-wide"
+                  className="bg-gradient-primary hover:from-blue-600 hover:to-blue-700 text-white h-12 text-base font-bold rounded-lg shadow-lg shadow-blue-500/20 transition-all transform active:scale-[0.98] tracking-wide"
                 >
                   {loading ? 'Verifying...' : 'VERIFY & LOGIN'}
                 </Button>
@@ -311,7 +311,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   ) : (
                     <button 
                       onClick={handleSendNumber}
-                      className="text-orange-600 font-bold hover:text-orange-700 hover:underline"
+                      className="text-blue-600 font-bold hover:text-blue-700 hover:underline"
                     >
                       Resend OTP
                     </button>

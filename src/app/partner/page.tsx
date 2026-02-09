@@ -22,17 +22,17 @@ const PartnerPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="z-10">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-5">
                 More Orders.<br />
                 Less Effort.<br />
-                <span className="text-blue-600">Real Growth.</span>
+                <span className="text-gradient-primary">Real Growth.</span>
               </h1>
-              <p className="text-lg text-slate-600 mb-8 max-w-lg">
+              <p className="text-lg text-slate-600 mb-5 max-w-lg">
                 Become an Upleex partner and grow your rental business across India.
               </p>
               <Link 
                 href="/auth/register" 
-                className="inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="inline-flex items-center gap-2 bg-gradient-primary text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transform hover:-translate-y-1 transition-all shadow-lg shadow-blue-500/20"
               >
                 Start Renting <ArrowRight size={20} />
               </Link>
@@ -72,7 +72,7 @@ const PartnerPage = () => {
               { number: '100+', label: 'Cities Covered' },
             ].map((stat, index) => (
               <div key={index} className="p-4">
-                <div className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">{stat.number}</div>
+                <div className="text-3xl md:text-4xl font-bold text-gradient-primary mb-2">{stat.number}</div>
                 <div className="text-slate-600 font-medium">{stat.label}</div>
               </div>
             ))}
@@ -84,7 +84,7 @@ const PartnerPage = () => {
       <section id="benefits" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Why Partners Love Upleex</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary mb-4 py-1 pr-1">Why Partners Love Upleex</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
               All the benefits designed to help you rent more and grow your business.
             </p>
@@ -151,7 +151,7 @@ const PartnerPage = () => {
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Experiences Partners Love to Talk About</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary mb-4">Experiences Partners Love to Talk About</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -178,7 +178,7 @@ const PartnerPage = () => {
                     <h4 className="font-bold text-lg text-slate-900">{testimonial.name}</h4>
                     <p className="text-sm text-slate-500">{testimonial.role}</p>
                   </div>
-                  <button className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                  <button className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-gradient-primary group-hover:text-white transition-all">
                     <Play size={18} fill="currentColor" />
                   </button>
                 </div>
@@ -195,7 +195,7 @@ const PartnerPage = () => {
       <section id="how-it-works" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">How it works</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary">How it works</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8 relative">
@@ -210,7 +210,7 @@ const PartnerPage = () => {
               { step: 5, title: 'Receive Payments', desc: 'Payments are deposited directly to your bank account.' }
             ].map((item, index) => (
               <div key={index} className={`bg-white p-6 rounded-xl border ${item.active ? 'border-blue-200 shadow-md ring-1 ring-blue-100' : 'border-gray-100 shadow-sm'} text-center h-full flex flex-col items-center`}>
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mb-6 ${item.active ? 'bg-blue-600 text-white' : 'bg-blue-600 text-white'}`}>
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mb-6 ${item.active ? 'bg-gradient-primary text-white shadow-lg shadow-blue-500/30' : 'bg-gradient-primary text-white'}`}>
                   {item.step}
                 </div>
                 <h3 className="font-bold text-slate-900 mb-3">{item.title}</h3>
@@ -238,7 +238,7 @@ const PartnerPage = () => {
       <section id="categories" className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">Popular Categories to Rent Online</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary py-1 pr-1">Popular Categories to Rent Online</h2>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -246,7 +246,7 @@ const PartnerPage = () => {
               'Furniture', 'Electronics', 'Home Appliances', 'Event Equipment', 'Medical Equipment',
               'Automobile', 'Musical Instruments', 'Tools & Machinery', 'Generator', 'And More'
             ].map((cat, index) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-lg py-4 px-2 text-center hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all cursor-pointer font-medium text-slate-700 text-sm md:text-base">
+              <div key={index} className="bg-white border border-gray-200 rounded-lg py-4 px-2 text-center hover:border-transparent hover:text-white hover:bg-gradient-primary transition-all cursor-pointer font-medium text-slate-700 text-sm md:text-base hover:shadow-lg hover:shadow-blue-500/20">
                 {cat}
               </div>
             ))}
@@ -257,12 +257,12 @@ const PartnerPage = () => {
       {/* Support Section */}
       <section className="py-20 bg-gray-50 text-center">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">Upleex Partner Support Available 24/7</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Upleex Partner Support Available 24/7</h2>
           <p className="text-slate-600 mb-8">
             Upleex partner support is available to solve all your doubts and issues before and after you start your rental business.
           </p>
-          <a href="mailto:partnerships@upleex.com" className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-lg">
-            <Mail size={20} />
+          <a href="mailto:partnerships@upleex.com" className="inline-flex items-center gap-2 text-gradient-primary hover:opacity-80 font-bold text-xl transition-opacity">
+            <Mail size={24} className="text-blue-600" />
             partnerships@upleex.com
           </a>
         </div>
