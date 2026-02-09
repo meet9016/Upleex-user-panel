@@ -24,6 +24,7 @@ import { AuthModal } from "@/components/features/AuthModal";
 import { QuoteModal } from "@/components/features/QuoteModal";
 import { Modal } from "@/components/ui/Modal";
 import { RelatedProducts } from "@/components/features/RelatedProducts";
+import Image from "next/image";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -187,17 +188,21 @@ export default function ProductDetailsPage() {
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-0">
             {/* ─── Left: Gallery ──────────────────────────────────────── */}
-            <div className="bg-white p-4 lg:p-6 flex items-start justify-center border-r border-gray-100">
+            <div className="bg-white p-4 lg:p-6 lg:pb-2 flex items-start justify-center border-r border-gray-100">
               <div className="w-full max-w-[520px]">
-                <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-gray-200/50 bg-white border border-gray-100 aspect-[4/3.2]">
-                  <img
-                    src={
-                      selectedImage ||
-                      "https://via.placeholder.com/720x540?text=Product"
-                    }
-                    alt={productDetails?.product_name}
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-                  />
+                <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-gray-200/50 bg-white border border-gray-100 aspect-[4/2.8]">
+                  {allImages.length > 0 ? (
+                    <img
+                      src={selectedImage || allImages[0]}
+                      alt={productDetails?.product_name}
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-400">
+                      <Image size={48} strokeWidth={1.5} className="mb-2 opacity-50" />
+                      <span className="text-sm font-medium">No Image Available</span>
+                    </div>
+                  )}
                 </div>
 
                 {allImages.length > 1 && (
@@ -262,15 +267,15 @@ export default function ProductDetailsPage() {
             </div>
 
             {/* ─── Right: Content ─────────────────────────────────────── */}
-            <div className="p-6 lg:p-10 xl:p-12 flex flex-col">
-              <div>
-                <div className="flex flex-wrap items-center gap-3 mb-3">
+            <div className="p-4 lg:p-5 xl:p-4 lg:pb-2 xl:pb-2 flex flex-col">
+              <div className="flex flex-col h-full">
+                <div className="flex flex-wrap items-center gap-2 mb-1">
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">
                     {productDetails?.product_name || "Loading product..."}
                   </h1>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 text-sm mb-6">
+                <div className="flex flex-wrap items-center gap-1 text-sm mb-4">
                   {productDetails?.sub_category_name && (
                     <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-medium text-xs">
                       {productDetails.sub_category_name}
@@ -313,11 +318,11 @@ export default function ProductDetailsPage() {
                 </div> */}
 
                 {activeTab === "monthly" ? (
-                  <div className="space-y-7">
+                  <div className="">
                     {productDetails?.month_arrr?.length > 0 ? (
                       <>
                         <div>
-                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-3">
+                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
                             Select Duration
                           </label>
                           
@@ -350,10 +355,10 @@ export default function ProductDetailsPage() {
                                       )
                                     }
                                     className={clsx(
-                                      "group relative min-w-[140px] flex-shrink-0 rounded-xl border p-4 text-center transition-all duration-200",
+                                      "group relative min-w-[140px] flex-shrink-0 rounded-xl border-2 p-4 text-center transition-all duration-200",
                                       active
-                                        ? "border-blue-600 bg-blue-50/60 shadow-md ring-1 ring-blue-600"
-                                        : "border-gray-200 hover:border-gray-300 hover:shadow-sm bg-white",
+                                        ? "border-blue-600 bg-blue-50/60"
+                                        : "border-gray-100 hover:border-gray-200 bg-white",
                                     )}
                                   >
                                     <div className="text-base font-bold text-gray-900">
@@ -403,12 +408,12 @@ export default function ProductDetailsPage() {
                           if (!selectedMonthData) return null;
                           
                           return (
-                            <div className="p-5 border border-gray-200 rounded-xl bg-gray-50/50">
-                              <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/50">
+                              <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                                 <span className="w-1 h-4 bg-blue-600 rounded-full"></span>
                                 Payment Breakdown
                               </h3>
-                              <div className="space-y-3">
+                              <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
                                   <span className="text-gray-600">Plan Duration</span>
                                   <span className="font-medium text-gray-900">{selectedMonthData.month_name}</span>
@@ -443,37 +448,37 @@ export default function ProductDetailsPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     {productDetails?.product_listing_type_name?.toLowerCase() ===
                     "daily" ? (
-                      <div className="p-6 border border-gray-200 rounded-xl bg-gray-50/40">
-                        <div className="flex items-center justify-between mb-5">
+                      <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/40">
+                        <div className="flex items-center justify-between mb-4">
                           <span className="font-semibold text-gray-700">
                             Rental Days
                           </span>
                           <div className="flex items-center bg-white border rounded-lg shadow-sm">
                             <button
                               onClick={() => setDays(Math.max(1, days - 1))}
-                              className="px-3 py-2.5 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                               disabled={days <= 1}
                             >
-                              <Minus size={16} />
+                              <Minus size={14} />
                             </button>
-                            <span className="w-12 text-center font-bold text-lg">
+                            <span className="w-10 text-center font-bold text-base">
                               {days}
                             </span>
                             <button
                               onClick={() => setDays(Math.min(31, days + 1))}
-                              className="px-3 py-2.5 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                               disabled={days >= 31}
                             >
-                              <Plus size={16} />
+                              <Plus size={14} />
                             </button>
                           </div>
                         </div>
 
-                        <div className="space-y-3 pt-4 border-t border-gray-200">
-                          <div className="flex justify-between items-center bg-blue-50/80 p-3 rounded-lg border border-blue-100">
+                        <div className="space-y-2 pt-3 border-t border-gray-200">
+                          <div className="flex justify-between items-center bg-blue-50/80 p-2.5 rounded-lg border border-blue-100">
                             <span className="text-sm font-semibold text-blue-900">
                               Per Day Price
                             </span>
@@ -514,7 +519,7 @@ export default function ProductDetailsPage() {
                 )}
 
                 {/* Quantity + Date */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4  pt-4">
                   <div className="flex items-center justify-between bg-white border rounded-lg px-4 h-12 shadow-sm">
                     <span className="font-medium text-gray-700">Quantity</span>
                     <div className="flex items-center">
@@ -547,7 +552,7 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                <div className="flex flex-col sm:flex-row gap-4 mt-4">
                   <Button
                     size="lg"
                     className="bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white shadow-lg h-12 text-base font-semibold flex-1"

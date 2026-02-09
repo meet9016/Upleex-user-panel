@@ -40,11 +40,11 @@ export const RelatedProducts = () => {
       {/* Header Section */}
       <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
         <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <span className="w-1.5 h-6 bg-orange-500 rounded-full"></span>
+          <span className="w-1.5 h-6 bg-blue-600 rounded-full"></span>
           You May Also Like
         </h2>
         {/* Optional: View All link if needed in future */}
-        {/* <a href="#" className="text-sm font-semibold text-orange-600 hover:text-orange-700">View All</a> */}
+        {/* <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700">View All</a> */}
       </div>
       
       {/* Products Grid */}
@@ -53,7 +53,7 @@ export const RelatedProducts = () => {
           {RELATED_PRODUCTS.map((product) => (
             <div 
               key={product.id}
-              className="group flex flex-col h-full bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-orange-500/10 hover:border-orange-200 transition-all duration-300"
+              className="group flex flex-col h-full bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-blue-500/10 hover:border-blue-200 transition-all duration-300"
             >
               {/* Image Area */}
               <div className="aspect-[4/3] bg-gray-50 p-4 relative overflow-hidden">
@@ -69,13 +69,13 @@ export const RelatedProducts = () => {
               
               {/* Content Area */}
               <div className="p-4 flex flex-col flex-grow">
-                <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 min-h-[40px] group-hover:text-orange-600 transition-colors" title={product.title}>
+                <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 min-h-[40px] group-hover:text-blue-600 transition-colors" title={product.title}>
                   {product.title}
                 </h3>
                 
                 <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
                   <div className="flex items-baseline gap-0.5">
-                    <span className="text-lg font-extrabold text-blue-600 group-hover:text-orange-600 transition-colors">
+                    <span className="text-lg font-extrabold text-blue-600 group-hover:text-blue-700 transition-colors">
                       ₹{product.price.toFixed(2)}
                     </span>
                     <span className="text-xs font-semibold text-gray-400">

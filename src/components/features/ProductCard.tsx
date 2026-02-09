@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Heart } from 'lucide-react';
 import type { Product } from '../../types';
 import { Button } from '../ui/Button';
+import { useRouter } from 'next/navigation';
 
 interface ProductCardProps {
   product: Product | any;
@@ -13,6 +14,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
+  const router = useRouter();
   const [liked, setLiked] = useState(false);
 
   const productId = product.product_id || product.id;
@@ -27,7 +29,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
   return (
     <motion.div
-      className={`group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ${className}`}
+      onClick={() => router.push(`/browse-ads/${productId}`)}
+      className={`group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer ${className}`}
       whileHover={{ boxShadow: '0 20px 35px -10px rgba(0,0,0,0.15)' }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
@@ -101,11 +104,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
       {/* CONTENT */}
       <div className="p-4 space-y-2">
-        <Link href={`/browse-ads/${productId}`}>
-          <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition">
-            {productName}
-          </h3>
-        </Link>
+        <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition">
+          {productName}
+        </h3>
 
         <div className="flex items-center text-sm text-gray-500">
           <MapPin size={14} className="mr-1" />
@@ -118,15 +119,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
           </div>
         )}
 
-        <Link href={`/browse-ads/${productId}`}>
-          <Button
-            fullWidth
-            variant="primary"
-            className="mt-3 rounded-xl font-semibold tracking-wide"
-          >
-            Take On Rent
-          </Button>
-        </Link>
+        <Button
+          fullWidth
+          variant="primary"
+          className="mt-3 rounded-xl font-semibold tracking-wide cursor-pointer"
+        >
+          Take On Rent
+        </Button>
       </div>
     </motion.div>
   );
