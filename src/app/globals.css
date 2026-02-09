@@ -12,7 +12,7 @@ html {
 
 @layer utilities {
   .text-gradient-primary {
-    background: linear-gradient(to right, var(--color-upleex-purple), var(--color-upleex-blue));
+    background: linear-gradient(to right, #6366f1, #0ea5e9);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -20,7 +20,7 @@ html {
   }
   
   .bg-gradient-primary {
-    background: linear-gradient(to right, var(--color-upleex-purple), var(--color-upleex-blue));
+    background: linear-gradient(to right, #6366f1, #0ea5e9);
   }
 }
 

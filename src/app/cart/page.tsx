@@ -1,10 +1,9 @@
-  'use client';
+'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight,
   ShoppingBag,
-  MapPin,
   CreditCard as PaymentIcon,
   Calendar,
   Wallet,
@@ -15,11 +14,10 @@ import {
   Edit2,
   Info,
   Check,
-  X,
   CreditCard,
   MessageCircle,
 } from 'lucide-react';
-import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup, Variants } from 'framer-motion';
 
 // ────────────────────────────────────────────────
 // Helper Components
@@ -54,6 +52,28 @@ interface CartItem {
   installationCharge: number;
 }
 
+interface CartSummary {
+  mode: string;
+  rentLabel: string;
+  rentAmount: number;
+  tax: number;
+  delivery: number;
+  installation: number;
+  deposit: number;
+  dueToday: number;
+  totalLabel: string;
+}
+
+interface PlanOption {
+  id: PaymentPlan;
+  title: string;
+  subtitle: string;
+  badge: string | null;
+  icon: React.ElementType;
+  color: string;
+  bg: string;
+}
+
 // ────────────────────────────────────────────────
 // Main Component
 // ────────────────────────────────────────────────
@@ -82,7 +102,7 @@ export default function CartPage() {
   // ────────────────────────────────────────────────
   // Summary Calculation
   // ────────────────────────────────────────────────
-  const summary = (() => {
+  const summary: CartSummary | null = (() => {
     if (!item) return null;
 
     const rentPerMonth = item.monthlyRent * item.quantity;
@@ -128,7 +148,7 @@ export default function CartPage() {
   // ────────────────────────────────────────────────
   // Animation Variants
   // ────────────────────────────────────────────────
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -139,10 +159,40 @@ export default function CartPage() {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 50 } },
   };
+
+  const plans: PlanOption[] = [
+    {
+      id: 'monthly',
+      title: 'Monthly',
+      subtitle: '₹900/mo + deposit',
+      badge: 'Popular',
+      icon: Calendar,
+      color: 'text-blue-700',
+      bg: 'bg-blue-50',
+    },
+    {
+      id: 'full',
+      title: 'No Cost EMI',
+      subtitle: 'Pay full amount',
+      badge: null,
+      icon: CreditCard,
+      color: 'text-slate-700',
+      bg: 'bg-slate-50',
+    },
+    {
+      id: 'upfront',
+      title: 'Upfront',
+      subtitle: 'Best savings',
+      badge: 'Save More',
+      icon: Wallet,
+      color: 'text-purple-700',
+      bg: 'bg-purple-50',
+    },
+  ];
 
   return (
     <motion.div 
@@ -334,41 +384,13 @@ export default function CartPage() {
 
                 <div className="p-6 grid sm:grid-cols-3 gap-4">
                   <LayoutGroup>
-                  {[
-                    {
-                      id: 'monthly',
-                      title: 'Monthly',
-                      subtitle: '₹900/mo + deposit',
-                      badge: 'Popular',
-                      icon: Calendar,
-                      color: 'text-blue-700',
-                      bg: 'bg-blue-50',
-                    },
-                    {
-                      id: 'full',
-                      title: 'No Cost EMI',
-                      subtitle: 'Pay full amount',
-                      badge: null,
-                      icon: CreditCard,
-                      color: 'text-slate-700',
-                      bg: 'bg-slate-50',
-                    },
-                    {
-                      id: 'upfront',
-                      title: 'Upfront',
-                      subtitle: 'Best savings',
-                      badge: 'Save More',
-                      icon: Wallet,
-                      color: 'text-purple-700',
-                      bg: 'bg-purple-50',
-                    },
-                  ].map((plan) => {
+                  {plans.map((plan) => {
                     const isSelected = selectedPlan === plan.id;
                     return (
                     <motion.button
                       key={plan.id}
                       layout
-                      onClick={() => setSelectedPlan(plan.id as PaymentPlan)}
+                      onClick={() => setSelectedPlan(plan.id)}
                       whileHover={{ y: -4 }}
                       whileTap={{ scale: 0.98 }}
                       className={`relative p-5 rounded-xl border-2 transition-all duration-300 text-left group h-full flex flex-col
@@ -461,7 +483,7 @@ export default function CartPage() {
                     </div>
 
                     <AnimatePresence mode="wait">
-                      {summary?.deposit > 0 && (
+                      {(summary?.deposit ?? 0) > 0 && (
                         <motion.div
                           key="deposit-row"
                           initial={{ opacity: 0, height: 0, marginTop: 0 }}
@@ -477,7 +499,7 @@ export default function CartPage() {
                             <div className="text-xs text-blue-600">100% refund on return</div>
                           </div>
                           <span className="font-semibold">
-                            ₹{summary?.deposit.toLocaleString('en-IN')}
+                            ₹{(summary?.deposit ?? 0).toLocaleString('en-IN')}
                           </span>
                         </motion.div>
                       )}
