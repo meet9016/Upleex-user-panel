@@ -35,7 +35,7 @@ const BLOGS = [
 
 export const LatestBlogs = () => {
   return (
-    <section className="py-10 bg-white">
+    <section className="py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative mb-12 flex items-center justify-center">
           <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary text-center pb-1">Latest Blogs</h2>
@@ -65,7 +65,7 @@ export const LatestBlogs = () => {
                 </div>
               </div>
               
-              <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-gradient-primary transition-all line-clamp-2">
+              <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:bg-gradient-to-r group-hover:from-[#6366f1] group-hover:to-[#0ea5e9] group-hover:bg-clip-text group-hover:text-transparent transition-all line-clamp-2">
                 {blog.title}
               </h3>
               <p className="text-slate-500 text-sm leading-relaxed line-clamp-3">

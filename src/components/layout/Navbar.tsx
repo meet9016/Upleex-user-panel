@@ -289,12 +289,12 @@ export const Navbar: React.FC = () => {
                 )}
               </div>
             ) : (
-              <Link 
-                href="/auth/login" 
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm hover:shadow"
+              <Button 
+                onClick={() => router.push('/auth/login')}
+                className="px-4 py-2 cursor-pointer"
               >
                 Login / Sign Up
-              </Link>
+              </Button>
             )}
 
             <div className="h-4 w-px bg-gray-300"></div>

@@ -178,7 +178,7 @@ const PartnerPage = () => {
                     <h4 className="font-bold text-lg text-slate-900">{testimonial.name}</h4>
                     <p className="text-sm text-slate-500">{testimonial.role}</p>
                   </div>
-                  <button className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-gradient-primary group-hover:text-white transition-all">
+                  <button className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-gradient-to-r group-hover:from-[#6366f1] group-hover:to-[#0ea5e9] group-hover:text-white transition-all">
                     <Play size={18} fill="currentColor" />
                   </button>
                 </div>
@@ -246,7 +246,7 @@ const PartnerPage = () => {
               'Furniture', 'Electronics', 'Home Appliances', 'Event Equipment', 'Medical Equipment',
               'Automobile', 'Musical Instruments', 'Tools & Machinery', 'Generator', 'And More'
             ].map((cat, index) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-lg py-4 px-2 text-center hover:border-transparent hover:text-white hover:bg-gradient-primary transition-all cursor-pointer font-medium text-slate-700 text-sm md:text-base hover:shadow-lg hover:shadow-blue-500/20">
+              <div key={index} className="bg-white border border-gray-200 rounded-lg py-4 px-2 text-center hover:border-transparent hover:text-white hover:bg-gradient-to-r hover:from-[#6366f1] hover:to-[#0ea5e9] transition-all cursor-pointer font-medium text-slate-700 text-sm md:text-base hover:shadow-lg hover:shadow-blue-500/20">
                 {cat}
               </div>
             ))}
