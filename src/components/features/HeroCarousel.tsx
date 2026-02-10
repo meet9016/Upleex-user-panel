@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -44,6 +45,7 @@ const BANNERS = [
 ];
 
 export const HeroCarousel = () => {
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeCategory, setActiveCategory] = useState("Home Appliance");
 
@@ -77,7 +79,7 @@ export const HeroCarousel = () => {
 
   return (
     <section className="w-full py-8 overflow-hidden bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Categories - Horizontal Scroll */}
         {/* <div className="flex overflow-x-auto pb-6 gap-2 no-scrollbar justify-start md:justify-center">
@@ -97,7 +99,7 @@ export const HeroCarousel = () => {
         </div> */}
 
         {/* Carousel Container */}
-        <div className="relative h-[250px] md:h-[350px] w-full max-w-6xl mx-auto mt-4 flex items-center justify-center perspective-1000">
+        <div className="relative h-[400px] md:h-[500px] w-full max-w-full mx-auto mt-4 flex items-center justify-center perspective-1000">
           
           {/* Navigation Buttons */}
           <button 
@@ -134,7 +136,7 @@ export const HeroCarousel = () => {
                return (
                  <motion.div
                    key={banner.id}
-                   className={`absolute w-[85%] md:w-[70%] h-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 ease-out cursor-pointer`}
+                   className={`absolute w-[90%] md:w-[85%] h-full rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 ease-out cursor-pointer`}
                    initial={false}
                    animate={{
                      scale: isActive ? 1 : 0.85,
@@ -167,9 +169,17 @@ export const HeroCarousel = () => {
                             <p className="text-gray-200 text-sm md:text-base max-w-md mb-8 line-clamp-2">
                                 {banner.description}
                             </p>
-                            <Button className="rounded-full bg-white text-slate-900 hover:bg-blue-50 border-0 font-bold px-8">
-                                Explore Now
-                            </Button>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <Button 
+                                    onClick={() => router.push('/membership')}
+                                    className=" border-0 font-bold px-8 py-3 cursor-pointer "
+                                >
+                                    List Your Product
+                                </Button>
+                                <Button variant="outline" onClick={() => router.push('/service')} className="rounded-full border-2 border-white text-white hover:bg-white/10 font-bold px-8 py-3 bg-transparent">
+                                    List Your Service
+                                </Button>
+                            </div>
                         </div>
                      </div>
                    </div>

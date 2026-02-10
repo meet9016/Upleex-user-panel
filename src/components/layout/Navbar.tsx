@@ -101,6 +101,11 @@ export const Navbar: React.FC = () => {
     window.dispatchEvent(new Event('storage'));
   };
 
+  // Hide Navbar on Partner Auth pages
+  if (pathname === '/partner/login' || pathname === '/partner/signup') {
+    return null;
+  }
+
   // Partner Page Navbar
   if (pathname === '/partner') {
     return (
@@ -135,13 +140,13 @@ export const Navbar: React.FC = () => {
             <div className="hidden md:flex items-center gap-4">
               <Button 
                 variant="ghost"
-                onClick={() => router.push('/auth/login')}
+                onClick={() => router.push('/partner/login')}
                 className="px-6 border border-gray-300 text-slate-700 font-semibold hover:bg-transparent hover:border-blue-600 hover:text-blue-600"
               >
                 Login
               </Button>
               <Button 
-                onClick={() => router.push('/auth/register')}
+                onClick={() => router.push('/partner/signup')}
                 className="px-6 shadow-md hover:shadow-lg"
               >
                 Start Renting
@@ -169,14 +174,14 @@ export const Navbar: React.FC = () => {
                 <Link href="#categories" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Categories</Link>
                 <div className="pt-4 flex flex-col gap-3">
                    <Link 
-                    href="/auth/login" 
+                    href="/partner/login" 
                     className="block w-full text-center py-3 border border-gray-300 rounded-lg text-slate-700 font-semibold"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Login
                   </Link>
                   <Link 
-                    href="/auth/register" 
+                    href="/partner/signup" 
                     className="block w-full text-center py-3 bg-blue-600 text-white rounded-lg font-semibold"
                     onClick={() => setIsMenuOpen(false)}
                   >

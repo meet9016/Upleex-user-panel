@@ -123,7 +123,7 @@ export default function Home() {
       <FloatingParticles />
 
       <main className="flex-grow">
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50/40 min-h- flex items-center">
+        {/* <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50/40 min-h- flex items-center">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50/50 -z-10" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 md:pt-32 md:pb-32">
             <div className="text-center md:text-left md:flex md:items-center md:justify-between md:gap-16">
@@ -164,7 +164,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right */}
               <div className="mt-12 md:mt-0 md:w-1/2 relative">
                 <div className="relative z-10 w-full rounded-2xl bg-white shadow-2xl p-4 md:p-6 transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
                   <img
@@ -181,20 +180,19 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Decorative blobs */}
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
                 <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
 
         {/* Promotional Banner Section */}
-        <PromotionalBanner />
-        <ContinuousBanner />
+        {/* <PromotionalBanner /> */}
+        {/* <ContinuousBanner /> */}
         <HeroCarousel />
-        <CenterModeCarousel />
+        {/* <CenterModeCarousel /> */}
 
         {/* Enhanced Categories Section */}
         <section className="py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
