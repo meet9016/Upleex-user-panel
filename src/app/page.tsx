@@ -204,10 +204,10 @@ export default function Home() {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-upleex-blue text-sm font-semibold mb-4">
+              {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-upleex-blue text-sm font-semibold mb-4">
                 <Zap className="w-4 h-4" />
                 Popular Categories
-              </div>
+              </div> */}
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
                 Explore Our <span className="text-gradient-primary">Premium</span> Collection
               </h2>

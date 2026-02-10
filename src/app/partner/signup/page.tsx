@@ -76,7 +76,7 @@ export default function PartnerSignupPage() {
             {/* Logo */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold tracking-tighter flex items-center gap-2">
-                 <span className="text-orange-500">Partner</span>Hub
+                 <span className="text-gradient-primary">Partner</span>Hub
               </h1>
             </div>
 
@@ -139,7 +139,7 @@ export default function PartnerSignupPage() {
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-upleex-purple focus:ring-2 focus:ring-upleex-purple/20 outline-none transition-all"
                         placeholder="John Doe"
                         required
                       />
@@ -154,7 +154,7 @@ export default function PartnerSignupPage() {
                         name="businessName"
                         value={formData.businessName}
                         onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-upleex-purple focus:ring-2 focus:ring-upleex-purple/20 outline-none transition-all"
                         placeholder="My Business Ltd"
                         required
                       />
@@ -172,7 +172,7 @@ export default function PartnerSignupPage() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-upleex-purple focus:ring-2 focus:ring-upleex-purple/20 outline-none transition-all"
                       placeholder="john@example.com"
                       required
                     />
@@ -182,7 +182,7 @@ export default function PartnerSignupPage() {
                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                  <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Mobile Number</label>
-                    <div className="flex rounded-lg border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all">
+                    <div className="flex rounded-lg border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple transition-all">
                       <div className="bg-gray-50 px-3 py-3 border-r border-gray-200 text-gray-600 font-medium text-sm flex items-center">
                         +91
                       </div>
@@ -202,7 +202,7 @@ export default function PartnerSignupPage() {
                  </div>
                  <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Alternative Number</label>
-                    <div className="flex rounded-lg border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all">
+                    <div className="flex rounded-lg border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple transition-all">
                       <div className="bg-gray-50 px-3 py-3 border-r border-gray-200 text-gray-600 font-medium text-sm flex items-center">
                         +91
                       </div>
@@ -231,7 +231,7 @@ export default function PartnerSignupPage() {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-upleex-purple focus:ring-2 focus:ring-upleex-purple/20 outline-none transition-all"
                       placeholder="Ahmedabad, Gujarat"
                       required
                     />
@@ -256,9 +256,6 @@ export default function PartnerSignupPage() {
                     )}
                   </div>
                   <div className="relative">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 flex items-center justify-center font-bold tracking-widest">
-                      •••
-                    </div>
                     <input 
                       type="text"
                       name="otp"
@@ -268,8 +265,8 @@ export default function PartnerSignupPage() {
                         if (val.length <= 6) setFormData(prev => ({ ...prev, otp: val }));
                       }}
                       disabled={!otpSent}
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed tracking-widest"
-                      placeholder="Enter 6-digit OTP"
+                      className="w-full py-3 px-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-upleex-purple/20 focus:border-upleex-purple disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      placeholder="Enter OTP"
                       required={otpSent}
                     />
                   </div>

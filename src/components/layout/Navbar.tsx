@@ -141,13 +141,13 @@ export const Navbar: React.FC = () => {
               <Button 
                 variant="ghost"
                 onClick={() => router.push('/partner/login')}
-                className="px-6 border border-gray-300 text-slate-700 font-semibold hover:bg-transparent hover:border-blue-600 hover:text-blue-600"
+                className="px-6 border border-gray-300 text-slate-700 font-semibold hover:bg-transparent hover:border-blue-600 hover:text-blue-600 cursor-pointer focus:outline-none focus:ring-0 focus:ring-offset-0 active:outline-none"
               >
                 Login
               </Button>
               <Button 
                 onClick={() => router.push('/partner/signup')}
-                className="px-6 shadow-md hover:shadow-lg"
+                className="px-6 shadow-md hover:shadow-lg cursor-pointer"
               >
                 Start Renting
               </Button>

@@ -25,7 +25,6 @@ import { AuthModal } from "@/components/features/AuthModal";
 import { QuoteModal } from "@/components/features/QuoteModal";
 import { Modal } from "@/components/ui/Modal";
 import { RelatedProducts } from "@/components/features/RelatedProducts";
-import Image from "next/image";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -201,7 +200,7 @@ export default function ProductDetailsPage() {
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-400">
-                      <Image size={48} strokeWidth={1.5} className="mb-2 opacity-50" />
+                      <ImageOff size={48} strokeWidth={1.5} className="mb-2 opacity-50" />
                       <span className="text-sm font-medium">No Image Available</span>
                     </div>
                   )}

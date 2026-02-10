@@ -176,7 +176,7 @@ export const HeroCarousel = () => {
                                 >
                                     List Your Product
                                 </Button>
-                                <Button variant="outline" onClick={() => router.push('/service')} className="rounded-full border-2 border-white text-white hover:bg-white/10 font-bold px-8 py-3 bg-transparent">
+                                <Button variant="outline" onClick={() => router.push('/service')} className=" border-2 border-white text-white hover:bg-white/10 font-bold px-8 py-3 bg-transparent cursor-pointer">
                                     List Your Service
                                 </Button>
                             </div>

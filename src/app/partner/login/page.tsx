@@ -71,7 +71,7 @@ export default function PartnerLoginPage() {
             {/* Logo Placeholder */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold tracking-tighter flex items-center gap-2">
-                 <span className="text-orange-500">Partner</span>Hub
+                 <span className="text-gradient-primary">Partner</span>Hub
               </h1>
             </div>
 
@@ -161,8 +161,8 @@ export default function PartnerLoginPage() {
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Mobile Number
                       </label>
-                      <div className="flex rounded-lg border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent transition-all">
-                        <div className="bg-gray-50 px-4 py-3 border-r border-gray-300 text-gray-600 font-medium">
+                      <div className="flex rounded-lg border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple transition-all">
+                        <div className="bg-gray-50 px-4 py-3 border-r border-gray-200 text-gray-600 font-medium">
                           +91
                         </div>
                         <input
@@ -214,15 +214,13 @@ export default function PartnerLoginPage() {
                         Enter OTP
                       </label>
                       <input
-                        type="text"
                         value={otp}
                         onChange={(e) => {
                           const val = e.target.value.replace(/\D/g, "");
                           if (val.length <= 6) setOtp(val);
                         }}
-                        placeholder="000000"
-                        className="w-full px-4 py-3 rounded-lg border border-blue-500 ring-1 ring-blue-500 outline-none text-gray-900 text-lg tracking-widest text-center"
-                        autoFocus
+                        placeholder="Enter OTP"
+                        className="w-full py-3 px-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-upleex-purple/20 focus:border-upleex-purple"
                       />
                       <p className="mt-2 text-sm text-gray-500">
                         OTP sent to your mobile number
