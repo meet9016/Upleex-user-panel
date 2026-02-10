@@ -171,6 +171,13 @@ const ServicePage = () => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
+  const scrollToCategories = () => {
+    const element = document.getElementById('service-categories');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white">
       
@@ -187,7 +194,7 @@ const ServicePage = () => {
                 List your skills, connect with customers, and grow your income effortlessly. Join thousands of professionals today.
               </p>
               <div className="pt-4">
-                <Button className=" text-lg font-bold px-10 py-6 rounded-lg shadow-lg shadow-blue-500/30 border-none">
+                <Button  onClick={scrollToCategories} className=" text-lg font-bold px-10 py-6 rounded-lg shadow-lg shadow-blue-500/30 border-none">
                   List Your Service Now
                 </Button>
               </div>
@@ -320,7 +327,7 @@ const ServicePage = () => {
       </section>
 
       {/* Service Categories */}
-      <section className="py-10 bg-white">
+      <section id="service-categories" className="py-10 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 mb-8">
             <span className="text-blue-600 text-2xl">↗</span>
