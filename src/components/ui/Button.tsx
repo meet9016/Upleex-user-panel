@@ -31,7 +31,7 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <button 
       className={cn(
-        "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none cursor-pointer ",
+        "inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none cursor-pointer ",
         variants[variant],
         sizes[size],
         fullWidth && 'w-full',

@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { BackButton } from "@/components/ui/BackButton";
 import { DatePicker } from "@/components/ui/DatePicker";
 import {
   MapPin,
@@ -186,6 +187,9 @@ export default function ProductDetailsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-0">
             {/* ─── Left: Gallery ──────────────────────────────────────── */}
@@ -557,10 +561,10 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                <div className="flex flex-col sm:flex-row gap-3 mt-4">
                   <Button
                     size="lg"
-                    className="bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white shadow-lg h-12 text-base font-semibold flex-1"
+                    className="bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white shadow-lg h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-3"
                     onClick={handleGetQuoteClick}
                   >
                     Get Quote →
@@ -569,7 +573,7 @@ export default function ProductDetailsPage() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="h-14 border-2 border-gray-200 hover:border-gray-800 text-gray-700 hover:text-gray-900 font-bold flex items-center gap-2 flex-1 rounded-xl bg-white"
+                    className="h-14 border-2 border-gray-200 hover:border-gray-800 text-gray-700 hover:text-gray-900 font-bold flex items-center justify-center gap-2 w-full sm:flex-1 rounded-xl bg-white text-base px-3"
                     onClick={() => router.push('/cart')}
                   >
                     <MapPin size={18} className="text-orange-600" />

@@ -34,7 +34,14 @@ const FAQS = [
   }
 ];
 
-const FAQItem = ({ question, answer, isOpen, onClick }: { question: string, answer: string, isOpen: boolean, onClick: () => void }) => {
+interface FAQItemProps {
+  question: string;
+  answer: string;
+  isOpen: boolean;
+  onClick: () => void;
+}
+
+const FAQItem = ({ question, answer, isOpen, onClick }: FAQItemProps) => {
   return (
     <div className="border-b border-gray-100 last:border-0 bg-gray-50 rounded-lg mb-4 overflow-hidden">
       <button
@@ -54,7 +61,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }: { question: string, answ
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="px-6 pb-6 text-slate-500 leading-relaxed">
+            <div className="px-6 pb-6 text-slate-500 leading-relaxed border-t border-gray-100/50">
               {answer}
             </div>
           </motion.div>
@@ -64,7 +71,12 @@ const FAQItem = ({ question, answer, isOpen, onClick }: { question: string, answ
   );
 };
 
-export const FAQSection = () => {
+interface FAQSectionProps {
+  data?: { question: string; answer: string }[];
+  title?: string;
+}
+
+export const FAQSection = ({ data = FAQS, title }: FAQSectionProps) => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggleFAQ = (index: number) => {
@@ -74,12 +86,18 @@ export const FAQSection = () => {
   return (
     <section className="py-10 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-4xl md:text-5xl font-bold text-center text-slate-900 mb-12">
-          <span className="text-gradient-primary">Got Questions?</span> We've Got Answers!
+        <h2 className="text-3xl md:text-5xl font-bold text-center text-slate-900 mb-12">
+          {title ? (
+            <span className="text-gradient-primary">{title}</span>
+          ) : (
+            <>
+              <span className="text-gradient-primary">Got Questions?</span> We've Got Answers!
+            </>
+          )}
         </h2>
         
         <div className="space-y-2">
-          {FAQS.map((faq, index) => (
+          {data.map((faq, index) => (
             <FAQItem
               key={index}
               question={faq.question}

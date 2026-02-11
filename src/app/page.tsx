@@ -122,7 +122,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white overflow-hidden" ref={containerRef} suppressHydrationWarning={true}>
       <FloatingParticles />
 
-      <main className="flex-grow">
+      <main className="flex-grow" suppressHydrationWarning={true}>
         {/* <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50/40 min-h- flex items-center">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50/50 -z-10" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 md:pt-32 md:pb-32">
@@ -440,8 +440,8 @@ export default function Home() {
         <CorporateCustomers />
 
         {/* CTA Section */}
-        <section className="py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-24" suppressHydrationWarning={true}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning={true}>
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -503,10 +503,10 @@ export default function Home() {
                 >
                   <Button
                     size="lg"
-                    className="rounded-full px-10 py-6
-                       bg-white text-slate-900 text-lg
+                    className="rounded-full px-6 sm:px-10 py-6
+                       bg-white text-slate-900 text-base sm:text-lg
                        hover:bg-slate-100
-                       shadow-xl transition-all"
+                       shadow-xl transition-all w-full sm:w-auto"
                   >
                     Start Renting Now
                   </Button>

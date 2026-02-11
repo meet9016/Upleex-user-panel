@@ -62,7 +62,7 @@ export default function PartnerLoginPage() {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col md:flex-row min-h-[600px]">
         
         {/* Left Panel - Dark Navy */}
-        <div className="w-full md:w-1/2 bg-[#1e293b] p-8 md:p-12 text-white flex flex-col justify-between relative overflow-hidden">
+        <div className="w-full md:w-5/12 bg-[#1e293b] p-8 md:p-12 text-white flex flex-col justify-between relative overflow-hidden hidden md:flex">
           {/* Background Gradient/Pattern overlay */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000" />
@@ -115,7 +115,7 @@ export default function PartnerLoginPage() {
         </div>
 
         {/* Right Panel - White Form */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 bg-white flex flex-col justify-center">
+        <div className="w-full md:w-7/12 p-8 md:p-12 bg-white flex flex-col justify-center">
           <div className="max-w-md mx-auto w-full">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
@@ -135,7 +135,7 @@ export default function PartnerLoginPage() {
                 <Mail className="w-4 h-4" />
                 Email
               </button> */}
-              <Button
+              {/* <Button
                 onClick={() => setAuthMethod("mobile")}
                 className={`flex-1 py-2.5 px-4 rounded-lg border flex items-center justify-center gap-2 transition-all cursor-pointer${
                   authMethod === "mobile"
@@ -145,7 +145,7 @@ export default function PartnerLoginPage() {
               >
                 <Smartphone className="w-4 h-4" />
                 Mobile OTP
-              </Button>
+              </Button> */}
             </div>
 
             <AnimatePresence mode="wait">
@@ -179,13 +179,13 @@ export default function PartnerLoginPage() {
                       </div>
                     </div>
 
-                    <button
+                    <Button
                       type="submit"
                       disabled={mobileNumber.length < 10}
-                      className="w-full bg-[#5d6b82] hover:bg-[#4a5568] text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                      className="w-full  text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                       <span className="transform -rotate-45">➤</span> Send OTP
-                    </button>
+                    </Button>
                   </form>
                 </motion.div>
               ) : (

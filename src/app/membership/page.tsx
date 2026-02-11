@@ -176,14 +176,11 @@ const FAQS = [
   }
 ];
 
+import { FAQSection } from "@/components/features/FAQSection";
+
 const MembershipPage = () => {
   const router = useRouter();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-
-  const toggleFaq = (index: number) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index);
-  };
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -418,35 +415,7 @@ const MembershipPage = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">Frequently Asked Questions</h2>
-            
-            <div className="space-y-6">
-                {FAQS.map((faq, index) => (
-                    <div key={index} className="group">
-                        <button
-                            onClick={() => toggleFaq(index)}
-                            className="w-full flex items-center justify-between p-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-300 text-left"
-                        >
-                            <span className="font-bold text-slate-900 text-lg pr-8">{faq.question}</span>
-                            <ArrowRight className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openFaqIndex === index ? 'rotate-90 text-upleex-blue' : ''}`} />
-                        </button>
-                        
-                        <div 
-                            className={`transition-all duration-500 ease-in-out overflow-hidden ${
-                                openFaqIndex === index ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'
-                            }`}
-                        >
-                            <div className="bg-gray-100 p-6 rounded-xl text-slate-600 leading-relaxed border border-gray-200 shadow-inner">
-                                {faq.answer}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-      </section>
+      <FAQSection data={FAQS} title="Frequently Asked Questions" />
     </main>
   );
 };

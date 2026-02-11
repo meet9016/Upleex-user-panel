@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { FAQSection } from '@/components/features/FAQSection';
+import { useRouter } from 'next/navigation';
 import { 
   ArrowRight, 
   Check, 
@@ -163,13 +165,8 @@ const FAQS = [
 
 // Helper Icon for one missing in lucide import
 
-
-const ServicePage = () => {
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-
-  const toggleFaq = (index: number) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index);
-  };
+export default function ServicePage() {
+  const router = useRouter();
 
   const scrollToCategories = () => {
     const element = document.getElementById('service-categories');
@@ -352,35 +349,7 @@ const ServicePage = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-10 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold mb-12 text-center text-gradient-primary">Frequently Asked Questions</h2>
-          
-          <div className="space-y-4">
-            {FAQS.map((faq, index) => (
-              <div key={index} className="group">
-                <button
-                  onClick={() => toggleFaq(index)}
-                  className="w-full flex items-center justify-between p-6 bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 text-left"
-                >
-                  <span className="font-bold text-slate-800 text-base md:text-lg pr-8">{faq.question}</span>
-                  <ArrowRight className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${openFaqIndex === index ? 'rotate-90 text-blue-600' : ''}`} />
-                </button>
-                
-                <div 
-                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    openFaqIndex === index ? 'max-h-48 opacity-100 mt-2' : 'max-h-0 opacity-0 mt-0'
-                  }`}
-                >
-                  <div className="bg-gray-50 p-6 rounded-lg text-slate-600 leading-relaxed border border-gray-100">
-                    {faq.answer}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FAQSection data={FAQS} title="Frequently Asked Questions" />
 
       {/* Download App Section */}
       <section className="bg-gradient-to-br from-slate-50 to-blue-50 py-10 lg:py-28 overflow-hidden relative">
@@ -558,8 +527,9 @@ const ServicePage = () => {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <FAQSection />
+
     </main>
   );
-};
-
-export default ServicePage;
+}

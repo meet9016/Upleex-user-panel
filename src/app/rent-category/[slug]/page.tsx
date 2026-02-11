@@ -6,6 +6,7 @@ import { ProductCard } from '@/components/features/ProductCard';
 import { categories } from '@/data/mockData';
 import { ArrowRight, ChevronDown, ArrowUpDown, Calendar, Check } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { BackButton } from '@/components/ui/BackButton';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { motion } from 'framer-motion';
@@ -101,8 +102,9 @@ export default function RentCategoryPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-100 pt-8 pb-6">
+      <div className="bg-white border-b border-gray-100 pt-4 pb-6">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+            <BackButton className="mb-2 hover:bg-transparent text-slate-500" />
           <div className="text-sm text-slate-500 flex gap-2 mb-2">
             <span className="hover:text-upleex-purple cursor-pointer">Home</span> / <span>Rent</span> / <span className="text-upleex-purple font-medium">{currentCategoryName}</span>
           </div>

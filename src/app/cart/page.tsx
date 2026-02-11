@@ -17,6 +17,7 @@ import {
   CreditCard,
   MessageCircle,
 } from 'lucide-react';
+import { BackButton } from '@/components/ui/BackButton';
 import { motion, AnimatePresence, LayoutGroup, Variants } from 'framer-motion';
 
 // ────────────────────────────────────────────────
@@ -202,6 +203,10 @@ export default function CartPage() {
       className="min-h-screen bg-gradient-to-b from-slate-50 to-white"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+
+        <div className="mb-6">
+          <BackButton label="Continue Shopping" />
+        </div>
 
         {/* Progress Bar */}
         <motion.div variants={itemVariants} className="mb-10">

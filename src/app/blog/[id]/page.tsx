@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { BLOGS } from '@/data/blogData';
 import { Twitter, Linkedin, Share2, Search, Calendar, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { BackButton } from '@/components/ui/BackButton';
 
 export default function BlogDetailPage() {
   const params = useParams();
@@ -37,6 +38,10 @@ export default function BlogDetailPage() {
     <div className="min-h-screen bg-white pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
+        <div className="mb-6">
+          <BackButton />
+        </div>
+
         {/* Breadcrumb / Header Meta */}
         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
             <div className="flex items-center gap-2 text-sm text-gray-500">
