@@ -535,37 +535,64 @@ export default function ProductDetailsPage() {
 
                 {/* Sell Price Display */}
                 {isSell && (
-                  <div className="mb-6 p-4 border border-orange-100 rounded-xl bg-orange-50/30">
-                    <label className="text-xs font-bold text-orange-600 uppercase tracking-wider block mb-1">
-                      Selling Price
-                    </label>
-                    <div className="text-3xl font-extrabold text-gray-900">
-                      ₹{Number(productDetails?.price || 0).toLocaleString()}
+                  <div className="mb-6 p-6 border-2 border-blue-100 rounded-2xl bg-gradient-to-br from-blue-50/50 to-white shadow-sm relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700" />
+                    
+                    <div className="relative">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-1.5 h-4 bg-upleex-blue rounded-full" />
+                        <label className="text-xs font-bold text-upleex-blue uppercase tracking-wider block">
+                          Selling Price
+                        </label>
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <div className="text-4xl font-extrabold text-slate-900">
+                          ₹{Number(productDetails?.price || 0).toLocaleString()}
+                        </div>
+                        {productDetails?.cancel_price && (
+                          <div className="text-lg text-gray-400 line-through font-medium">
+                            ₹{Number(productDetails.cancel_price).toLocaleString()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+                        <CheckCircle size={12} className="text-green-500" />
+                        Inclusive of all taxes
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Quantity + Date */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4  pt-4">
-                  <div className="flex items-center justify-between bg-white border rounded-lg px-4 h-12 shadow-sm">
-                    <span className="font-medium text-gray-700">Quantity</span>
-                    <div className="flex items-center">
+                <div className={clsx(
+                  "grid gap-4 pt-4",
+                  isSell ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
+                )}>
+                  <div className={clsx(
+                    "flex items-center justify-between bg-white border rounded-xl px-4 shadow-sm transition-all hover:border-blue-200",
+                    isSell ? "h-14" : "h-12"
+                  )}>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-gray-900">Quantity</span>
+                      {isSell && <span className="text-[10px] text-gray-500">Select units</span>}
+                    </div>
+                    <div className="flex items-center bg-gray-50 rounded-lg p-1">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={quantity <= 1}
                       >
-                        <Minus size={16} />
+                        <Minus size={16} className="text-gray-600" />
                       </button>
-                      <span className="w-10 text-center font-bold text-lg">
+                      <span className="w-12 text-center font-extrabold text-lg text-slate-900">
                         {quantity}
                       </span>
                       <button
                         onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                        className="p-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={quantity >= 10}
                       >
-                        <Plus size={16} />
+                        <Plus size={16} className="text-gray-600" />
                       </button>
                     </div>
                   </div>
@@ -581,23 +608,40 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <div className={clsx(
+                  "flex flex-col sm:flex-row gap-4 mt-6",
+                  isSell && "items-stretch"
+                )}>
                   <Button
                     size="lg"
-                    className="bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white shadow-lg h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-3"
+                    className={clsx(
+                      "shadow-xl shadow-blue-500/20 h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
+                      isSell 
+                        ? "bg-upleex-blue hover:bg-blue-700 text-white border-none" 
+                        : "bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white"
+                    )}
                     onClick={handleGetQuoteClick}
                   >
-                    {isSell ? 'Buy Now →' : 'Get Quote →'}
+                    <span className="flex items-center justify-center gap-2">
+                      {isSell ? <ShoppingCart size="20" /> : null}
+                      {isSell ? 'Proceed to Buy' : 'Get Quote'}
+                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </span>
                   </Button>
 
                   <Button
                     size="lg"
                     variant="outline"
-                    className="h-14 border-2 border-gray-200 hover:border-gray-800 text-gray-700 hover:text-gray-900 font-bold flex items-center justify-center gap-2 w-full sm:flex-1 rounded-xl bg-white text-base px-3"
+                    className={clsx(
+                      "h-14 border-2 font-bold flex items-center justify-center gap-2 w-full sm:flex-1 rounded-xl bg-white text-base px-8 transition-all",
+                      isSell 
+                        ? "border-blue-100 text-blue-600 hover:border-upleex-blue hover:bg-blue-50" 
+                        : "border-gray-200 hover:border-gray-800 text-gray-700"
+                    )}
                     onClick={() => router.push('/cart')}
                   >
-                    <MapPin size={18} className="text-orange-600" />
-                    Enter City
+                    <MapPin size={18} className="text-blue-500" />
+                    Check Availability
                   </Button>
                 </div>
 

@@ -34,6 +34,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
   const productLocation = product.location || 'Surat';
   const listingType = (product?.product_type_name || product?.product_listing_type_name)?.toLowerCase();
 
+  const sanitizeUrl = (url: string) => {
+    if (!url) return '';
+    return url.replace(/\s*\)\s*$/, '').trim();
+  };
+
   return (
     <motion.div
       onClick={() => router.push(`/browse-ads/${productId}`)}
@@ -57,7 +62,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
         <motion.img
           src={
-            productImage ||
+            sanitizeUrl(productImage) ||
             'https://upleex.2min.cloud/upload/product_main_images/2026/01/2026-01-29/ce145a2a7c6ba13df4baceb3ac7843fd.jpg'
           }
           alt={productName}
@@ -117,8 +122,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
         {/* Price */}
         <div className="absolute bottom-3 right-3 z-10 bg-gradient-to-r from-upleex-blue to-indigo-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
-          ₹{Number(productPrice || 0).toLocaleString()}/ {product?.product_listing_type_name}
+          ₹{Number(productPrice ?? 0).toLocaleString()}{" "}
+          {product?.product_listing_type_name
+            ? `/ ${product.product_listing_type_name}`
+            : ""}
         </div>
+
       </div>
 
       {/* CONTENT */}

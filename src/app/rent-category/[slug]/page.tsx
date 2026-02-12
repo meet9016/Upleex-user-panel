@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/features/ProductCard';
 import { categories } from '@/data/mockData';
-import { ArrowRight, ChevronDown, ArrowUpDown, Calendar, Check } from 'lucide-react';
+import { ArrowRight, ChevronDown, ArrowUpDown, Calendar, Check, PackageOpen } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
 import { api } from '@/utils/axiosInstance';
@@ -305,8 +305,25 @@ function RentCategoryContent() {
 
         {/* Empty State */}
         {filteredProducts.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-slate-400 text-lg">No products found in this category.</p>
+          <div className="flex flex-col items-center justify-center py-20 px-4">
+            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+              <PackageOpen className="w-12 h-12 text-gray-300" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No Products Found</h3>
+            <p className="text-gray-500 text-center max-w-md mb-8">
+              We couldn't find any products in this category at the moment. Try adjusting your filters or check back later.
+            </p>
+            {/* <Button 
+              variant="outline" 
+              onClick={() => {
+                handleFilterClick("all");
+                setSelectedSort({ label: 'All Types', value: '0' });
+                setSelectedTenure({ label: 'All Durations', value: '0' });
+              }}
+              className="rounded-full px-8"
+            >
+              Clear All Filters
+            </Button> */}
           </div>
         )}
 
