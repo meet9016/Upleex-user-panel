@@ -4,16 +4,36 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { ProductCard } from '@/components/features/ProductCard';
 import { categories } from '@/data/mockData';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown, ArrowUpDown, Calendar, Check } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { BackButton } from '@/components/ui/BackButton';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { motion } from 'framer-motion';
+
+import { CategorySEOContent } from '@/components/features/CategorySEOContent';
 
 export default function RentCategoryPage() {
   const params = useParams();
   const slug = params?.slug as string;
   const [activeFilter, setActiveFilter] = useState('all');
+  
+  // Dropdown UI States
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isTenureOpen, setIsTenureOpen] = useState(false);
+  const [selectedSort, setSelectedSort] = useState({ label: 'All Types', value: '0' });
+  const [selectedTenure, setSelectedTenure] = useState({ label: 'All Durations', value: '0' });
+  const sortOptions = [
+    { label: 'All Types', value: '0' },
+    { label: 'Rent', value: '1' },
+    { label: 'Sell', value: '2' },
+  ];
+
+  const tenureOptions = [
+    { label: 'All Durations', value: '0' },
+    { label: 'Daily', value: '1' },
+    { label: 'Monthly', value: '2' },
+  ];
 
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [productList, setProductList] = useState<any[]>([]);
@@ -56,6 +76,15 @@ export default function RentCategoryPage() {
         formData.append("sub_category_id", activeFilter);
       }
 
+      // Add dynamic filters from screenshot
+      if (selectedSort.value !== '0') {
+        formData.append("filter_rent_sell", selectedSort.value);
+      }
+      
+      if (selectedTenure.value !== '0') {
+        formData.append("filter_tenure", selectedTenure.value);
+      }
+
       try {
         const res = await api.post(endPointApi.webCategoryProductList, formData);
         setProductList(res.data.data || []);
@@ -68,7 +97,7 @@ export default function RentCategoryPage() {
     if (slug) {
       fetchProducts();
     }
-  }, [slug, activeFilter]);
+  }, [slug, activeFilter, selectedSort, selectedTenure]);
   const handleFilterClick = (filterSlug: string) => {
     setActiveFilter(filterSlug);
   };
@@ -81,8 +110,9 @@ export default function RentCategoryPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-100 pt-8 pb-6">
+      <div className="bg-white border-b border-gray-100 pt-4 pb-6">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+            <BackButton className="mb-2 hover:bg-transparent text-slate-500" />
           <div className="text-sm text-slate-500 flex gap-2 mb-2">
             <span className="hover:text-upleex-purple cursor-pointer">Home</span> / <span>Rent</span> / <span className="text-upleex-purple font-medium">{currentCategoryName}</span>
           </div>
@@ -120,30 +150,95 @@ export default function RentCategoryPage() {
 
         {/* Controls Bar (Sort/Tenure) */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-1">
-          {/* Left side mock sort */}
-          <div className="relative group w-full sm:w-auto">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-upleex-purple">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" /></svg>
+          
+          {/* Custom Sort Dropdown */}
+          <div className="relative z-30 w-full sm:w-auto">
+            <button 
+              onClick={() => { setIsSortOpen(!isSortOpen); setIsTenureOpen(false); }}
+              className={`w-full sm:w-64 flex items-center justify-between pl-4 pr-4 py-3 bg-white border-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+                isSortOpen 
+                  ? 'border-upleex-purple shadow-lg shadow-purple-500/10 ring-4 ring-purple-500/5' 
+                  : 'border-gray-100 text-slate-700 hover:border-upleex-purple/50 hover:shadow-md'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className={`text-upleex-purple ${isSortOpen ? 'scale-110' : ''} transition-transform duration-300`}>
+                  <ArrowUpDown size={18} />
+                </span>
+                <span className="truncate">{selectedSort.label}</span>
+              </div>
+              <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${isSortOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
+            </button>
+
+            {/* Dropdown Menu */}
+            <div className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden transition-all duration-300 origin-top ${
+              isSortOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'
+            }`}>
+              <div className="p-1.5">
+                {sortOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => {
+                      setSelectedSort(option);
+                      setIsSortOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      selectedSort.value === option.value
+                        ? 'bg-purple-50 text-upleex-purple'
+                        : 'text-slate-600 hover:bg-gray-50 hover:text-slate-900'
+                    }`}
+                  >
+                    {option.label}
+                    {selectedSort.value === option.value && <Check size={16} className="text-upleex-purple" />}
+                  </button>
+                ))}
+              </div>
             </div>
-            <select className="w-full sm:w-64 appearance-none pl-12 pr-10 py-3 bg-white border-2 border-gray-100 rounded-full text-sm font-semibold text-slate-700 hover:border-upleex-purple/50 hover:shadow-md focus:outline-none focus:border-upleex-purple focus:ring-4 focus:ring-purple-500/10 cursor-pointer transition-all">
-              <option>Sort by</option>
-              <option>Low to High</option>
-              <option>High to Low</option>
-            </select>
-            <ChevronDown className="absolute right-5 top-4 text-gray-400 pointer-events-none group-hover:text-upleex-purple transition-colors" size={16} />
           </div>
 
-          {/* Right side mock tenure */}
-          <div className="relative group w-full sm:w-auto">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-upleex-purple">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></svg>
+          {/* Custom Tenure Dropdown */}
+          <div className="relative z-20 w-full sm:w-auto">
+            <button 
+              onClick={() => { setIsTenureOpen(!isTenureOpen); setIsSortOpen(false); }}
+              className={`w-full sm:w-64 flex items-center justify-between pl-4 pr-4 py-3 bg-white border-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+                isTenureOpen 
+                  ? 'border-upleex-purple shadow-lg shadow-purple-500/10 ring-4 ring-purple-500/5' 
+                  : 'border-gray-100 text-slate-700 hover:border-upleex-purple/50 hover:shadow-md'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className={`text-upleex-purple ${isTenureOpen ? 'scale-110' : ''} transition-transform duration-300`}>
+                  <Calendar size={18} />
+                </span>
+                <span className="truncate">{selectedTenure.label}</span>
+              </div>
+              <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${isTenureOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
+            </button>
+
+            {/* Dropdown Menu */}
+            <div className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden transition-all duration-300 origin-top ${
+              isTenureOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'
+            }`}>
+              <div className="p-1.5">
+                {tenureOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => {
+                      setSelectedTenure(option);
+                      setIsTenureOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      selectedTenure.value === option.value
+                        ? 'bg-purple-50 text-upleex-purple'
+                        : 'text-slate-600 hover:bg-gray-50 hover:text-slate-900'
+                    }`}
+                  >
+                    {option.label}
+                    {selectedTenure.value === option.value && <Check size={16} className="text-upleex-purple" />}
+                  </button>
+                ))}
+              </div>
             </div>
-            <select className="w-full sm:w-64 appearance-none pl-12 pr-10 py-3 bg-white border-2 border-gray-100 rounded-full text-sm font-semibold text-slate-700 hover:border-upleex-purple/50 hover:shadow-md focus:outline-none focus:border-upleex-purple focus:ring-4 focus:ring-purple-500/10 cursor-pointer transition-all">
-              <option>Select Tenure</option>
-              <option>Days</option>
-              <option>Months</option>
-            </select>
-            <ChevronDown className="absolute right-5 top-4 text-gray-400 pointer-events-none group-hover:text-upleex-purple transition-colors" size={16} />
           </div>
         </div>
 
@@ -151,7 +246,7 @@ export default function RentCategoryPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product, index) => (
             <motion.div
-              key={product._id} // ✅ unique & stable
+              key={product.product_id || product.id || index}
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -180,6 +275,9 @@ export default function RentCategoryPage() {
             <p className="text-slate-400 text-lg">No products found in this category.</p>
           </div>
         )}
+
+        {/* SEO Content Section */}
+        <CategorySEOContent />
       </div>
     </div>
   );

@@ -14,15 +14,20 @@ import {
   LogOut
 } from 'lucide-react';
 import Image from 'next/image';
+import { DownloadAppPopup } from '../features/DownloadAppPopup';
+import { Button } from '@/components/ui/Button';
+import { categoryService, Category } from '@/services/categoryService';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isDownloadPopupOpen, setIsDownloadPopupOpen] = useState(false);
   const [currentLocations] = useState('Surat');
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen);
@@ -57,6 +62,14 @@ export const Navbar: React.FC = () => {
       setEmail(null);
     }
   };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const data = await categoryService.getCategories();
+      setCategories(data);
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     readUserData();
@@ -94,10 +107,103 @@ export const Navbar: React.FC = () => {
     setEmail(null);
     setIsProfileMenuOpen(false);
     setIsMenuOpen(false);
-    router.push('/login');
+    router.push('/auth/login');
     window.dispatchEvent(new Event('storage'));
   };
 
+  // Hide Navbar on Partner Auth pages
+  if (pathname === '/partner/login' || pathname === '/partner/signup') {
+    return null;
+  }
+
+  // Partner Page Navbar
+  if (pathname === '/partner') {
+    return (
+      <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm h-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+          <div className="flex items-center justify-between h-full">
+            {/* Logo */}
+            <Link href="/" className="flex-shrink-0 flex items-center gap-2">
+              <Image
+                src="/image/upleex-logo-dark.png"
+                alt="Upleex Logo"
+                width={150}
+                height={40}
+                priority
+              />
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-8">
+              <Link href="#how-it-works" className="text-slate-600 font-medium hover:text-blue-600 transition-colors">
+                How it works
+              </Link>
+              <Link href="#benefits" className="text-slate-600 font-medium hover:text-blue-600 transition-colors">
+                Benefits
+              </Link>
+              <Link href="#categories" className="text-slate-600 font-medium hover:text-blue-600 transition-colors">
+                Categories
+              </Link>
+            </div>
+
+            {/* Auth Buttons */}
+            <div className="hidden md:flex items-center gap-4">
+              <Button 
+                variant="ghost"
+                onClick={() => router.push('/partner/login')}
+                className="px-6 border border-gray-300 text-slate-700 font-semibold hover:bg-transparent hover:border-blue-600 hover:text-blue-600 cursor-pointer focus:outline-none focus:ring-0 focus:ring-offset-0 active:outline-none"
+              >
+                Login
+              </Button>
+              <Button 
+                onClick={() => router.push('/partner/signup')}
+                className="px-6 shadow-md hover:shadow-lg cursor-pointer"
+              >
+                Start Renting
+              </Button>
+            </div>
+
+            {/* Mobile Menu Button */}
+             <div className="md:hidden flex items-center">
+                <button
+                  onClick={toggleMenu}
+                  className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:text-blue-600 focus:outline-none"
+                >
+                  {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                </button>
+             </div>
+          </div>
+        </div>
+        
+        {/* Mobile Menu for Partner Page */}
+        {isMenuOpen && (
+           <div className="md:hidden bg-white border-b border-gray-100 absolute w-full shadow-lg z-50">
+             <div className="px-4 pt-4 pb-6 space-y-4">
+                <Link href="#how-it-works" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>How it works</Link>
+                <Link href="#benefits" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Benefits</Link>
+                <Link href="#categories" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Categories</Link>
+                <div className="pt-4 flex flex-col gap-3">
+                   <Link 
+                    href="/partner/login" 
+                    className="block w-full text-center py-3 border border-gray-300 rounded-lg text-slate-700 font-semibold"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    href="/partner/signup" 
+                    className="block w-full text-center py-3 bg-blue-600 text-white rounded-lg font-semibold"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Start Renting
+                  </Link>
+                </div>
+             </div>
+           </div>
+        )}
+      </nav>
+    );
+  }
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm">
@@ -144,10 +250,13 @@ export const Navbar: React.FC = () => {
           {/* Right Section Actions */}
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-700">
 
-            <a href="#" className="flex items-center gap-2 hover:text-upleex-blue transition-colors group">
+            <button 
+              onClick={() => setIsDownloadPopupOpen(true)} 
+              className="flex items-center gap-2 hover:text-upleex-blue transition-colors group"
+            >
               <Smartphone size={18} className="text-gray-400 group-hover:text-upleex-blue" />
               <span>Download App</span>
-            </a>
+            </button>
 
             <div className="h-4 w-px bg-gray-300"></div>
 
@@ -165,9 +274,9 @@ export const Navbar: React.FC = () => {
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                     {user?.full_name?.charAt(0) || email?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
-                  <span className="capitalize font-semibold">
+                  {/* <span className="capitalize font-semibold">
                     Hi, {user?.split(' ')[0] || 'User'}
-                  </span>
+                  </span> */}
                   <ChevronDown 
                     size={16} 
                     className={`text-gray-400 transition-transform duration-200 ${isProfileMenuOpen ? 'rotate-180' : ''}`}
@@ -195,12 +304,12 @@ export const Navbar: React.FC = () => {
                 )}
               </div>
             ) : (
-              <Link 
-                href="/auth/login" 
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-sm hover:shadow"
+              <Button 
+                onClick={() => router.push('/auth/login')}
+                className="px-4 py-2 cursor-pointer"
               >
                 Login / Sign Up
-              </Link>
+              </Button>
             )}
 
             <div className="h-4 w-px bg-gray-300"></div>
@@ -229,49 +338,42 @@ export const Navbar: React.FC = () => {
 
         {/* Categories Bar - Secondary Navigation with Dropdowns */}
         <div className="hidden lg:flex items-center gap-1 py-1 text-sm font-medium text-slate-600 border-t border-gray-100 bg-gray-50/50 px-4">
-          {[
-            { name: 'Appliances', slug: 'home-appliance', subs: ['Refrigerators', 'Washing Machines', 'Air Conditioners', 'Microwaves'] },
-            { name: 'Furniture', slug: 'furniture', subs: ['Sofas', 'Beds', 'Wardrobes', 'Dining Tables'] },
-            { name: 'Computers', slug: 'electronics', subs: ['Laptops', 'Desktops', 'Monitors', 'Printers'] },
-            { name: 'Cameras', slug: 'cameras', subs: ['DSLRs', 'Mirrorless', 'Lenses', 'Action Cameras'] },
-            { name: 'Medical', slug: 'medical', subs: ['Hospital Beds', 'Wheelchairs', 'Oxygen Concentrators'] },
-            { name: 'Fitness', slug: 'fitness', subs: ['Treadmills', 'Ellipticals', 'Home Gyms', 'Dumbbells'] },
-            { name: 'Camping', slug: 'camping', subs: ['Tents', 'Sleeping Bags', 'Camping Stoves'] }
-          ].map((item) => {
-            const isActive = pathname?.includes(item.slug);
+          {categories.map((item) => {
+            const isActive = pathname?.includes(item.categories_id);
             return (
-              <div key={item.name} className="relative group">
+              <div key={item.categories_id} className="relative group">
                 <Link
-                  href={`/rent-category/${item.slug}`}
-                  className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 ${isActive
+                  href={`/rent-category/${item.categories_id}`}
+                  className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap ${isActive
                     ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
                     : 'hover:bg-upleex-purple hover:text-white'
                     }`}
                 >
-                  {item.name}
-                  <ChevronDown size={14} className={`ml-1 transition-opacity ${isActive ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'}`} />
+                  {item.categories_name}
+                  {item.subcategories.length > 0 && (
+                    <ChevronDown size={14} className={`ml-1 transition-opacity ${isActive ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'}`} />
+                  )}
                 </Link>
 
                 {/* Dropdown Menu */}
-                <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-lg rounded-r-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0">
-                  <div className="py-2">
-                    {item.subs.map((sub, idx) => (
-                      <Link
-                        key={idx}
-                        href={`/rent-category/${item.slug}?sub=${sub.toLowerCase().replace(' ', '-')}`}
-                        className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0"
-                      >
-                        {sub}
-                      </Link>
-                    ))}
+                {item.subcategories.length > 0 && (
+                  <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-lg rounded-r-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0">
+                    <div className="py-2">
+                      {item.subcategories.map((sub) => (
+                        <Link
+                          key={sub.subcategory_id}
+                          href={`/rent-category/${item.categories_id}?sub=${sub.subcategory_id}`}
+                          className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0"
+                        >
+                          {sub.subcategory_name}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })}
-          {/* <Link href="/rent-category/all" className="ml-auto px-4 py-2 text-upleex-blue hover:text-upleex-purple transition-colors font-semibold flex items-center">
-            All Categories <ChevronDown size={14} className="ml-1 rotate-[-90deg]" />
-          </Link> */}
         </div>
       </div>
 
@@ -332,9 +434,9 @@ export const Navbar: React.FC = () => {
             <div className="pt-2 border-t border-gray-100">
               <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Categories</div>
               <div className="grid grid-cols-2 gap-2">
-                {['Appliances', 'Furniture', 'Computers', 'Cameras', 'Medical', 'Fitness'].map(item => (
-                  <Link key={item} href={`/rent-category/${item.toLowerCase()}`} className="text-sm text-slate-700 py-1 hover:text-upleex-blue" onClick={() => setIsMenuOpen(false)}>
-                    {item}
+                {categories.slice(0, 6).map(item => (
+                  <Link key={item.categories_id} href={`/rent-category/${item.categories_id}`} className="text-sm text-slate-700 py-1 hover:text-upleex-blue" onClick={() => setIsMenuOpen(false)}>
+                    {item.categories_name}
                   </Link>
                 ))}
               </div>
@@ -342,6 +444,11 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       )}
+
+      <DownloadAppPopup 
+        isOpen={isDownloadPopupOpen} 
+        onClose={() => setIsDownloadPopupOpen(false)} 
+      />
     </nav>
   );
 };

@@ -128,7 +128,7 @@ const LoginPage = () => {
                 />
               </div>
 
-              <Button fullWidth onClick={handleSendNumber}>
+              <Button fullWidth onClick={handleSendNumber} className="cursor-pointer">
                 Continue <ArrowRight className="ml-2" size={18} />
               </Button>
             </>

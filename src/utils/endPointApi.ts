@@ -11,6 +11,11 @@ export interface EndPointApi {
 
     //Product details
     webGetQuote: string;
+
+    // Content
+    blogList: string;
+    singleBlog: string;
+    faqList: string;
 }
 
 // Define and export the API endpoint object
@@ -27,6 +32,11 @@ const endPointApi: EndPointApi = {
 
     //Product details
     webGetQuote: 'web-get-quote',
+
+    // Content
+    blogList: 'blog-list',
+    singleBlog: 'single-blog',
+    faqList: 'faq-list',
 };
 
 

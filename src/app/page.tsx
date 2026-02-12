@@ -2,23 +2,27 @@
 import { Button } from '@/components/ui/Button';
 import { CategoryCard } from '@/components/features/CategoryCard';
 import { ProductCard } from '@/components/features/ProductCard';
+import { LatestBlogs } from '@/components/features/LatestBlogs';
+import { FAQSection } from '@/components/features/FAQSection';
+import { CorporateCustomers } from '@/components/features/CorporateCustomers';
+import { PromotionalBanner } from '@/components/features/PromotionalBanner';
+import { ContinuousBanner } from '@/components/features/ContinuousBanner';
+import { CenterModeCarousel } from '@/components/features/CenterModeCarousel';
+import { HeroCarousel } from '@/components/features/HeroCarousel';
 import { categories, featuredProducts } from '@/data/mockData';
 import { ArrowRight, CheckCircle, Shield, Clock, Activity, Sparkles, Zap, TrendingUp, Star, ChevronRight, ArrowUpRight, Heart, ShoppingBag } from 'lucide-react';
 import { useEffect, useState, useRef } from 'react';
 import endPointApi from '@/utils/endPointApi';
 import { api } from '@/utils/axiosInstance';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
-
-interface Category {
-  id: number;
-  categories_name: string;
-  image: string;
-  categories_id: string;
-  product_count?: number;
-}
+import { categoryService, Category as ServiceCategory, HomeResponse } from '@/services/categoryService';
+import { blogService, Blog } from '@/services/blogService';
+import { faqService, FAQ } from '@/services/faqService';
 
 interface CategoryResponse {
-  all_categories: Category[];
+  slider: any[];
+  banner: any[];
+  all_categories: ServiceCategory[];
 }
 
 // Add floating particles component
@@ -52,6 +56,8 @@ const FloatingParticles = () => {
 
 export default function Home() {
   const [categoryList, setCategoryList] = useState<CategoryResponse | null>(null);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [isHovered, setIsHovered] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const containerRef = useRef(null);
@@ -64,23 +70,29 @@ export default function Home() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const res = await api.post(endPointApi.home, {});
-        setCategoryList(res.data.data);
+        const [categoryData, blogData, faqData] = await Promise.all([
+          categoryService.getHomeData(),
+          blogService.getBlogList(),
+          faqService.getFAQList()
+        ]);
+        setCategoryList(categoryData.data);
+        setBlogs(blogData);
+        setFaqs(faqData);
       } catch (err) {
-        console.error("Error fetching categories", err);
+        console.error("Error fetching data", err);
       }
     };
-    fetchCategories();
+    fetchData();
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white overflow-hidden" ref={containerRef} suppressHydrationWarning={true}>
       <FloatingParticles />
 
-      <main className="flex-grow">
-        <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50/40 min-h- flex items-center">
+      <main className="flex-grow" suppressHydrationWarning={true}>
+        {/* <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50/40 min-h- flex items-center">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50/50 -z-10" />
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 md:pt-32 md:pb-32">
             <div className="text-center md:text-left md:flex md:items-center md:justify-between md:gap-16">
@@ -95,7 +107,7 @@ export default function Home() {
 
                 <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-snug md:leading-tight">
                   Don't Buy.{' '}
-                  <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-upleex-purple to-upleex-blue animate-gradient-x">
+                  <span className="relative inline-block text-gradient-primary animate-gradient-x">
                     Just Rent It.
                     <span className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 opacity-30 blur-xl rounded-lg mix-blend-overlay"></span>
                   </span>
@@ -121,7 +133,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Right */}
               <div className="mt-12 md:mt-0 md:w-1/2 relative">
                 <div className="relative z-10 w-full rounded-2xl bg-white shadow-2xl p-4 md:p-6 transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
                   <img
@@ -138,14 +149,19 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Decorative blobs */}
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
                 <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
+
+        {/* Promotional Banner Section */}
+        {/* <PromotionalBanner /> */}
+        {/* <ContinuousBanner /> */}
+        <HeroCarousel />
+        {/* <CenterModeCarousel /> */}
 
         {/* Enhanced Categories Section */}
         <section className="py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
@@ -157,37 +173,26 @@ export default function Home() {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-upleex-blue text-sm font-semibold mb-4">
+              {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-upleex-blue text-sm font-semibold mb-4">
                 <Zap className="w-4 h-4" />
                 Popular Categories
-              </div>
+              </div> */}
               <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-                Explore Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-upleex-purple to-upleex-blue">Premium</span> Collection
+                Explore Our <span className="text-gradient-primary">Premium</span> Collection
               </h2>
               <p className="text-slate-500 max-w-2xl mx-auto text-lg">Find exactly what you are looking for from our wide range of rental categories.</p>
             </motion.div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-8">
-              {categoryList?.all_categories?.map((cat, index) => (
-                <motion.div
-                  key={`${cat.id}-${index}`}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  // whileHover={{ y: -8, scale: 1.05 }}
-                  onMouseEnter={() => setActiveCategory(cat.id)}
-                  onMouseLeave={() => setActiveCategory(null)}
-                >
-                  <CategoryCard
-                    {...cat}
-                    className={`transform transition-all duration-300 ${activeCategory === cat.id
-                      ? 'shadow-2xl shadow-purple-500/20 ring-2 ring-purple-500/20'
-                      : 'hover:shadow-xl hover:shadow-blue-500/10'
-                      }`}
-                  />
-                </motion.div>
-              ))}
+              {categoryList?.all_categories?.slice(0, 10).map((category, index) => (
+                 <CategoryCard
+                   key={category.categories_id}
+                   categories_id={category.categories_id}
+                   categories_name={category.categories_name}
+                   image={category.image}
+                   product_count={Number(category.product_count)}
+                 />
+               ))}
             </div>
 
             <motion.div
@@ -210,7 +215,7 @@ export default function Home() {
         </section>
 
         {/* Enhanced Featured Products */}
-        <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative">
+        {/* <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative">
           <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-gray-50 to-transparent"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
@@ -259,10 +264,10 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Value Props / Why Choose Us */}
-        <section className="py-24 bg-white border-t border-gray-100">
+        <section className="py-10 bg-white border-t border-gray-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -387,9 +392,14 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
+
+        <LatestBlogs blogs={blogs} />
+        <FAQSection data={faqs} />
+        <CorporateCustomers />
+
         {/* CTA Section */}
-        <section className="py-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="py-24" suppressHydrationWarning={true}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning={true}>
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -451,10 +461,10 @@ export default function Home() {
                 >
                   <Button
                     size="lg"
-                    className="rounded-full px-10 py-6
-                       bg-white text-slate-900 text-lg
+                    className="rounded-full px-6 sm:px-10 py-6
+                       bg-white text-slate-900 text-base sm:text-lg
                        hover:bg-slate-100
-                       shadow-xl transition-all"
+                       shadow-xl transition-all w-full sm:w-auto"
                   >
                     Start Renting Now
                   </Button>

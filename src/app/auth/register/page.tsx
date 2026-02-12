@@ -100,7 +100,7 @@ export default function RegisterPage() {
             </div>
 
             <div className="pt-2">
-              <Button fullWidth variant="primary" className="shadow-lg shadow-purple-500/30 h-12 text-base">
+              <Button fullWidth variant="primary" className="shadow-lg shadow-purple-500/30 h-12 text-base cursor-pointer">
                 Create Account <ArrowRight size={18} className="ml-2" />
               </Button>
             </div>
