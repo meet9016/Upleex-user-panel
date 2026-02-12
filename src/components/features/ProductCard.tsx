@@ -4,7 +4,13 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Heart } from 'lucide-react';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import type { Product } from '../../types';
+  
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 import { Button } from '../ui/Button';
 import { useRouter } from 'next/navigation';
 
@@ -26,6 +32,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     (product.pricePerMonth ? Math.round(product.pricePerMonth * 1.2) : null);
   const productCategory = product.sub_category_name || product.category;
   const productLocation = product.location || 'Surat';
+  const listingType = (product?.product_type_name || product?.product_listing_type_name)?.toLowerCase();
 
   return (
     <motion.div
@@ -36,6 +43,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     >
       {/* IMAGE */}
       <div className="relative h-52 overflow-hidden">
+        {/* Rent/Sell Tag */}
+        {listingType && (
+          <div className="absolute top-3 left-3 z-20">
+            <span className={cn(
+              "px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-sm text-white",
+              listingType === 'sell' ? "bg-orange-500" : "bg-upleex-blue"
+            )}>
+              {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
+            </span>
+          </div>
+        )}
+
         <motion.img
           src={
             productImage ||
@@ -124,7 +143,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
           variant="primary"
           className="mt-3 rounded-xl font-semibold tracking-wide cursor-pointer"
         >
-          Take On Rent
+          {listingType === 'sell' ? 'Buy Now' : 'Take On Rent'}
         </Button>
       </div>
     </motion.div>

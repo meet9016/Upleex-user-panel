@@ -18,6 +18,7 @@ import {
   ChevronRight,
   CheckCircle,
   ImageOff,
+  ShoppingCart,
 } from "lucide-react";
 import endPointApi from "@/utils/endPointApi";
 import { api } from "@/utils/axiosInstance";
@@ -184,6 +185,9 @@ export default function ProductDetailsPage() {
     setMinDate(formattedDate);
   }, []);
 
+  const listingType = (productDetails?.product_type_name || productDetails?.product_listing_type_name)?.toLowerCase();
+  const isSell = listingType === "sell";
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
@@ -237,41 +241,43 @@ export default function ProductDetailsPage() {
                   </div>
                 )}
 
-                {/* Trust Badges */}
-                <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-200">
-                  <div className="flex flex-col items-center text-center gap-1.5">
-                    <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
-                      <Shield size={16} strokeWidth={2.5} />
+                {/* Trust Badges - Show on left only for Rent */}
+                {!isSell && (
+                  <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-200">
+                    <div className="flex flex-col items-center text-center gap-1.5">
+                      <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
+                        <Shield size={16} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                        KYC<br/>Verified
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                      KYC<br/>Verified
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-1.5">
-                    <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
-                      <Shield size={16} strokeWidth={2.5} />
+                    <div className="flex flex-col items-center text-center gap-1.5">
+                      <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                        <Shield size={16} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                        Secure<br/>Payment
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                      Secure<br/>Payment
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-1.5">
-                    <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
-                      <Truck size={16} strokeWidth={2.5} />
+                    <div className="flex flex-col items-center text-center gap-1.5">
+                      <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
+                        <Truck size={16} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                        Verified<br/>Product
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                      Verified<br/>Product
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-1.5">
-                    <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
-                      <ArrowRight size={16} strokeWidth={2.5} />
+                    <div className="flex flex-col items-center text-center gap-1.5">
+                      <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
+                        <ArrowRight size={16} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                        100%<br/>Refund
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                      100%<br/>Refund
-                    </span>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -327,7 +333,7 @@ export default function ProductDetailsPage() {
                 </div> */}
 
                 {activeTab === "monthly" ? (
-                  <div className="">
+                  <div className={clsx(isSell && "hidden")}>
                     {productDetails?.month_arrr?.length > 0 ? (
                       <>
                         <div>
@@ -457,7 +463,7 @@ export default function ProductDetailsPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-5">
+                  <div className={clsx("space-y-5", isSell && "hidden")}>
                     {productDetails?.product_listing_type_name?.toLowerCase() ===
                     "daily" ? (
                       <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/40">
@@ -527,6 +533,18 @@ export default function ProductDetailsPage() {
                   </div>
                 )}
 
+                {/* Sell Price Display */}
+                {isSell && (
+                  <div className="mb-6 p-4 border border-orange-100 rounded-xl bg-orange-50/30">
+                    <label className="text-xs font-bold text-orange-600 uppercase tracking-wider block mb-1">
+                      Selling Price
+                    </label>
+                    <div className="text-3xl font-extrabold text-gray-900">
+                      ₹{Number(productDetails?.price || 0).toLocaleString()}
+                    </div>
+                  </div>
+                )}
+
                 {/* Quantity + Date */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4  pt-4">
                   <div className="flex items-center justify-between bg-white border rounded-lg px-4 h-12 shadow-sm">
@@ -552,12 +570,14 @@ export default function ProductDetailsPage() {
                     </div>
                   </div>
 
-                  <DatePicker
-                    label="Delivery Date"
-                    value={deliveryDate}
-                    onChange={setDeliveryDate}
-                    min={minDate}
-                  />
+                  {!isSell && (
+                    <DatePicker
+                      label="Delivery Date"
+                      value={deliveryDate}
+                      onChange={setDeliveryDate}
+                      min={minDate}
+                    />
+                  )}
                 </div>
 
                 {/* CTAs */}
@@ -567,7 +587,7 @@ export default function ProductDetailsPage() {
                     className="bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white shadow-lg h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-3"
                     onClick={handleGetQuoteClick}
                   >
-                    Get Quote →
+                    {isSell ? 'Buy Now →' : 'Get Quote →'}
                   </Button>
 
                   <Button
@@ -580,6 +600,44 @@ export default function ProductDetailsPage() {
                     Enter City
                   </Button>
                 </div>
+
+                {/* Trust Badges - Show on right only for Sell */}
+                {isSell && (
+                  <div className="grid grid-cols-4 gap-3 mt-8 pt-6 border-t border-gray-100">
+                    <div className="flex flex-col items-center text-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
+                        <Shield size={18} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                        KYC<br/>Verified
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center text-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                        <Shield size={18} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                        Secure<br/>Payment
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center text-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
+                        <Truck size={18} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                        Verified<br/>Product
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center text-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
+                        <ArrowRight size={18} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                        100%<br/>Refund
+                      </span>
+                    </div>
+                  </div>
+                )}
 
 
               </div>
@@ -638,15 +696,16 @@ export default function ProductDetailsPage() {
                           {productDetails.product_details.map(
                             (spec: any, idx: number) => {
                               const label =
+                                spec.specification ||
                                 spec.label ||
                                 spec.key ||
                                 spec.name ||
                                 spec.title ||
                                 `Specification ${idx + 1}`;
                               const value =
+                                spec.detail ||
                                 spec.value ||
                                 spec.description ||
-                                spec.detail ||
                                 "N/A";
 
                               return (

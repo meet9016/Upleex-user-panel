@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/features/ProductCard';
 import { categories } from '@/data/mockData';
 import { ArrowRight, ChevronDown, ArrowUpDown, Calendar, Check } from 'lucide-react';
@@ -14,26 +14,45 @@ import { motion } from 'framer-motion';
 import { CategorySEOContent } from '@/components/features/CategorySEOContent';
 
 export default function RentCategoryPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <RentCategoryContent />
+    </Suspense>
+  );
+}
+
+function RentCategoryContent() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const subId = searchParams?.get('sub');
+  
   const slug = params?.slug as string;
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState(subId || 'all');
+
+  useEffect(() => {
+    if (subId) {
+      setActiveFilter(subId);
+    } else {
+      setActiveFilter('all');
+    }
+  }, [subId]);
   
   // Dropdown UI States
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isTenureOpen, setIsTenureOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState({ label: 'All Types', value: '0' });
   const [selectedTenure, setSelectedTenure] = useState({ label: 'All Durations', value: '0' });
-  const sortOptions = [
+  const [sortOptions, setSortOptions] = useState([
     { label: 'All Types', value: '0' },
     { label: 'Rent', value: '1' },
     { label: 'Sell', value: '2' },
-  ];
+  ]);
 
-  const tenureOptions = [
+  const [tenureOptions, setTenureOptions] = useState([
     { label: 'All Durations', value: '0' },
     { label: 'Daily', value: '1' },
     { label: 'Monthly', value: '2' },
-  ];
+  ]);
 
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [productList, setProductList] = useState<any[]>([]);
@@ -42,8 +61,8 @@ export default function RentCategoryPage() {
   const filterCategories = [
     { name: 'All', slug: 'all' },
     ...(categoryList?.map((cat: any) => ({
-      name: cat.name,
-      slug: cat.id,
+      name: cat.subcategory_name || cat.name,
+      slug: String(cat.subcategory_id || cat.id),
       image: cat.image
     })) || [])
   ];
@@ -54,9 +73,18 @@ export default function RentCategoryPage() {
       formData.append("category_id", slug);
       try {
         const res = await api.post(endPointApi.webSubCategoryList, formData);
-        setCategoryList(res.data.data);
+        setCategoryList(res.data.data || []);
+        
+        // Update options if available in API
+        if (res.data.sort_options && Array.isArray(res.data.sort_options)) {
+          setSortOptions([{ label: 'All Types', value: '0' }, ...res.data.sort_options]);
+        }
+        if (res.data.tenure_options && Array.isArray(res.data.tenure_options)) {
+          setTenureOptions([{ label: 'All Durations', value: '0' }, ...res.data.tenure_options]);
+        }
       } catch (err) {
         console.error("Error fetching categories", err);
+        setCategoryList([]);
       }
     };
 
@@ -98,8 +126,14 @@ export default function RentCategoryPage() {
       fetchProducts();
     }
   }, [slug, activeFilter, selectedSort, selectedTenure]);
+  const router = useRouter();
+
   const handleFilterClick = (filterSlug: string) => {
-    setActiveFilter(filterSlug);
+    if (filterSlug === 'all') {
+      router.push(`/rent-category/${slug}`);
+    } else {
+      router.push(`/rent-category/${slug}?sub=${filterSlug}`);
+    }
   };
 
   const currentCategoryName = filterCategories.find(c => c.slug === activeFilter)?.name || 'Products';
@@ -110,15 +144,15 @@ export default function RentCategoryPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Header Section */}
-      <div className="bg-white border-b border-gray-100 pt-4 pb-6">
+      {/* <div className="bg-white border-b border-gray-100 pt-4 pb-6">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             <BackButton className="mb-2 hover:bg-transparent text-slate-500" />
           <div className="text-sm text-slate-500 flex gap-2 mb-2">
             <span className="hover:text-upleex-purple cursor-pointer">Home</span> / <span>Rent</span> / <span className="text-upleex-purple font-medium">{currentCategoryName}</span>
           </div>
-          {/* <h1 className="text-3xl font-bold text-slate-900">{currentCategoryName}</h1> */}
+          <h1 className="text-3xl font-bold text-slate-900">{currentCategoryName}</h1>
         </div>
-      </div>
+      </div> */}
 
       {/* Top Filter Bar - Sticky Icon Header */}
       <div className="bg-white border-b-2 border-purple-50 sticky top-[80px] z-40 shadow-sm/50 backdrop-blur-md bg-white/95 supports-[backdrop-filter]:bg-white/80 transition-all">
@@ -132,7 +166,7 @@ export default function RentCategoryPage() {
                 <button
                   key={cat.slug}
                   onClick={() => handleFilterClick(cat.slug)}
-                  className={`group flex items-center gap-2 whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 border-2 ${activeFilter === cat.slug
+                  className={`group flex items-center gap-2 whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 border-2 cursor-pointer select-none ${activeFilter === cat.slug
                     ? 'bg-upleex-purple border-upleex-purple text-white shadow-lg shadow-purple-500/20 ring-2 ring-purple-100 ring-offset-2'
                     : 'bg-white border-gray-100 text-slate-600 hover:border-upleex-purple/50 hover:bg-purple-50/50 hover:text-upleex-purple hover:shadow-md'
                     }`}

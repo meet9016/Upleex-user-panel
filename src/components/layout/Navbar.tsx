@@ -339,7 +339,7 @@ export const Navbar: React.FC = () => {
         {/* Categories Bar - Secondary Navigation with Dropdowns */}
         <div className="hidden lg:flex items-center gap-1 py-1 text-sm font-medium text-slate-600 border-t border-gray-100 bg-gray-50/50 px-4">
           {categories.map((item) => {
-            const isActive = pathname?.includes(item.categories_id);
+            const isActive = pathname === `/rent-category/${item.categories_id}`;
             return (
               <div key={item.categories_id} className="relative group">
                 <Link
@@ -434,11 +434,19 @@ export const Navbar: React.FC = () => {
             <div className="pt-2 border-t border-gray-100">
               <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Categories</div>
               <div className="grid grid-cols-2 gap-2">
-                {categories.slice(0, 6).map(item => (
-                  <Link key={item.categories_id} href={`/rent-category/${item.categories_id}`} className="text-sm text-slate-700 py-1 hover:text-upleex-blue" onClick={() => setIsMenuOpen(false)}>
-                    {item.categories_name}
-                  </Link>
-                ))}
+                {categories.slice(0, 6).map(item => {
+                  const isActive = pathname === `/rent-category/${item.categories_id}`;
+                  return (
+                    <Link 
+                      key={item.categories_id} 
+                      href={`/rent-category/${item.categories_id}`} 
+                      className={`text-sm py-1 transition-colors ${isActive ? 'text-upleex-purple font-bold' : 'text-slate-700 hover:text-upleex-blue'}`} 
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.categories_name}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
