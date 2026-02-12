@@ -21,19 +21,18 @@ export default function RentCategoryPage() {
   // Dropdown UI States
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isTenureOpen, setIsTenureOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState({ label: 'Sort by', value: 'default' });
-  const [selectedTenure, setSelectedTenure] = useState({ label: 'Select Tenure', value: 'all' });
-
+  const [selectedSort, setSelectedSort] = useState({ label: 'All Types', value: '0' });
+  const [selectedTenure, setSelectedTenure] = useState({ label: 'All Durations', value: '0' });
   const sortOptions = [
-    { label: 'Sort by', value: 'default' },
-    { label: 'Price: Low to High', value: 'low_high' },
-    { label: 'Price: High to Low', value: 'high_low' },
+    { label: 'All Types', value: '0' },
+    { label: 'Rent', value: '1' },
+    { label: 'Sell', value: '2' },
   ];
 
   const tenureOptions = [
-    { label: 'All Durations', value: 'all' },
-    { label: 'Daily Rental', value: 'daily' },
-    { label: 'Monthly Rental', value: 'monthly' },
+    { label: 'All Durations', value: '0' },
+    { label: 'Daily', value: '1' },
+    { label: 'Monthly', value: '2' },
   ];
 
   const [categoryList, setCategoryList] = useState<any[]>([]);
@@ -77,6 +76,15 @@ export default function RentCategoryPage() {
         formData.append("sub_category_id", activeFilter);
       }
 
+      // Add dynamic filters from screenshot
+      if (selectedSort.value !== '0') {
+        formData.append("filter_rent_sell", selectedSort.value);
+      }
+      
+      if (selectedTenure.value !== '0') {
+        formData.append("filter_tenure", selectedTenure.value);
+      }
+
       try {
         const res = await api.post(endPointApi.webCategoryProductList, formData);
         setProductList(res.data.data || []);
@@ -89,7 +97,7 @@ export default function RentCategoryPage() {
     if (slug) {
       fetchProducts();
     }
-  }, [slug, activeFilter]);
+  }, [slug, activeFilter, selectedSort, selectedTenure]);
   const handleFilterClick = (filterSlug: string) => {
     setActiveFilter(filterSlug);
   };

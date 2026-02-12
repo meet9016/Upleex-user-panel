@@ -16,6 +16,7 @@ import {
 import Image from 'next/image';
 import { DownloadAppPopup } from '../features/DownloadAppPopup';
 import { Button } from '@/components/ui/Button';
+import { categoryService, Category } from '@/services/categoryService';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,6 +27,7 @@ export const Navbar: React.FC = () => {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
   const [email, setEmail] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen);
@@ -60,6 +62,14 @@ export const Navbar: React.FC = () => {
       setEmail(null);
     }
   };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const data = await categoryService.getCategories();
+      setCategories(data);
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     readUserData();
@@ -328,49 +338,42 @@ export const Navbar: React.FC = () => {
 
         {/* Categories Bar - Secondary Navigation with Dropdowns */}
         <div className="hidden lg:flex items-center gap-1 py-1 text-sm font-medium text-slate-600 border-t border-gray-100 bg-gray-50/50 px-4">
-          {[
-            { name: 'Appliances', slug: 'home-appliance', subs: ['Refrigerators', 'Washing Machines', 'Air Conditioners', 'Microwaves'] },
-            { name: 'Furniture', slug: 'furniture', subs: ['Sofas', 'Beds', 'Wardrobes', 'Dining Tables'] },
-            { name: 'Computers', slug: 'electronics', subs: ['Laptops', 'Desktops', 'Monitors', 'Printers'] },
-            { name: 'Cameras', slug: 'cameras', subs: ['DSLRs', 'Mirrorless', 'Lenses', 'Action Cameras'] },
-            { name: 'Medical', slug: 'medical', subs: ['Hospital Beds', 'Wheelchairs', 'Oxygen Concentrators'] },
-            { name: 'Fitness', slug: 'fitness', subs: ['Treadmills', 'Ellipticals', 'Home Gyms', 'Dumbbells'] },
-            { name: 'Camping', slug: 'camping', subs: ['Tents', 'Sleeping Bags', 'Camping Stoves'] }
-          ].map((item) => {
-            const isActive = pathname?.includes(item.slug);
+          {categories.map((item) => {
+            const isActive = pathname?.includes(item.categories_id);
             return (
-              <div key={item.name} className="relative group">
+              <div key={item.categories_id} className="relative group">
                 <Link
-                  href={`/rent-category/${item.slug}`}
-                  className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 ${isActive
+                  href={`/rent-category/${item.categories_id}`}
+                  className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap ${isActive
                     ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
                     : 'hover:bg-upleex-purple hover:text-white'
                     }`}
                 >
-                  {item.name}
-                  <ChevronDown size={14} className={`ml-1 transition-opacity ${isActive ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'}`} />
+                  {item.categories_name}
+                  {item.subcategories.length > 0 && (
+                    <ChevronDown size={14} className={`ml-1 transition-opacity ${isActive ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'}`} />
+                  )}
                 </Link>
 
                 {/* Dropdown Menu */}
-                <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-lg rounded-r-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0">
-                  <div className="py-2">
-                    {item.subs.map((sub, idx) => (
-                      <Link
-                        key={idx}
-                        href={`/rent-category/${item.slug}?sub=${sub.toLowerCase().replace(' ', '-')}`}
-                        className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0"
-                      >
-                        {sub}
-                      </Link>
-                    ))}
+                {item.subcategories.length > 0 && (
+                  <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-lg rounded-r-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0">
+                    <div className="py-2">
+                      {item.subcategories.map((sub) => (
+                        <Link
+                          key={sub.subcategory_id}
+                          href={`/rent-category/${item.categories_id}?sub=${sub.subcategory_id}`}
+                          className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0"
+                        >
+                          {sub.subcategory_name}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })}
-          {/* <Link href="/rent-category/all" className="ml-auto px-4 py-2 text-upleex-blue hover:text-upleex-purple transition-colors font-semibold flex items-center">
-            All Categories <ChevronDown size={14} className="ml-1 rotate-[-90deg]" />
-          </Link> */}
         </div>
       </div>
 
@@ -431,9 +434,9 @@ export const Navbar: React.FC = () => {
             <div className="pt-2 border-t border-gray-100">
               <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Categories</div>
               <div className="grid grid-cols-2 gap-2">
-                {['Appliances', 'Furniture', 'Computers', 'Cameras', 'Medical', 'Fitness'].map(item => (
-                  <Link key={item} href={`/rent-category/${item.toLowerCase()}`} className="text-sm text-slate-700 py-1 hover:text-upleex-blue" onClick={() => setIsMenuOpen(false)}>
-                    {item}
+                {categories.slice(0, 6).map(item => (
+                  <Link key={item.categories_id} href={`/rent-category/${item.categories_id}`} className="text-sm text-slate-700 py-1 hover:text-upleex-blue" onClick={() => setIsMenuOpen(false)}>
+                    {item.categories_name}
                   </Link>
                 ))}
               </div>

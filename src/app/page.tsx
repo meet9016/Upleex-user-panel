@@ -15,6 +15,7 @@ import { useEffect, useState, useRef } from 'react';
 import endPointApi from '@/utils/endPointApi';
 import { api } from '@/utils/axiosInstance';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
+import { categoryService, Category as ServiceCategory } from '@/services/categoryService';
 
 interface Category {
   id: number;
@@ -109,8 +110,8 @@ export default function Home() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await api.post(endPointApi.home, {});
-        setCategoryList(res.data.data);
+        const data = await categoryService.getHomeData();
+        setCategoryList(data.data);
       } catch (err) {
         console.error("Error fetching categories", err);
       }
