@@ -15,18 +15,12 @@ import { useEffect, useState, useRef } from 'react';
 import endPointApi from '@/utils/endPointApi';
 import { api } from '@/utils/axiosInstance';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
-import { categoryService, Category as ServiceCategory } from '@/services/categoryService';
-
-interface Category {
-  id: number;
-  categories_name: string;
-  image: string;
-  categories_id: string;
-  product_count?: number;
-}
+import { categoryService, Category as ServiceCategory, HomeResponse } from '@/services/categoryService';
 
 interface CategoryResponse {
-  all_categories: Category[];
+  slider: any[];
+  banner: any[];
+  all_categories: ServiceCategory[];
 }
 
 // Add floating particles component
@@ -216,26 +210,15 @@ export default function Home() {
             </motion.div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-8">
-              {categoryList?.all_categories?.map((cat, index) => (
-                <motion.div
-                  key={`${cat.id}-${index}`}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  // whileHover={{ y: -8, scale: 1.05 }}
-                  onMouseEnter={() => setActiveCategory(cat.id)}
-                  onMouseLeave={() => setActiveCategory(null)}
-                >
-                  <CategoryCard
-                    {...cat}
-                    className={`transform transition-all duration-300 ${activeCategory === cat.id
-                      ? 'shadow-2xl shadow-purple-500/20 ring-2 ring-purple-500/20'
-                      : 'hover:shadow-xl hover:shadow-blue-500/10'
-                      }`}
-                  />
-                </motion.div>
-              ))}
+              {categoryList?.all_categories?.slice(0, 10).map((category, index) => (
+                 <CategoryCard
+                   key={category.categories_id}
+                   categories_id={category.categories_id}
+                   categories_name={category.categories_name}
+                   image={category.image}
+                   product_count={Number(category.product_count)}
+                 />
+               ))}
             </div>
 
             <motion.div
