@@ -2,9 +2,13 @@ import React from 'react';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { BLOGS } from '@/data/blogData';
+import { Blog } from '@/services/blogService';
 
-export const LatestBlogs = () => {
+interface LatestBlogsProps {
+  blogs: Blog[];
+}
+
+export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
   return (
     <section className="py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,7 +22,7 @@ export const LatestBlogs = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {BLOGS.map((blog) => (
+          {blogs.slice(0, 4).map((blog) => (
             <Link key={blog.id} href={`/blog/${blog.id}`} className="group cursor-pointer block">
               <div className="relative overflow-hidden rounded-2xl mb-4 shadow-lg">
                 <div className="aspect-square bg-gray-100">
@@ -31,7 +35,7 @@ export const LatestBlogs = () => {
                 {/* Overlay Text similar to screenshot */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-6">
                    <p className="text-white font-semibold text-sm">
-                      Why Is <span className="font-bold text-gradient-primary">{blog.category}</span> on Rent the Best Option
+                      {blog.title}
                    </p>
                 </div>
               </div>

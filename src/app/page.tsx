@@ -16,6 +16,8 @@ import endPointApi from '@/utils/endPointApi';
 import { api } from '@/utils/axiosInstance';
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import { categoryService, Category as ServiceCategory, HomeResponse } from '@/services/categoryService';
+import { blogService, Blog } from '@/services/blogService';
+import { faqService, FAQ } from '@/services/faqService';
 
 interface CategoryResponse {
   slider: any[];
@@ -90,6 +92,8 @@ const AnimatedCounter = ({ end, duration = 2 }: { end: number; duration?: number
 
 export default function Home() {
   const [categoryList, setCategoryList] = useState<CategoryResponse | null>(null);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [isHovered, setIsHovered] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const containerRef = useRef(null);
@@ -102,15 +106,21 @@ export default function Home() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const data = await categoryService.getHomeData();
-        setCategoryList(data.data);
+        const [categoryData, blogData, faqData] = await Promise.all([
+          categoryService.getHomeData(),
+          blogService.getBlogList(),
+          faqService.getFAQList()
+        ]);
+        setCategoryList(categoryData.data);
+        setBlogs(blogData);
+        setFaqs(faqData);
       } catch (err) {
-        console.error("Error fetching categories", err);
+        console.error("Error fetching data", err);
       }
     };
-    fetchCategories();
+    fetchData();
   }, []);
 
   return (
@@ -419,8 +429,8 @@ export default function Home() {
           </div>
         </section>
 
-        <LatestBlogs />
-        <FAQSection />
+        <LatestBlogs blogs={blogs} />
+        <FAQSection data={faqs} />
         <CorporateCustomers />
 
         {/* CTA Section */}
