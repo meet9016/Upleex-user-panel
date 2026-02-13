@@ -26,9 +26,15 @@ export interface HomeResponse {
 }
 
 class CategoryService {
+    private homeData: HomeResponse | null = null;
+
     async getHomeData(): Promise<HomeResponse> {
+        if (this.homeData) {
+            return this.homeData;
+        }
         try {
             const res = await api.post(endPointApi.home, {});
+            this.homeData = res.data;
             return res.data;
         } catch (error) {
             console.error('Error fetching home data:', error);

@@ -18,6 +18,7 @@ import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'fra
 import { categoryService, Category as ServiceCategory, HomeResponse } from '@/services/categoryService';
 import { blogService, Blog } from '@/services/blogService';
 import { faqService, FAQ } from '@/services/faqService';
+import { useRouter } from 'next/navigation';
 
 interface CategoryResponse {
   slider: any[];
@@ -55,9 +56,12 @@ const FloatingParticles = () => {
 };
 
 export default function Home() {
+  const router = useRouter();
+
   const [categoryList, setCategoryList] = useState<CategoryResponse | null>(null);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [faqs, setFaqs] = useState<FAQ[]>([]);
+
   const [isHovered, setIsHovered] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const containerRef = useRef(null);
@@ -204,12 +208,14 @@ export default function Home() {
               <Button
                 variant="outline"
                 className="rounded-full px-8 py-6 border-2 group"
+               onClick={() => router.push('/categories')}
               >
                 <span className="flex items-center gap-2">
                   View All Categories
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
-              </Button>
+              </Button>     
+
             </motion.div>
           </div>
         </section>

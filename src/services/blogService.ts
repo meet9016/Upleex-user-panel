@@ -27,10 +27,17 @@ export interface SingleBlogResponse {
 }
 
 class BlogService {
+    private blogList: Blog[] | null = null;
+
     async getBlogList(): Promise<Blog[]> {
+        if (this.blogList) {
+            return this.blogList;
+        }
         try {
             const res = await api.post(endPointApi.blogList, {});
-            return res.data.data || [];
+            const data = res.data.data || [];
+            this.blogList = data;
+            return data;
         } catch (error) {
             console.error('Error fetching blog list:', error);
             return [];

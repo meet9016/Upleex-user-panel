@@ -9,10 +9,12 @@ import {
   Search, 
   MapPin, 
   ChevronDown, 
+  ChevronRight,
   Smartphone, 
   ShoppingCart,
   LogOut
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { DownloadAppPopup } from '../features/DownloadAppPopup';
 import { Button } from '@/components/ui/Button';
@@ -337,43 +339,63 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Categories Bar - Secondary Navigation with Dropdowns */}
-        <div className="hidden lg:flex items-center gap-1 py-1 text-sm font-medium text-slate-600 border-t border-gray-100 bg-gray-50/50 px-4">
-          {categories.map((item) => {
-            const isActive = pathname?.includes(item.categories_id);
-            return (
-              <div key={item.categories_id} className="relative group">
-                <Link
-                  href={`/rent-category/${item.categories_id}`}
-                  className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap ${isActive
-                    ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
-                    : 'hover:bg-upleex-purple hover:text-white'
-                    }`}
-                >
-                  {item.categories_name}
-                  {item.subcategories.length > 0 && (
-                    <ChevronDown size={14} className={`ml-1 transition-opacity ${isActive ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'}`} />
-                  )}
-                </Link>
+        <div className="hidden lg:flex items-center justify-between gap-1 py-1  text-sm font-medium text-slate-600 border-t border-gray-100 bg-gray-50/50">
+          <div className="flex items-center gap-1">
+            {categories.slice(0, 7).map((item) => {
+              const isActive = pathname === `/rent-category/${item.categories_id}`;
+              return (
+                <div key={item.categories_id} className="relative group">
+                  <Link
+                    href={`/rent-category/${item.categories_id}`}
+                    className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap ${isActive
+                      ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
+                      : 'hover:bg-upleex-purple hover:text-white'
+                      }`}
+                  >
+                    {item.categories_name}
+                    {item.subcategories.length > 0 && (
+                      <ChevronDown size={14} className={`ml-1 transition-opacity ${isActive ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'}`} />
+                    )}
+                  </Link>
 
-                {/* Dropdown Menu */}
-                {item.subcategories.length > 0 && (
-                  <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-lg rounded-r-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0">
-                    <div className="py-2">
-                      {item.subcategories.map((sub) => (
-                        <Link
-                          key={sub.subcategory_id}
-                          href={`/rent-category/${item.categories_id}?sub=${sub.subcategory_id}`}
-                          className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0"
-                        >
-                          {sub.subcategory_name}
-                        </Link>
-                      ))}
+                  {/* Dropdown Menu */}
+                  {item.subcategories.length > 0 && (
+                    <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-lg rounded-r-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0">
+                      <div className="py-2">
+                        {item.subcategories.map((sub) => (
+                          <Link
+                            key={sub.subcategory_id}
+                            href={`/rent-category/${item.categories_id}?sub=${sub.subcategory_id}`}
+                            className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0"
+                          >
+                            {sub.subcategory_name}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* View All Categories Button */}
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            className="flex items-center"
+          >
+            <Button 
+              variant="outline" 
+              className={`rounded-full px-5 py-2 border-2 group h-auto text-xs font-bold transition-all duration-200 ${pathname === '/categories' ? 'bg-upleex-purple text-white border-upleex-purple' : 'text-upleex-purple border-upleex-purple hover:bg-upleex-purple hover:text-white'}`}
+              onClick={() => router.push('/categories')}
+            >
+              <span className="flex items-center gap-2">
+                View All Categories
+                <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+              </span>
+            </Button>
+          </motion.div>
         </div>
       </div>
 
@@ -434,11 +456,19 @@ export const Navbar: React.FC = () => {
             <div className="pt-2 border-t border-gray-100">
               <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Categories</div>
               <div className="grid grid-cols-2 gap-2">
-                {categories.slice(0, 6).map(item => (
-                  <Link key={item.categories_id} href={`/rent-category/${item.categories_id}`} className="text-sm text-slate-700 py-1 hover:text-upleex-blue" onClick={() => setIsMenuOpen(false)}>
-                    {item.categories_name}
-                  </Link>
-                ))}
+                {categories.slice(0, 6).map(item => {
+                  const isActive = pathname === `/rent-category/${item.categories_id}`;
+                  return (
+                    <Link 
+                      key={item.categories_id} 
+                      href={`/rent-category/${item.categories_id}`} 
+                      className={`text-sm py-1 transition-colors ${isActive ? 'text-upleex-purple font-bold' : 'text-slate-700 hover:text-upleex-blue'}`} 
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      {item.categories_name}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>

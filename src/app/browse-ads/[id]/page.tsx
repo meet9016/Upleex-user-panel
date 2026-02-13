@@ -18,6 +18,7 @@ import {
   ChevronRight,
   CheckCircle,
   ImageOff,
+  ShoppingCart,
 } from "lucide-react";
 import endPointApi from "@/utils/endPointApi";
 import { api } from "@/utils/axiosInstance";
@@ -184,6 +185,9 @@ export default function ProductDetailsPage() {
     setMinDate(formattedDate);
   }, []);
 
+  const listingType = (productDetails?.product_type_name || productDetails?.product_listing_type_name)?.toLowerCase();
+  const isSell = listingType === "sell";
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
@@ -237,41 +241,43 @@ export default function ProductDetailsPage() {
                   </div>
                 )}
 
-                {/* Trust Badges */}
-                <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-200">
-                  <div className="flex flex-col items-center text-center gap-1.5">
-                    <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
-                      <Shield size={16} strokeWidth={2.5} />
+                {/* Trust Badges - Show on left only for Rent */}
+                {!isSell && (
+                  <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-200">
+                    <div className="flex flex-col items-center text-center gap-1.5">
+                      <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
+                        <Shield size={16} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                        KYC<br/>Verified
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                      KYC<br/>Verified
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-1.5">
-                    <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
-                      <Shield size={16} strokeWidth={2.5} />
+                    <div className="flex flex-col items-center text-center gap-1.5">
+                      <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                        <Shield size={16} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                        Secure<br/>Payment
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                      Secure<br/>Payment
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-1.5">
-                    <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
-                      <Truck size={16} strokeWidth={2.5} />
+                    <div className="flex flex-col items-center text-center gap-1.5">
+                      <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
+                        <Truck size={16} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                        Verified<br/>Product
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                      Verified<br/>Product
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center text-center gap-1.5">
-                    <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
-                      <ArrowRight size={16} strokeWidth={2.5} />
+                    <div className="flex flex-col items-center text-center gap-1.5">
+                      <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
+                        <ArrowRight size={16} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                        100%<br/>Refund
+                      </span>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                      100%<br/>Refund
-                    </span>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
@@ -327,7 +333,7 @@ export default function ProductDetailsPage() {
                 </div> */}
 
                 {activeTab === "monthly" ? (
-                  <div className="">
+                  <div className={clsx(isSell && "hidden")}>
                     {productDetails?.month_arrr?.length > 0 ? (
                       <>
                         <div>
@@ -457,7 +463,7 @@ export default function ProductDetailsPage() {
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-5">
+                  <div className={clsx("space-y-5", isSell && "hidden")}>
                     {productDetails?.product_listing_type_name?.toLowerCase() ===
                     "daily" ? (
                       <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/40">
@@ -527,59 +533,155 @@ export default function ProductDetailsPage() {
                   </div>
                 )}
 
+                {/* Sell Price Display */}
+                {isSell && (
+                  <div className="mb-6 p-6 border-2 border-blue-100 rounded-2xl bg-gradient-to-br from-blue-50/50 to-white shadow-sm relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700" />
+                    
+                    <div className="relative">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="w-1.5 h-4 bg-upleex-blue rounded-full" />
+                        <label className="text-xs font-bold text-upleex-blue uppercase tracking-wider block">
+                          Selling Price
+                        </label>
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <div className="text-4xl font-extrabold text-slate-900">
+                          ₹{Number(productDetails?.price || 0).toLocaleString()}
+                        </div>
+                        {productDetails?.cancel_price && (
+                          <div className="text-lg text-gray-400 line-through font-medium">
+                            ₹{Number(productDetails.cancel_price).toLocaleString()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+                        <CheckCircle size={12} className="text-green-500" />
+                        Inclusive of all taxes
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Quantity + Date */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4  pt-4">
-                  <div className="flex items-center justify-between bg-white border rounded-lg px-4 h-12 shadow-sm">
-                    <span className="font-medium text-gray-700">Quantity</span>
-                    <div className="flex items-center">
+                <div className={clsx(
+                  "grid gap-4 pt-4",
+                  isSell ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
+                )}>
+                  <div className={clsx(
+                    "flex items-center justify-between bg-white border rounded-xl px-4 shadow-sm transition-all hover:border-blue-200",
+                    isSell ? "h-14" : "h-12"
+                  )}>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-gray-900">Quantity</span>
+                      {isSell && <span className="text-[10px] text-gray-500">Select units</span>}
+                    </div>
+                    <div className="flex items-center bg-gray-50 rounded-lg p-1">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={quantity <= 1}
                       >
-                        <Minus size={16} />
+                        <Minus size={16} className="text-gray-600" />
                       </button>
-                      <span className="w-10 text-center font-bold text-lg">
+                      <span className="w-12 text-center font-extrabold text-lg text-slate-900">
                         {quantity}
                       </span>
                       <button
                         onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                        className="p-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={quantity >= 10}
                       >
-                        <Plus size={16} />
+                        <Plus size={16} className="text-gray-600" />
                       </button>
                     </div>
                   </div>
 
-                  <DatePicker
-                    label="Delivery Date"
-                    value={deliveryDate}
-                    onChange={setDeliveryDate}
-                    min={minDate}
-                  />
+                  {!isSell && (
+                    <DatePicker
+                      label="Delivery Date"
+                      value={deliveryDate}
+                      onChange={setDeliveryDate}
+                      min={minDate}
+                    />
+                  )}
                 </div>
 
                 {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-3 mt-4">
+                <div className={clsx(
+                  "flex flex-col sm:flex-row gap-4 mt-6",
+                  isSell && "items-stretch"
+                )}>
                   <Button
                     size="lg"
-                    className="bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white shadow-lg h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-3"
+                    className={clsx(
+                      "shadow-xl shadow-blue-500/20 h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
+                      isSell 
+                        ? "bg-upleex-blue hover:bg-blue-700 text-white border-none" 
+                        : "bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white"
+                    )}
                     onClick={handleGetQuoteClick}
                   >
-                    Get Quote →
+                    <span className="flex items-center justify-center gap-2">
+                      {isSell ? <ShoppingCart size="20" /> : null}
+                      {isSell ? 'Proceed to Buy' : 'Get Quote'}
+                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </span>
                   </Button>
 
                   <Button
                     size="lg"
                     variant="outline"
-                    className="h-14 border-2 border-gray-200 hover:border-gray-800 text-gray-700 hover:text-gray-900 font-bold flex items-center justify-center gap-2 w-full sm:flex-1 rounded-xl bg-white text-base px-3"
+                    className={clsx(
+                      "h-14 border-2 font-bold flex items-center justify-center gap-2 w-full sm:flex-1 rounded-xl bg-white text-base px-8 transition-all",
+                      isSell 
+                        ? "border-blue-100 text-blue-600 hover:border-upleex-blue hover:bg-blue-50" 
+                        : "border-gray-200 hover:border-gray-800 text-gray-700"
+                    )}
                     onClick={() => router.push('/cart')}
                   >
-                    <MapPin size={18} className="text-orange-600" />
-                    Enter City
+                    <MapPin size={18} className="text-blue-500" />
+                    Check Availability
                   </Button>
                 </div>
+
+                {/* Trust Badges - Show on right only for Sell */}
+                {isSell && (
+                  <div className="grid grid-cols-4 gap-3 mt-8 pt-6 border-t border-gray-100">
+                    <div className="flex flex-col items-center text-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
+                        <Shield size={18} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                        KYC<br/>Verified
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center text-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
+                        <Shield size={18} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                        Secure<br/>Payment
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center text-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
+                        <Truck size={18} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                        Verified<br/>Product
+                      </span>
+                    </div>
+                    <div className="flex flex-col items-center text-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
+                        <ArrowRight size={18} strokeWidth={2.5} />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                        100%<br/>Refund
+                      </span>
+                    </div>
+                  </div>
+                )}
 
 
               </div>
@@ -638,15 +740,16 @@ export default function ProductDetailsPage() {
                           {productDetails.product_details.map(
                             (spec: any, idx: number) => {
                               const label =
+                                spec.specification ||
                                 spec.label ||
                                 spec.key ||
                                 spec.name ||
                                 spec.title ||
                                 `Specification ${idx + 1}`;
                               const value =
+                                spec.detail ||
                                 spec.value ||
                                 spec.description ||
-                                spec.detail ||
                                 "N/A";
 
                               return (
