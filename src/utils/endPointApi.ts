@@ -16,6 +16,10 @@ export interface EndPointApi {
     blogList: string;
     singleBlog: string;
     faqList: string;
+
+    // Cart
+    webAddToCart: string;
+    webCartList: string;
 }
 
 // Define and export the API endpoint object
@@ -37,6 +41,10 @@ const endPointApi: EndPointApi = {
     blogList: 'blog-list',
     singleBlog: 'single-blog',
     faqList: 'faq-list',
+
+    // Cart
+    webAddToCart: 'web-add-to-cart',
+    webCartList: 'web-cart-list',
 };
 
 

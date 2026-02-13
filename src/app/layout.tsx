@@ -4,6 +4,10 @@ import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Toaster } from 'react-hot-toast';
+import { Suspense } from 'react';
+import ProgressBar from '@/components/ui/ProgressBar';
+import { CartProvider } from '@/context/CartContext';
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -19,10 +23,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
-        <Navbar />
-        {children}
-            <Toaster position="top-right" />
-        <Footer />
+        <CartProvider>
+          <Suspense fallback={null}>
+            <ProgressBar />
+          </Suspense>
+          <Navbar />
+          {children}
+          <Toaster position="top-right" />
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

@@ -11,7 +11,7 @@ export const api = apiAdminInstance;
 
 apiAdminInstance.interceptors.request.use(
   async config => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,8 +29,10 @@ apiAdminInstance.interceptors.response.use(
     const { response } = error;
 
     if (response.status === 401) {
-      localStorage.removeItem('auth_token');
-      window.location.href = '/auth/login';
+      localStorage.removeItem('token');
+      if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
+        window.location.href = '/auth/login';
+      }
     }
     return Promise.reject(error);
   }

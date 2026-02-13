@@ -27,6 +27,8 @@ import { AuthModal } from "@/components/features/AuthModal";
 import { QuoteModal } from "@/components/features/QuoteModal";
 import { Modal } from "@/components/ui/Modal";
 import { RelatedProducts } from "@/components/features/RelatedProducts";
+import { useCart } from "@/context/CartContext";
+import { toast } from "react-hot-toast";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -50,6 +52,8 @@ export default function ProductDetailsPage() {
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addToCart } = useCart();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -125,6 +129,17 @@ export default function ProductDetailsPage() {
       setIsAuthModalOpen(true);
     } else {
       setIsQuoteModalOpen(true);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      setIsAddingToCart(true);
+      await addToCart(id, quantity);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -612,6 +627,7 @@ export default function ProductDetailsPage() {
                   "flex flex-col sm:flex-row gap-4 mt-6",
                   isSell && "items-stretch"
                 )}>
+                  {!isSell && (
                   <Button
                     size="lg"
                     className={clsx(
@@ -628,6 +644,25 @@ export default function ProductDetailsPage() {
                       <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Button>
+                   )}
+
+                  {isSell && (
+                    <Button
+                      size="lg"
+                      className={clsx(
+                        "shadow-xl shadow-blue-500/20 h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
+                        "bg-upleex-blue hover:bg-blue-700 text-white border-none"
+                      )}
+                      onClick={handleAddToCart}
+                      disabled={isAddingToCart}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <ShoppingCart size="20" />
+                        {isAddingToCart ? 'Adding...' : 'Add to Cart'}
+                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </Button>
+                  )}
 
                   <Button
                     size="lg"
@@ -638,7 +673,7 @@ export default function ProductDetailsPage() {
                         ? "border-blue-100 text-blue-600 hover:border-upleex-blue hover:bg-blue-50" 
                         : "border-gray-200 hover:border-gray-800 text-gray-700"
                     )}
-                    onClick={() => router.push('/cart')}
+                    // onClick={() => router.push('/cart')}
                   >
                     <MapPin size={18} className="text-blue-500" />
                     Check Availability

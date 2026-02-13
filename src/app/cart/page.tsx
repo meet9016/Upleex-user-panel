@@ -16,9 +16,14 @@ import {
   Check,
   CreditCard,
   MessageCircle,
+  Loader2,
+  Minus,
+  Plus,
 } from 'lucide-react';
 import { BackButton } from '@/components/ui/BackButton';
 import { motion, AnimatePresence, LayoutGroup, Variants } from 'framer-motion';
+import { useCart } from '@/context/CartContext';
+import Image from 'next/image';
 
 // ────────────────────────────────────────────────
 // Helper Components
@@ -39,19 +44,6 @@ const AnimatedPrice = ({ value }: { value: number }) => (
 // Types
 // ────────────────────────────────────────────────
 type PaymentPlan = 'monthly' | 'full' | 'upfront';
-
-interface CartItem {
-  id: string;
-  name: string;
-  image: string;
-  monthlyRent: number;
-  tenure: number;
-  quantity: number;
-  startDate: string;
-  deposit: number;
-  deliveryCharge: number;
-  installationCharge: number;
-}
 
 interface CartSummary {
   mode: string;
@@ -80,70 +72,34 @@ interface PlanOption {
 // ────────────────────────────────────────────────
 export default function CartPage() {
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan>('monthly');
-  // const [couponCode, setCouponCode] = useState('');
-
-  const cartItems: CartItem[] = [
-    {
-      id: '1',
-      name: '25 LTR Geyser',
-      image: '/Asset-32.webp',
-      monthlyRent: 900,
-      tenure: 12,
-      quantity: 1,
-      startDate: '09 Feb 2026',
-      deposit: 1000,
-      deliveryCharge: 500,
-      installationCharge: 300,
-    },
-  ];
+  const { cartItems, loading, totalAmount, updateQuantity, removeFromCart } = useCart();
 
   const isEmpty = cartItems.length === 0;
-  const item = cartItems[0];
 
   // ────────────────────────────────────────────────
   // Summary Calculation
   // ────────────────────────────────────────────────
   const summary: CartSummary | null = (() => {
-    if (!item) return null;
+    if (isEmpty) return null;
 
-    const rentPerMonth = item.monthlyRent * item.quantity;
-    const totalRent = rentPerMonth * item.tenure;
+    const totalRent = totalAmount;
     const taxRate = 0.18;
+    const tax = Math.round(totalRent * taxRate);
+    const delivery = 0; // Dynamic delivery if needed
+    const installation = 0;
+    const deposit = 0;
 
-    const delivery = item.deliveryCharge;
-    const installation = item.installationCharge;
-
-    if (selectedPlan === 'monthly') {
-      const tax = Math.round(rentPerMonth * taxRate);
-      const dueToday = rentPerMonth + tax + delivery + installation + item.deposit;
-
-      return {
-        mode: 'Monthly Rental + Deposit',
-        rentLabel: 'Monthly Rent',
-        rentAmount: rentPerMonth,
-        tax,
-        delivery,
-        installation,
-        deposit: item.deposit,
-        dueToday,
-        totalLabel: 'Due Today',
-      };
-    } else {
-      const tax = Math.round(totalRent * taxRate);
-      const total = totalRent + tax + delivery + installation;
-
-      return {
-        mode: selectedPlan === 'full' ? 'No Cost EMI' : 'Pay Upfront (Save More)',
-        rentLabel: 'Total Rent',
-        rentAmount: totalRent,
-        tax,
-        delivery,
-        installation,
-        deposit: 0,
-        dueToday: total,
-        totalLabel: 'Total Payable',
-      };
-    }
+    return {
+      mode: 'Order Summary',
+      rentLabel: 'Subtotal',
+      rentAmount: totalRent,
+      tax,
+      delivery,
+      installation,
+      deposit,
+      dueToday: totalRent + tax + delivery + installation + deposit,
+      totalLabel: 'Total Payable',
+    };
   })();
 
   // ────────────────────────────────────────────────
@@ -294,11 +250,16 @@ export default function CartPage() {
                 </div>
 
                 <div className="p-6">
-                  {cartItems.map((item) => (
+                  {loading && cartItems.length === 0 ? (
+                    <div className="flex justify-center py-10">
+                      <Loader2 className="animate-spin text-blue-600" size={32} />
+                    </div>
+                  ) : (
+                  cartItems.map((item) => (
                     <motion.div 
-                      key={item.id} 
+                      key={item.cart_id} 
                       layout
-                      className="flex flex-col sm:flex-row gap-6 group"
+                      className="flex flex-col sm:flex-row gap-6 group mb-8 last:mb-0"
                     >
                       {/* Image */}
                       <motion.div 
@@ -306,10 +267,10 @@ export default function CartPage() {
                         className="w-full sm:w-44 h-44 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-4 overflow-hidden relative"
                       >
                         <motion.img
-                          src={item.image}
+                          src={item.image.trim().startsWith('http') ? item.image.trim() : `https://upleex.2min.cloud/${item.image.trim()}`}
                           alt={item.name}
-                          whileHover={{ scale: 1.1, rotate: 2 }}
-                          transition={{ type: "spring", stiffness: 200 }}
+                          width={200}
+                          height={200}
                           className="w-full h-full object-contain"
                         />
                       </motion.div>
@@ -329,34 +290,34 @@ export default function CartPage() {
 
                           <div className="text-right">
                             <div className="text-2xl font-bold text-blue-700">
-                              ₹{item.monthlyRent.toLocaleString('en-IN')}
+                              ₹{parseFloat(item.price).toLocaleString('en-IN')}
                             </div>
-                            <div className="text-sm text-slate-500">per month</div>
+                            <div className="text-sm text-slate-500">per unit</div>
                           </div>
                         </div>
 
-                        {/* Specs */}
-                        <div className="mt-5 grid grid-cols-3 gap-3 text-sm">
-                          {[
-                            { label: 'Start', value: item.startDate },
-                            { label: 'Tenure', value: `${item.tenure} mo` },
-                            { label: 'Qty', value: item.quantity },
-                          ].map((d) => (
-                            <motion.div
-                              whileHover={{ y: -2, backgroundColor: '#f8fafc' }}
-                              key={d.label}
-                              className="bg-slate-50 rounded-lg px-3 py-2.5 text-center border border-slate-100 cursor-default"
-                            >
-                              <div className="text-xs text-slate-500 uppercase tracking-wide font-medium">
-                                {d.label}
+                          {/* Quantity and Actions */}
+                          <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200">
+                              <button
+                                onClick={() => updateQuantity(item.id, Math.max(0, parseInt(item.qty) - 1))}
+                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-slate-600 disabled:opacity-50"
+                                disabled={parseInt(item.qty) <= 1}
+                              >
+                                <Minus size={16} />
+                              </button>
+                              <div className="w-10 text-center font-bold text-slate-900">
+                                {item.qty}
                               </div>
-                              <div className="font-medium text-slate-800 mt-0.5">{d.value}</div>
-                            </motion.div>
-                          ))}
-                        </div>
+                              <button
+                                onClick={() => updateQuantity(item.id, parseInt(item.qty) + 1)}
+                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-slate-600"
+                              >
+                                <Plus size={16} />
+                              </button>
+                            </div>
 
-                        {/* Actions */}
-                        <div className="mt-6 flex gap-3 justify-end">
+                            <div className="flex gap-3">
                           <motion.button 
                             whileHover={{ scale: 1.05, color: '#2563eb' }}
                             whileTap={{ scale: 0.95 }}
@@ -364,17 +325,38 @@ export default function CartPage() {
                           >
                             <Edit2 size={16} /> Edit
                           </motion.button>
-                          <motion.button 
-                            whileHover={{ scale: 1.05, color: '#dc2626' }}
-                            whileTap={{ scale: 0.95 }}
-                            className="flex items-center gap-1.5 text-sm text-red-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
-                          >
-                            <Trash2 size={16} /> Remove
-                          </motion.button>
+                              <motion.button 
+                                whileHover={{ scale: 1.05, color: '#dc2626' }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => removeFromCart(item.id)}
+                                className="flex items-center gap-1.5 text-sm text-red-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
+                              >
+                                <Trash2 size={16} /> Remove
+                              </motion.button>
+                            </div>
+                          </div>
+
+                          {/* Price Details */}
+                          <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                            {[
+                              { label: 'Subtotal', value: `₹${parseFloat(item.sub_total).toLocaleString('en-IN')}` },
+                              { label: 'Final Amount', value: `₹${parseFloat(item.final_amount).toLocaleString('en-IN')}` },
+                            ].map((d) => (
+                              <div
+                                key={d.label}
+                                className="bg-slate-50/50 rounded-lg px-3 py-2 border border-slate-100"
+                              >
+                                <div className="text-[10px] text-slate-500 uppercase tracking-wide font-bold">
+                                  {d.label}
+                                </div>
+                                <div className="font-bold text-slate-900 mt-0.5">{d.value}</div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    ))
+                  )}
                 </div>
               </motion.div>
 
