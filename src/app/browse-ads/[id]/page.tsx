@@ -133,6 +133,13 @@ export default function ProductDetailsPage() {
   };
 
   const handleAddToCart = async () => {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     try {
       setIsAddingToCart(true);
       await addToCart(id, quantity);
@@ -183,7 +190,12 @@ export default function ProductDetailsPage() {
 
   const handleLoginSuccess = () => {
     setIsAuthModalOpen(false);
-    setIsQuoteModalOpen(true);
+    // If it's a sell product, add to cart, otherwise open quote modal
+    if (isSell) {
+      handleAddToCart();
+    } else {
+      setIsQuoteModalOpen(true);
+    }
   };
 
   const [minDate, setMinDate] = useState("");

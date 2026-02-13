@@ -77,6 +77,7 @@ const LoginPage = () => {
         );
 
         toast.success(result.message || 'Login successful');
+        window.dispatchEvent(new Event('storage'));
         router.push('/');
       } else {
         toast.error(result?.message || 'Login failed');
