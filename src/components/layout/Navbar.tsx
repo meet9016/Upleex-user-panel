@@ -317,11 +317,9 @@ export const Navbar: React.FC = () => {
 
             <Link href="/cart" className="relative group">
               <ShoppingCart size={24} className="text-slate-700 group-hover:text-upleex-blue transition-colors" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                  {cartCount}
-                </span>
-              )}
+              <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                {cartCount || 0}
+              </span>
             </Link>
 
           </div>
@@ -330,11 +328,9 @@ export const Navbar: React.FC = () => {
           <div className="lg:hidden flex items-center gap-4">
             <Link href="/cart" className="relative">
               <ShoppingCart size={24} className="text-slate-700" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                  {cartCount}
-                </span>
-              )}
+              <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                {cartCount || 0}
+              </span>
             </Link>
             <button
               onClick={toggleMenu}

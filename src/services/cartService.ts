@@ -50,6 +50,19 @@ class CartService {
             throw error;
         }
     }
+
+    async removeFromCart(cartId: string): Promise<AddToCartResponse> {
+        try {
+            const formData = new FormData();
+            formData.append('cart_id', cartId);
+
+            const res = await api.post(endPointApi.webRemoveCart, formData);
+            return res.data;
+        } catch (error) {
+            console.error('Error removing from cart:', error);
+            throw error;
+        }
+    }
 }
 
 export const cartService = new CartService();

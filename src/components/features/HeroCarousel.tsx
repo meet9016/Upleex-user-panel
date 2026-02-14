@@ -52,10 +52,10 @@ export const HeroCarousel = () => {
   // Auto-scroll
   useEffect(() => {
     const interval = setInterval(() => {
-      handleNext();
+      setActiveIndex((prev) => (prev + 1) % BANNERS.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [activeIndex]);
+  }, []);
 
   const handleNext = () => {
     setActiveIndex((prev) => (prev + 1) % BANNERS.length);

@@ -165,7 +165,7 @@ export default function CartPage() {
         </div>
 
         {/* Progress Bar */}
-        <motion.div variants={itemVariants} className="mb-10">
+        {/* <motion.div variants={itemVariants} className="mb-10">
           <div className="flex items-center justify-center gap-4 md:gap-12 max-w-md mx-auto">
             {[
               { label: 'Cart', active: true },
@@ -209,7 +209,7 @@ export default function CartPage() {
               </React.Fragment>
             ))}
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {isEmpty ? (
           <motion.div variants={itemVariants} className="text-center py-24">
@@ -318,17 +318,17 @@ export default function CartPage() {
                             </div>
 
                             <div className="flex gap-3">
-                          <motion.button 
+                          {/* <motion.button 
                             whileHover={{ scale: 1.05, color: '#2563eb' }}
                             whileTap={{ scale: 0.95 }}
                             className="flex items-center gap-1.5 text-sm text-slate-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-blue-50"
                           >
                             <Edit2 size={16} /> Edit
-                          </motion.button>
+                          </motion.button> */}
                               <motion.button 
                                 whileHover={{ scale: 1.05, color: '#dc2626' }}
                                 whileTap={{ scale: 0.95 }}
-                                onClick={() => removeFromCart(item.id)}
+                                onClick={() => removeFromCart(item.cart_id)}
                                 className="flex items-center gap-1.5 text-sm text-red-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
                               >
                                 <Trash2 size={16} /> Remove

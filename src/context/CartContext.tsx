@@ -10,7 +10,7 @@ interface CartContextType {
     loading: boolean;
     addToCart: (productId: string, qty: number) => Promise<void>;
     updateQuantity: (productId: string, qty: number) => Promise<void>;
-    removeFromCart: (productId: string) => Promise<void>;
+    removeFromCart: (cartId: string) => Promise<void>;
     refreshCart: () => Promise<void>;
     totalAmount: number;
 }
@@ -64,9 +64,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    const removeFromCart = async (productId: string) => {
+    const removeFromCart = async (cartId: string) => {
         try {
-            const response = await cartService.addToCart(productId, 0);
+            const response = await cartService.removeFromCart(cartId);
             if (response.status === 200) {
                 toast.success('Item removed from cart');
                 await refreshCart();
@@ -83,6 +83,24 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         if (token) {
             refreshCart();
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        const onStorage = () => {
+            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+            if (!token) {
+                setCartItems([]);
+            } else {
+                refreshCart();
+            }
+        };
+        if (typeof window !== 'undefined') {
+            window.addEventListener('storage', onStorage);
+            return () => {
+                window.removeEventListener('storage', onStorage);
+            };
         }
     }, [refreshCart]);
 
