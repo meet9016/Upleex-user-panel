@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { blogService, Blog, SingleBlogData } from '@/services/blogService';
-import { Twitter, Linkedin, Share2, Search, Calendar, ChevronRight } from 'lucide-react';
+import { blogService, SingleBlogData } from '@/services/blogService';
+import { Twitter, Share2, Search, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
 
