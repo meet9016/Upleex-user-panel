@@ -80,7 +80,7 @@ export default function AboutUsPage() {
               </div>
               <div className="space-y-2">
                 <div>
-                  <h3 className="text-lg md:text-xl font-bold text-slate-900">Gunjan Mathur</h3>
+                  <h3 className="text-lg md:text-xl font-bold text-slate-900">Upleex</h3>
                   <p className="text-sm text-slate-600">Co-Founder at Upleex</p>
                 </div>
                 <ul className="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
@@ -91,7 +91,7 @@ export default function AboutUsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-md px-6 md:px-8 py-5 md:py-6 flex flex-col md:flex-row gap-4 md:gap-6 items-start">
+            {/* <div className="bg-white rounded-3xl shadow-md px-6 md:px-8 py-5 md:py-6 flex flex-col md:flex-row gap-4 md:gap-6 items-start">
               <div className="order-2 md:order-1 space-y-2 flex-1">
                 <div>
                   <h3 className="text-lg md:text-xl font-bold text-slate-900">Monali Mathur</h3>
@@ -123,7 +123,7 @@ export default function AboutUsPage() {
                   <li>Focused on sustainable growth and value creation for stakeholders.</li>
                 </ul>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
       </div>

@@ -32,8 +32,9 @@ export default function ContactUsPage() {
         backgroundPosition: 'center',
       }}
     >
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[3fr,2.2fr] gap-6 lg:gap-8">
-        <div className="bg-white/95 rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 backdrop-blur-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.35)]">
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[3fr,2.2fr] gap-6 lg:gap-8 items-stretch">
+        {/* Left Form Section */}
+        <div className="bg-white/95 rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 backdrop-blur-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.35)] h-full flex flex-col">
           <div className="mb-6 md:mb-8">
             <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide text-upleex-dark uppercase">
               Contact Us
@@ -44,69 +45,61 @@ export default function ContactUsPage() {
             </p>
           </div>
 
-          <form className="space-y-4 md:space-y-5" onSubmit={handleSubmit}>
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Full Name</label>
-                <input
-                  type="text"
+          <form className="space-y-4 md:space-y-5 flex-1" onSubmit={handleSubmit}>
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-700">Full Name</label>
+              <input
+                type="text"
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple bg-gray-50 transition-shadow"
                 placeholder="Enter your full name"
               />
-              </div>
+            </div>
 
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Email</label>
-                <input
-                  type="email"
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-700">Email</label>
+              <input
+                type="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple bg-gray-50 transition-shadow"
                 placeholder="you@example.com"
               />
-              </div>
+            </div>
 
-            <div className="grid grid-cols-[110px,1fr] gap-3">
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Dial Code</label>
-                <select
-                  name="dialCode"
-                  value={form.dialCode}
-                  onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple"
-                >
-                  <option value="+91">+91</option>
-                  {/* <option value="+1">+1</option>
-                  <option value="+971">+971</option> */}
-                </select>
+            {/* Combined Mobile Number Field - Updated as per screenshot */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-700">Mobile Number</label>
+              <div className="flex items-center">
+                <div className="flex items-center bg-gray-50 border border-gray-200 rounded-l-lg px-3 py-2.5 text-sm text-gray-600">
+                  <span>{form.dialCode}</span>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Mobile No</label>
-                  <input
-                    type="tel"
+                <input
+                  type="tel"
                   name="mobile"
                   value={form.mobile}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple bg-gray-50"
+                  className="flex-1 rounded-r-lg border border-l-0 border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple bg-gray-50"
                   placeholder="9876543210"
                 />
-                </div>
+                <input type="hidden" name="dialCode" value={form.dialCode} />
               </div>
+            </div>
 
-              <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Message</label>
-                <textarea
-                  rows={4}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-700">Message</label>
+              <textarea
+                rows={4}
                 name="message"
                 value={form.message}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple bg-gray-50"
                 placeholder="Write your message here..."
               />
-              </div>
+            </div>
 
             <Button
               type="submit"
@@ -118,7 +111,8 @@ export default function ContactUsPage() {
           </form>
         </div>
 
-        <div className="bg-gradient-to-br from-upleex-purple to-upleex-blue text-white rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 flex flex-col justify-between transform transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.45)]">
+        {/* Right Contact Info Section */}
+        <div className="bg-gradient-to-br from-upleex-purple to-upleex-blue text-white rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 flex flex-col justify-between transform transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.45)] h-full">
           <div>
             <h2 className="text-lg md:text-xl font-semibold tracking-wide">Get In Touch With Us</h2>
             <p className="mt-3 text-xs md:text-sm text-white/85 leading-relaxed">

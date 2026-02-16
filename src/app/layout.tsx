@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { ScrollToTop } from '@/components/layout/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
 import { Suspense } from 'react';
 import ProgressBar from '@/components/ui/ProgressBar';
@@ -28,6 +29,7 @@ export default function RootLayout({
             <ProgressBar />
           </Suspense>
           <Navbar />
+          <ScrollToTop />
           {children}
           <Toaster position="top-right" />
           <Footer />
