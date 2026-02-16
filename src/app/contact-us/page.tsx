@@ -23,16 +23,16 @@ export default function ContactUsPage() {
   };
 
   return (
-    <div
-      className="min-h-[80vh] flex items-center justify-center px-4 py-10 bg-slate-900/80"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600&auto=format&fit=crop')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-[3fr,2.2fr] gap-6 lg:gap-8 items-stretch">
+      <div
+    className="min-h-[80vh] flex items-center justify-center px-4 py-10 bg-slate-900/80"
+    style={{
+      backgroundImage:
+        "url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600&auto=format&fit=crop')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }}
+  >
+    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
         {/* Left Form Section */}
         <div className="bg-white/95 rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 backdrop-blur-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.35)] h-full flex flex-col">
           <div className="mb-6 md:mb-8">
