@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 export const Loader = () => {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 backdrop-blur-md">
       <div className="relative flex flex-col items-center">
-        {/* Animated Logo or Icon */}
         <div className="relative w-20 h-20 mb-4">
           <motion.div
             className="absolute inset-0 border-4 border-upleex-blue/20 rounded-full"
@@ -34,14 +34,19 @@ export const Loader = () => {
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="w-10 h-10 bg-upleex-blue rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center"
+              className="w-10 h-10 rounded-xl shadow-lg shadow-blue-500/20 flex items-center justify-center bg-white"
             >
-              <span className="text-white font-bold text-xl">U</span>
+              <Image
+                src="/favicon.png"
+                alt="Upleex"
+                width={28}
+                height={28}
+                priority
+              />
             </motion.div>
           </div>
         </div>
 
-        {/* Loading Text */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}

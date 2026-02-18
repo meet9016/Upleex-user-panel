@@ -19,6 +19,7 @@ import {
   CheckCircle,
   ImageOff,
   ShoppingCart,
+  Store,
 } from "lucide-react";
 import endPointApi from "@/utils/endPointApi";
 import { api } from "@/utils/axiosInstance";
@@ -29,6 +30,13 @@ import { Modal } from "@/components/ui/Modal";
 import { RelatedProducts } from "@/components/features/RelatedProducts";
 import { useCart } from "@/context/CartContext";
 import { toast } from "react-hot-toast";
+
+const SELLER_INFO = {
+  name: "U.B ENTERPRISES",
+  rating: 4.1,
+  ratingsCount: 8777,
+  productsCount: 8,
+};
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -179,8 +187,6 @@ export default function ProductDetailsPage() {
         setIsQuoteModalOpen(false);
         setIsSuccessModalOpen(true);
       }
-      
-      console.log("res00.....", res.data);
     } catch (err) {
       console.error("Error fetching product details", err);
     } finally {
@@ -269,7 +275,7 @@ export default function ProductDetailsPage() {
                 )}
 
                 {/* Trust Badges - Show on left only for Rent */}
-                {!isSell && (
+                {/* {!isSell && ( */}
                   <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-200">
                     <div className="flex flex-col items-center text-center gap-1.5">
                       <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
@@ -304,7 +310,7 @@ export default function ProductDetailsPage() {
                       </span>
                     </div>
                   </div>
-                )}
+                {/* )} */}
               </div>
             </div>
 
@@ -635,28 +641,30 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* CTAs */}
-                <div className={clsx(
-                  "flex flex-col sm:flex-row gap-4 mt-6",
-                  isSell && "items-stretch"
-                )}>
+                <div
+                  className={clsx(
+                    "flex flex-col sm:flex-row gap-4 mt-6",
+                    isSell && "items-stretch"
+                  )}
+                >
                   {!isSell && (
-                  <Button
-                    size="lg"
-                    className={clsx(
-                      "shadow-xl shadow-blue-500/20 h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
-                      isSell 
-                        ? "bg-upleex-blue hover:bg-blue-700 text-white border-none" 
-                        : "bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white"
-                    )}
-                    onClick={handleGetQuoteClick}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      {isSell ? <ShoppingCart size="20" /> : null}
-                      {isSell ? 'Proceed to Buy' : 'Get Quote'}
-                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </Button>
-                   )}
+                    <Button
+                      size="lg"
+                      className={clsx(
+                        " h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
+                        "bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white"
+                      )}
+                      onClick={handleGetQuoteClick}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        Get Quote
+                        <ArrowRight
+                          size={18}
+                          className="group-hover:translate-x-1 transition-transform"
+                        />
+                      </span>
+                    </Button>
+                  )}
 
                   {isSell && (
                     <Button
@@ -669,9 +677,12 @@ export default function ProductDetailsPage() {
                       disabled={isAddingToCart}
                     >
                       <span className="flex items-center justify-center gap-2">
-                        <ShoppingCart size="20" />
-                        {isAddingToCart ? 'Adding...' : 'Add to Cart'}
-                        <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                        <ShoppingCart size={20} />
+                        {isAddingToCart ? "Adding..." : "Add to Cart"}
+                        <ArrowRight
+                          size={18}
+                          className="group-hover:translate-x-1 transition-transform"
+                        />
                       </span>
                     </Button>
                   )}
@@ -681,8 +692,8 @@ export default function ProductDetailsPage() {
                     variant="outline"
                     className={clsx(
                       "h-14 border-2 font-bold flex items-center justify-center gap-2 w-full sm:flex-1 rounded-xl bg-white text-base px-8 transition-all",
-                      isSell 
-                        ? "border-blue-100 text-blue-600 hover:border-upleex-blue hover:bg-blue-50" 
+                      isSell
+                        ? "border-blue-100 text-blue-600 hover:border-upleex-blue hover:bg-blue-50"
                         : "border-gray-200 hover:border-gray-800 text-gray-700"
                     )}
                     // onClick={() => router.push('/cart')}
@@ -692,8 +703,57 @@ export default function ProductDetailsPage() {
                   </Button>
                 </div>
 
+                {/* {isSell && ( */}
+                  <div className="mt-4">
+                    <div className="bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
+                          <Store size={22} className="text-upleex-blue" />
+                        </div>
+                        <div>
+                          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.12em]">
+                            Sold By
+                          </div>
+                          <div className="text-sm font-bold text-slate-900">
+                            {SELLER_INFO.name}
+                          </div>
+                          <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
+                            <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold">
+                              <span className="mr-0.5">
+                                {SELLER_INFO.rating.toFixed(1)}
+                              </span>
+                              <Star
+                                size={11}
+                                className="text-blue-600 fill-blue-600"
+                              />
+                            </div>
+                            <span>
+                              {SELLER_INFO.ratingsCount.toLocaleString()} Ratings
+                            </span>
+                            
+                            <span className="w-1 h-1 rounded-full bg-gray-300" />
+                            <span>
+                              <span className="font-semibold">
+                                {SELLER_INFO.productsCount}
+                              </span>{" "}
+                              Products
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        className="h-9 px-4 rounded-full border-upleex-purple text-upleex-purple text-xs font-semibold whitespace-nowrap"
+                        onClick={() => router.push("/seller")}
+                      >
+                        View Shop
+                      </Button>
+                    </div>
+                  </div>
+                {/* )} */}
+
                 {/* Trust Badges - Show on right only for Sell */}
-                {isSell && (
+                {/* {isSell && (
                   <div className="grid grid-cols-4 gap-3 mt-8 pt-6 border-t border-gray-100">
                     <div className="flex flex-col items-center text-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
@@ -728,7 +788,7 @@ export default function ProductDetailsPage() {
                       </span>
                     </div>
                   </div>
-                )}
+                )} */}
 
 
               </div>
@@ -840,7 +900,6 @@ export default function ProductDetailsPage() {
           </div>
         </div>
 
-        {/* Related Products Section */}
         <RelatedProducts />
       </div>
 

@@ -83,7 +83,6 @@ const LoginPage = () => {
       );
 
       const result = res.data;
-      console.log("🚀 ~ handleVerifyOtp ~ result:", result)
 
       if (result?.status === 200 || result?.success === true) {
         localStorage.setItem('token', result.data.token);
