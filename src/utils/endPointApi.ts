@@ -8,6 +8,7 @@ export interface EndPointApi {
     webSubCategoryList: string;
     webCategoryProductList: string;
     webSingleProductList: string;
+    webVendorProductList: string;
 
     //Product details
     webGetQuote: string;
@@ -34,6 +35,7 @@ const endPointApi: EndPointApi = {
     webSubCategoryList: 'web-sub-category-list',
     webCategoryProductList: 'web-category-product-list',
     webSingleProductList: 'web-single-product-list',
+    webVendorProductList: 'web-vendor-product-list',
 
     //Product details
     webGetQuote: 'web-get-quote',

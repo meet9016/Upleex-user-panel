@@ -31,13 +31,6 @@ import { RelatedProducts } from "@/components/features/RelatedProducts";
 import { useCart } from "@/context/CartContext";
 import { toast } from "react-hot-toast";
 
-const SELLER_INFO = {
-  name: "U.B ENTERPRISES",
-  rating: 4.1,
-  ratingsCount: 8777,
-  productsCount: 8,
-};
-
 export default function ProductDetailsPage() {
   const params = useParams();
   const router = useRouter();
@@ -715,36 +708,31 @@ export default function ProductDetailsPage() {
                             Sold By
                           </div>
                           <div className="text-sm font-bold text-slate-900">
-                            {SELLER_INFO.name}
+                            {productDetails?.vendor_name || 'Vendor'}
                           </div>
                           <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
-                            <div className="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 font-semibold">
-                              <span className="mr-0.5">
-                                {SELLER_INFO.rating.toFixed(1)}
-                              </span>
-                              <Star
-                                size={11}
-                                className="text-blue-600 fill-blue-600"
-                              />
-                            </div>
-                            <span>
-                              {SELLER_INFO.ratingsCount.toLocaleString()} Ratings
-                            </span>
-                            
-                            <span className="w-1 h-1 rounded-full bg-gray-300" />
-                            <span>
-                              <span className="font-semibold">
-                                {SELLER_INFO.productsCount}
-                              </span>{" "}
-                              Products
-                            </span>
+                            {productDetails?.vendor_name && (
+                              <>
+                                <span className="w-1 h-1 rounded-full bg-gray-300" />
+                                
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
                       <Button
                         variant="outline"
                         className="h-9 px-4 rounded-full border-upleex-purple text-upleex-purple text-xs font-semibold whitespace-nowrap"
-                        onClick={() => router.push("/seller")}
+                        onClick={() => {
+                          if (!productDetails?.vendor_id) return;
+                          router.push(
+                            `/seller?vendor_id=${encodeURIComponent(
+                              productDetails.vendor_id
+                            )}&vendor_name=${encodeURIComponent(
+                              productDetails.vendor_name || ''
+                            )}`
+                          );
+                        }}
                       >
                         View Shop
                       </Button>

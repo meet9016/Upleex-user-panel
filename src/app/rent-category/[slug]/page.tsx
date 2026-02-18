@@ -181,7 +181,10 @@ function RentCategoryContent() {
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
+        <div className="mb-2">
+            
+            <BackButton/>
+        </div>
         {/* Controls Bar (Sort/Tenure) */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-1">
           
