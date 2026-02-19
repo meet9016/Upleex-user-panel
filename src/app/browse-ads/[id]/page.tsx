@@ -19,6 +19,7 @@ import {
   CheckCircle,
   ImageOff,
   ShoppingCart,
+  Store,
 } from "lucide-react";
 import endPointApi from "@/utils/endPointApi";
 import { api } from "@/utils/axiosInstance";
@@ -27,6 +28,8 @@ import { AuthModal } from "@/components/features/AuthModal";
 import { QuoteModal } from "@/components/features/QuoteModal";
 import { Modal } from "@/components/ui/Modal";
 import { RelatedProducts } from "@/components/features/RelatedProducts";
+import { useCart } from "@/context/CartContext";
+import { toast } from "react-hot-toast";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -50,6 +53,8 @@ export default function ProductDetailsPage() {
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addToCart } = useCart();
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -128,6 +133,24 @@ export default function ProductDetailsPage() {
     }
   };
 
+  const handleAddToCart = async () => {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    try {
+      setIsAddingToCart(true);
+      await addToCart(id, quantity);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
   const submitQuote = async (note: string) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -157,8 +180,6 @@ export default function ProductDetailsPage() {
         setIsQuoteModalOpen(false);
         setIsSuccessModalOpen(true);
       }
-      
-      console.log("res00.....", res.data);
     } catch (err) {
       console.error("Error fetching product details", err);
     } finally {
@@ -168,7 +189,12 @@ export default function ProductDetailsPage() {
 
   const handleLoginSuccess = () => {
     setIsAuthModalOpen(false);
-    setIsQuoteModalOpen(true);
+    // If it's a sell product, add to cart, otherwise open quote modal
+    if (isSell) {
+      handleAddToCart();
+    } else {
+      setIsQuoteModalOpen(true);
+    }
   };
 
   const [minDate, setMinDate] = useState("");
@@ -242,7 +268,7 @@ export default function ProductDetailsPage() {
                 )}
 
                 {/* Trust Badges - Show on left only for Rent */}
-                {!isSell && (
+                {/* {!isSell && ( */}
                   <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-200">
                     <div className="flex flex-col items-center text-center gap-1.5">
                       <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
@@ -277,7 +303,7 @@ export default function ProductDetailsPage() {
                       </span>
                     </div>
                   </div>
-                )}
+                {/* )} */}
               </div>
             </div>
 
@@ -608,45 +634,114 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* CTAs */}
-                <div className={clsx(
-                  "flex flex-col sm:flex-row gap-4 mt-6",
-                  isSell && "items-stretch"
-                )}>
-                  <Button
-                    size="lg"
-                    className={clsx(
-                      "shadow-xl shadow-blue-500/20 h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
-                      isSell 
-                        ? "bg-upleex-blue hover:bg-blue-700 text-white border-none" 
-                        : "bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white"
-                    )}
-                    onClick={handleGetQuoteClick}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      {isSell ? <ShoppingCart size="20" /> : null}
-                      {isSell ? 'Proceed to Buy' : 'Get Quote'}
-                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </Button>
+                <div
+                  className={clsx(
+                    "flex flex-col sm:flex-row gap-4 mt-6",
+                    isSell && "items-stretch"
+                  )}
+                >
+                  {!isSell && (
+                    <Button
+                      size="lg"
+                      className={clsx(
+                        " h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
+                        "bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white"
+                      )}
+                      onClick={handleGetQuoteClick}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        Get Quote
+                        <ArrowRight
+                          size={18}
+                          className="group-hover:translate-x-1 transition-transform"
+                        />
+                      </span>
+                    </Button>
+                  )}
+
+                  {isSell && (
+                    <Button
+                      size="lg"
+                      className={clsx(
+                        "shadow-xl shadow-blue-500/20 h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
+                        "bg-upleex-blue hover:bg-blue-700 text-white border-none"
+                      )}
+                      onClick={handleAddToCart}
+                      disabled={isAddingToCart}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <ShoppingCart size={20} />
+                        {isAddingToCart ? "Adding..." : "Add to Cart"}
+                        <ArrowRight
+                          size={18}
+                          className="group-hover:translate-x-1 transition-transform"
+                        />
+                      </span>
+                    </Button>
+                  )}
 
                   <Button
                     size="lg"
                     variant="outline"
                     className={clsx(
                       "h-14 border-2 font-bold flex items-center justify-center gap-2 w-full sm:flex-1 rounded-xl bg-white text-base px-8 transition-all",
-                      isSell 
-                        ? "border-blue-100 text-blue-600 hover:border-upleex-blue hover:bg-blue-50" 
+                      isSell
+                        ? "border-blue-100 text-blue-600 hover:border-upleex-blue hover:bg-blue-50"
                         : "border-gray-200 hover:border-gray-800 text-gray-700"
                     )}
-                    onClick={() => router.push('/cart')}
+                    // onClick={() => router.push('/cart')}
                   >
                     <MapPin size={18} className="text-blue-500" />
                     Check Availability
                   </Button>
                 </div>
 
+                {/* {isSell && ( */}
+                  <div className="mt-4">
+                    <div className="bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
+                          <Store size={22} className="text-upleex-blue" />
+                        </div>
+                        <div>
+                          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.12em]">
+                            Sold By
+                          </div>
+                          <div className="text-sm font-bold text-slate-900">
+                            {productDetails?.vendor_name || 'Vendor'}
+                          </div>
+                          <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
+                            {productDetails?.vendor_name && (
+                              <>
+                                <span className="w-1 h-1 rounded-full bg-gray-300" />
+                                
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        className="h-9 px-4 rounded-full border-upleex-purple text-upleex-purple text-xs font-semibold whitespace-nowrap"
+                        onClick={() => {
+                          if (!productDetails?.vendor_id) return;
+                          router.push(
+                            `/seller?vendor_id=${encodeURIComponent(
+                              productDetails.vendor_id
+                            )}&vendor_name=${encodeURIComponent(
+                              productDetails.vendor_name || ''
+                            )}`
+                          );
+                        }}
+                      >
+                        View Shop
+                      </Button>
+                    </div>
+                  </div>
+                {/* )} */}
+
                 {/* Trust Badges - Show on right only for Sell */}
-                {isSell && (
+                {/* {isSell && (
                   <div className="grid grid-cols-4 gap-3 mt-8 pt-6 border-t border-gray-100">
                     <div className="flex flex-col items-center text-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
@@ -681,7 +776,7 @@ export default function ProductDetailsPage() {
                       </span>
                     </div>
                   </div>
-                )}
+                )} */}
 
 
               </div>
@@ -793,7 +888,6 @@ export default function ProductDetailsPage() {
           </div>
         </div>
 
-        {/* Related Products Section */}
         <RelatedProducts />
       </div>
 

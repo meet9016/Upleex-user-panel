@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import endPointApi from '@/utils/endPointApi';
 import { api } from '@/utils/axiosInstance';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const LoginPage = () => {
   const [number, setNumber] = useState('');
@@ -18,11 +19,17 @@ const LoginPage = () => {
     name: '',
     email: ''
   });
+  const [errors, setErrors] = useState<{ number?: string; otp?: string; name?: string; email?: string }>({});
 
   const handleSendNumber = async () => {
+    const clean = number.replace(/\D/g, '');
+    if (clean.length !== 10) {
+      setErrors(prev => ({ ...prev, number: 'Enter a valid 10-digit mobile number' }));
+      return;
+    }
     try {
       const formData = new FormData();
-      formData.append('number', number);
+      formData.append('number', clean);
       formData.append('country_id', '91');
 
       const res = await api.post(
@@ -36,6 +43,7 @@ const LoginPage = () => {
         toast.success('OTP sent successfully 📩');
         setUserType(result?.data?.user_type);
         setStep('otp');
+        setErrors(prev => ({ ...prev, number: '' }));
       } else {
         toast.error(result?.message || 'Failed to send OTP');
       }
@@ -46,10 +54,22 @@ const LoginPage = () => {
   };
 
   const handleVerifyOtp = async () => {
+    const cleanOtp = otp.replace(/\D/g, '');
+    const newErrors: { otp?: string; name?: string; email?: string } = {};
+    if (cleanOtp.length < 4) newErrors.otp = 'Enter the OTP';
+    if (userType === 'new') {
+      if (!form.name.trim()) newErrors.name = 'Name is required';
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(form.email.trim())) newErrors.email = 'Enter a valid email';
+    }
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(prev => ({ ...prev, ...newErrors }));
+      return;
+    }
     try {
       const formData = new FormData();
-      formData.append('number', number);
-      formData.append('otp', otp);
+      formData.append('number', number.replace(/\D/g, ''));
+      formData.append('otp', cleanOtp);
       formData.append('country_id', '91');
 
       if (userType === 'new') {
@@ -63,7 +83,6 @@ const LoginPage = () => {
       );
 
       const result = res.data;
-      console.log("🚀 ~ handleVerifyOtp ~ result:", result)
 
       if (result?.status === 200 || result?.success === true) {
         localStorage.setItem('token', result.data.token);
@@ -77,6 +96,7 @@ const LoginPage = () => {
         );
 
         toast.success(result.message || 'Login successful');
+        window.dispatchEvent(new Event('storage'));
         router.push('/');
       } else {
         toast.error(result?.message || 'Login failed');
@@ -107,7 +127,6 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* RIGHT */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white">
         <div className="max-w-md w-full space-y-6">
 
@@ -115,62 +134,97 @@ const LoginPage = () => {
             Sign In
           </h2>
 
-          {/* STEP 1 */}
-          {step === 'number' && (
-            <>
-              <div className="relative">
-                <Phone className="absolute left-3 top-3 text-gray-400" />
-                <input
-                  value={number}
-                  onChange={(e) => setNumber(e.target.value)}
-                  placeholder="Mobile Number"
-                  className="w-full pl-10 py-3 border rounded-lg bg-gray-50"
-                />
-              </div>
-
-              <Button fullWidth onClick={handleSendNumber} className="cursor-pointer">
-                Continue <ArrowRight className="ml-2" size={18} />
-              </Button>
-            </>
-          )}
-
-          {/* STEP 2 */}
-          {step === 'otp' && (
-            <>
-              <input
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter OTP"
-                className="w-full py-3 px-3 border rounded-lg bg-gray-50"
-              />
-
-              {userType === 'new' && (
-                <>
-                  <input
-                    placeholder="Full Name"
-                    value={form.name}
-                    onChange={(e) =>
-                      setForm({ ...form, name: e.target.value })
-                    }
-                    className="w-full py-3 px-3 border rounded-lg"
-                  />
-
-                  <input
-                    placeholder="Email"
-                    value={form.email}
-                    onChange={(e) =>
-                      setForm({ ...form, email: e.target.value })
-                    }
-                    className="w-full py-3 px-3 border rounded-lg"
-                  />
-                </>
-              )}
-
-              <Button fullWidth onClick={handleVerifyOtp}>
-                Verify & Continue
-              </Button>
-            </>
-          )}
+              <AnimatePresence mode="wait">
+                {step === 'number' ? (
+                  <motion.div
+                    key="step-number"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-4"
+                  >
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-3 text-gray-400" />
+                      <input
+                        value={number}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, '');
+                          if (val.length <= 10) setNumber(val);
+                          if (val.length === 10) setErrors(prev => ({ ...prev, number: '' }));
+                        }}
+                        placeholder="Mobile Number"
+                        className={`w-full pl-10 py-3 border rounded-lg bg-gray-50 ${errors.number ? 'border-red-500' : ''}`}
+                      />
+                      {errors.number ? (
+                        <p className="text-red-600 text-sm mt-1">{errors.number}</p>
+                      ) : null}
+                    </div>
+                    <Button
+                      fullWidth
+                      onClick={handleSendNumber}
+                      className="cursor-pointer"
+                    >
+                      Continue <ArrowRight className="ml-2" size={18} />
+                    </Button>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="step-otp"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-4"
+                  >
+                    <input
+                      value={otp}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '');
+                        if (val.length <= 6) setOtp(val);
+                        if (val.length >= 4) setErrors(prev => ({ ...prev, otp: '' }));
+                      }}
+                      placeholder="Enter OTP"
+                      className={`w-full py-3 px-3 border rounded-lg bg-gray-50 ${errors.otp ? 'border-red-500' : ''}`}
+                    />
+                    {errors.otp ? (
+                      <p className="text-red-600 text-sm -mt-3">{errors.otp}</p>
+                    ) : null}
+                    {userType === 'new' && (
+                      <>
+                        <input
+                          placeholder="Full Name"
+                          value={form.name}
+                          onChange={(e) => {
+                            setForm({ ...form, name: e.target.value });
+                            if (e.target.value.trim()) setErrors(prev => ({ ...prev, name: '' }));
+                          }}
+                          className={`w-full py-3 px-3 border rounded-lg ${errors.name ? 'border-red-500' : ''}`}
+                        />
+                        {errors.name ? (
+                          <p className="text-red-600 text-sm -mt-3">{errors.name}</p>
+                        ) : null}
+                        <input
+                          placeholder="Email"
+                          value={form.email}
+                          onChange={(e) => {
+                            setForm({ ...form, email: e.target.value });
+                            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                            if (emailPattern.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
+                          }}
+                          className={`w-full py-3 px-3 border rounded-lg ${errors.email ? 'border-red-500' : ''}`}
+                        />
+                        {errors.email ? (
+                          <p className="text-red-600 text-sm -mt-3">{errors.email}</p>
+                        ) : null}
+                      </>
+                    )}
+                    <Button fullWidth onClick={handleVerifyOtp}>
+                      Verify & Continue
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
           <p className="text-sm text-gray-500">
             New to Upleex?{' '}

@@ -30,6 +30,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [agreed, setAgreed] = useState(false);
   const [showOtp, setShowOtp] = useState(false);
   const [timer, setTimer] = useState(120);
+  const [errors, setErrors] = useState<{ number?: string; otp?: string; name?: string; email?: string; agreed?: string }>({});
 
   // Timer logic
   useEffect(() => {
@@ -43,19 +44,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   }, [step, timer]);
 
   const handleSendNumber = async () => {
-    if (!number || number.length < 10) {
-      toast.error('Please enter a valid mobile number');
+    const clean = number.replace(/\D/g, '');
+    if (clean.length !== 10) {
+      setErrors(prev => ({ ...prev, number: 'Enter a valid 10-digit mobile number' }));
       return;
     }
     if (!agreed) {
-      toast.error('Please agree to the terms and conditions');
+      setErrors(prev => ({ ...prev, agreed: 'Please agree to the terms' }));
       return;
     }
 
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append('number', number);
+      formData.append('number', clean);
       formData.append('country_id', '91');
 
       const res = await api.post(endPointApi.webLoginRegister, formData);
@@ -66,6 +68,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setUserType(result?.data?.user_type);
         setStep('otp');
         setTimer(120); // Reset timer
+        setErrors(prev => ({ ...prev, number: '', agreed: '' }));
       } else {
         toast.error(result?.message || 'Failed to send OTP');
       }
@@ -78,34 +81,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   const handleVerifyOtp = async () => {
-    if (!otp) {
-      toast.error('Please enter OTP');
-      return;
+    const cleanOtp = otp.replace(/\D/g, '');
+    const e: { otp?: string; name?: string; email?: string } = {};
+    if (cleanOtp.length < 4) e.otp = 'Enter the OTP';
+    if (userType === 'new') {
+      if (!form.name.trim()) e.name = 'Name is required';
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(form.email.trim())) e.email = 'Enter a valid email';
     }
-
-    if (userType === 'new' && (!form.name || !form.email)) {
-      // If new user, we might need to show extra fields. 
-      // Based on screenshot, the design only shows OTP input. 
-      // If the API requires name/email for new users, we might need an intermediate step 
-      // or show fields below OTP.
-      // For now, assuming the provided design is complete and maybe registration happens later 
-      // or we just default name/email if not provided in UI.
-      // However, the original code had these fields.
-      // I'll keep the logic but maybe render them if userType is 'new'.
-      
-      // Let's assume for now we just show name/email fields if it's a new user, 
-      // matching the style of the inputs.
+    if (Object.keys(e).length > 0) {
+      setErrors(prev => ({ ...prev, ...e }));
+      return;
     }
 
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append('number', number);
-      formData.append('otp', otp);
+      formData.append('number', number.replace(/\D/g, ''));
+      formData.append('otp', cleanOtp);
       formData.append('country_id', '91');
 
       if (userType === 'new') {
-        // If we collected name/email
         if (form.name) formData.append('name', form.name);
         if (form.email) formData.append('email', form.email);
       }
@@ -183,29 +179,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <input
                       type="tel"
                       value={number}
-                      onChange={(e) => setNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setNumber(val);
+                        if (val.length === 10) setErrors(prev => ({ ...prev, number: '' }));
+                      }}
                       placeholder="Enter Mobile Number"
-                      className="flex-1 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-900 placeholder:text-gray-400 font-semibold shadow-sm"
+                      className={clsx(
+                        'flex-1 px-4 border rounded-lg focus:outline-none focus:ring-2 transition-all text-gray-900 placeholder:text-gray-400 font-semibold shadow-sm',
+                        errors.number ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
+                      )}
                       autoFocus
                     />
                   </div>
+                  {errors.number ? <p className="text-red-600 text-sm mt-1">{errors.number}</p> : null}
                 </div>
-
-                <Button 
-                  fullWidth 
-                  onClick={handleSendNumber} 
-                  disabled={loading}
-                  className="bg-gradient-primary hover:from-blue-600 hover:to-blue-700 text-white h-12 text-base font-bold rounded-lg shadow-lg shadow-blue-500/20 transition-all transform active:scale-[0.98] tracking-wide"
-                >
-                  {loading ? 'Sending...' : 'CONTINUE'}
-                </Button>
-
-                <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3">
                    <div className="relative flex items-start">
                       <input
                         type="checkbox"
                         checked={agreed}
-                        onChange={() => setAgreed(!agreed)}
+                        onChange={() => {
+                          setAgreed(!agreed);
+                          if (!agreed) setErrors(prev => ({ ...prev, agreed: '' }));
+                        }}
                         className="peer h-4 w-4 shrink-0 cursor-pointer appearance-none rounded-sm border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-none checked:bg-blue-600 checked:border-blue-600 transition-all mt-0.5"
                       />
                       <Check 
@@ -218,6 +215,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     By continuing, I agree to the <span className="text-blue-600 font-semibold hover:underline">Terms of Use</span> & <span className="text-blue-600 font-semibold hover:underline">Privacy Policy</span>
                   </p>
                 </div>
+                {errors.agreed ? <p className="text-red-600 text-xs -mt-2">{errors.agreed}</p> : null}
+                <Button 
+                  fullWidth 
+                  onClick={handleSendNumber} 
+                  disabled={loading}
+                  className="bg-gradient-primary hover:from-blue-600 hover:to-blue-700 text-white h-12 text-base font-bold rounded-lg shadow-lg shadow-blue-500/20 transition-all transform active:scale-[0.98] tracking-wide"
+                >
+                  {loading ? 'Sending...' : 'CONTINUE'}
+                </Button>
+
+                
               </div>
 
               {/* <div className="relative py-2">
@@ -256,9 +264,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <input
                     type={showOtp ? "text" : "password"}
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      setOtp(val);
+                      if (val.length >= 4) setErrors(prev => ({ ...prev, otp: '' }));
+                    }}
                     placeholder="Enter 6-digit OTP"
-                    className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-gray-900 placeholder:text-gray-400 font-bold tracking-[0.2em] text-lg shadow-sm"
+                    className={clsx(
+                      'w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 transition-all text-gray-900 placeholder:text-gray-400 font-bold tracking-[0.2em] text-lg shadow-sm',
+                      errors.otp ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
+                    )}
                     autoFocus
                   />
                   <button 
@@ -268,22 +283,38 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     {showOtp ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                {errors.otp ? <p className="text-red-600 text-sm -mt-2">{errors.otp}</p> : null}
 
                 {userType === 'new' && (
                   <div className="space-y-4 pt-2 animate-in slide-in-from-top-2">
                     <input
                       placeholder="Full Name"
                       value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                      onChange={(e) => {
+                        setForm({ ...form, name: e.target.value });
+                        if (e.target.value.trim()) setErrors(prev => ({ ...prev, name: '' }));
+                      }}
+                      className={clsx(
+                        'w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 transition-all font-medium',
+                        errors.name ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
+                      )}
                     />
+                    {errors.name ? <p className="text-red-600 text-sm -mt-2">{errors.name}</p> : null}
                     <input
                       type="email"
                       placeholder="Email Address"
                       value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full h-12 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                      onChange={(e) => {
+                        setForm({ ...form, email: e.target.value });
+                        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (emailPattern.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
+                      }}
+                      className={clsx(
+                        'w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 transition-all font-medium',
+                        errors.email ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
+                      )}
                     />
+                    {errors.email ? <p className="text-red-600 text-sm -mt-2">{errors.email}</p> : null}
                   </div>
                 )}
 

@@ -19,6 +19,7 @@ import Image from 'next/image';
 import { DownloadAppPopup } from '../features/DownloadAppPopup';
 import { Button } from '@/components/ui/Button';
 import { categoryService, Category } from '@/services/categoryService';
+import { useCart } from '@/context/CartContext';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,6 +31,7 @@ export const Navbar: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const { cartCount } = useCart();
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen);
@@ -80,12 +82,9 @@ export const Navbar: React.FC = () => {
     };
     
     window.addEventListener('storage', handleStorageChange);
-    // Poll for changes (as a fallback)
-    const intervalId = setInterval(readUserData, 1000);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      clearInterval(intervalId);
     };
   }, []);
 
@@ -318,7 +317,9 @@ export const Navbar: React.FC = () => {
 
             <Link href="/cart" className="relative group">
               <ShoppingCart size={24} className="text-slate-700 group-hover:text-upleex-blue transition-colors" />
-              <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+              <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                {cartCount || 0}
+              </span>
             </Link>
 
           </div>
@@ -327,7 +328,9 @@ export const Navbar: React.FC = () => {
           <div className="lg:hidden flex items-center gap-4">
             <Link href="/cart" className="relative">
               <ShoppingCart size={24} className="text-slate-700" />
-              <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">0</span>
+              <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                {cartCount || 0}
+              </span>
             </Link>
             <button
               onClick={toggleMenu}
@@ -386,8 +389,15 @@ export const Navbar: React.FC = () => {
             className="flex items-center"
           >
             <Button 
-              variant="outline" 
-              className={`rounded-full px-5 py-2 border-2 group h-auto text-xs font-bold transition-all duration-200 ${pathname === '/categories' ? 'bg-upleex-purple text-white border-upleex-purple' : 'text-upleex-purple border-upleex-purple hover:bg-upleex-purple hover:text-white'}`}
+              variant="outline"
+              className={`
+                rounded-full px-5 py-2 group h-auto text-xs font-bold transition-all duration-200
+                border-upleex-purple focus:outline-none focus:ring-0
+                ${pathname === '/categories' 
+                  ? 'bg-upleex-purple text-white border-upleex-purple hover:bg-upleex-purple hover:text-white'
+                  : 'text-upleex-purple hover:bg-upleex-purple hover:text-white'
+                }
+              `}
               onClick={() => router.push('/categories')}
             >
               <span className="flex items-center gap-2">

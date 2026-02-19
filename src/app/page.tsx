@@ -188,7 +188,7 @@ export default function Home() {
             </motion.div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-8">
-              {categoryList?.all_categories?.slice(0, 10).map((category, index) => (
+              {categoryList?.all_categories?.slice(0, 12).map((category, index) => (
                  <CategoryCard
                    key={category.categories_id}
                    categories_id={category.categories_id}

@@ -32,6 +32,7 @@ export default function PartnerSignupPage() {
   });
   const [otpSent, setOtpSent] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [errors, setErrors] = useState<{ fullName?: string; businessName?: string; email?: string; mobileNumber?: string; city?: string; otp?: string }>({});
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -47,7 +48,13 @@ export default function PartnerSignupPage() {
   };
 
   const handleSendOtp = () => {
-    if (formData.mobileNumber.length < 10) return;
+    const e: { mobileNumber?: string } = {};
+    if (formData.mobileNumber.length < 10) e.mobileNumber = "Enter a valid 10-digit mobile number";
+    if (Object.keys(e).length > 0) {
+      setErrors(prev => ({ ...prev, ...e }));
+      return;
+    }
+    setErrors(prev => ({ ...prev, mobileNumber: "" }));
     setOtpSent(true);
     setTimer(120);
   };
@@ -55,9 +62,25 @@ export default function PartnerSignupPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!otpSent) {
+      const e: { fullName?: string; businessName?: string; email?: string; mobileNumber?: string; city?: string } = {};
+      if (!formData.fullName.trim()) e.fullName = "Full name is required";
+      if (!formData.businessName.trim()) e.businessName = "Business name is required";
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(formData.email.trim())) e.email = "Enter a valid email";
+      if (formData.mobileNumber.length < 10) e.mobileNumber = "Enter a valid 10-digit mobile number";
+      if (!formData.city.trim()) e.city = "City is required";
+      if (Object.keys(e).length > 0) {
+        setErrors(prev => ({ ...prev, ...e }));
+        return;
+      }
       handleSendOtp();
     } else {
-      console.log("Registering:", formData);
+      const e: { otp?: string } = {};
+      if ((formData.otp || "").replace(/\D/g, "").length < 4) e.otp = "Enter the OTP";
+      if (Object.keys(e).length > 0) {
+        setErrors(prev => ({ ...prev, ...e }));
+        return;
+      }
       router.push('/partner');
     }
   };
@@ -138,12 +161,16 @@ export default function PartnerSignupPage() {
                         type="text"
                         name="fullName"
                         value={formData.fullName}
-                        onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-upleex-purple focus:ring-2 focus:ring-upleex-purple/20 outline-none transition-all"
+                        onChange={(e) => {
+                          handleChange(e);
+                          if (e.target.value.trim()) setErrors(prev => ({ ...prev, fullName: '' }));
+                        }}
+                        className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.fullName ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                         placeholder="John Doe"
                         required
                       />
                     </div>
+                    {errors.fullName ? <p className="text-red-600 text-sm mt-1">{errors.fullName}</p> : null}
                  </div>
                  <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Business Name</label>
@@ -153,12 +180,16 @@ export default function PartnerSignupPage() {
                         type="text"
                         name="businessName"
                         value={formData.businessName}
-                        onChange={handleChange}
-                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-upleex-purple focus:ring-2 focus:ring-upleex-purple/20 outline-none transition-all"
+                        onChange={(e) => {
+                          handleChange(e);
+                          if (e.target.value.trim()) setErrors(prev => ({ ...prev, businessName: '' }));
+                        }}
+                        className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.businessName ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                         placeholder="My Business Ltd"
                         required
                       />
                     </div>
+                    {errors.businessName ? <p className="text-red-600 text-sm mt-1">{errors.businessName}</p> : null}
                  </div>
                </div>
 
@@ -171,18 +202,22 @@ export default function PartnerSignupPage() {
                       type="email"
                       name="email"
                       value={formData.email}
-                      onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-upleex-purple focus:ring-2 focus:ring-upleex-purple/20 outline-none transition-all"
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
+                      }}
+                      className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.email ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                       placeholder="john@example.com"
                       required
                     />
                   </div>
+                  {errors.email ? <p className="text-red-600 text-sm mt-1">{errors.email}</p> : null}
                </div>
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                  <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Mobile Number</label>
-                    <div className="flex rounded-lg border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple transition-all">
+                    <div className={`flex rounded-lg border overflow-hidden focus-within:ring-2 transition-all ${errors.mobileNumber ? 'border-red-500 focus-within:ring-red-500/20' : 'border-gray-200 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple'}`}>
                       <div className="bg-gray-50 px-3 py-3 border-r border-gray-200 text-gray-600 font-medium text-sm flex items-center">
                         +91
                       </div>
@@ -193,12 +228,14 @@ export default function PartnerSignupPage() {
                         onChange={(e) => {
                           const val = e.target.value.replace(/\D/g, "");
                           if (val.length <= 10) setFormData(prev => ({ ...prev, mobileNumber: val }));
+                          if (val.length === 10) setErrors(prev => ({ ...prev, mobileNumber: '' }));
                         }}
                         className="flex-1 px-4 py-3 outline-none text-gray-900 placeholder-gray-400 w-full"
                         placeholder="9876543210"
                         required
                       />
                     </div>
+                    {errors.mobileNumber ? <p className="text-red-600 text-sm mt-1">{errors.mobileNumber}</p> : null}
                  </div>
                  <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Alternative Number</label>
@@ -230,12 +267,16 @@ export default function PartnerSignupPage() {
                       type="text"
                       name="city"
                       value={formData.city}
-                      onChange={handleChange}
-                      className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 focus:border-upleex-purple focus:ring-2 focus:ring-upleex-purple/20 outline-none transition-all"
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (e.target.value.trim()) setErrors(prev => ({ ...prev, city: '' }));
+                      }}
+                      className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.city ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                       placeholder="Ahmedabad, Gujarat"
                       required
                     />
                   </div>
+                  {errors.city ? <p className="text-red-600 text-sm mt-1">{errors.city}</p> : null}
                </div>
 
                {/* OTP Section */}
@@ -263,12 +304,14 @@ export default function PartnerSignupPage() {
                       onChange={(e) => {
                         const val = e.target.value.replace(/\D/g, "");
                         if (val.length <= 6) setFormData(prev => ({ ...prev, otp: val }));
+                        if (val.length >= 4) setErrors(prev => ({ ...prev, otp: '' }));
                       }}
                       disabled={!otpSent}
-                      className="w-full py-3 px-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-upleex-purple/20 focus:border-upleex-purple disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className={`w-full py-3 px-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 disabled:bg-gray-100 disabled:cursor-not-allowed ${errors.otp ? 'border-red-500 focus:ring-red-500/20' : 'focus:ring-upleex-purple/20 focus:border-upleex-purple'}`}
                       placeholder="Enter OTP"
                       required={otpSent}
                     />
+                    {errors.otp ? <p className="text-red-600 text-sm mt-1">{errors.otp}</p> : null}
                   </div>
                </div>
 
