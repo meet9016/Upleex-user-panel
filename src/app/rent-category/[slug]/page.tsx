@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/features/ProductCard';
 import { categories } from '@/data/mockData';
@@ -8,8 +8,7 @@ import { ArrowRight, ChevronDown, ArrowUpDown, Calendar, Check, PackageOpen } fr
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
 import { Pagination } from '@/components/ui/Pagination';
-import { api } from '@/utils/axiosInstance';
-import endPointApi from '@/utils/endPointApi';
+import { productService } from '@/services/productService';
 import { motion } from 'framer-motion';
 
 import { CategorySEOContent } from '@/components/features/CategorySEOContent';
@@ -61,6 +60,9 @@ function RentCategoryContent() {
   const [totalPages, setTotalPages] = useState(1);
   const ITEMS_PER_PAGE = 12;
 
+  const sortDropdownRef = useRef<HTMLDivElement | null>(null);
+  const tenureDropdownRef = useRef<HTMLDivElement | null>(null);
+
   // Dynamic filter categories: "All" + API data
   const filterCategories = [
     { name: 'All', slug: 'all' },
@@ -73,18 +75,17 @@ function RentCategoryContent() {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const formData = new FormData();
-      formData.append("category_id", slug);
       try {
-        const res = await api.post(endPointApi.webSubCategoryList, formData);
-        setCategoryList(res.data.data || []);
+        const res = await productService.getSubCategories(slug);
+        setCategoryList(res.data || res.data?.data || res || []);
         
         // Update options if available in API
-        if (res.data.sort_options && Array.isArray(res.data.sort_options)) {
-          setSortOptions([{ label: 'All Types', value: '0' }, ...res.data.sort_options]);
+        const root = res.data || res;
+        if (root.sort_options && Array.isArray(root.sort_options)) {
+          setSortOptions([{ label: 'All Types', value: '0' }, ...root.sort_options]);
         }
-        if (res.data.tenure_options && Array.isArray(res.data.tenure_options)) {
-          setTenureOptions([{ label: 'All Durations', value: '0' }, ...res.data.tenure_options]);
+        if (root.tenure_options && Array.isArray(root.tenure_options)) {
+          setTenureOptions([{ label: 'All Durations', value: '0' }, ...root.tenure_options]);
         }
       } catch (err) {
         console.error("Error fetching categories", err);
@@ -99,27 +100,16 @@ function RentCategoryContent() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const formData = new FormData();
-      formData.append("category_id", slug);
-
-      if (activeFilter !== 'all') {
-        formData.append("sub_category_id", activeFilter);
-      }
-
-      if (selectedSort.value !== '0') {
-        formData.append("filter_rent_sell", selectedSort.value);
-      }
-      
-      if (selectedTenure.value !== '0') {
-        formData.append("filter_tenure", selectedTenure.value);
-      }
-
       try {
-        formData.append("page", String(currentPage));
-
-        const res = await api.post(endPointApi.webCategoryProductList, formData);
-        const payload = res.data?.data;
-        const root = res.data || {};
+        const res = await productService.getCategoryProducts({
+          category_id: slug,
+          sub_category_id: activeFilter,
+          filter_rent_sell: selectedSort.value,
+          filter_tenure: selectedTenure.value,
+          page: currentPage
+        });
+        const payload = res?.data;
+        const root = res || {};
 
         // Case 1: data itself is array of products, meta on root
         if (Array.isArray(payload)) {
@@ -213,6 +203,23 @@ function RentCategoryContent() {
   useEffect(() => {
     setCurrentPage(1);
   }, [slug, activeFilter, selectedSort, selectedTenure]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(target)) {
+        setIsSortOpen(false);
+      }
+      if (tenureDropdownRef.current && !tenureDropdownRef.current.contains(target)) {
+        setIsTenureOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   const router = useRouter();
 
   const handleFilterClick = (filterSlug: string) => {
@@ -274,7 +281,7 @@ function RentCategoryContent() {
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-1">
           
           {/* Custom Sort Dropdown */}
-          <div className="relative z-30 w-full sm:w-auto">
+          <div className="relative z-30 w-full sm:w-auto" ref={sortDropdownRef}>
             <button 
               onClick={() => { setIsSortOpen(!isSortOpen); setIsTenureOpen(false); }}
               className={`w-full sm:w-64 flex items-center justify-between pl-4 pr-4 py-3 bg-white border-2 rounded-full text-sm font-semibold transition-all duration-300 ${
@@ -319,7 +326,7 @@ function RentCategoryContent() {
           </div>
 
           {/* Custom Tenure Dropdown */}
-          <div className="relative z-20 w-full sm:w-auto">
+          <div className="relative z-20 w-full sm:w-auto" ref={tenureDropdownRef}>
             <button 
               onClick={() => { setIsTenureOpen(!isTenureOpen); setIsSortOpen(false); }}
               className={`w-full sm:w-64 flex items-center justify-between pl-4 pr-4 py-3 bg-white border-2 rounded-full text-sm font-semibold transition-all duration-300 ${

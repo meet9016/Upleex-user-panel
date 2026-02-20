@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { ArrowRight, Phone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import endPointApi from '@/utils/endPointApi';
-import { api } from '@/utils/axiosInstance';
+import { authService } from '@/services/authService';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const LoginPage = () => {
@@ -28,16 +27,10 @@ const LoginPage = () => {
       return;
     }
     try {
-      const formData = new FormData();
-      formData.append('number', clean);
-      formData.append('country_id', '91');
-
-      const res = await api.post(
-        endPointApi.webLoginRegister,
-        formData
-      );
-
-      const result = res.data;
+      const result = await authService.sendOtp({
+        number: clean,
+        country_id: '91'
+      });
 
       if (result?.status === 200 || result?.success === true) {
         toast.success('OTP sent successfully 📩');
@@ -67,22 +60,13 @@ const LoginPage = () => {
       return;
     }
     try {
-      const formData = new FormData();
-      formData.append('number', number.replace(/\D/g, ''));
-      formData.append('otp', cleanOtp);
-      formData.append('country_id', '91');
-
-      if (userType === 'new') {
-        formData.append('name', form.name);
-        formData.append('email', form.email);
-      }
-
-      const res = await api.post(
-        endPointApi.webLoginRegister,
-        formData
-      );
-
-      const result = res.data;
+      const result = await authService.verifyOtp({
+        number: number.replace(/\D/g, ''),
+        otp: cleanOtp,
+        country_id: '91',
+        name: userType === 'new' ? form.name : undefined,
+        email: userType === 'new' ? form.email : undefined
+      });
 
       if (result?.status === 200 || result?.success === true) {
         localStorage.setItem('token', result.data.token);

@@ -7,8 +7,7 @@ import { motion } from 'framer-motion';
 import { ProductCard } from '@/components/features/ProductCard';
 import { BackButton } from '@/components/ui/BackButton';
 import { Pagination } from '@/components/ui/Pagination';
-import { api } from '@/utils/axiosInstance';
-import endPointApi from '@/utils/endPointApi';
+import { productService } from '@/services/productService';
 
 export default function SellerPage() {
   const searchParams = useSearchParams();
@@ -44,21 +43,13 @@ export default function SellerPage() {
       setLoading(true);
 
       try {
-        const formData = new FormData();
-        formData.append('vendor_id', vendorId);
-
-        if (selectedSort.value !== '0') {
-          formData.append('filter_rent_sell', selectedSort.value);
-        }
-
-        if (selectedTenure.value !== '0') {
-          formData.append('filter_tenure', selectedTenure.value);
-        }
-
-        formData.append('page', String(currentPage));
-
-        const res = await api.post(endPointApi.webVendorProductList, formData);
-        const payload = res.data?.data;
+        const res = await productService.getVendorProducts({
+          vendor_id: vendorId,
+          filter_rent_sell: selectedSort.value,
+          filter_tenure: selectedTenure.value,
+          page: currentPage
+        });
+        const payload = res?.data;
         let inferredVendorName: string | null = null;
 
         if (Array.isArray(payload)) {

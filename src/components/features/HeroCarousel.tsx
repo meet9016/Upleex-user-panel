@@ -52,7 +52,7 @@ export const HeroCarousel = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % BANNERS.length);
-    }, 5000);
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
 

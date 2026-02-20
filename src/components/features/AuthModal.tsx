@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight, Phone, Mail, Chrome, Eye, EyeOff, Check, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
-import endPointApi from '@/utils/endPointApi';
-import { api } from '@/utils/axiosInstance';
 import { Modal } from '@/components/ui/Modal';
 import clsx from 'clsx';
+import { authService } from '@/services/authService';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -56,12 +55,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('number', clean);
-      formData.append('country_id', '91');
-
-      const res = await api.post(endPointApi.webLoginRegister, formData);
-      const result = res.data;
+      const result = await authService.sendOtp({
+        number: clean,
+        country_id: '91'
+      });
 
       if (result?.status === 200 || result?.success === true) {
         toast.success('OTP sent successfully 📩');
@@ -96,18 +93,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.append('number', number.replace(/\D/g, ''));
-      formData.append('otp', cleanOtp);
-      formData.append('country_id', '91');
-
-      if (userType === 'new') {
-        if (form.name) formData.append('name', form.name);
-        if (form.email) formData.append('email', form.email);
-      }
-
-      const res = await api.post(endPointApi.webLoginRegister, formData);
-      const result = res.data;
+      const result = await authService.verifyOtp({
+        number: number.replace(/\D/g, ''),
+        otp: cleanOtp,
+        country_id: '91',
+        name: userType === 'new' ? form.name : undefined,
+        email: userType === 'new' ? form.email : undefined
+      });
 
       if (result?.status === 200 || result?.success === true) {
         localStorage.setItem('token', result.data.token);
@@ -192,23 +184,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       autoFocus
                     />
                   </div>
-                  {errors.number ? <p className="text-red-600 text-sm mt-1">{errors.number}</p> : null}
+                  {errors.number ? <p className="text-red-600 text-sm mt-1 ml-23">{errors.number}</p> : null}
                 </div>
               <div className="flex items-start gap-3">
-                   <div className="relative flex items-start">
+                     <div className="relative flex items-center justify-center">
                       <input
-                        type="checkbox"
-                        checked={agreed}
-                        onChange={() => {
-                          setAgreed(!agreed);
-                          if (!agreed) setErrors(prev => ({ ...prev, agreed: '' }));
-                        }}
-                        className="peer h-4 w-4 shrink-0 cursor-pointer appearance-none rounded-sm border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-none checked:bg-blue-600 checked:border-blue-600 transition-all mt-0.5"
-                      />
+            type="checkbox"
+        checked={agreed}
+        onChange={() => {
+          setAgreed(!agreed);
+          if (!agreed) setErrors(prev => ({ ...prev, agreed: '' }));
+        }}
+        className="peer h-5 w-5 cursor-pointer appearance-none rounded-md 
+                  border border-gray-300 bg-white 
+                  checked:bg-blue-600 checked:border-blue-600 
+                  transition-all duration-200"
+      />
                       <Check 
                         size={12} 
                         strokeWidth={3} 
-                        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[40%] text-white opacity-0 peer-checked:opacity-100 transition-opacity mt-0.5" 
+                        className="pointer-events-none absolute text-white 
+                 opacity-0 peer-checked:opacity-100 
+                 transition-opacity duration-200"
+
                       />
                    </div>
                   <p className="text-xs text-gray-500 leading-relaxed cursor-pointer" onClick={() => setAgreed(!agreed)}>

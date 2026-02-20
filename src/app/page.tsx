@@ -250,7 +250,7 @@ export default function Home() {
                   View All Categories
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
-              </Button>     
+              </Button>
 
             </motion.div>
           </div>

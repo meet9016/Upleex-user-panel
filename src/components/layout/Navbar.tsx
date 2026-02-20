@@ -26,7 +26,7 @@ export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isDownloadPopupOpen, setIsDownloadPopupOpen] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState('select city');
+  const [currentLocation, setCurrentLocation] = useState('Select city');
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -113,13 +113,13 @@ export const Navbar: React.FC = () => {
     setSuggestions([]);
     setShowSuggestions(false);
 
-    setSelectedCityId(null);
-    setCurrentLocation('select city');
-    setCitySearchTerm('');
-    setCities([]);
-    setHasLoadedInitialCities(false);
-    setCityPage(1);
-    setCityHasMore(true);
+    // setSelectedCityId(null);
+    // setCurrentLocation('select city');
+    // setCitySearchTerm('');
+    // setCities([]);
+    // setHasLoadedInitialCities(false);
+    // setCityPage(1);
+    // setCityHasMore(true);
   }, [pathname]);
 
   useEffect(() => {
@@ -170,6 +170,16 @@ export const Navbar: React.FC = () => {
     setSelectedCityId(String(city.id));
     setCurrentLocation(city.city_name);
     setIsCityDropdownOpen(false);
+  };
+
+  const handleClearCity = () => {
+    setSelectedCityId(null);
+    setCurrentLocation('select city');
+    setCitySearchTerm('');
+    setCities([]);
+    setHasLoadedInitialCities(false);
+    setCityPage(1);
+    setCityHasMore(true);
   };
 
   const handleCityToggle = () => {
@@ -415,18 +425,36 @@ export const Navbar: React.FC = () => {
             >
               <div
                 ref={cityDropdownRef}
-                className="relative flex items-stretch bg-gray-50 border-r border-gray-300 min-w-[140px]"
+                className="relative flex items-stretch bg-white border-r border-gray-300 min-w-[150px]"
               >
                 <button
                   type="button"
                   onClick={handleCityToggle}
-                  className="flex items-center px-3 cursor-pointer hover:bg-gray-100 transition-colors w-full"
+                  className="flex items-center gap-2 px-2 cursor-pointer transition-colors w-full"
                 >
-                  <MapPin size={18} className="text-gray-500 mr-2" />
-                  <span className="text-sm font-medium text-gray-700 truncate flex-1">
-                    {currentLocation}
-                  </span>
-                  <ChevronDown size={14} className="text-gray-400 ml-2" />
+                  <div className="flex items-center justify-between flex-1  transition-all duration-300 border-gray-100 text-slate-700">
+                    <div className="flex items-center gap-2">
+                      <MapPin size={16} className="text-upleex-purple" />
+                      <span className="truncate">
+                        {currentLocation}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {selectedCityId && (
+                        <button
+                          type="button"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleClearCity();
+                          }}
+                          className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          <X size={12} />
+                        </button>
+                      )}
+                      <ChevronDown size={14} className="text-gray-400" />
+                    </div>
+                  </div>
                 </button>
                 {isCityDropdownOpen && (
                   <div className="absolute left-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg z-40">

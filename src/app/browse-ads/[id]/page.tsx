@@ -21,8 +21,7 @@ import {
   ShoppingCart,
   Store,
 } from "lucide-react";
-import endPointApi from "@/utils/endPointApi";
-import { api } from "@/utils/axiosInstance";
+import { productService } from "@/services/productService";
 import clsx from "clsx";
 import { AuthModal } from "@/components/features/AuthModal";
 import { QuoteModal } from "@/components/features/QuoteModal";
@@ -101,18 +100,17 @@ export default function ProductDetailsPage() {
 
   useEffect(() => {
     const fetchProductDetails = async () => {
-      const formData = new FormData();
-      formData.append("product_id", id);
       try {
-        const res = await api.post(endPointApi.webSingleProductList, formData);
-        setProductDetails(res.data.data);
+        const res = await productService.getSingleProduct(id);
+        const data = res?.data || res?.product || res;
+        setProductDetails(data);
 
         // Set initial selected image
-        if (res.data.data?.product_main_image) {
-          setSelectedImage(res.data.data.product_main_image);
+        if (data?.product_main_image) {
+          setSelectedImage(data.product_main_image);
         }
         const listingType =
-          res.data.data?.product_listing_type_name?.toLowerCase();
+          (data?.product_listing_type_name || data?.product_type_name)?.toLowerCase();
         if (listingType === "daily") setActiveTab("daily");
         else if (listingType === "monthly") setActiveTab("monthly");
       } catch (err) {
@@ -156,27 +154,17 @@ export default function ProductDetailsPage() {
     if (!token) return;
 
     setIsSubmitting(true);
-    const formData = new FormData();
-
-    formData.append("product_id", String(id));
-    formData.append("delivery_date", String(deliveryDate));
-    formData.append("number_of_days", String(days));
-    formData.append("months_id", selectedMonthId ?? "");
-    formData.append("qty", String(quantity));
-    
-    if (note.trim()) {
-      formData.append("note", note.trim());
-    }
-
     try {
-      const res = await api.post(endPointApi.webGetQuote, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+      const res = await productService.getQuote({
+        product_id: String(id),
+        delivery_date: String(deliveryDate),
+        number_of_days: days,
+        months_id: selectedMonthId ?? "",
+        qty: quantity,
+        note
       });
 
-      if (res.data?.status === 200 || res.data?.success === true) {
+      if (res?.status === 200 || res?.success === true) {
         setIsQuoteModalOpen(false);
         setIsSuccessModalOpen(true);
       }
