@@ -681,10 +681,12 @@ export const Navbar: React.FC = () => {
                 <div key={item.categories_id} className="relative group">
                   <Link
                     href={`/rent-category/${item.categories_id}`}
-                    className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer ${isActive
-                        ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
-                        : 'hover:bg-upleex-purple hover:text-white'
-                      }`}
+                    className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer 
+                    bg-gray-100 
+                    ${isActive
+                    ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
+                   :  'hover:bg-upleex-purple hover:text-white'
+                    }`}                    
                   >
                     {item.categories_name}
                     {item.subcategories.length > 0 && (

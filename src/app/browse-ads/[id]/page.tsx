@@ -88,8 +88,8 @@ export default function ProductDetailsPage() {
     ]?.price || 0
   ) * quantity; // Multiply by quantity
   
-  const dayPrice = productDetails?.price || 0;
-  const totalPrice = activeTab === "monthly" ? monthlyPrice : dayPrice * days * quantity; // Include quantity in daily total
+  const unitPrice = productDetails?.price || 0;
+  const totalPrice = activeTab === "monthly" ? monthlyPrice : unitPrice * days * quantity; // Include quantity in daily/hourly total
 
   const allImages = productDetails
     ? [
@@ -111,7 +111,7 @@ export default function ProductDetailsPage() {
         }
         const listingType =
           (data?.product_listing_type_name || data?.product_type_name)?.toLowerCase();
-        if (listingType === "daily") setActiveTab("daily");
+        if (listingType === "daily" || listingType === "hourly") setActiveTab("daily");
         else if (listingType === "monthly") setActiveTab("monthly");
       } catch (err) {
         console.error("Error fetching product details", err);
@@ -201,6 +201,8 @@ export default function ProductDetailsPage() {
 
   const listingType = (productDetails?.product_type_name || productDetails?.product_listing_type_name)?.toLowerCase();
   const isSell = listingType === "sell";
+  const isDaily = listingType === "daily";
+  const isHourly = listingType === "hourly";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
@@ -478,12 +480,11 @@ export default function ProductDetailsPage() {
                   </div>
                 ) : (
                   <div className={clsx("space-y-5", isSell && "hidden")}>
-                    {productDetails?.product_listing_type_name?.toLowerCase() ===
-                    "daily" ? (
+                    {isDaily || isHourly ? (
                       <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/40">
                         <div className="flex items-center justify-between mb-4">
                           <span className="font-semibold text-gray-700">
-                            Rental Days
+                            {isHourly ? "Rental Hours" : "Rental Days"}
                           </span>
                           <div className="flex items-center bg-white border rounded-lg shadow-sm overflow-hidden">
                         <button
@@ -497,7 +498,7 @@ export default function ProductDetailsPage() {
                         <input
                           type="number"
                           min={1}
-                          max={31}
+                          max={isHourly ? 24 : 31}
                           value={days}
                           onChange={(e) => {
                             const value = e.target.value;
@@ -507,16 +508,20 @@ export default function ProductDetailsPage() {
                             }
                             const parsed = Number(value);
                             if (Number.isNaN(parsed)) return;
-                            const clamped = Math.min(31, Math.max(1, parsed));
+                            const maxUnits = isHourly ? 24 : 31;
+                            const clamped = Math.min(maxUnits, Math.max(1, parsed));
                             setDays(clamped);
                           }}
                           className="w-12 text-center font-bold text-base focus:outline-none focus:ring-0"
                         />
 
                         <button
-                          onClick={() => setDays(Math.min(31, days + 1))}
+                          onClick={() => {
+                            const maxUnits = isHourly ? 24 : 31;
+                            setDays(Math.min(maxUnits, days + 1));
+                          }}
                           className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed border-l"
-                          disabled={days >= 31}
+                          disabled={days >= (isHourly ? 24 : 31)}
                         >
                           <Plus size={14} />
                         </button>
@@ -526,15 +531,17 @@ export default function ProductDetailsPage() {
                         <div className="space-y-2 pt-3 border-t border-gray-200">
                           <div className="flex justify-between items-center bg-blue-50/80 p-2.5 rounded-lg border border-blue-100">
                             <span className="text-sm font-semibold text-blue-900">
-                              Per Day Price
+                              {isHourly ? "Per Hour Price" : "Per Day Price"}
                             </span>
                             <span className="font-bold text-lg text-blue-900">
-                              ₹{dayPrice.toLocaleString()}
+                              ₹{unitPrice.toLocaleString()}
                             </span>
                           </div>
                           <div className="flex justify-between text-sm text-gray-600 px-1">
                             <span>Rental Duration</span>
-                            <span className="font-medium">{days} Days</span>
+                            <span className="font-medium">
+                              {days} {isHourly ? "Hours" : "Days"}
+                            </span>
                           </div>
                           <div className="flex justify-between text-sm text-gray-600 px-1">
                             <span>Quantity</span>
@@ -547,11 +554,11 @@ export default function ProductDetailsPage() {
                                 Total Amount
                               </span>
                               <span className="text-[10px] text-gray-400 font-normal">
-                                (Price × Days × Qty)
+                                {isHourly ? "(Price × Hours × Qty)" : "(Price × Days × Qty)"}
                               </span>
                             </div>
                             <div className="text-2xl font-extrabold text-blue-700">
-                              ₹{(dayPrice * days * quantity).toLocaleString()}
+                              ₹{(unitPrice * days * quantity).toLocaleString()}
                             </div>
                           </div>
                         </div>
