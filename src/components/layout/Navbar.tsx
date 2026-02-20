@@ -425,7 +425,7 @@ export const Navbar: React.FC = () => {
             >
               <div
                 ref={cityDropdownRef}
-                className="relative flex items-stretch bg-white border-r border-gray-300 min-w-[150px]"
+                className="relative flex items-stretch bg-white border-r border-gray-300 min-w-[170px]"
               >
                 <button
                   type="button"
@@ -457,20 +457,20 @@ export const Navbar: React.FC = () => {
                   </div>
                 </button>
                 {isCityDropdownOpen && (
-                  <div className="absolute left-0 top-full mt-2 w-64 bg-white border border-gray-200 rounded-md shadow-lg z-40">
+                  <div className="absolute left-0 top-full mt-2 w-64 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 z-40 overflow-hidden">
                     <div className="p-2 border-b border-gray-100">
                       <div className="flex items-center gap-2">
                         <input
                           type="text"
                           placeholder="Search city"
-                          className="flex-1 px-2 py-2 text-xs border border-gray-200 rounded-md outline-none focus:border-upleex-blue"
+                          className="flex-1 px-2 py-2 text-xs border border-gray-200 rounded-lg outline-none focus:border-upleex-purple"
                           value={citySearchTerm}
                           onChange={handleCitySearchChange}
                           onKeyDown={handleCitySearchKeyDown}
                         />
                         <button
                           type="button"
-                          className="px-2 py-2 text-xs bg-upleex-blue text-white rounded-md hover:bg-blue-600 cursor-pointer"
+                          className="px-2 py-2 text-xs bg-upleex-purple text-white rounded-lg hover:bg-upleex-blue cursor-pointer"
                           onClick={handleCitySearchButtonClick}
                         >
                           <Search size={14} />
@@ -488,28 +488,29 @@ export const Navbar: React.FC = () => {
                             key={city.id}
                             type="button"
                             onClick={() => handleCitySelect(city)}
-                            className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer ${selectedCityId === String(city.id)
-                                ? 'bg-blue-50 text-blue-600'
-                                : 'text-gray-700'
-                              }`}
+                            className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
+                              selectedCityId === String(city.id)
+                                ? 'bg-purple-50 text-upleex-purple'
+                                : 'text-slate-600 hover:bg-gray-50 hover:text-slate-900 cursor-pointer'
+                            }`}
                           >
                             {city.city_name}
                           </button>
                         ))
                       ) : (
                         !isCityLoading && citySearchTerm.trim() !== '' && (
-                          <div className="px-3 py-4 text-sm text-gray-500 text-center">
+                          <div className="px-4 py-4 text-sm text-slate-500 text-center">
                             No cities found for "{citySearchTerm}"
                           </div>
                         )
                       )}
                       {isCityLoading && (
-                        <div className="px-3 py-2 text-sm text-gray-500 text-center">
+                        <div className="px-4 py-2 text-sm text-slate-500 text-center">
                           Loading...
                         </div>
                       )}
                       {!isCityLoading && cities.length === 0 && citySearchTerm.trim() === '' && (
-                        <div className="px-3 py-4 text-sm text-gray-500 text-center">
+                        <div className="px-4 py-4 text-sm text-slate-500 text-center">
                           Type to search cities
                         </div>
                       )}

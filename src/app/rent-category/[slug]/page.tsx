@@ -49,6 +49,7 @@ function RentCategoryContent() {
 
   const [tenureOptions, setTenureOptions] = useState([
     { label: 'All Durations', value: '0' },
+    { label: 'Hourly', value: '3' },
     { label: 'Daily', value: '1' },
     { label: 'Monthly', value: '2' },
   ]);
