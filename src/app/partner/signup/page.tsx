@@ -18,6 +18,8 @@ import {
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
+import { partnerService } from "@/services/partnerService";
+import toast from "react-hot-toast";
 
 export default function PartnerSignupPage() {
   const router = useRouter();
@@ -33,6 +35,7 @@ export default function PartnerSignupPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [timer, setTimer] = useState(0);
   const [errors, setErrors] = useState<{ fullName?: string; businessName?: string; email?: string; mobileNumber?: string; city?: string; otp?: string }>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -47,7 +50,7 @@ export default function PartnerSignupPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     const e: { mobileNumber?: string } = {};
     if (formData.mobileNumber.length < 10) e.mobileNumber = "Enter a valid 10-digit mobile number";
     if (Object.keys(e).length > 0) {
@@ -55,11 +58,32 @@ export default function PartnerSignupPage() {
       return;
     }
     setErrors(prev => ({ ...prev, mobileNumber: "" }));
-    setOtpSent(true);
-    setTimer(120);
+    try {
+      const res = await partnerService.businessRegister({
+        full_name: formData.fullName.trim(),
+        business_name: formData.businessName.trim(),
+        email: formData.email.trim(),
+        number: formData.mobileNumber,
+        alternate_number: formData.altMobileNumber || "",
+        country: "97"
+      });
+      const status = res?.status;
+      const message = res?.message || "OTP sent successfully";
+      if (status === 200) {
+        toast.success(message);
+        setOtpSent(true);
+        setTimer(120);
+      } else {
+        toast.error(message);
+      }
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Failed to send OTP";
+      toast.error(message);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!otpSent) {
       const e: { fullName?: string; businessName?: string; email?: string; mobileNumber?: string; city?: string } = {};
@@ -73,7 +97,7 @@ export default function PartnerSignupPage() {
         setErrors(prev => ({ ...prev, ...e }));
         return;
       }
-      handleSendOtp();
+      await handleSendOtp();
     } else {
       const e: { otp?: string } = {};
       if ((formData.otp || "").replace(/\D/g, "").length < 4) e.otp = "Enter the OTP";
@@ -81,7 +105,33 @@ export default function PartnerSignupPage() {
         setErrors(prev => ({ ...prev, ...e }));
         return;
       }
-      router.push('/partner');
+      try {
+        setIsSubmitting(true);
+        const res = await partnerService.businessRegister({
+          full_name: formData.fullName.trim(),
+          business_name: formData.businessName.trim(),
+          email: formData.email.trim(),
+          number: formData.mobileNumber,
+          alternate_number: formData.altMobileNumber || "",
+          country: "97",
+          otp: formData.otp
+        });
+        const status = res?.status;
+        const message = res?.message || "Registered successfully";
+
+        if (status === 200) {
+          toast.success(message);
+          router.push("/partner");
+        } else {
+          toast.error(message);
+        }
+      } catch (error: any) {
+        const message =
+          error?.response?.data?.message || "Something went wrong while registering";
+        toast.error(message);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -319,10 +369,14 @@ export default function PartnerSignupPage() {
                <div className="pt-4">
                   <Button
                     type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 py-6 text-lg"
-                    disabled={!formData.mobileNumber || formData.mobileNumber.length < 10}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/20 py-6 text-lg disabled:opacity-70 disabled:cursor-not-allowed"
+                    disabled={
+                      isSubmitting ||
+                      !formData.mobileNumber ||
+                      formData.mobileNumber.length < 10
+                    }
                   >
-                    {otpSent ? "Register Now" : "Send OTP"}
+                    {otpSent ? (isSubmitting ? "Registering..." : "Register Now") : "Send OTP"}
                   </Button>
                </div>
 

@@ -20,8 +20,7 @@ import { DownloadAppPopup } from '../features/DownloadAppPopup';
 import { Button } from '@/components/ui/Button';
 import { categoryService, Category } from '@/services/categoryService';
 import { useCart } from '@/context/CartContext';
-import { api } from '@/utils/axiosInstance';
-import endPointApi from '@/utils/endPointApi';
+import { searchService } from '@/services/searchService';
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -101,13 +100,27 @@ export const Navbar: React.FC = () => {
     const handleStorageChange = () => {
       readUserData();
     };
-
+    
     window.addEventListener('storage', handleStorageChange);
-
+    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+
+  useEffect(() => {
+    setSearchTerm('');
+    setSuggestions([]);
+    setShowSuggestions(false);
+
+    setSelectedCityId(null);
+    setCurrentLocation('select city');
+    setCitySearchTerm('');
+    setCities([]);
+    setHasLoadedInitialCities(false);
+    setCityPage(1);
+    setCityHasMore(true);
+  }, [pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -129,29 +142,16 @@ export const Navbar: React.FC = () => {
     };
   }, []);
 
-  const CITY_PAGE_SIZE = 10;
-
   const loadCities = async (page = 1, append = false, searchText?: string) => {
     try {
       setIsCityLoading(true);
-      const formData = new FormData();
-      formData.append('page', String(page));
-
-      // Use the provided searchText or fall back to citySearchTerm state
       const query = searchText !== undefined ? searchText : citySearchTerm;
-
-      if (query.trim()) {
-        formData.append('search', query.trim());
-      }
-
-      const res = await api.post(endPointApi.webAllCityList, formData);
-      const data = res.data?.data || [];
+      const data = await searchService.getCities(page, query);
 
       setCities(prev => (append ? [...prev, ...data] : data));
       setCityPage(page);
-      setCityHasMore(data.length >= CITY_PAGE_SIZE);
+      setCityHasMore(data.length >= 10);
 
-      // Update the citySearchTerm state to match the search we just performed
       if (searchText !== undefined) {
         setCitySearchTerm(searchText);
       }
@@ -229,13 +229,7 @@ export const Navbar: React.FC = () => {
   const fetchSuggestions = async (query: string) => {
     try {
       setIsSuggestionLoading(true);
-      const formData = new FormData();
-      formData.append('search', query);
-      if (selectedCityId) {
-        formData.append('city', selectedCityId);
-      }
-      const res = await api.post(endPointApi.webProductSuggestionList, formData);
-      const data = res.data?.data || [];
+      const data = await searchService.getProductSuggestions(query, selectedCityId);
       setSuggestions(data);
       setShowSuggestions(true);
     } catch (error) {

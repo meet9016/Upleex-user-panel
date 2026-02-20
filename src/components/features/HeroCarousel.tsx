@@ -15,7 +15,7 @@ const BANNERS = [
     title: "Join the Rental Revolution",
     subtitle: "As seen on Shark Tank India",
     description: "Rent furniture, appliances, and more at affordable rates.",
-    image: "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=1200&auto=format&fit=crop", // Shark Tank ish vibe
+    image: "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=1200&auto=format&fit=crop",
     color: "bg-blue-900"
   },
   {
@@ -23,7 +23,7 @@ const BANNERS = [
     title: "Be Smart, Rent Smart",
     subtitle: "Warm winters with Oil Heaters",
     description: "Get premium heaters on rent starting @ ₹499/mo",
-    image: "https://images.unsplash.com/photo-1512445239398-6d0c4c575b89?q=80&w=1200&auto=format&fit=crop", // Cozy room
+    image: "https://images.unsplash.com/photo-1512445239398-6d0c4c575b89?q=80&w=1200&auto=format&fit=crop",
     color: "bg-orange-600"
   },
   {
@@ -31,7 +31,7 @@ const BANNERS = [
     title: "Work From Home Setup",
     subtitle: "Ergonomic Chairs & Desks",
     description: "Boost your productivity with our premium office furniture.",
-    image: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1200&auto=format&fit=crop", // Office
+    image: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1200&auto=format&fit=crop",
     color: "bg-slate-800"
   },
   {
@@ -39,7 +39,7 @@ const BANNERS = [
     title: "Fitness at Home",
     subtitle: "Treadmills & Cross Trainers",
     description: "Achieve your fitness goals without buying expensive equipment.",
-    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop", // Gym
+    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop",
     color: "bg-emerald-800"
   }
 ];
@@ -49,7 +49,6 @@ export const HeroCarousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeCategory, setActiveCategory] = useState("Home Appliance");
 
-  // Auto-scroll
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % BANNERS.length);
@@ -65,22 +64,10 @@ export const HeroCarousel = () => {
     setActiveIndex((prev) => (prev - 1 + BANNERS.length) % BANNERS.length);
   };
 
-  const getSlideStyles = (index: number) => {
-    if (index === activeIndex) {
-      return "scale-100 opacity-100 z-20 translate-x-0";
-    } else if (index === (activeIndex - 1 + BANNERS.length) % BANNERS.length) {
-      return "scale-90 opacity-60 z-10 -translate-x-[15%] md:-translate-x-[50%]";
-    } else if (index === (activeIndex + 1) % BANNERS.length) {
-      return "scale-90 opacity-60 z-10 translate-x-[15%] md:translate-x-[50%]";
-    } else {
-      return "scale-75 opacity-0 z-0 hidden"; // Hide others for simplicity or stack them
-    }
-  };
-
   return (
     <section className="w-full py-8 overflow-hidden bg-gray-50">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-
+        
         {/* Categories - Horizontal Scroll */}
         {/* <div className="flex overflow-x-auto pb-6 gap-2 no-scrollbar justify-start md:justify-center">
           {CATEGORIES.map((cat, i) => (
@@ -101,17 +88,19 @@ export const HeroCarousel = () => {
         {/* Carousel Container */}
         <div className="relative h-[400px] md:h-[500px] w-full max-w-full mx-auto mt-4 flex items-center justify-center perspective-1000">
 
-          {/* Navigation Buttons */}
+          {/* Navigation Buttons - Fixed positioning */}
           <button
             onClick={handlePrev}
-            className="absolute left-2 md:-left-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/80 shadow-lg hover:bg-white transition-all text-slate-700 backdrop-blur-sm"
+            className="absolute left-2 md:-left-4 top-1/2 -translate-y-1/2 z-40 p-2 rounded-full bg-white/80 shadow-lg hover:bg-white transition-all text-slate-700 backdrop-blur-sm cursor-pointer"
+            style={{ top: '50%', transform: 'translateY(-50%)' }} /* Added inline style for extra safety */
           >
             <ChevronLeft size={24} />
           </button>
 
           <button
             onClick={handleNext}
-            className="absolute right-2 md:-right-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/80 shadow-lg hover:bg-white transition-all text-slate-700 backdrop-blur-sm"
+            className="absolute right-2 md:-right-4 top-1/2 -translate-y-1/2 z-40 p-2 rounded-full bg-white/80 shadow-lg hover:bg-white transition-all text-slate-700 backdrop-blur-sm cursor-pointer"
+            style={{ top: '50%', transform: 'translateY(-50%)' }} /* Added inline style for extra safety */
           >
             <ChevronRight size={24} />
           </button>
@@ -119,12 +108,11 @@ export const HeroCarousel = () => {
           {/* Slides */}
           <div className="relative w-full h-full flex items-center justify-center">
             {BANNERS.map((banner, index) => {
-              // Calculate position relative to active index
-              let position = 0; // 0 = active, -1 = prev, 1 = next
+              let position = 0;
               if (index === activeIndex) position = 0;
               else if (index === (activeIndex - 1 + BANNERS.length) % BANNERS.length) position = -1;
               else if (index === (activeIndex + 1) % BANNERS.length) position = 1;
-              else position = 2; // Hidden/Far
+              else position = 2;
 
               const isActive = position === 0;
               const isPrev = position === -1;

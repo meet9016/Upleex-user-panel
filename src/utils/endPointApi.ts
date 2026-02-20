@@ -25,6 +25,7 @@ export interface EndPointApi {
     webAddToCart: string;
     webCartList: string;
     webRemoveCart: string;
+    businessRegister: string;
 }
 
 // Define and export the API endpoint object
@@ -55,6 +56,7 @@ const endPointApi: EndPointApi = {
     webAddToCart: 'web-add-to-cart',
     webCartList: 'web-cart-list',
     webRemoveCart: 'web-remove-cart',
+    businessRegister: 'business-register',
 };
 
 
