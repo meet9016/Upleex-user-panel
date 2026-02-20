@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 const CATEGORIES = [
-  "Hospital Beds", "Home Appliance", "Bikes & Scooters", "Geyser", 
+  "Hospital Beds", "Home Appliance", "Bikes & Scooters", "Geyser",
   "Wheel Chairs", "Musical Instruments", "AC & Coolers", "Generators", "All Categories"
 ];
 
@@ -80,7 +80,7 @@ export const HeroCarousel = () => {
   return (
     <section className="w-full py-8 overflow-hidden bg-gray-50">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Categories - Horizontal Scroll */}
         {/* <div className="flex overflow-x-auto pb-6 gap-2 no-scrollbar justify-start md:justify-center">
           {CATEGORIES.map((cat, i) => (
@@ -100,18 +100,18 @@ export const HeroCarousel = () => {
 
         {/* Carousel Container */}
         <div className="relative h-[400px] md:h-[500px] w-full max-w-full mx-auto mt-4 flex items-center justify-center perspective-1000">
-          
+
           {/* Navigation Buttons */}
-          <button 
+          <button
             onClick={handlePrev}
-            className="absolute left-2 md:-left-4 z-30 p-2 rounded-full bg-white/80 shadow-lg hover:bg-white transition-all text-slate-700 backdrop-blur-sm"
+            className="absolute left-2 md:-left-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/80 shadow-lg hover:bg-white transition-all text-slate-700 backdrop-blur-sm"
           >
             <ChevronLeft size={24} />
           </button>
-          
-          <button 
+
+          <button
             onClick={handleNext}
-            className="absolute right-2 md:-right-4 z-30 p-2 rounded-full bg-white/80 shadow-lg hover:bg-white transition-all text-slate-700 backdrop-blur-sm"
+            className="absolute right-2 md:-right-4 top-1/2 -translate-y-1/2 z-30 p-2 rounded-full bg-white/80 shadow-lg hover:bg-white transition-all text-slate-700 backdrop-blur-sm"
           >
             <ChevronRight size={24} />
           </button>
@@ -119,59 +119,59 @@ export const HeroCarousel = () => {
           {/* Slides */}
           <div className="relative w-full h-full flex items-center justify-center">
             {BANNERS.map((banner, index) => {
-               // Calculate position relative to active index
-               let position = 0; // 0 = active, -1 = prev, 1 = next
-               if (index === activeIndex) position = 0;
-               else if (index === (activeIndex - 1 + BANNERS.length) % BANNERS.length) position = -1;
-               else if (index === (activeIndex + 1) % BANNERS.length) position = 1;
-               else position = 2; // Hidden/Far
+              // Calculate position relative to active index
+              let position = 0; // 0 = active, -1 = prev, 1 = next
+              if (index === activeIndex) position = 0;
+              else if (index === (activeIndex - 1 + BANNERS.length) % BANNERS.length) position = -1;
+              else if (index === (activeIndex + 1) % BANNERS.length) position = 1;
+              else position = 2; // Hidden/Far
 
-               const isActive = position === 0;
-               const isPrev = position === -1;
-               const isNext = position === 1;
-               const isHidden = position === 2;
+              const isActive = position === 0;
+              const isPrev = position === -1;
+              const isNext = position === 1;
+              const isHidden = position === 2;
 
-               return (
-                  <motion.div
-                    key={banner.id}
-                    className={`absolute w-[90%] md:w-[85%] h-full rounded-2xl overflow-hidden shadow-2xl cursor-pointer ${isHidden ? 'pointer-events-none' : ''}`}
-                    initial={false}
-                    animate={{
-                      scale: isActive ? 1 : (isHidden ? 0.7 : 0.85),
-                      opacity: isActive ? 1 : (isHidden ? 0 : 0.5),
-                      x: isActive ? '0%' : (isPrev ? '-60%' : (isNext ? '60%' : '0%')),
-                      zIndex: isActive ? 30 : (isHidden ? 10 : 20),
-                      filter: isActive ? 'blur(0px)' : (isHidden ? 'blur(5px)' : 'blur(2px)')
-                    }}
-                    transition={{
-                      duration: 0.8,
-                      ease: [0.16, 1, 0.3, 1]
-                    }}
-                    style={{ willChange: "transform, opacity" }}
-                    onClick={() => {
-                      if (isPrev) handlePrev();
-                      if (isNext) handleNext();
-                    }}
-                  >
-                   <div className="relative w-full h-full">
-                     <img 
-                       src={banner.image} 
-                       alt={banner.title} 
-                       className="w-full h-full object-cover"
-                     />
-                     <div className={`absolute inset-0 bg-gradient-to-r ${banner.color} opacity-80 mix-blend-multiply`}></div>
-                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
-                     
-                     <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-12 text-white">
-                        <div className={`transition-all duration-500 delay-100 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-                            <p className="text-sm md:text-lg font-medium text-blue-200 mb-2 uppercase tracking-widest">{banner.subtitle}</p>
-                            <h2 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight max-w-lg">
-                                {banner.title}
-                            </h2>
-                            <p className="text-gray-200 text-sm md:text-base max-w-md mb-8 line-clamp-2">
-                                {banner.description}
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              return (
+                <motion.div
+                  key={banner.id}
+                  className={`absolute w-[90%] md:w-[85%] h-full rounded-2xl overflow-hidden shadow-2xl cursor-pointer ${isHidden ? 'pointer-events-none' : ''}`}
+                  initial={false}
+                  animate={{
+                    scale: isActive ? 1 : (isHidden ? 0.7 : 0.85),
+                    opacity: isActive ? 1 : (isHidden ? 0 : 0.5),
+                    x: isActive ? '0%' : (isPrev ? '-60%' : (isNext ? '60%' : '0%')),
+                    zIndex: isActive ? 30 : (isHidden ? 10 : 20),
+                    filter: isActive ? 'blur(0px)' : (isHidden ? 'blur(5px)' : 'blur(2px)')
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                  style={{ willChange: "transform, opacity" }}
+                  onClick={() => {
+                    if (isPrev) handlePrev();
+                    if (isNext) handleNext();
+                  }}
+                >
+                  <div className="relative w-full h-full">
+                    <img
+                      src={banner.image}
+                      alt={banner.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-r ${banner.color} opacity-80 mix-blend-multiply`}></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent"></div>
+
+                    <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-12 text-white">
+                      <div className={`transition-all duration-500 delay-100 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+                        <p className="text-sm md:text-lg font-medium text-blue-200 mb-2 uppercase tracking-widest">{banner.subtitle}</p>
+                        <h2 className="text-3xl md:text-5xl font-extrabold mb-4 leading-tight max-w-lg">
+                          {banner.title}
+                        </h2>
+                        <p className="text-gray-200 text-sm md:text-base max-w-md mb-8 line-clamp-2">
+                          {banner.description}
+                        </p>
+                        {/* <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                 <Button 
                                     onClick={() => router.push('/membership')}
                                     className="font-bold px-4 py-3 sm:px-8 text-sm sm:text-base cursor-pointer whitespace-nowrap w-full sm:w-auto"
@@ -185,12 +185,12 @@ export const HeroCarousel = () => {
                                 >
                                     List Your Service
                                 </Button>
-                            </div>
-                        </div>
-                     </div>
-                   </div>
-                 </motion.div>
-               );
+                            </div> */}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
             })}
           </div>
         </div>

@@ -7,6 +7,7 @@ import { categories } from '@/data/mockData';
 import { ArrowRight, ChevronDown, ArrowUpDown, Calendar, Check, PackageOpen } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
+import { Pagination } from '@/components/ui/Pagination';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { motion } from 'framer-motion';
@@ -37,10 +38,9 @@ function RentCategoryContent() {
     }
   }, [subId]);
   
-  // Dropdown UI States
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isTenureOpen, setIsTenureOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState({ label: 'All Types', value: '0' });
+  const [selectedSort, setSelectedSort] = useState({ label: 'Rent', value: '1' });
   const [selectedTenure, setSelectedTenure] = useState({ label: 'All Durations', value: '0' });
   const [sortOptions, setSortOptions] = useState([
     { label: 'All Types', value: '0' },
@@ -56,6 +56,10 @@ function RentCategoryContent() {
 
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [productList, setProductList] = useState<any[]>([]);
+  const [productCount, setProductCount] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const ITEMS_PER_PAGE = 12;
 
   // Dynamic filter categories: "All" + API data
   const filterCategories = [
@@ -93,18 +97,15 @@ function RentCategoryContent() {
     }
   }, [slug]);
 
-  // Fetch products based on selected subcategory filter
   useEffect(() => {
     const fetchProducts = async () => {
       const formData = new FormData();
       formData.append("category_id", slug);
 
-      // If "All" is selected, don't pass sub_category_id, otherwise pass the selected filter
       if (activeFilter !== 'all') {
         formData.append("sub_category_id", activeFilter);
       }
 
-      // Add dynamic filters from screenshot
       if (selectedSort.value !== '0') {
         formData.append("filter_rent_sell", selectedSort.value);
       }
@@ -114,17 +115,103 @@ function RentCategoryContent() {
       }
 
       try {
+        formData.append("page", String(currentPage));
+
         const res = await api.post(endPointApi.webCategoryProductList, formData);
-        setProductList(res.data.data || []);
+        const payload = res.data?.data;
+        const root = res.data || {};
+
+        // Case 1: data itself is array of products, meta on root
+        if (Array.isArray(payload)) {
+          setProductList(payload);
+
+          const totalFromRoot =
+            root.product_count ??
+            root.total_items ??
+            root.total_count ??
+            root.total ??
+            null;
+
+          const lastPageFromRoot =
+            root.last_page ??
+            root.total_pages ??
+            root.pages ??
+            null;
+
+          if (totalFromRoot !== null && totalFromRoot !== undefined) {
+            const totalNumber = Number(totalFromRoot);
+            setProductCount(totalNumber);
+
+            const perPageRaw = root.per_page ?? ITEMS_PER_PAGE;
+            const perPage = Number(perPageRaw) || ITEMS_PER_PAGE;
+            const pages = Math.max(1, Math.ceil(totalNumber / perPage));
+            setTotalPages(pages);
+          } else if (lastPageFromRoot !== null && lastPageFromRoot !== undefined) {
+            const pages = Math.max(1, Number(lastPageFromRoot));
+            setProductCount(null);
+            setTotalPages(pages);
+          } else {
+            // Fallback: assume more pages while we keep receiving full pages
+            const hasFullPage = payload.length >= ITEMS_PER_PAGE;
+            setProductCount(null);
+            setTotalPages(hasFullPage ? currentPage + 1 : currentPage);
+          }
+        } else {
+          // Case 2: data is object with product_data and pagination/meta
+          const products = Array.isArray(payload?.product_data) ? payload.product_data : [];
+          setProductList(products);
+
+          const pagination = payload?.pagination || payload?.pager || null;
+
+          const countRaw =
+            payload?.product_count ??
+            pagination?.total ??
+            pagination?.total_items ??
+            pagination?.total_count ??
+            null;
+
+          const lastPageRaw =
+            payload?.total_pages ??
+            payload?.last_page ??
+            pagination?.total_pages ??
+            pagination?.last_page ??
+            null;
+
+          if (countRaw !== null && countRaw !== undefined) {
+            const countNumber = Number(countRaw);
+            setProductCount(countNumber);
+
+            if (lastPageRaw !== null && lastPageRaw !== undefined) {
+              setTotalPages(Math.max(1, Number(lastPageRaw)));
+            } else {
+              const perPageRaw = pagination?.per_page ?? ITEMS_PER_PAGE;
+              const perPage = Number(perPageRaw) || ITEMS_PER_PAGE;
+              const pages = Math.max(1, Math.ceil(countNumber / perPage));
+              setTotalPages(pages);
+            }
+          } else if (lastPageRaw !== null && lastPageRaw !== undefined) {
+            setProductCount(null);
+            setTotalPages(Math.max(1, Number(lastPageRaw)));
+          } else {
+            setProductCount(null);
+            setTotalPages(1);
+          }
+        }
       } catch (err) {
         console.error("Error fetching products", err);
         setProductList([]);
+        setProductCount(null);
+        setTotalPages(1);
       }
     };
 
     if (slug) {
       fetchProducts();
     }
+  }, [slug, activeFilter, selectedSort, selectedTenure, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
   }, [slug, activeFilter, selectedSort, selectedTenure]);
   const router = useRouter();
 
@@ -137,8 +224,6 @@ function RentCategoryContent() {
   };
 
   const currentCategoryName = filterCategories.find(c => c.slug === activeFilter)?.name || 'Products';
-
-  // Use products from API instead of mock data
   const filteredProducts = productList;
 
   return (
@@ -279,34 +364,6 @@ function RentCategoryContent() {
           </div>
         </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product, index) => (
-            <motion.div
-              key={product.product_id || product.id || index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <ProductCard product={product} />
-            </motion.div>
-          ))}
-        </div>
-
-
-        {/* Load More Button */}
-        {filteredProducts.length > 0 && (
-          <div className="mt-12 text-center">
-            <Button
-              variant="primary" size="lg" className="px-12 shadow-lg shadow-purple-500/20">
-              Load More Products
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </div>
-        )}
-
-        {/* Empty State */}
         {filteredProducts.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 px-4">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
@@ -316,18 +373,31 @@ function RentCategoryContent() {
             <p className="text-gray-500 text-center max-w-md mb-8">
               We couldn't find any products in this category at the moment. Try adjusting your filters or check back later.
             </p>
-            {/* <Button 
-              variant="outline" 
-              onClick={() => {
-                handleFilterClick("all");
-                setSelectedSort({ label: 'All Types', value: '0' });
-                setSelectedTenure({ label: 'All Durations', value: '0' });
-              }}
-              className="rounded-full px-8"
-            >
-              Clear All Filters
-            </Button> */}
           </div>
+        )}
+
+        {filteredProducts.length > 0 && (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map((product, index) => (
+                <motion.div
+                  key={product.product_id || product.id || index}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </>
         )}
 
         {/* SEO Content Section */}

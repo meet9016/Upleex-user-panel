@@ -9,6 +9,9 @@ export interface EndPointApi {
     webCategoryProductList: string;
     webSingleProductList: string;
     webVendorProductList: string;
+    webAllCityList: string;
+    webProductSuggestionList: string;
+    webSearchProductList: string;
 
     //Product details
     webGetQuote: string;
@@ -36,6 +39,9 @@ const endPointApi: EndPointApi = {
     webCategoryProductList: 'web-category-product-list',
     webSingleProductList: 'web-single-product-list',
     webVendorProductList: 'web-vendor-product-list',
+    webAllCityList: 'web-all-city-list',
+    webProductSuggestionList: 'web-product-suggestion-list',
+    webSearchProductList: 'web-search-product-list',
 
     //Product details
     webGetQuote: 'web-get-quote',

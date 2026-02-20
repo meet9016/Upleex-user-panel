@@ -69,6 +69,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const response = await cartService.removeFromCart(cartId);
             if (response.status === 200) {
                 toast.success('Item removed from cart');
+                setCartItems(prev => prev.filter(item => item.cart_id !== cartId));
                 await refreshCart();
             } else {
                 toast.error(response.message || 'Failed to remove item');
