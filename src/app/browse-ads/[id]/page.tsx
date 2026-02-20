@@ -109,8 +109,7 @@ export default function ProductDetailsPage() {
         if (data?.product_main_image) {
           setSelectedImage(data.product_main_image);
         }
-        const listingType =
-          (data?.product_listing_type_name || data?.product_type_name)?.toLowerCase();
+        const listingType = data?.product_listing_type_name?.toLowerCase();
         if (listingType === "daily" || listingType === "hourly") setActiveTab("daily");
         else if (listingType === "monthly") setActiveTab("monthly");
       } catch (err) {
@@ -199,8 +198,9 @@ export default function ProductDetailsPage() {
     setMinDate(formattedDate);
   }, []);
 
-  const listingType = (productDetails?.product_type_name || productDetails?.product_listing_type_name)?.toLowerCase();
-  const isSell = listingType === "sell";
+  const listingType = productDetails?.product_listing_type_name?.toLowerCase();
+  const baseType = productDetails?.product_type_name?.toLowerCase();
+  const isSell = baseType === "sell";
   const isDaily = listingType === "daily";
   const isHourly = listingType === "hourly";
 
@@ -259,7 +259,7 @@ export default function ProductDetailsPage() {
 
                 {/* Trust Badges - Show on left only for Rent */}
                 {/* {!isSell && ( */}
-                  <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-200">
+                  <div className="grid grid-cols-4 gap-3 mt-4 pt-4 border-t border-gray-200">
                     <div className="flex flex-col items-center text-center gap-1.5">
                       <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
                         <Shield size={16} strokeWidth={2.5} />
@@ -298,7 +298,7 @@ export default function ProductDetailsPage() {
             </div>
 
             {/* ─── Right: Content ─────────────────────────────────────── */}
-            <div className="p-4 lg:p-5 xl:p-4 lg:pb-2 xl:pb-2 flex flex-col">
+            <div className="p-4 lg:p-4 xl:p-3 lg:pb-2 xl:pb-2 flex flex-col">
               <div className="flex flex-col h-full">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">
@@ -439,12 +439,12 @@ export default function ProductDetailsPage() {
                           if (!selectedMonthData) return null;
                           
                           return (
-                            <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/50">
-                              <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <div className="p-3 border border-gray-200 rounded-xl bg-gray-50/50">
+                              {/* <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                                 <span className="w-1 h-4 bg-blue-600 rounded-full"></span>
                                 Payment Breakdown
-                              </h3>
-                              <div className="space-y-2">
+                              </h3> */}
+                              <div className="space-y-1">
                                 <div className="flex justify-between text-sm">
                                   <span className="text-gray-600">Plan Duration</span>
                                   <span className="font-medium text-gray-900">{selectedMonthData.month_name}</span>
@@ -663,7 +663,7 @@ export default function ProductDetailsPage() {
                 {/* CTAs */}
                 <div
                   className={clsx(
-                    "flex flex-col sm:flex-row gap-4 mt-6",
+                    "flex flex-col sm:flex-row gap-4 mt-5",
                     isSell && "items-stretch"
                   )}
                 >
@@ -691,7 +691,7 @@ export default function ProductDetailsPage() {
                       size="lg"
                       className={clsx(
                         "shadow-xl shadow-blue-500/20 h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
-                        "bg-upleex-blue hover:bg-blue-700 text-white border-none"
+                        "text-white border-none"
                       )}
                       onClick={handleAddToCart}
                       disabled={isAddingToCart}
@@ -724,7 +724,7 @@ export default function ProductDetailsPage() {
                 </div>
 
                 {/* {isSell && ( */}
-                  <div className="mt-4">
+                  <div className="mt-3">
                     <div className="bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
                         <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
@@ -738,12 +738,12 @@ export default function ProductDetailsPage() {
                             {productDetails?.vendor_name || 'Vendor'}
                           </div>
                           <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
-                            {productDetails?.vendor_name && (
+                            {/* {productDetails?.vendor_name && (
                               <>
                                 <span className="w-1 h-1 rounded-full bg-gray-300" />
                                 
                               </>
-                            )}
+                            )} */}
                           </div>
                         </div>
                       </div>
