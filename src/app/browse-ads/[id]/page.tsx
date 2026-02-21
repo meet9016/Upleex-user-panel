@@ -723,9 +723,14 @@ export default function ProductDetailsPage() {
                   </Button> */}
                 </div>
 
-                {/* {isSell && ( */}
-                  <div className="mt-3">
-                    <div className="bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4">
+                {/* Vendor / Sold By */}
+                  <div className={clsx("mt-3", isSell ? "mb-0" : "mb-2")}>
+                    <div
+                      className={clsx(
+                        "bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4",
+                        !isSell && (isDaily || isHourly) && "py-4 min-h-[88px]"
+                      )}
+                    >
                       <div className="flex items-center gap-3">
                         <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
                           <Store size={22} className="text-upleex-blue" />
@@ -765,11 +770,10 @@ export default function ProductDetailsPage() {
                       </Button>
                     </div>
                   </div>
-                {/* )} */}
 
                 {/* Trust Badges - Show on right only for Sell */}
-                {/* {isSell && (
-                  <div className="grid grid-cols-4 gap-3 mt-8 pt-6 border-t border-gray-100">
+                {isSell && (
+                  <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-100">
                     <div className="flex flex-col items-center text-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
                         <Shield size={18} strokeWidth={2.5} />
@@ -803,7 +807,7 @@ export default function ProductDetailsPage() {
                       </span>
                     </div>
                   </div>
-                )} */}
+                )}
 
 
               </div>
