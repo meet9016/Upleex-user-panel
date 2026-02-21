@@ -206,7 +206,7 @@ export default function ProductDetailsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
         <div className="mb-4">
           <BackButton />
         </div>
@@ -258,8 +258,8 @@ export default function ProductDetailsPage() {
                 )}
 
                 {/* Trust Badges - Show on left only for Rent */}
-                {/* {!isSell && ( */}
-                  <div className="grid grid-cols-4 gap-3 mt-4 pt-4 border-t border-gray-200">
+                {!isSell && (
+                  <div className="grid grid-cols-4 gap-3 mt-5 pt-4 border-t border-gray-200">
                     <div className="flex flex-col items-center text-center gap-1.5">
                       <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
                         <Shield size={16} strokeWidth={2.5} />
@@ -293,7 +293,7 @@ export default function ProductDetailsPage() {
                       </span>
                     </div>
                   </div>
-                {/* )} */}
+                )}
               </div>
             </div>
 
@@ -728,7 +728,7 @@ export default function ProductDetailsPage() {
                     <div
                       className={clsx(
                         "bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4",
-                        !isSell && (isDaily || isHourly) && "py-4 min-h-[88px]"
+                        !isSell && (isDaily || isHourly) && "py-4 min-h-[96px]"
                       )}
                     >
                       <div className="flex items-center gap-3">
