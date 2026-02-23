@@ -33,9 +33,75 @@ class CategoryService {
             return this.homeData;
         }
         try {
-            const res = await api.post(endPointApi.home, {});
-            this.homeData = res.data;
-            return res.data;
+            const [categoryRes, subCategoryRes] = await Promise.all([
+                api.get(endPointApi.home, {
+                    params: {
+                        page: 1,
+                        limit: 100,
+                    },
+                }),
+                api.get(endPointApi.webSubCategoryList, {
+                    params: {
+                        page: 1,
+                        limit: 1000,
+                    },
+                }),
+            ]);
+
+            const categoryPayload = categoryRes.data || {};
+            const rawCategories = Array.isArray(categoryPayload.data) ? categoryPayload.data : [];
+
+            const subCategoryPayload = subCategoryRes.data || {};
+            const rawSubCategories = Array.isArray(subCategoryPayload.data) ? subCategoryPayload.data : [];
+
+            const subcategoriesByCategory: Record<string, SubCategory[]> = {};
+
+            rawSubCategories.forEach((sub: any) => {
+                const categoryId = sub.categoryId || sub.category_id;
+                if (!categoryId) return;
+
+                const mappedSubcategory: SubCategory = {
+                    subcategory_id: sub.id || sub._id || '',
+                    subcategory_name: sub.name || sub.subcategory_name || '',
+                    image: sub.image
+                        ? `${process.env.NEXT_PUBLIC_APP_URL}${sub.image}`
+                        : '',
+                };
+
+                if (!subcategoriesByCategory[categoryId]) {
+                    subcategoriesByCategory[categoryId] = [];
+                }
+
+                subcategoriesByCategory[categoryId].push(mappedSubcategory);
+            });
+
+            const mappedCategories: Category[] = rawCategories.map((cat: any) => {
+                const id = cat.id || cat._id || '';
+
+                return {
+                    categories_id: id,
+                    categories_name: cat.categories_name || cat.name || '',
+                    image: cat.image
+        ? `${process.env.NEXT_PUBLIC_APP_URL}${cat.image}`
+        : '',
+
+                    product_count: cat.product_count ? String(cat.product_count) : '0',
+                    subcategories: subcategoriesByCategory[id] || [],
+                };
+            });
+
+            const transformed: HomeResponse = {
+                status: categoryPayload.success === false ? 500 : 200,
+                message: categoryPayload.message || '',
+                data: {
+                    slider: [],
+                    banner: [],
+                    all_categories: mappedCategories,
+                },
+            };
+
+            this.homeData = transformed;
+            return transformed;
         } catch (error) {
             console.error('Error fetching home data:', error);
             throw error;

@@ -70,23 +70,19 @@ export default function ProductDetailsPage() {
   };
 
   useEffect(() => {
-    if (productDetails?.month_arrr?.length) {
-      setSelectedMonthId(productDetails.month_arrr[0].product_months_id);
+    if (productDetails?.month_arr?.length) {
+      setSelectedMonthId(productDetails.month_arr[0].product_months_id);
     }
   }, [productDetails]);
 
-  // Calculated values from API data
-  const monthlyPrice = (
-    productDetails?.month_arrr?.[
-      selectedDuration === 3
-        ? 0
-        : selectedDuration === 6
-          ? 1
-          : selectedDuration === 9
-            ? 2
-            : 3
-    ]?.price || 0
-  ) * quantity; // Multiply by quantity
+  const monthlyPrice = (() => {
+    if (!productDetails?.month_arr?.length || !selectedMonthId) return 0;
+    const selectedMonth =
+      productDetails.month_arr.find(
+        (m: any) => m.product_months_id === selectedMonthId
+      ) || productDetails.month_arr[0];
+    return Number(selectedMonth.price || 0) * quantity;
+  })();
   
   const unitPrice = productDetails?.price || 0;
   const totalPrice = activeTab === "monthly" ? monthlyPrice : unitPrice * days * quantity; // Include quantity in daily/hourly total
@@ -350,7 +346,7 @@ export default function ProductDetailsPage() {
 
                 {activeTab === "monthly" ? (
                   <div className={clsx(isSell && "hidden")}>
-                    {productDetails?.month_arrr?.length > 0 ? (
+                    {productDetails?.month_arr?.length > 0 ? (
                       <>
                         <div>
                           <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
@@ -371,7 +367,7 @@ export default function ProductDetailsPage() {
                               ref={scrollContainerRef}
                               className="flex overflow-x-auto gap-3.5 pb-4 pt-3 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
                             >
-                              {productDetails.month_arrr.map((monthData: any) => {
+                              {productDetails.month_arr.map((monthData: any) => {
                                 const active =
                                   selectedMonthId === monthData.product_months_id;
                                 // Show unit price, not multiplied by quantity
@@ -433,7 +429,7 @@ export default function ProductDetailsPage() {
 
                         {/* Summary Section for Monthly */}
                         {selectedMonthId && (() => {
-                          const selectedMonthData = productDetails.month_arrr.find(
+                          const selectedMonthData = productDetails.month_arr.find(
                             (m: any) => m.product_months_id === selectedMonthId
                           );
                           if (!selectedMonthData) return null;

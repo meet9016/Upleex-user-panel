@@ -53,13 +53,19 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
               flex items-center justify-center 
               group-hover:scale-110 transition-transform duration-300"
             >
-              <Image
-                src={image}
-                alt={categories_name}
-                width={96}
-                height={96}
-                className="w-full h-full object-cover"
-              />
+              {image ? (
+  <Image
+    src={image}
+    alt={categories_name}
+    width={96}
+    height={96}
+    className="w-full h-full object-cover"
+  />
+) : (
+  <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+    No Image
+  </div>
+)}
             </div>
           </div>
 

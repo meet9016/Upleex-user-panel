@@ -35,10 +35,10 @@ const endPointApi: EndPointApi = {
     logout: 'auth/logout',
 
     //Vendor
-    home: 'home',
-    webSubCategoryList: 'web-sub-category-list',
-    webCategoryProductList: 'web-category-product-list',
-    webSingleProductList: 'web-single-product-list',
+    home: '/api/v1/categories/getall',
+    webSubCategoryList: '/api/v1/subcategories/getall',
+    webCategoryProductList: '/api/v1/products/getall',
+    webSingleProductList: '/api/v1/products/getById',
     webVendorProductList: 'web-vendor-product-list',
     webAllCityList: 'web-all-city-list',
     webProductSuggestionList: 'web-product-suggestion-list',
@@ -48,9 +48,9 @@ const endPointApi: EndPointApi = {
     webGetQuote: 'web-get-quote',
 
     // Content
-    blogList: 'blog-list',
+    blogList: '/api/v1/blogs/getall',
     singleBlog: 'single-blog',
-    faqList: 'faq-list',
+    faqList: '/api/v1/faqs/getall',
 
     // Cart
     webAddToCart: 'web-add-to-cart',

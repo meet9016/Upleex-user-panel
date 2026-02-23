@@ -1,13 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactStrictMode: false, // Speed up local dev by disabling double render
+  reactStrictMode: false,
   images: {
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'upleex.2min.cloud',
+        pathname: '/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3688',
         pathname: '/**',
       },
       {

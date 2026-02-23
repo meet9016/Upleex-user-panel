@@ -27,9 +27,7 @@ export interface CategoryProductParams {
 
 class ProductService {
     async getSingleProduct(productId: string): Promise<any> {
-        const formData = new FormData();
-        formData.append('product_id', productId);
-        const res = await api.post(endPointApi.webSingleProductList, formData);
+        const res = await api.get(`${endPointApi.webSingleProductList}/${productId}`);
         return res.data;
     }
 
@@ -48,26 +46,44 @@ class ProductService {
     }
 
     async getSubCategories(categoryId: string): Promise<any> {
-        const formData = new FormData();
-        formData.append('category_id', categoryId);
-        const res = await api.post(endPointApi.webSubCategoryList, formData);
+        const res = await api.get(endPointApi.webSubCategoryList, {
+            params: {
+                categoryId,
+                page: 1,
+                limit: 1000,
+            },
+        });
         return res.data;
     }
 
     async getCategoryProducts(params: CategoryProductParams): Promise<any> {
-        const formData = new FormData();
-        formData.append('category_id', params.category_id);
+        const query: Record<string, string | number> = {};
+
+        if (params.category_id && params.category_id !== 'all') {
+            query.category_id = params.category_id;
+        }
+
         if (params.sub_category_id && params.sub_category_id !== 'all') {
-            formData.append('sub_category_id', params.sub_category_id);
+            query.sub_category_id = params.sub_category_id;
         }
+
         if (params.filter_rent_sell && params.filter_rent_sell !== '0') {
-            formData.append('filter_rent_sell', params.filter_rent_sell);
+            query.filter_rent_sell = params.filter_rent_sell;
         }
+
         if (params.filter_tenure && params.filter_tenure !== '0') {
-            formData.append('filter_tenure', params.filter_tenure);
+            query.filter_tenure = params.filter_tenure;
         }
-        formData.append('page', String(params.page));
-        const res = await api.post(endPointApi.webCategoryProductList, formData);
+
+        if (params.page && params.page > 0) {
+            query.page = params.page;
+            query.limit = 12;
+        }
+
+        const res = await api.get(endPointApi.webCategoryProductList, {
+            params: query,
+        });
+
         return res.data;
     }
 

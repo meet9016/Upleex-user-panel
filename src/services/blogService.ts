@@ -34,8 +34,13 @@ class BlogService {
             return this.blogList;
         }
         try {
-            const res = await api.post(endPointApi.blogList, {});
-            const data = res.data.data || [];
+            const res = await api.get(endPointApi.blogList, {
+                params: {
+                    page: 1,
+                    limit: 100,
+                },
+            });
+            const data = res.data?.data || [];
             this.blogList = data;
             return data;
         } catch (error) {
