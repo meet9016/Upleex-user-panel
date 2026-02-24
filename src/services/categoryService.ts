@@ -75,18 +75,34 @@ class CategoryService {
                 subcategoriesByCategory[categoryId].push(mappedSubcategory);
             });
 
+            const buildImageUrl = (path: string | undefined | null): string => {
+                if (!path) return '';
+                const trimmed = path.trim();
+                if (!trimmed) return '';
+                if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+                    return trimmed;
+                }
+                const base = process.env.NEXT_PUBLIC_APP_URL || '';
+                if (!base) return trimmed;
+                if (trimmed.startsWith('/')) {
+                    return `${base.replace(/\/+$/, '')}${trimmed}`;
+                }
+                return `${base.replace(/\/+$/, '')}/${trimmed.replace(/^\/+/, '')}`;
+            };
+
             const mappedCategories: Category[] = rawCategories.map((cat: any) => {
                 const id = cat.id || cat._id || '';
 
                 return {
                     categories_id: id,
                     categories_name: cat.categories_name || cat.name || '',
-                    image: cat.image
-        ? `${process.env.NEXT_PUBLIC_APP_URL}${cat.image}`
-        : '',
+                    image: buildImageUrl(cat.image),
 
                     product_count: cat.product_count ? String(cat.product_count) : '0',
-                    subcategories: subcategoriesByCategory[id] || [],
+                    subcategories: (subcategoriesByCategory[id] || []).map((sub) => ({
+                        ...sub,
+                        image: buildImageUrl(sub.image),
+                    })),
                 };
             });
 

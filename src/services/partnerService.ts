@@ -19,17 +19,15 @@ export interface ApiResponse<T = any> {
 
 class PartnerService {
     async businessRegister(payload: BusinessRegisterPayload): Promise<ApiResponse> {
-        const formData = new FormData();
-        formData.append('full_name', payload.full_name);
-        formData.append('business_name', payload.business_name);
-        formData.append('email', payload.email);
-        formData.append('number', payload.number);
-        formData.append('alternate_number', payload.alternate_number || '');
-        formData.append('country', payload.country);
-        if (payload.otp) {
-            formData.append('otp', payload.otp);
-        }
-        const res = await api.post(endPointApi.businessRegister, formData);
+        const res = await api.post(endPointApi.businessRegister, {
+            full_name: payload.full_name,
+            business_name: payload.business_name,
+            email: payload.email,
+            number: payload.number,
+            alternate_number: payload.alternate_number || '',
+            country: payload.country,
+            otp: payload.otp,
+        });
         return res.data;
     }
 }

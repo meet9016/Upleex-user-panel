@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { categoryService, Category, SubCategory } from '@/services/categoryService';
 import { Checkbox } from '@/components/ui/Checkbox';
-import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronRight } from 'lucide-react';
@@ -130,13 +129,16 @@ export default function CategoriesPage() {
                       <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-50">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center">
-                            <Image
-                              src={sanitizeUrl(cat.image)}
-                              alt={cat.categories_name}
-                              width={24}
-                              height={24}
-                              className="object-contain"
-                            />
+                            {cat.image && (
+                              <img
+                                src={sanitizeUrl(cat.image)}
+                                alt={cat.categories_name}
+                                width={24}
+                                height={24}
+                                className="object-contain"
+                                loading="lazy"
+                              />
+                            )}
                           </div>
                           <div>
                             <h2 className="text-xl font-bold text-slate-900">{cat.categories_name}</h2>
@@ -158,13 +160,15 @@ export default function CategoriesPage() {
                             href={`/rent-category/${cat.categories_id}?sub=${sub.subcategory_id}`}
                             className="group"
                           >
-                            <div className="relative aspect-square rounded-2xl bg-orange-50 p-6 mb-3 transition-all group-hover:shadow-lg group-hover:shadow-orange-200/50 group-hover:-translate-y-1 overflow-hidden">
-                              <Image
-                                src={sanitizeUrl(sub.image)}
-                                alt={sub.subcategory_name}
-                                fill
-                                className="object-contain p-4 transition-transform group-hover:scale-110"
-                              />
+                            <div className="relative aspect-square rounded-2xl bg-orange-50 p-6 mb-3 transition-all group-hover:shadow-lg group-hover:shadow-orange-200/50 group-hover:-translate-y-1 overflow-hidden flex items-center justify-center">
+                              {sub.image && (
+                                <img
+                                  src={sanitizeUrl(sub.image)}
+                                  alt={sub.subcategory_name}
+                                  className="max-w-full max-h-full object-contain p-4 transition-transform group-hover:scale-110"
+                                  loading="lazy"
+                                />
+                              )}
                             </div>
                             <h3 className="text-sm font-bold text-slate-800 text-center group-hover:text-upleex-purple transition-colors">
                               {sub.subcategory_name}

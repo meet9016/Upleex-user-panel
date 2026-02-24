@@ -49,14 +49,14 @@ const endPointApi: EndPointApi = {
 
     // Content
     blogList: '/api/v1/blogs/getall',
-    singleBlog: 'single-blog',
+    singleBlog: '/api/v1/blogs/getbyid',
     faqList: '/api/v1/faqs/getall',
 
     // Cart
     webAddToCart: 'web-add-to-cart',
     webCartList: 'web-cart-list',
     webRemoveCart: 'web-remove-cart',
-    businessRegister: 'business-register',
+    businessRegister: '/api/v1/vendor/auth/business-register',
 };
 
 

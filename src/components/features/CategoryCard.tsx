@@ -1,6 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 interface CategoryCardProps {
   categories_name: string;
@@ -54,18 +53,19 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
               group-hover:scale-110 transition-transform duration-300"
             >
               {image ? (
-  <Image
-    src={image}
-    alt={categories_name}
-    width={96}
-    height={96}
-    className="w-full h-full object-cover"
-  />
-) : (
-  <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-    No Image
-  </div>
-)}
+                <img
+                  src={image}
+                  alt={categories_name}
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                  No Image
+                </div>
+              )}
             </div>
           </div>
 
