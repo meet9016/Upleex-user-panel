@@ -483,9 +483,9 @@ export const Navbar: React.FC = () => {
                       onScroll={handleCityScroll}
                     >
                       {cities.length > 0 ? (
-                        cities.map((city) => (
+                        cities.map((city, index) => (
                           <button
-                            key={city.id}
+                            key={city.id || `city-${index}`}
                             type="button"
                             onClick={() => handleCitySelect(city)}
                             className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
@@ -558,9 +558,9 @@ export const Navbar: React.FC = () => {
                           Loading...
                         </div>
                       ) : suggestions.length > 0 ? (
-                        suggestions.map((item) => (
+                        suggestions.map((item, index) => (
                           <button
-                            key={item.id}
+                            key={item.id || `suggest-${index}`}
                             type="button"
                             onClick={() => handleSuggestionClick(item)}
                             className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 text-gray-700 cursor-pointer"
@@ -675,10 +675,11 @@ export const Navbar: React.FC = () => {
         {/* Categories Bar - Secondary Navigation with Dropdowns */}
         <div className="hidden lg:flex items-center justify-between gap-1 py-1 text-sm font-medium text-slate-600 border-t border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-1">
-            {categories.slice(0, 7).map((item) => {
+            {categories.slice(0, 7).map((item, index) => {
               const isActive = pathname === `/rent-category/${item.categories_id}`;
+              const key = item.categories_id || `cat-${index}`;
               return (
-                <div key={item.categories_id} className="relative group">
+                <div key={key} className="relative group">
                   <Link
                     href={`/rent-category/${item.categories_id}`}
                     className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer 
@@ -699,9 +700,9 @@ export const Navbar: React.FC = () => {
                   {item.subcategories.length > 0 && (
                     <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-lg rounded-r-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0">
                       <div className="py-2">
-                        {item.subcategories.map((sub) => (
+                        {item.subcategories.map((sub, subIndex) => (
                           <Link
-                            key={sub.subcategory_id}
+                            key={sub.subcategory_id || `sub-${subIndex}`}
                             href={`/rent-category/${item.categories_id}?sub=${sub.subcategory_id}`}
                             className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0 cursor-pointer"
                           >

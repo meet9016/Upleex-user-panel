@@ -5,7 +5,7 @@ interface CategoryCardProps {
   categories_name: string;
   image: string;
   categories_id: string;
-  product_count?: number;
+  product_count?: string | number;
   className?: string;
 }
 
@@ -40,7 +40,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
               text-xs font-medium bg-upleex-blue text-white 
               px-3 py-1 rounded-full shadow-md"
             >
-              {product_count} Items
+              {product_count || 0} Items
             </span>
           )}
 
