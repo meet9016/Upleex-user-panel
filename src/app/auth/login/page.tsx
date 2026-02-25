@@ -72,7 +72,7 @@ const LoginPage = () => {
         localStorage.setItem('token', result.data.token);
         localStorage.setItem(
           'user',
-          JSON.stringify(result.data.user.full_name)
+          JSON.stringify(result.data.user.name)
         );
           localStorage.setItem(
           'email',

@@ -33,47 +33,15 @@ class CategoryService {
             return this.homeData;
         }
         try {
-            const [categoryRes, subCategoryRes] = await Promise.all([
-                api.get(endPointApi.home, {
-                    params: {
-                        page: 1,
-                        limit: 100,
-                    },
-                }),
-                api.get(endPointApi.webSubCategoryList, {
-                    params: {
-                        page: 1,
-                        limit: 1000,
-                    },
-                }),
-            ]);
+            const categoryRes = await api.get(endPointApi.home, {
+                params: {
+                    page: 1,
+                    limit: 100,
+                },
+            });
 
             const categoryPayload = categoryRes.data || {};
             const rawCategories = Array.isArray(categoryPayload.data) ? categoryPayload.data : [];
-
-            const subCategoryPayload = subCategoryRes.data || {};
-            const rawSubCategories = Array.isArray(subCategoryPayload.data) ? subCategoryPayload.data : [];
-
-            const subcategoriesByCategory: Record<string, SubCategory[]> = {};
-
-            rawSubCategories.forEach((sub: any) => {
-                const categoryId = sub.categoryId || sub.category_id;
-                if (!categoryId) return;
-
-                const mappedSubcategory: SubCategory = {
-                    subcategory_id: sub.id || sub._id || '',
-                    subcategory_name: sub.name || sub.subcategory_name || '',
-                    image: sub.image
-                        ? `${process.env.NEXT_PUBLIC_APP_URL}${sub.image}`
-                        : '',
-                };
-
-                if (!subcategoriesByCategory[categoryId]) {
-                    subcategoriesByCategory[categoryId] = [];
-                }
-
-                subcategoriesByCategory[categoryId].push(mappedSubcategory);
-            });
 
             const buildImageUrl = (path: string | undefined | null): string => {
                 if (!path) return '';
@@ -91,18 +59,18 @@ class CategoryService {
             };
 
             const mappedCategories: Category[] = rawCategories.map((cat: any) => {
-                const id = cat.id || cat._id || '';
-
                 return {
-                    categories_id: id,
+                    categories_id: cat.categories_id || cat.id || cat._id || '',
                     categories_name: cat.categories_name || cat.name || '',
                     image: buildImageUrl(cat.image),
-
                     product_count: cat.product_count ? String(cat.product_count) : '0',
-                    subcategories: (subcategoriesByCategory[id] || []).map((sub) => ({
-                        ...sub,
-                        image: buildImageUrl(sub.image),
-                    })),
+                    subcategories: Array.isArray(cat.subcategories) 
+                        ? cat.subcategories.map((sub: any) => ({
+                            subcategory_id: sub.subcategory_id || sub.id || sub._id || '',
+                            subcategory_name: sub.subcategory_name || sub.name || '',
+                            image: buildImageUrl(sub.image),
+                        }))
+                        : [],
                 };
             });
 
