@@ -20,6 +20,19 @@ const LoginPage = () => {
   });
   const [errors, setErrors] = useState<{ number?: string; otp?: string; name?: string; email?: string }>({});
 
+  // Handle Enter key press
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent form submission if inside a form
+      
+      if (step === 'number') {
+        handleSendNumber();
+      } else if (step === 'otp') {
+        handleVerifyOtp();
+      }
+    }
+  };
+
   const handleSendNumber = async () => {
     const clean = number.replace(/\D/g, '');
     if (clean.length !== 10) {
@@ -37,6 +50,12 @@ const LoginPage = () => {
         setUserType(result?.data?.user_type);
         setStep('otp');
         setErrors(prev => ({ ...prev, number: '' }));
+        
+        // Automatically focus OTP input after step change
+        setTimeout(() => {
+          const otpInput = document.querySelector('input[placeholder="Enter OTP"]') as HTMLInputElement;
+          if (otpInput) otpInput.focus();
+        }, 100);
       } else {
         toast.error(result?.message || 'Failed to send OTP');
       }
@@ -74,7 +93,7 @@ const LoginPage = () => {
           'user',
           JSON.stringify(result.data.user.name)
         );
-          localStorage.setItem(
+        localStorage.setItem(
           'email',
           JSON.stringify(result.data.user.email)
         );
@@ -85,8 +104,6 @@ const LoginPage = () => {
       } else {
         toast.error(result?.message || 'Login failed');
       }
-
-
     } catch (error) {
       console.error(error);
       toast.error('Something went wrong');
@@ -113,7 +130,6 @@ const LoginPage = () => {
 
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white">
         <div className="max-w-md w-full space-y-6">
-
           <h2 className="text-3xl font-extrabold text-slate-900">
             Sign In
           </h2>
@@ -137,8 +153,10 @@ const LoginPage = () => {
                           if (val.length <= 10) setNumber(val);
                           if (val.length === 10) setErrors(prev => ({ ...prev, number: '' }));
                         }}
+                        onKeyDown={handleKeyPress} // Add enter key handler
                         placeholder="Mobile Number"
                         className={`w-full pl-10 py-3 border rounded-lg bg-gray-50 ${errors.number ? 'border-red-500' : ''}`}
+                        autoFocus // Auto focus on page load
                       />
                       {errors.number ? (
                         <p className="text-red-600 text-sm mt-1">{errors.number}</p>
@@ -168,12 +186,15 @@ const LoginPage = () => {
                         if (val.length <= 6) setOtp(val);
                         if (val.length >= 4) setErrors(prev => ({ ...prev, otp: '' }));
                       }}
+                      onKeyDown={handleKeyPress} // Add enter key handler
                       placeholder="Enter OTP"
                       className={`w-full py-3 px-3 border rounded-lg bg-gray-50 ${errors.otp ? 'border-red-500' : ''}`}
+                      autoFocus // Auto focus when OTP step loads
                     />
                     {errors.otp ? (
                       <p className="text-red-600 text-sm -mt-3">{errors.otp}</p>
                     ) : null}
+                    
                     {userType === 'new' && (
                       <>
                         <input
@@ -183,11 +204,13 @@ const LoginPage = () => {
                             setForm({ ...form, name: e.target.value });
                             if (e.target.value.trim()) setErrors(prev => ({ ...prev, name: '' }));
                           }}
+                          onKeyDown={handleKeyPress} // Add enter key handler
                           className={`w-full py-3 px-3 border rounded-lg ${errors.name ? 'border-red-500' : ''}`}
                         />
                         {errors.name ? (
                           <p className="text-red-600 text-sm -mt-3">{errors.name}</p>
                         ) : null}
+                        
                         <input
                           placeholder="Email"
                           value={form.email}
@@ -196,6 +219,7 @@ const LoginPage = () => {
                             const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                             if (emailPattern.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
                           }}
+                          onKeyDown={handleKeyPress} // Add enter key handler
                           className={`w-full py-3 px-3 border rounded-lg ${errors.email ? 'border-red-500' : ''}`}
                         />
                         {errors.email ? (
@@ -203,6 +227,7 @@ const LoginPage = () => {
                         ) : null}
                       </>
                     )}
+                    
                     <Button fullWidth onClick={handleVerifyOtp}>
                       Verify & Continue
                     </Button>
@@ -216,10 +241,10 @@ const LoginPage = () => {
               Create an account
             </Link>
           </p>
-
         </div>
       </div>
     </div>
   );
 };
+
 export default LoginPage;
