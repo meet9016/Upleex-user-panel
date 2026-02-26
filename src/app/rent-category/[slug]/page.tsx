@@ -47,12 +47,12 @@ function RentCategoryContent() {
     { label: 'Sell', value: '2' },
   ]);
 
-  const [tenureOptions, setTenureOptions] = useState([
-    { label: 'All Durations', value: '0' },
-    { label: 'Hourly', value: '3' },
-    { label: 'Daily', value: '1' },
-    { label: 'Monthly', value: '2' },
-  ]);
+const [tenureOptions, setTenureOptions] = useState([
+  { label: 'All Durations', value: '0' }, // Special case for "all"
+  { label: 'Daily', value: '1' },    // Assuming '1' is Daily in your DB
+  { label: 'Monthly', value: '2' },  // Assuming '2' is Monthly in your DB
+  { label: 'Hourly', value: '3' },   // Assuming '3' is Hourly in your DB
+]);
 
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [productList, setProductList] = useState<any[]>([]);

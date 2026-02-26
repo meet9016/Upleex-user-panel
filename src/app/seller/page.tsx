@@ -102,10 +102,10 @@ export default function SellerPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 pb-10">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
         <BackButton />
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 px-6 sm:px-8 py-5 sm:py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 mt-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 px-6 sm:px-8 py-5 sm:py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 mt-4 w-full">
           <div className="flex items-center gap-4 sm:gap-5">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-50 flex items-center justify-center">
               <Store size={32} className="text-upleex-blue" />
@@ -128,12 +128,12 @@ export default function SellerPage() {
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 w-full">
           <h2 className="text-lg font-bold text-slate-900 mb-4">
             Products from {vendorName || 'Vendor'}
           </h2>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-4 sm:p-6 lg:p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-4 sm:p-6 lg:p-8 w-full">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
               <div className="relative z-30 w-full sm:w-auto">
                 <button
@@ -257,12 +257,13 @@ export default function SellerPage() {
                 </div>
               </div> */}
             </div>
+            
             {loading ? (
-              <div className="py-10 text-center text-sm text-gray-500">
+              <div className="py-10 text-center text-sm text-gray-500 w-full">
                 Loading products...
               </div>
             ) : products.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 px-4">
+              <div className="flex flex-col items-center justify-center py-20 px-4 w-full">
                 <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                   <PackageOpen className="w-12 h-12 text-gray-300" />
                 </div>
@@ -272,10 +273,29 @@ export default function SellerPage() {
                 <p className="text-gray-500 text-center max-w-md mb-4">
                   We couldn't find any products for this vendor.
                 </p>
+                
+                {/* Optional: Add suggestion or action buttons */}
+                <div className="flex gap-4 mt-4">
+                  <button 
+                    onClick={() => {
+                      setSelectedSort({ label: 'All Types', value: '0' });
+                      setSelectedTenure({ label: 'All Durations', value: '0' });
+                    }}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    Clear Filters
+                  </button>
+                  <button 
+                    onClick={() => window.history.back()}
+                    className="px-6 py-2 border border-gray-300 text-gray-700 rounded-full text-sm font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Go Back
+                  </button>
+                </div>
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
                   {products.map((product, index) => (
                     <motion.div
                       key={product.product_id || index}
@@ -283,18 +303,21 @@ export default function SellerPage() {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.05 }}
+                      className="w-full"
                     >
                       <ProductCard product={product} />
                     </motion.div>
                   ))}
                 </div>
 
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  showWhenSingle
-                />
+                {totalPages > 1 && (
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                    showWhenSingle
+                  />
+                )}
               </>
             )}
           </div>

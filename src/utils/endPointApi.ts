@@ -35,11 +35,11 @@ const endPointApi: EndPointApi = {
     logout: 'auth/logout',
 
     //Vendor
-    home: '/api/v1/categories/getall',
-    webSubCategoryList: '/api/v1/subcategories/getall',
-    webCategoryProductList: '/api/v1/products/getall',
-    webSingleProductList: '/api/v1/products/getById',
-    webVendorProductList: 'web-vendor-product-list',
+    home: 'categories/getall',
+    webSubCategoryList: 'subcategories/getall',
+    webCategoryProductList: 'products/getall',
+    webSingleProductList: 'products/getById',
+    webVendorProductList: '/web-vendor-product-list',
     webAllCityList: 'web-all-city-list',
     webProductSuggestionList: 'web-product-suggestion-list',
     webSearchProductList: 'web-search-product-list',
@@ -48,15 +48,15 @@ const endPointApi: EndPointApi = {
     webGetQuote: 'web-get-quote',
 
     // Content
-    blogList: '/api/v1/blogs/getall',
-    singleBlog: '/api/v1/blogs/getbyid',
-    faqList: '/api/v1/faqs/getall',
+    blogList: 'blogs/getall',
+    singleBlog: 'blogs/getbyid',
+    faqList: 'faqs/getall',
 
     // Cart
-    webAddToCart: 'web-add-to-cart',
-    webCartList: 'web-cart-list',
-    webRemoveCart: 'web-remove-cart',
-    businessRegister: '/api/v1/vendor/auth/business-register',
+    webAddToCart: 'cart/web-add-to-cart',
+    webCartList: 'cart/web-cart-list',
+    webRemoveCart: 'cart/web-remove-cart',
+    businessRegister: 'vendor/auth/business-register',
 };
 
 

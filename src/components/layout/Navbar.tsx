@@ -12,7 +12,11 @@ import {
   ChevronRight,
   Smartphone,
   ShoppingCart,
-  LogOut
+  LogOut,
+  User,
+  Package,
+  Heart,
+  Settings
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -616,24 +620,88 @@ export const Navbar: React.FC = () => {
                 </button>
 
                 {/* Profile Dropdown Menu - Only Email and Logout */}
-                {isProfileMenuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden animate-in slide-in-from-top-2 duration-200 z-50">
-                    {/* Email Display */}
-                    <div className="p-4 bg-gray-50 border-b">
-                      <p className="text-sm text-gray-500 mb-1">Logged in as</p>
-                      <p className="font-medium text-gray-900 truncate">{email}</p>
-                    </div>
+             {isProfileMenuOpen && (
+  <motion.div
+    initial={{ opacity: 0, y: 12, scale: 0.95 }}
+    animate={{ opacity: 1, y: 0, scale: 1 }}
+    exit={{ opacity: 0, y: 10, scale: 0.96 }}
+    transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+    className="absolute right-0 top-full mt-3 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/60 overflow-hidden z-50"
+  >
+    {/* Header */}
+    <div className="px-6 py-5 bg-gradient-to-br from-gray-50/80 via-white to-gray-50/40 border-b border-gray-100/80">
+      <div className="flex items-center gap-4">
+        <motion.div
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          className="relative"
+        >
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-2xl shadow-lg ring-2 ring-purple-300/40 ring-offset-2 ring-offset-white">
+            {user?.full_name?.charAt(0)?.toUpperCase() || email?.charAt(0)?.toUpperCase() || "U"}
+          </div>
+          <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-sm" />
+        </motion.div>
 
-                    {/* Logout Button */}
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center justify-center gap-3 w-full px-4 py-3 text-red-600 hover:bg-red-50 transition-colors group cursor-pointer"
-                    >
-                      <LogOut size={18} className="group-hover:rotate-90 transition-transform" />
-                      <span className="font-semibold">Logout</span>
-                    </button>
-                  </div>
-                )}
+        <div className="min-w-0">
+          <p className="font-semibold text-gray-900 truncate text-lg leading-tight">
+            {user?.full_name || "User"}
+          </p>
+          <p className="text-sm text-gray-500 truncate">{email}</p>
+        </div>
+      </div>
+    </div>
+
+    {/* Menu items with stagger */}
+    <motion.div
+      className="py-2"
+      variants={{
+        hidden: { opacity: 0 },
+        show: {
+          opacity: 1,
+          transition: { staggerChildren: 0.07 }
+        }
+      }}
+      initial="hidden"
+      animate="show"
+    >
+      {[
+        { icon: User, label: "My Profile", href: "/profile" },
+        { icon: Package, label: "My Rentals", href: "/my-rentals" },
+        { icon: Heart, label: "Wishlist", href: "/wishlist" },
+        { icon: Settings, label: "Settings", href: "/settings" },
+      ].map((item, i) => (
+        <motion.button
+          key={i}
+          variants={{
+            hidden: { opacity: 0, y: 8 },
+            show: { opacity: 1, y: 0 }
+          }}
+          whileHover={{ x: 4, scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="group flex items-center gap-3.5 w-full px-6 py-3.5 text-left text-gray-700 hover:bg-gradient-to-r hover:from-purple-50/70 hover:to-indigo-50/40 transition-all duration-200"
+          onClick={() => item.href && router.push(item.href)}
+        >
+          <item.icon size={18} className="text-gray-500 group-hover:text-purple-600 transition-colors" />
+          <span className="font-medium flex-1">{item.label}</span>
+          <ChevronRight size={16} className="text-gray-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+        </motion.button>
+      ))}
+
+      <div className="h-px bg-gray-100 my-2 mx-6" />
+
+      <motion.button
+        variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+        whileHover={{ x: 4, scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={handleLogout}
+        className="group flex items-center gap-3.5 w-full px-6 py-3.5 text-left text-red-600 hover:bg-red-50/80 transition-all duration-200"
+      >
+        <LogOut size={18} className="group-hover:rotate-12 transition-transform duration-300" />
+        <span className="font-semibold flex-1">Logout</span>
+      </motion.button>
+    </motion.div>
+  </motion.div>
+)}
               </div>
             ) : (
               <Button

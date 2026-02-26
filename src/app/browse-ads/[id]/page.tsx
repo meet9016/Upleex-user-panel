@@ -494,7 +494,7 @@ export default function ProductDetailsPage() {
                         <input
                           type="number"
                           min={1}
-                          max={isHourly ? 24 : 31}
+                          // remove 31 day max restriction
                           value={days}
                           onChange={(e) => {
                             const value = e.target.value;
@@ -504,20 +504,16 @@ export default function ProductDetailsPage() {
                             }
                             const parsed = Number(value);
                             if (Number.isNaN(parsed)) return;
-                            const maxUnits = isHourly ? 24 : 31;
-                            const clamped = Math.min(maxUnits, Math.max(1, parsed));
+                            const clamped = Math.max(1, parsed);
                             setDays(clamped);
                           }}
                           className="w-12 text-center font-bold text-base focus:outline-none focus:ring-0"
                         />
 
                         <button
-                          onClick={() => {
-                            const maxUnits = isHourly ? 24 : 31;
-                            setDays(Math.min(maxUnits, days + 1));
-                          }}
+                          onClick={() => setDays(days + 1)}
                           className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed border-l"
-                          disabled={days >= (isHourly ? 24 : 31)}
+                          disabled={false}
                         >
                           <Plus size={14} />
                         </button>
@@ -618,10 +614,9 @@ export default function ProductDetailsPage() {
                       >
                         <Minus size={16} className="text-gray-600" />
                       </button>
-                      <input
+                        <input
                         type="number"
                         min={1}
-                        max={10}
                         value={quantity}
                         onChange={(e) => {
                           const value = e.target.value;
@@ -631,15 +626,15 @@ export default function ProductDetailsPage() {
                           }
                           const parsed = Number(value);
                           if (Number.isNaN(parsed)) return;
-                          const clamped = Math.min(10, Math.max(1, parsed));
+                            const clamped = Math.max(1, parsed);
                           setQuantity(clamped);
                         }}
                         className="w-14 text-center font-extrabold text-lg text-slate-900 bg-transparent focus:outline-none focus:ring-0"
                       />
                       <button
-                        onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                        onClick={() => setQuantity(quantity + 1)}
                         className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                        disabled={quantity >= 10}
+                        disabled={false}
                       >
                         <Plus size={16} className="text-gray-600" />
                       </button>
@@ -815,101 +810,86 @@ export default function ProductDetailsPage() {
             <div className="flex gap-8 border-b border-gray-200 mb-6">
               <button
                 onClick={() => setActiveDetailTab("description")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"}`}
+                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${
+                  activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+                }`}
               >
                 Description
               </button>
               <button
                 onClick={() => setActiveDetailTab("details")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"}`}
+                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${
+                  activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+                }`}
               >
                 Product Details
               </button>
             </div>
 
-            <div className="h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+<div className="min-h-[420px] flex flex-col">
               {activeDetailTab === "description" ? (
                 <div className="prose prose-slate max-w-none animate-fadeIn">
-                  <h3 className="text-lg font-bold text-slate-900 mb-3">
-                    {productDetails?.product_name}
-                  </h3>
-                  {productDetails?.description &&
-                  productDetails.description.trim() !== "" ? (
-                    <p className="text-slate-600 leading-relaxed whitespace-pre-line">
-                      {productDetails.description}
-                    </p>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">Description</h3>
+                  {productDetails?.description && productDetails.description.trim() !== "" ? (
+                    <div
+                      className="text-slate-600 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: productDetails.description }}
+                    />
                   ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-gray-400 italic">
-                        No description available for this product.
-                      </p>
+                    <div className="min-h-[320px] flex items-center justify-center text-gray-400 italic">
+                      No description available for this product.
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="max-w-3xl h-full">
-                  <h3 className="text-lg font-bold text-slate-900 mb-4">
-                    Specifications
-                  </h3>
-                  {(() => {
-                    if (
-                      productDetails?.product_details &&
-                      Array.isArray(productDetails.product_details) &&
-                      productDetails.product_details.length > 0
-                    ) {
-                      return (
-                        <div className="space-y-4">
-                          {productDetails.product_details.map(
-                            (spec: any, idx: number) => {
-                              const label =
-                                spec.specification ||
-                                spec.label ||
-                                spec.key ||
-                                spec.name ||
-                                spec.title ||
-                                `Specification ${idx + 1}`;
-                              const value =
-                                spec.detail ||
-                                spec.value ||
-                                spec.description ||
-                                "N/A";
+                <>
+                  <h3 className="text-lg font-bold text-slate-900 mb-4">Product Details</h3>
 
-                              return (
-                                <div
-                                  key={idx}
-                                  className="grid grid-cols-1 sm:grid-cols-3 gap-2 pb-3 border-b border-gray-100 last:border-0"
-                                >
-                                  <div className="font-semibold text-slate-900">
-                                    {label}
-                                  </div>
-                                  <div className="sm:col-span-2 text-slate-600">
-                                    {value}
-                                  </div>
-                                </div>
-                              );
-                            },
-                          )}
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <div className="flex items-center justify-center h-full">
-                          <div className="text-center">
-                            <p className="text-gray-400 italic mb-2">
-                              No detailed specifications available for this
-                              product.
-                            </p>
-                            <p className="text-gray-400 text-xs">
-                              {productDetails?.product_details
-                                ? `(Data type: ${typeof productDetails.product_details}, Array: ${Array.isArray(productDetails.product_details)})`
-                                : "(No data received from API)"}
-                            </p>
+                  {productDetails?.product_details &&
+                  Array.isArray(productDetails.product_details) &&
+                  productDetails.product_details.length > 0 ? (
+                    <div className="space-y-4">
+                      {productDetails.product_details.map((spec: any, idx: number) => {
+                        const label =
+                          spec.specification ||
+                          spec.label ||
+                          spec.key ||
+                          spec.name ||
+                          spec.title ||
+                          `Specification ${idx + 1}`;
+                        const value = spec.detail || spec.value || spec.description || "—";
+
+                        return (
+                          <div
+                            key={idx}
+                            className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-3 border-b border-gray-100 last:border-0"
+                          >
+                            <div className="font-semibold text-slate-900">{label}</div>
+                            <div className="sm:col-span-2 text-slate-600">{value}</div>
                           </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center py-12">
+                      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center">
+                        <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gray-50 flex items-center justify-center">
+                          <ImageOff size={28} className="text-gray-400" />
                         </div>
-                      );
-                    }
-                  })()}
-                </div>
+
+                        <h4 className="text-xl font-bold text-gray-800 mb-3">
+                          No Product Details Available
+                        </h4>
+
+                        <p className="text-gray-500 text-sm leading-relaxed">
+                          Detailed specifications for this product have not been added yet.
+                          <br />
+                          Please check back later or contact the seller for more information.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
