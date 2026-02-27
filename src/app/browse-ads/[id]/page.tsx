@@ -618,6 +618,7 @@ export default function ProductDetailsPage() {
                         type="number"
                         min={1}
                         value={quantity}
+                        onFocus={(e) => e.currentTarget.select()}
                         onChange={(e) => {
                           const value = e.target.value;
                           if (value === '') {

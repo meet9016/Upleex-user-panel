@@ -4,6 +4,7 @@ export interface EndPointApi {
     logout: string;
 
     //Vendor
+    vendorLogin?: string;
     home: string;
     webSubCategoryList: string;
     webCategoryProductList: string;
@@ -35,6 +36,7 @@ const endPointApi: EndPointApi = {
     logout: 'auth/logout',
 
     //Vendor
+    vendorLogin: 'vendor/auth/vendor-login',
     home: 'categories/getall',
     webSubCategoryList: 'subcategories/getall',
     webCategoryProductList: 'products/getall',

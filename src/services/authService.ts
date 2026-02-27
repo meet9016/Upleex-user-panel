@@ -23,12 +23,12 @@ export interface VerifyOtpParams {
 
 class AuthService {
     async sendOtp(params: SendOtpParams): Promise<LoginRegisterResponse> {
-        const res = await api.post(`/api/v1/auth/${endPointApi.webLoginRegister}`, params);
+        const res = await api.post(`auth/${endPointApi.webLoginRegister}`, params);
         return res.data;
     }
 
     async verifyOtp(params: VerifyOtpParams): Promise<LoginRegisterResponse> {
-        const res = await api.post(`/api/v1/auth/${endPointApi.webLoginRegister}`, params);
+        const res = await api.post(`auth/${endPointApi.webLoginRegister}`, params);
         return res.data;
     }
 }
