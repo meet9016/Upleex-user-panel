@@ -50,6 +50,8 @@ export const Navbar: React.FC = () => {
   const [citySearchTerm, setCitySearchTerm] = useState('');
   const [hasLoadedInitialCities, setHasLoadedInitialCities] = useState(false);
   const cityListRef = useRef<HTMLDivElement>(null);
+  const cityScrollLockRef = useRef(false);
+  const currentCityQueryRef = useRef<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -147,26 +149,40 @@ export const Navbar: React.FC = () => {
   }, []);
 
   const loadCities = async (page = 1, append = false, searchText?: string) => {
+    if (isCityLoading || (append && !cityHasMore)) return;
+    
     try {
       setIsCityLoading(true);
       const query = searchText !== undefined ? searchText : citySearchTerm;
-      const data = await searchService.getCities(page, query);
+      currentCityQueryRef.current = query;
+      
+      const res = await searchService.getCities(page, query);
+      const data = res.items || [];
 
-      setCities(prev => (append ? [...prev, ...data] : data));
+      setCities(prev => {
+        if (append) {
+          const existingIds = new Set(prev.map(c => c.id));
+          const newCities = data.filter(c => !existingIds.has(c.id));
+          return [...prev, ...newCities];
+        }
+        return data;
+      });
+      
       setCityPage(page);
-      setCityHasMore(data.length >= 10);
+      setCityHasMore(page < res.totalPages);
 
       if (searchText !== undefined) {
         setCitySearchTerm(searchText);
       }
     } catch (error) {
-      console.error('Error fetching cities', error);
+      console.error('Error fetching cities:', error);
       if (!append) {
         setCities([]);
       }
       setCityHasMore(false);
     } finally {
       setIsCityLoading(false);
+      cityScrollLockRef.current = false;
     }
   };
 
@@ -189,18 +205,31 @@ export const Navbar: React.FC = () => {
   const handleCityToggle = () => {
     const nextOpen = !isCityDropdownOpen;
     setIsCityDropdownOpen(nextOpen);
-    if (nextOpen && !hasLoadedInitialCities) {
-      loadCities(1, false);
-      setHasLoadedInitialCities(true);
+    if (nextOpen) {
+      if (!hasLoadedInitialCities || cities.length === 0) {
+        loadCities(1, false, citySearchTerm);
+        setHasLoadedInitialCities(true);
+      }
     }
   };
 
   const handleCityScroll = (event: React.UIEvent<HTMLDivElement>) => {
-    if (!cityHasMore || isCityLoading) return;
     const target = event.currentTarget;
-    const threshold = 40;
-    if (target.scrollTop + target.clientHeight >= target.scrollHeight - threshold) {
-      loadCities(cityPage + 1, true);
+    const scrollTop = target.scrollTop;
+    const scrollHeight = target.scrollHeight;
+    const clientHeight = target.clientHeight;
+    const threshold = 50;
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < threshold;
+
+    if (
+      isNearBottom && 
+      cityHasMore && 
+      !isCityLoading && 
+      !cityScrollLockRef.current &&
+      currentCityQueryRef.current === citySearchTerm
+    ) {
+      cityScrollLockRef.current = true;
+      loadCities(cityPage + 1, true, citySearchTerm);
     }
   };
 
@@ -208,13 +237,13 @@ export const Navbar: React.FC = () => {
     const value = event.target.value;
     setCitySearchTerm(value);
 
-    // Clear previous timeout
     if (citySearchTimeoutRef.current) {
       window.clearTimeout(citySearchTimeoutRef.current);
     }
 
-    // Set new timeout for debounced search
     citySearchTimeoutRef.current = window.setTimeout(() => {
+      setCityPage(1);
+      setCityHasMore(true);
       loadCities(1, false, value);
     }, 300);
   };
@@ -222,21 +251,21 @@ export const Navbar: React.FC = () => {
   const handleCitySearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      // Clear any pending timeout
       if (citySearchTimeoutRef.current) {
         window.clearTimeout(citySearchTimeoutRef.current);
       }
-      // Search immediately with current value
+      setCityPage(1);
+      setCityHasMore(true);
       loadCities(1, false, event.currentTarget.value);
     }
   };
 
   const handleCitySearchButtonClick = () => {
-    // Clear any pending timeout
     if (citySearchTimeoutRef.current) {
       window.clearTimeout(citySearchTimeoutRef.current);
     }
-    // Search immediately with current search term
+    setCityPage(1);
+    setCityHasMore(true);
     loadCities(1, false, citySearchTerm);
   };
 
@@ -482,43 +511,68 @@ export const Navbar: React.FC = () => {
                       </div>
                     </div>
                     <div
-                      className="max-h-64 overflow-y-auto"
-                      ref={cityListRef}
-                      onScroll={handleCityScroll}
-                    >
-                      {cities.length > 0 ? (
-                        cities.map((city, index) => (
-                          <button
-                            key={city.id || `city-${index}`}
-                            type="button"
-                            onClick={() => handleCitySelect(city)}
-                            className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-                              selectedCityId === String(city.id)
-                                ? 'bg-purple-50 text-upleex-purple'
-                                : 'text-slate-600 hover:bg-gray-50 hover:text-slate-900 cursor-pointer'
-                            }`}
-                          >
-                            {city.city_name}
-                          </button>
-                        ))
-                      ) : (
-                        !isCityLoading && citySearchTerm.trim() !== '' && (
-                          <div className="px-4 py-4 text-sm text-slate-500 text-center">
-                            No cities found for "{citySearchTerm}"
-                          </div>
-                        )
-                      )}
-                      {isCityLoading && (
-                        <div className="px-4 py-2 text-sm text-slate-500 text-center">
-                          Loading...
-                        </div>
-                      )}
-                      {!isCityLoading && cities.length === 0 && citySearchTerm.trim() === '' && (
-                        <div className="px-4 py-4 text-sm text-slate-500 text-center">
-                          Type to search cities
-                        </div>
-                      )}
-                    </div>
+    className="max-h-64 overflow-y-auto"
+    ref={cityListRef}
+    onScroll={handleCityScroll}
+    style={{ maxHeight: '16rem' }} // Ensure fixed height for scrolling
+  >
+    {cities.length > 0 ? (
+      <>
+        {cities.map((city, index) => (
+          <button
+            key={`${city.id}-${index}`}
+            type="button"
+            onClick={() => handleCitySelect(city)}
+            className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
+              selectedCityId === String(city.id)
+                ? 'bg-purple-50 text-upleex-purple'
+                : 'text-slate-600 hover:bg-gray-50 hover:text-slate-900 cursor-pointer'
+            }`}
+          >
+            {city.city_name}
+          </button>
+        ))}
+        
+        {/* Show loading indicator at bottom */}
+        {isCityLoading && (
+          <div className="px-4 py-3 text-sm text-slate-500 text-center border-t border-gray-100">
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-upleex-purple border-t-transparent rounded-full animate-spin"></div>
+              <span>Loading more cities...</span>
+            </div>
+          </div>
+        )}
+        
+        {/* Show "No more cities" message when reached end */}
+        {!isCityLoading && !cityHasMore && cities.length > 0 && (
+          <div className="px-4 py-3 text-sm text-slate-400 text-center border-t border-gray-100">
+            No more cities to load
+          </div>
+        )}
+      </>
+    ) : (
+      !isCityLoading && citySearchTerm.trim() !== '' && (
+        <div className="px-4 py-4 text-sm text-slate-500 text-center">
+          No cities found for "{citySearchTerm}"
+        </div>
+      )
+    )}
+    
+    {isCityLoading && cities.length === 0 && (
+      <div className="px-4 py-4 text-sm text-slate-500 text-center">
+        <div className="flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-upleex-purple border-t-transparent rounded-full animate-spin"></div>
+          <span>Loading cities...</span>
+        </div>
+      </div>
+    )}
+    
+    {!isCityLoading && cities.length === 0 && citySearchTerm.trim() === '' && (
+      <div className="px-4 py-4 text-sm text-slate-500 text-center">
+        Type to search cities
+      </div>
+    )}
+  </div>    
                   </div>
                 )}
               </div>

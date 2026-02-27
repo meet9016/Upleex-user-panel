@@ -42,7 +42,7 @@ const endPointApi: EndPointApi = {
     webCategoryProductList: 'products/getall',
     webSingleProductList: 'products/getById',
     webVendorProductList: 'products/web-vendor-product-list',
-    webAllCityList: 'web-all-city-list',
+    webAllCityList: 'vendor-india-city-list',
     webProductSuggestionList: 'web-product-suggestion-list',
     webSearchProductList: 'web-search-product-list',
 
