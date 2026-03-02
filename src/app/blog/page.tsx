@@ -10,6 +10,7 @@ export default function BlogListPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
 
+  
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
