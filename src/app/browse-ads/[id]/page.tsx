@@ -21,8 +21,7 @@ import {
   ShoppingCart,
   Store,
 } from "lucide-react";
-import endPointApi from "@/utils/endPointApi";
-import { api } from "@/utils/axiosInstance";
+import { productService } from "@/services/productService";
 import clsx from "clsx";
 import { AuthModal } from "@/components/features/AuthModal";
 import { QuoteModal } from "@/components/features/QuoteModal";
@@ -71,26 +70,22 @@ export default function ProductDetailsPage() {
   };
 
   useEffect(() => {
-    if (productDetails?.month_arrr?.length) {
-      setSelectedMonthId(productDetails.month_arrr[0].product_months_id);
+    if (productDetails?.month_arr?.length) {
+      setSelectedMonthId(productDetails.month_arr[0].product_months_id);
     }
   }, [productDetails]);
 
-  // Calculated values from API data
-  const monthlyPrice = (
-    productDetails?.month_arrr?.[
-      selectedDuration === 3
-        ? 0
-        : selectedDuration === 6
-          ? 1
-          : selectedDuration === 9
-            ? 2
-            : 3
-    ]?.price || 0
-  ) * quantity; // Multiply by quantity
+  const monthlyPrice = (() => {
+    if (!productDetails?.month_arr?.length || !selectedMonthId) return 0;
+    const selectedMonth =
+      productDetails.month_arr.find(
+        (m: any) => m.product_months_id === selectedMonthId
+      ) || productDetails.month_arr[0];
+    return Number(selectedMonth.price || 0) * quantity;
+  })();
   
-  const dayPrice = productDetails?.price || 0;
-  const totalPrice = activeTab === "monthly" ? monthlyPrice : dayPrice * days * quantity; // Include quantity in daily total
+  const unitPrice = productDetails?.price || 0;
+  const totalPrice = activeTab === "monthly" ? monthlyPrice : unitPrice * days * quantity; // Include quantity in daily/hourly total
 
   const allImages = productDetails
     ? [
@@ -101,19 +96,17 @@ export default function ProductDetailsPage() {
 
   useEffect(() => {
     const fetchProductDetails = async () => {
-      const formData = new FormData();
-      formData.append("product_id", id);
       try {
-        const res = await api.post(endPointApi.webSingleProductList, formData);
-        setProductDetails(res.data.data);
+        const res = await productService.getSingleProduct(id);
+        const data = res?.data || res?.product || res;
+        setProductDetails(data);
 
         // Set initial selected image
-        if (res.data.data?.product_main_image) {
-          setSelectedImage(res.data.data.product_main_image);
+        if (data?.product_main_image) {
+          setSelectedImage(data.product_main_image);
         }
-        const listingType =
-          res.data.data?.product_listing_type_name?.toLowerCase();
-        if (listingType === "daily") setActiveTab("daily");
+        const listingType = data?.product_listing_type_name?.toLowerCase();
+        if (listingType === "daily" || listingType === "hourly") setActiveTab("daily");
         else if (listingType === "monthly") setActiveTab("monthly");
       } catch (err) {
         console.error("Error fetching product details", err);
@@ -156,27 +149,17 @@ export default function ProductDetailsPage() {
     if (!token) return;
 
     setIsSubmitting(true);
-    const formData = new FormData();
-
-    formData.append("product_id", String(id));
-    formData.append("delivery_date", String(deliveryDate));
-    formData.append("number_of_days", String(days));
-    formData.append("months_id", selectedMonthId ?? "");
-    formData.append("qty", String(quantity));
-    
-    if (note.trim()) {
-      formData.append("note", note.trim());
-    }
-
     try {
-      const res = await api.post(endPointApi.webGetQuote, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+      const res = await productService.getQuote({
+        product_id: String(id),
+        delivery_date: String(deliveryDate),
+        number_of_days: days,
+        months_id: selectedMonthId ?? "",
+        qty: quantity,
+        note
       });
 
-      if (res.data?.status === 200 || res.data?.success === true) {
+      if (res?.status === 200 || res?.success === true) {
         setIsQuoteModalOpen(false);
         setIsSuccessModalOpen(true);
       }
@@ -211,12 +194,15 @@ export default function ProductDetailsPage() {
     setMinDate(formattedDate);
   }, []);
 
-  const listingType = (productDetails?.product_type_name || productDetails?.product_listing_type_name)?.toLowerCase();
-  const isSell = listingType === "sell";
+  const listingType = productDetails?.product_listing_type_name?.toLowerCase();
+  const baseType = productDetails?.product_type_name?.toLowerCase();
+  const isSell = baseType === "sell";
+  const isDaily = listingType === "daily";
+  const isHourly = listingType === "hourly";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
         <div className="mb-4">
           <BackButton />
         </div>
@@ -268,8 +254,8 @@ export default function ProductDetailsPage() {
                 )}
 
                 {/* Trust Badges - Show on left only for Rent */}
-                {/* {!isSell && ( */}
-                  <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-200">
+                {!isSell && (
+                  <div className="grid grid-cols-4 gap-3 mt-5 pt-4 border-t border-gray-200">
                     <div className="flex flex-col items-center text-center gap-1.5">
                       <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
                         <Shield size={16} strokeWidth={2.5} />
@@ -303,12 +289,12 @@ export default function ProductDetailsPage() {
                       </span>
                     </div>
                   </div>
-                {/* )} */}
+                )}
               </div>
             </div>
 
             {/* ─── Right: Content ─────────────────────────────────────── */}
-            <div className="p-4 lg:p-5 xl:p-4 lg:pb-2 xl:pb-2 flex flex-col">
+            <div className="p-4 lg:p-4 xl:p-3 lg:pb-2 xl:pb-2 flex flex-col">
               <div className="flex flex-col h-full">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">
@@ -360,7 +346,7 @@ export default function ProductDetailsPage() {
 
                 {activeTab === "monthly" ? (
                   <div className={clsx(isSell && "hidden")}>
-                    {productDetails?.month_arrr?.length > 0 ? (
+                    {productDetails?.month_arr?.length > 0 ? (
                       <>
                         <div>
                           <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
@@ -381,7 +367,7 @@ export default function ProductDetailsPage() {
                               ref={scrollContainerRef}
                               className="flex overflow-x-auto gap-3.5 pb-4 pt-3 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
                             >
-                              {productDetails.month_arrr.map((monthData: any) => {
+                              {productDetails.month_arr.map((monthData: any) => {
                                 const active =
                                   selectedMonthId === monthData.product_months_id;
                                 // Show unit price, not multiplied by quantity
@@ -443,18 +429,18 @@ export default function ProductDetailsPage() {
 
                         {/* Summary Section for Monthly */}
                         {selectedMonthId && (() => {
-                          const selectedMonthData = productDetails.month_arrr.find(
+                          const selectedMonthData = productDetails.month_arr.find(
                             (m: any) => m.product_months_id === selectedMonthId
                           );
                           if (!selectedMonthData) return null;
                           
                           return (
-                            <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/50">
-                              <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <div className="p-3 border border-gray-200 rounded-xl bg-gray-50/50">
+                              {/* <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
                                 <span className="w-1 h-4 bg-blue-600 rounded-full"></span>
                                 Payment Breakdown
-                              </h3>
-                              <div className="space-y-2">
+                              </h3> */}
+                              <div className="space-y-1">
                                 <div className="flex justify-between text-sm">
                                   <span className="text-gray-600">Plan Duration</span>
                                   <span className="font-medium text-gray-900">{selectedMonthData.month_name}</span>
@@ -490,46 +476,64 @@ export default function ProductDetailsPage() {
                   </div>
                 ) : (
                   <div className={clsx("space-y-5", isSell && "hidden")}>
-                    {productDetails?.product_listing_type_name?.toLowerCase() ===
-                    "daily" ? (
+                    {isDaily || isHourly ? (
                       <div className="p-4 border border-gray-200 rounded-xl bg-gray-50/40">
                         <div className="flex items-center justify-between mb-4">
                           <span className="font-semibold text-gray-700">
-                            Rental Days
+                            {isHourly ? "Rental Hours" : "Rental Days"}
                           </span>
-                          <div className="flex items-center bg-white border rounded-lg shadow-sm">
-                            <button
-                              onClick={() => setDays(Math.max(1, days - 1))}
-                              className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                              disabled={days <= 1}
-                            >
-                              <Minus size={14} />
-                            </button>
-                            <span className="w-10 text-center font-bold text-base">
-                              {days}
-                            </span>
-                            <button
-                              onClick={() => setDays(Math.min(31, days + 1))}
-                              className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                              disabled={days >= 31}
-                            >
-                              <Plus size={14} />
-                            </button>
-                          </div>
+                          <div className="flex items-center bg-white border rounded-lg shadow-sm overflow-hidden">
+                        <button
+                          onClick={() => setDays(Math.max(1, days - 1))}
+                          className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed border-r"
+                          disabled={days <= 1}
+                        >
+                          <Minus size={14} />
+                        </button>
+
+                        <input
+                          type="number"
+                          min={1}
+                          // remove 31 day max restriction
+                          value={days}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === '') {
+                              setDays(1);
+                              return;
+                            }
+                            const parsed = Number(value);
+                            if (Number.isNaN(parsed)) return;
+                            const clamped = Math.max(1, parsed);
+                            setDays(clamped);
+                          }}
+                          className="w-12 text-center font-bold text-base focus:outline-none focus:ring-0"
+                        />
+
+                        <button
+                          onClick={() => setDays(days + 1)}
+                          className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed border-l"
+                          disabled={false}
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>  
                         </div>
 
                         <div className="space-y-2 pt-3 border-t border-gray-200">
                           <div className="flex justify-between items-center bg-blue-50/80 p-2.5 rounded-lg border border-blue-100">
                             <span className="text-sm font-semibold text-blue-900">
-                              Per Day Price
+                              {isHourly ? "Per Hour Price" : "Per Day Price"}
                             </span>
                             <span className="font-bold text-lg text-blue-900">
-                              ₹{dayPrice.toLocaleString()}
+                              ₹{unitPrice.toLocaleString()}
                             </span>
                           </div>
                           <div className="flex justify-between text-sm text-gray-600 px-1">
                             <span>Rental Duration</span>
-                            <span className="font-medium">{days} Days</span>
+                            <span className="font-medium">
+                              {days} {isHourly ? "Hours" : "Days"}
+                            </span>
                           </div>
                           <div className="flex justify-between text-sm text-gray-600 px-1">
                             <span>Quantity</span>
@@ -542,11 +546,11 @@ export default function ProductDetailsPage() {
                                 Total Amount
                               </span>
                               <span className="text-[10px] text-gray-400 font-normal">
-                                (Price × Days × Qty)
+                                {isHourly ? "(Price × Hours × Qty)" : "(Price × Days × Qty)"}
                               </span>
                             </div>
                             <div className="text-2xl font-extrabold text-blue-700">
-                              ₹{(dayPrice * days * quantity).toLocaleString()}
+                              ₹{(unitPrice * days * quantity).toLocaleString()}
                             </div>
                           </div>
                         </div>
@@ -610,13 +614,28 @@ export default function ProductDetailsPage() {
                       >
                         <Minus size={16} className="text-gray-600" />
                       </button>
-                      <span className="w-12 text-center font-extrabold text-lg text-slate-900">
-                        {quantity}
-                      </span>
+                        <input
+                        type="number"
+                        min={1}
+                        value={quantity}
+                        onFocus={(e) => e.currentTarget.select()}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === '') {
+                            setQuantity(1);
+                            return;
+                          }
+                          const parsed = Number(value);
+                          if (Number.isNaN(parsed)) return;
+                            const clamped = Math.max(1, parsed);
+                          setQuantity(clamped);
+                        }}
+                        className="w-14 text-center font-extrabold text-lg text-slate-900 bg-transparent focus:outline-none focus:ring-0"
+                      />
                       <button
-                        onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                        onClick={() => setQuantity(quantity + 1)}
                         className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                        disabled={quantity >= 10}
+                        disabled={false}
                       >
                         <Plus size={16} className="text-gray-600" />
                       </button>
@@ -636,7 +655,7 @@ export default function ProductDetailsPage() {
                 {/* CTAs */}
                 <div
                   className={clsx(
-                    "flex flex-col sm:flex-row gap-4 mt-6",
+                    "flex flex-col sm:flex-row gap-4 mt-5",
                     isSell && "items-stretch"
                   )}
                 >
@@ -664,7 +683,7 @@ export default function ProductDetailsPage() {
                       size="lg"
                       className={clsx(
                         "shadow-xl shadow-blue-500/20 h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
-                        "bg-upleex-blue hover:bg-blue-700 text-white border-none"
+                        "text-white border-none"
                       )}
                       onClick={handleAddToCart}
                       disabled={isAddingToCart}
@@ -680,7 +699,7 @@ export default function ProductDetailsPage() {
                     </Button>
                   )}
 
-                  <Button
+                  {/* <Button
                     size="lg"
                     variant="outline"
                     className={clsx(
@@ -693,12 +712,17 @@ export default function ProductDetailsPage() {
                   >
                     <MapPin size={18} className="text-blue-500" />
                     Check Availability
-                  </Button>
+                  </Button> */}
                 </div>
 
-                {/* {isSell && ( */}
-                  <div className="mt-4">
-                    <div className="bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4">
+                {/* Vendor / Sold By */}
+                  <div className={clsx("mt-3", isSell ? "mb-0" : "mb-2")}>
+                    <div
+                      className={clsx(
+                        "bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4",
+                        !isSell && (isDaily || isHourly) && "py-4 min-h-[96px]"
+                      )}
+                    >
                       <div className="flex items-center gap-3">
                         <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
                           <Store size={22} className="text-upleex-blue" />
@@ -711,12 +735,12 @@ export default function ProductDetailsPage() {
                             {productDetails?.vendor_name || 'Vendor'}
                           </div>
                           <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
-                            {productDetails?.vendor_name && (
+                            {/* {productDetails?.vendor_name && (
                               <>
                                 <span className="w-1 h-1 rounded-full bg-gray-300" />
                                 
                               </>
-                            )}
+                            )} */}
                           </div>
                         </div>
                       </div>
@@ -738,11 +762,10 @@ export default function ProductDetailsPage() {
                       </Button>
                     </div>
                   </div>
-                {/* )} */}
 
                 {/* Trust Badges - Show on right only for Sell */}
-                {/* {isSell && (
-                  <div className="grid grid-cols-4 gap-3 mt-8 pt-6 border-t border-gray-100">
+                {isSell && (
+                  <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-100">
                     <div className="flex flex-col items-center text-center gap-2">
                       <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
                         <Shield size={18} strokeWidth={2.5} />
@@ -776,7 +799,7 @@ export default function ProductDetailsPage() {
                       </span>
                     </div>
                   </div>
-                )} */}
+                )}
 
 
               </div>
@@ -788,101 +811,86 @@ export default function ProductDetailsPage() {
             <div className="flex gap-8 border-b border-gray-200 mb-6">
               <button
                 onClick={() => setActiveDetailTab("description")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"}`}
+                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${
+                  activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+                }`}
               >
                 Description
               </button>
               <button
                 onClick={() => setActiveDetailTab("details")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"}`}
+                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${
+                  activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+                }`}
               >
                 Product Details
               </button>
             </div>
 
-            <div className="h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+<div className="min-h-[420px] flex flex-col">
               {activeDetailTab === "description" ? (
                 <div className="prose prose-slate max-w-none animate-fadeIn">
-                  <h3 className="text-lg font-bold text-slate-900 mb-3">
-                    {productDetails?.product_name}
-                  </h3>
-                  {productDetails?.description &&
-                  productDetails.description.trim() !== "" ? (
-                    <p className="text-slate-600 leading-relaxed whitespace-pre-line">
-                      {productDetails.description}
-                    </p>
+                  <h3 className="text-lg font-bold text-slate-900 mb-3">Description</h3>
+                  {productDetails?.description && productDetails.description.trim() !== "" ? (
+                    <div
+                      className="text-slate-600 leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: productDetails.description }}
+                    />
                   ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <p className="text-gray-400 italic">
-                        No description available for this product.
-                      </p>
+                    <div className="min-h-[320px] flex items-center justify-center text-gray-400 italic">
+                      No description available for this product.
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="max-w-3xl h-full">
-                  <h3 className="text-lg font-bold text-slate-900 mb-4">
-                    Specifications
-                  </h3>
-                  {(() => {
-                    if (
-                      productDetails?.product_details &&
-                      Array.isArray(productDetails.product_details) &&
-                      productDetails.product_details.length > 0
-                    ) {
-                      return (
-                        <div className="space-y-4">
-                          {productDetails.product_details.map(
-                            (spec: any, idx: number) => {
-                              const label =
-                                spec.specification ||
-                                spec.label ||
-                                spec.key ||
-                                spec.name ||
-                                spec.title ||
-                                `Specification ${idx + 1}`;
-                              const value =
-                                spec.detail ||
-                                spec.value ||
-                                spec.description ||
-                                "N/A";
+                <>
+                  <h3 className="text-lg font-bold text-slate-900 mb-4">Product Details</h3>
 
-                              return (
-                                <div
-                                  key={idx}
-                                  className="grid grid-cols-1 sm:grid-cols-3 gap-2 pb-3 border-b border-gray-100 last:border-0"
-                                >
-                                  <div className="font-semibold text-slate-900">
-                                    {label}
-                                  </div>
-                                  <div className="sm:col-span-2 text-slate-600">
-                                    {value}
-                                  </div>
-                                </div>
-                              );
-                            },
-                          )}
-                        </div>
-                      );
-                    } else {
-                      return (
-                        <div className="flex items-center justify-center h-full">
-                          <div className="text-center">
-                            <p className="text-gray-400 italic mb-2">
-                              No detailed specifications available for this
-                              product.
-                            </p>
-                            <p className="text-gray-400 text-xs">
-                              {productDetails?.product_details
-                                ? `(Data type: ${typeof productDetails.product_details}, Array: ${Array.isArray(productDetails.product_details)})`
-                                : "(No data received from API)"}
-                            </p>
+                  {productDetails?.product_details &&
+                  Array.isArray(productDetails.product_details) &&
+                  productDetails.product_details.length > 0 ? (
+                    <div className="space-y-4">
+                      {productDetails.product_details.map((spec: any, idx: number) => {
+                        const label =
+                          spec.specification ||
+                          spec.label ||
+                          spec.key ||
+                          spec.name ||
+                          spec.title ||
+                          `Specification ${idx + 1}`;
+                        const value = spec.detail || spec.value || spec.description || "—";
+
+                        return (
+                          <div
+                            key={idx}
+                            className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-3 border-b border-gray-100 last:border-0"
+                          >
+                            <div className="font-semibold text-slate-900">{label}</div>
+                            <div className="sm:col-span-2 text-slate-600">{value}</div>
                           </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="flex-1 flex items-center justify-center py-12">
+                      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center">
+                        <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gray-50 flex items-center justify-center">
+                          <ImageOff size={28} className="text-gray-400" />
                         </div>
-                      );
-                    }
-                  })()}
-                </div>
+
+                        <h4 className="text-xl font-bold text-gray-800 mb-3">
+                          No Product Details Available
+                        </h4>
+
+                        <p className="text-gray-500 text-sm leading-relaxed">
+                          Detailed specifications for this product have not been added yet.
+                          <br />
+                          Please check back later or contact the seller for more information.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

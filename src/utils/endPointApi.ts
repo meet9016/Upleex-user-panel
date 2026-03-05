@@ -4,11 +4,15 @@ export interface EndPointApi {
     logout: string;
 
     //Vendor
+    vendorLogin?: string;
     home: string;
     webSubCategoryList: string;
     webCategoryProductList: string;
     webSingleProductList: string;
     webVendorProductList: string;
+    webAllCityList: string;
+    webProductSuggestionList: string;
+    webSearchProductList: string;
 
     //Product details
     webGetQuote: string;
@@ -22,6 +26,9 @@ export interface EndPointApi {
     webAddToCart: string;
     webCartList: string;
     webRemoveCart: string;
+    businessRegister: string;
+    // Priority plans
+    getPriorityPlans?: string;
 }
 
 // Define and export the API endpoint object
@@ -31,24 +38,31 @@ const endPointApi: EndPointApi = {
     logout: 'auth/logout',
 
     //Vendor
-    home: 'home',
-    webSubCategoryList: 'web-sub-category-list',
-    webCategoryProductList: 'web-category-product-list',
-    webSingleProductList: 'web-single-product-list',
-    webVendorProductList: 'web-vendor-product-list',
+    vendorLogin: 'vendor/auth/vendor-login',
+    home: 'categories/getall',
+    webSubCategoryList: 'subcategories/getall',
+    webCategoryProductList: 'products/getall',
+    webSingleProductList: 'products/getById',
+    webVendorProductList: 'products/web-vendor-product-list',
+    webAllCityList: 'vendor-india-city-list',
+    webProductSuggestionList: 'web-product-suggestion-list',
+    webSearchProductList: 'web-search-product-list',
 
     //Product details
     webGetQuote: 'web-get-quote',
 
     // Content
-    blogList: 'blog-list',
-    singleBlog: 'single-blog',
-    faqList: 'faq-list',
+    blogList: 'blogs/getall',
+    singleBlog: 'blogs/getbyid',
+    faqList: 'faqs/getall',
 
     // Cart
-    webAddToCart: 'web-add-to-cart',
-    webCartList: 'web-cart-list',
-    webRemoveCart: 'web-remove-cart',
+    webAddToCart: 'cart/web-add-to-cart',
+    webCartList: 'cart/web-cart-list',
+    webRemoveCart: 'cart/web-remove-cart',
+    businessRegister: 'vendor/auth/business-register',
+    // Priority plans
+    getPriorityPlans: 'priority-plans/getall',
 };
 
 
