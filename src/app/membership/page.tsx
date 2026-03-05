@@ -158,7 +158,7 @@ const MembershipPage = () => {
       price: p.monthly_price,
       duration: '/ month',
       features: [`Product slots: ${p.product_slots}`],
-      tag: ''
+      tag: p.is_popular ? 'Popular' : ''
     }));
     const dynYearly = priorityPlans.map((p) => ({
       name: p.name,
@@ -168,7 +168,7 @@ const MembershipPage = () => {
         `Product slots: ${p.product_slots}`,
         p.addon_available_for_yearly ? `Exclusive Add-on ₹${p.addon_price_per_year}/year (upto ${p.addon_max_slots} slots)` : ''
       ].filter(Boolean),
-      tag: 'Best Value'
+      tag: p.is_popular ? 'Popular' : 'Best Value'
     }));
     const monthly = dynMonthly.length >= 4
       ? dynMonthly
@@ -225,25 +225,14 @@ const MembershipPage = () => {
             </div>
           </div>
 
-          <div className="relative">
-            <button
-              aria-label="Scroll left"
-              onClick={() => {
-                const el = document.getElementById('plans-scroll');
-                if (el) el.scrollBy({ left: -400, behavior: 'smooth' });
-              }}
-              className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white rounded-full p-2 shadow"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <div id="plans-scroll" className="overflow-x-auto">
-              <div className="flex gap-6 md:gap-8 snap-x snap-mandatory pb-4">
-            {derivedPlans[billingCycle].map((plan, index) => (
-                <div 
-                    key={index} 
-                    className={`relative bg-white rounded-2xl overflow-hidden transition-all duration-300 min-w-[280px] md:min-w-[320px] lg:min-w-[300px] snap-center ${
-                        plan.tag ? 'ring-4 ring-upleex-blue/50 transform scale-105 z-10' : 'hover:scale-105'
-                    }`}
+          <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {derivedPlans[billingCycle].map((plan, index) => (
+                <div
+                  key={index}
+                  className={`relative bg-white rounded-2xl overflow-hidden transition-all duration-300 ${
+                    plan.tag ? 'ring-4 ring-upleex-blue/50 transform scale-105 z-10' : 'hover:scale-105'
+                  }`}
                 >
                     {plan.tag && (
                         <div className="absolute top-0 right-0 bg-gradient-primary text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wide">
@@ -280,19 +269,8 @@ const MembershipPage = () => {
                         </div>
                     </div>
                 </div>
-            ))}
-              </div>
+              ))}
             </div>
-            <button
-              aria-label="Scroll right"
-              onClick={() => {
-                const el = document.getElementById('plans-scroll');
-                if (el) el.scrollBy({ left: 400, behavior: 'smooth' });
-              }}
-              className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white rounded-full p-2 shadow"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
           </div>
         </div>
       </section>
