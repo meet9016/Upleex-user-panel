@@ -848,12 +848,9 @@ export const Navbar: React.FC = () => {
             <Button
               variant="outline"
               className={`
-                rounded-full px-5 py-2 group h-auto text-xs font-bold transition-all duration-200
+                rounded-full px-5 py-2 group h-auto text-xs font-semibold transition-all duration-200
                 border-upleex-purple focus:outline-none focus:ring-0 cursor-pointer
-                ${pathname === '/categories'
-                  ? 'bg-upleex-purple text-white border-upleex-purple hover:bg-upleex-purple hover:text-white'
-                  : 'text-upleex-purple hover:bg-upleex-purple hover:text-white'
-                }
+          
               `}
               onClick={() => router.push('/categories')}
             >
