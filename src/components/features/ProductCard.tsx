@@ -26,13 +26,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
   const productId = product.product_id || product.id;
   const productName = product.product_name || product.title;
   const productImage = product.product_main_image;
-  const productPrice = product.price || product.pricePerMonth;
-  const cancelPrice =
-    product.cancel_price ||
-    (product.pricePerMonth ? Math.round(product.pricePerMonth * 1.2) : null);
+    const listingType = (product?.product_type_name || product?.product_listing_type_name)?.toLowerCase();
+
+  const isMonthly =
+  product?.product_listing_type_name?.toLowerCase() === "monthly";
+
+let productPrice = product.price || product.pricePerMonth;
+let cancelPrice =
+  product.cancel_price ||
+  (product.pricePerMonth ? Math.round(product.pricePerMonth * 1.2) : null);
+
+if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 0) {
+  const firstMonth = product.month_arr[0];
+
+  productPrice = Number(firstMonth.price);
+  cancelPrice = Number(firstMonth.cancel_price);
+}
   const productCategory = product.sub_category_name || product.category;
   const productLocation = product.location || 'Surat';
-  const listingType = (product?.product_type_name || product?.product_listing_type_name)?.toLowerCase();
 
   const sanitizeUrl = (url: string) => {
     if (!url) return '';

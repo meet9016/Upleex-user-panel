@@ -361,7 +361,7 @@ export default function CartPage() {
               </motion.div>
 
               {/* Payment Plan Selector */}
-              <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+              {/* <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-slate-100">
                   <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
                     <PaymentIcon className="text-blue-600" size={22} />
@@ -421,7 +421,7 @@ export default function CartPage() {
                   )})} 
                   </LayoutGroup>
                 </div>
-              </motion.div>
+              </motion.div> */}
             </div>
 
             {/* ─── RIGHT ─── Sticky Summary ───────────────────────────────────── */}

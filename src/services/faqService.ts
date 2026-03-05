@@ -21,8 +21,13 @@ class FAQService {
             return this.faqList;
         }
         try {
-            const res = await api.post(endPointApi.faqList, {});
-            const data = res.data.data || [];
+            const res = await api.get(endPointApi.faqList);
+            const payload = res.data;
+            const data = Array.isArray(payload?.data)
+                ? payload.data
+                : Array.isArray(payload)
+                ? payload
+                : [];
             this.faqList = data;
             return data;
         } catch (error) {

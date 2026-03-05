@@ -60,13 +60,11 @@ const BlogCard = memo(({ blog }: BlogCardProps) => {
         {/* Image Section */}
         <div className="relative overflow-hidden rounded-2xl mb-4 shadow-lg">
           <div className="aspect-square bg-gray-100 relative">
-            <Image
-              src={blog.image}
-              alt={blog.title}
-              fill
-              sizes="(max-width: 768px) 100vw, 25vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-110"
-            />
+            <img
+      src={blog.image}
+      alt={blog.title}
+      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+    />
           </div>
 
           {/* Overlay */}

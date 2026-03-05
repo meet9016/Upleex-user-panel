@@ -14,6 +14,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { api } from "@/utils/axiosInstance";
+import endPointApi from "@/utils/endPointApi";
 
 export default function PartnerLoginPage() {
   const router = useRouter();
@@ -24,6 +26,7 @@ export default function PartnerLoginPage() {
   const [timer, setTimer] = useState(119);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [errors, setErrors] = useState<{ mobile?: string; otp?: string }>({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -37,26 +40,50 @@ export default function PartnerLoginPage() {
     return () => clearInterval(interval);
   }, [isTimerActive, timer]);
 
-  const handleSendOtp = (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (mobileNumber.length < 10) {
       setErrors(prev => ({ ...prev, mobile: "Enter a valid 10-digit mobile number" }));
       return;
     }
-    setErrors(prev => ({ ...prev, mobile: "" }));
-    setStep("otp");
-    setIsTimerActive(true);
-    setTimer(119);
+    try {
+      setLoading(true);
+      setErrors(prev => ({ ...prev, mobile: "" }));
+      await api.post(endPointApi.vendorLogin as string, { number: mobileNumber });
+      setStep("otp");
+      setIsTimerActive(true);
+      setTimer(119);
+    } catch (err) {
+      setErrors(prev => ({ ...prev, mobile: "Failed to send OTP. Try again." }));
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerify = (e: React.FormEvent) => {
+  const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.replace(/\D/g, "").length < 4) {
       setErrors(prev => ({ ...prev, otp: "Enter the OTP" }));
       return;
     }
-    setErrors(prev => ({ ...prev, otp: "" }));
-    router.push('/partner');
+    try {
+      setLoading(true);
+      setErrors(prev => ({ ...prev, otp: "" }));
+      const res = await api.post(endPointApi.vendorLogin as string, { number: mobileNumber, otp });
+      const token = res?.data?.data?.token;
+      if (token) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("token", token);
+        }
+        router.push('/partner');
+      } else {
+        setErrors(prev => ({ ...prev, otp: "Invalid OTP or response" }));
+      }
+    } catch (err) {
+      setErrors(prev => ({ ...prev, otp: "Invalid OTP" }));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleResendOtp = () => {
@@ -190,10 +217,10 @@ export default function PartnerLoginPage() {
 
                     <Button
                       type="submit"
-                      disabled={mobileNumber.length < 10}
+                      disabled={mobileNumber.length < 10 || loading}
                       className="w-full  text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      <span className="transform -rotate-45">➤</span> Send OTP
+                      <span className="transform -rotate-45">➤</span> {loading ? "Sending..." : "Send OTP"}
                     </Button>
                   </form>
                 </motion.div>
@@ -255,10 +282,10 @@ export default function PartnerLoginPage() {
 
                     <button
                       type="submit"
-                      disabled={otp.length < 4}
+                      disabled={otp.length < 4 || loading}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      <Check className="w-5 h-5" /> Verify & Sign In
+                      <Check className="w-5 h-5" /> {loading ? "Verifying..." : "Verify & Sign In"}
                     </button>
                   </form>
                 </motion.div>

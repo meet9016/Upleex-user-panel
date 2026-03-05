@@ -1,12 +1,11 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 interface CategoryCardProps {
   categories_name: string;
   image: string;
   categories_id: string;
-  product_count?: number;
+  product_count?: string | number;
   className?: string;
 }
 
@@ -41,7 +40,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
               text-xs font-medium bg-upleex-blue text-white 
               px-3 py-1 rounded-full shadow-md"
             >
-              {product_count} Items
+              {product_count || 0} Items
             </span>
           )}
 
@@ -53,13 +52,20 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
               flex items-center justify-center 
               group-hover:scale-110 transition-transform duration-300"
             >
-              <Image
-                src={image}
-                alt={categories_name}
-                width={96}
-                height={96}
-                className="w-full h-full object-cover"
-              />
+              {image ? (
+                <img
+                  src={image}
+                  alt={categories_name}
+                  width={96}
+                  height={96}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                  No Image
+                </div>
+              )}
             </div>
           </div>
 
