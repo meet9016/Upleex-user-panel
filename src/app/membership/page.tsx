@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { api } from '@/utils/axiosInstance';
+import endPointApi from '@/utils/endPointApi';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CenterModeCarousel } from '@/components/features/CenterModeCarousel';
@@ -8,6 +10,8 @@ import {
   Check, 
   ChevronDown, 
   ChevronUp, 
+  ChevronLeft,
+  ChevronRight,
   Crown,
   Truck,
   ShieldCheck,
@@ -56,62 +60,17 @@ const BENEFITS = [
   }
 ];
 
-const PLANS = {
+const fallbackPLANS = {
   monthly: [
-    {
-      name: 'Gold Member',
-      price: 199,
-      duration: '/ month',
-      features: [
-        '10% Discount on all rentals',
-        'Free Delivery up to 3 orders',
-        'Standard Support',
-        'Cancel anytime'
-      ],
-      tag: ''
-    },
-    {
-      name: 'Platinum Member',
-      price: 499,
-      duration: '/ month',
-      features: [
-        '20% Discount on all rentals',
-        'Unlimited Free Delivery',
-        'Priority Support',
-        'No Security Deposit (upto ₹10k)',
-        'Exclusive Event Access'
-      ],
-      tag: 'Best Value'
-    }
+    { name: 'Priority Basic', price: 199, duration: '/ month', features: ['Product slots: 1'], tag: '' },
+    { name: 'Priority Standard', price: 399, duration: '/ month', features: ['Product slots: up to 3'], tag: '' },
+    { name: 'Priority Premium', price: 599, duration: '/ month', features: ['Product slots: up to 7'], tag: 'Best Value' },
   ],
   yearly: [
-    {
-      name: 'Gold Member',
-      price: 1999,
-      duration: '/ year',
-      features: [
-        '10% Discount on all rentals',
-        'Free Delivery up to 40 orders',
-        'Standard Support',
-        'Save ₹389 vs Monthly'
-      ],
-      tag: ''
-    },
-    {
-      name: 'Platinum Member',
-      price: 4999,
-      duration: '/ year',
-      features: [
-        '20% Discount on all rentals',
-        'Unlimited Free Delivery',
-        'Priority Support',
-        'No Security Deposit (upto ₹20k)',
-        'Exclusive Event Access',
-        'Save ₹989 vs Monthly'
-      ],
-      tag: 'Best Value'
-    }
-  ]
+    { name: 'Priority Basic', price: 1999, duration: '/ year', features: ['Product slots: 1'], tag: '' },
+    { name: 'Priority Standard', price: 3999, duration: '/ year', features: ['Product slots: up to 3'], tag: '' },
+    { name: 'Priority Premium', price: 5999, duration: '/ year', features: ['Product slots: up to 7', 'Exclusive Add-on ₹59/year (upto 7 slots)'], tag: 'Best Value' },
+  ],
 };
 
 const PROCESS_STEPS = [
@@ -181,6 +140,44 @@ import { FAQSection } from "@/components/features/FAQSection";
 const MembershipPage = () => {
   const router = useRouter();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
+  const [priorityPlans, setPriorityPlans] = useState<any[]>([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await api.get(endPointApi.getPriorityPlans!);
+        const list = res?.data?.data || [];
+        setPriorityPlans(list);
+      } catch {
+        setPriorityPlans([]);
+      }
+    })();
+  }, []);
+  const derivedPlans = (() => {
+    const dynMonthly = priorityPlans.map((p) => ({
+      name: p.name,
+      price: p.monthly_price,
+      duration: '/ month',
+      features: [`Product slots: ${p.product_slots}`],
+      tag: ''
+    }));
+    const dynYearly = priorityPlans.map((p) => ({
+      name: p.name,
+      price: p.yearly_price,
+      duration: '/ year',
+      features: [
+        `Product slots: ${p.product_slots}`,
+        p.addon_available_for_yearly ? `Exclusive Add-on ₹${p.addon_price_per_year}/year (upto ${p.addon_max_slots} slots)` : ''
+      ].filter(Boolean),
+      tag: 'Best Value'
+    }));
+    const monthly = dynMonthly.length >= 4
+      ? dynMonthly
+      : [...dynMonthly, ...fallbackPLANS.monthly].slice(0, 4);
+    const yearly = dynYearly.length >= 4
+      ? dynYearly
+      : [...dynYearly, ...fallbackPLANS.yearly].slice(0, 4);
+    return { monthly, yearly };
+  })();
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -228,11 +225,23 @@ const MembershipPage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {PLANS[billingCycle].map((plan, index) => (
+          <div className="relative">
+            <button
+              aria-label="Scroll left"
+              onClick={() => {
+                const el = document.getElementById('plans-scroll');
+                if (el) el.scrollBy({ left: -400, behavior: 'smooth' });
+              }}
+              className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white rounded-full p-2 shadow"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div id="plans-scroll" className="overflow-x-auto">
+              <div className="flex gap-6 md:gap-8 snap-x snap-mandatory pb-4">
+            {derivedPlans[billingCycle].map((plan, index) => (
                 <div 
                     key={index} 
-                    className={`relative bg-white rounded-2xl overflow-hidden transition-all duration-300 ${
+                    className={`relative bg-white rounded-2xl overflow-hidden transition-all duration-300 min-w-[280px] md:min-w-[320px] lg:min-w-[300px] snap-center ${
                         plan.tag ? 'ring-4 ring-upleex-blue/50 transform scale-105 z-10' : 'hover:scale-105'
                     }`}
                 >
@@ -272,6 +281,18 @@ const MembershipPage = () => {
                     </div>
                 </div>
             ))}
+              </div>
+            </div>
+            <button
+              aria-label="Scroll right"
+              onClick={() => {
+                const el = document.getElementById('plans-scroll');
+                if (el) el.scrollBy({ left: 400, behavior: 'smooth' });
+              }}
+              className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 bg-white/60 hover:bg-white rounded-full p-2 shadow"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </section>
