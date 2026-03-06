@@ -13,7 +13,7 @@ const BANNERS = [
   {
     id: 1,
     title: "Join the Rental Revolution",
-    subtitle: "As seen on Shark Tank India",
+    subtitle: "",
     description: "Rent furniture, appliances, and more at affordable rates.",
     image: "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=1200&auto=format&fit=crop",
     color: "bg-blue-900"
