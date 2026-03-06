@@ -60,19 +60,6 @@ const BENEFITS = [
   }
 ];
 
-const fallbackPLANS = {
-  monthly: [
-    { name: 'Priority Basic', price: 199, duration: '/ month', features: ['Product slots: 1'], tag: '' },
-    { name: 'Priority Standard', price: 399, duration: '/ month', features: ['Product slots: up to 3'], tag: '' },
-    { name: 'Priority Premium', price: 599, duration: '/ month', features: ['Product slots: up to 7'], tag: 'Best Value' },
-  ],
-  yearly: [
-    { name: 'Priority Basic', price: 1999, duration: '/ year', features: ['Product slots: 1'], tag: '' },
-    { name: 'Priority Standard', price: 3999, duration: '/ year', features: ['Product slots: up to 3'], tag: '' },
-    { name: 'Priority Premium', price: 5999, duration: '/ year', features: ['Product slots: up to 7', 'Exclusive Add-on ₹59/year (upto 7 slots)'], tag: 'Best Value' },
-  ],
-};
-
 const PROCESS_STEPS = [
   {
     step: 1,
@@ -153,6 +140,9 @@ const MembershipPage = () => {
     })();
   }, []);
   const derivedPlans = (() => {
+    if (priorityPlans.length === 0) {
+      return { monthly: [], yearly: [] };
+    }
     const dynMonthly = priorityPlans.map((p) => ({
       name: p.name,
       price: p.monthly_price,
@@ -170,13 +160,7 @@ const MembershipPage = () => {
       ].filter(Boolean),
       tag: p.is_popular ? 'Popular' : 'Best Value'
     }));
-    const monthly = dynMonthly.length >= 4
-      ? dynMonthly
-      : [...dynMonthly, ...fallbackPLANS.monthly].slice(0, 4);
-    const yearly = dynYearly.length >= 4
-      ? dynYearly
-      : [...dynYearly, ...fallbackPLANS.yearly].slice(0, 4);
-    return { monthly, yearly };
+    return { monthly: dynMonthly, yearly: dynYearly };
   })();
 
   return (
