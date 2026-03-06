@@ -109,6 +109,27 @@ export const Navbar: React.FC = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
+    // Auto-detect user's city
+    const detectUserCity = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        const detectedCity = data.city || '';
+        
+        if (detectedCity) {
+          const cityRes = await searchService.getCities(1, detectedCity);
+          if (cityRes.items && cityRes.items.length > 0) {
+            setCurrentLocation(cityRes.items[0].city_name);
+            setSelectedCityId(String(cityRes.items[0].id));
+          }
+        }
+      } catch (error) {
+        console.error('Error detecting city:', error);
+      }
+    };
+    
+    detectUserCity();
+    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -651,6 +672,15 @@ export const Navbar: React.FC = () => {
               <span>Download App</span>
             </button>
 
+
+            <div className="h-4 w-px bg-gray-300"></div>
+
+            <Link 
+              href="/membership"
+              className="hover:text-upleex-blue transition-colors cursor-pointer"
+            >
+              Plan
+            </Link>
             <div className="h-4 w-px bg-gray-300"></div>
 
             <Link href="/partner" className="hover:text-upleex-blue transition-colors cursor-pointer">
