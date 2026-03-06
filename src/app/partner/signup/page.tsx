@@ -249,16 +249,22 @@ export default function PartnerSignupPage() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input 
-                      type="email"
+                      type="text"
                       name="email"
                       value={formData.email}
+                      inputMode="email"
+                      autoComplete="email"
                       onChange={(e) => {
                         handleChange(e);
-                        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
+                        setErrors(prev => ({ ...prev, email: '' }));
+                      }}
+                      onBlur={() => {
+                        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!formData.email.trim()) setErrors(prev => ({ ...prev, email: 'Email is required' }));
+                        else if (!emailPattern.test(formData.email.trim())) setErrors(prev => ({ ...prev, email: 'Enter a valid email' }));
                       }}
                       className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.email ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                       placeholder="john@example.com"
-                      required
                     />
                   </div>
                   {errors.email ? <p className="text-red-600 text-sm mt-1">{errors.email}</p> : null}
@@ -321,9 +327,11 @@ export default function PartnerSignupPage() {
                         handleChange(e);
                         if (e.target.value.trim()) setErrors(prev => ({ ...prev, city: '' }));
                       }}
+                      onBlur={() => {
+                        if (!formData.city.trim()) setErrors(prev => ({ ...prev, city: 'City is required' }));
+                      }}
                       className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.city ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                       placeholder="Ahmedabad, Gujarat"
-                      required
                     />
                   </div>
                   {errors.city ? <p className="text-red-600 text-sm mt-1">{errors.city}</p> : null}
