@@ -215,9 +215,11 @@ export default function PartnerSignupPage() {
                           handleChange(e);
                           if (e.target.value.trim()) setErrors(prev => ({ ...prev, fullName: '' }));
                         }}
+                        onBlur={() => {
+                          if (!formData.fullName.trim()) setErrors(prev => ({ ...prev, fullName: 'Full name is required' }));
+                        }}
                         className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.fullName ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
-                        placeholder="John Doe"
-                        required
+                        placeholder="John Doe"
                       />
                     </div>
                     {errors.fullName ? <p className="text-red-600 text-sm mt-1">{errors.fullName}</p> : null}
@@ -234,9 +236,11 @@ export default function PartnerSignupPage() {
                           handleChange(e);
                           if (e.target.value.trim()) setErrors(prev => ({ ...prev, businessName: '' }));
                         }}
+                        onBlur={() => {
+                          if (!formData.businessName.trim()) setErrors(prev => ({ ...prev, businessName: 'Business name is required' }));
+                        }}
                         className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.businessName ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
-                        placeholder="My Business Ltd"
-                        required
+                        placeholder="My Business Ltd"
                       />
                     </div>
                     {errors.businessName ? <p className="text-red-600 text-sm mt-1">{errors.businessName}</p> : null}
@@ -286,9 +290,13 @@ export default function PartnerSignupPage() {
                           if (val.length <= 10) setFormData(prev => ({ ...prev, mobileNumber: val }));
                           if (val.length === 10) setErrors(prev => ({ ...prev, mobileNumber: '' }));
                         }}
+                        onBlur={() => {
+                          const clean = formData.mobileNumber.replace(/\D/g, "");
+                          if (!clean) setErrors(prev => ({ ...prev, mobileNumber: 'Mobile number is required' }));
+                          else if (clean.length !== 10) setErrors(prev => ({ ...prev, mobileNumber: 'Enter a valid 10-digit mobile number' }));
+                        }}
                         className="flex-1 px-4 py-3 outline-none text-gray-900 placeholder-gray-400 w-full"
                         placeholder="9876543210"
-                        required
                       />
                     </div>
                     {errors.mobileNumber ? <p className="text-red-600 text-sm mt-1">{errors.mobileNumber}</p> : null}
@@ -364,10 +372,15 @@ export default function PartnerSignupPage() {
                         if (val.length <= 6) setFormData(prev => ({ ...prev, otp: val }));
                         if (val.length >= 4) setErrors(prev => ({ ...prev, otp: '' }));
                       }}
+                      onBlur={() => {
+                        if (otpSent) {
+                          const len = (formData.otp || '').replace(/\D/g, '').length;
+                          if (len < 4) setErrors(prev => ({ ...prev, otp: len === 0 ? 'OTP is required' : 'Enter a valid OTP' }));
+                        }
+                      }}
                       disabled={!otpSent}
                       className={`w-full py-3 px-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 disabled:bg-gray-100 disabled:cursor-not-allowed ${errors.otp ? 'border-red-500 focus:ring-red-500/20' : 'focus:ring-upleex-purple/20 focus:border-upleex-purple'}`}
                       placeholder="Enter OTP"
-                      required={otpSent}
                     />
                     {errors.otp ? <p className="text-red-600 text-sm mt-1">{errors.otp}</p> : null}
                   </div>
