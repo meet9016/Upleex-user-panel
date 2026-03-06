@@ -12,6 +12,7 @@ import {
   Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import OtpInput from "react-otp-input";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { api } from "@/utils/axiosInstance";
@@ -58,10 +59,11 @@ export default function PartnerLoginPage() {
       setStep("otp");
       setIsTimerActive(true);
       setTimer(119);
-    } catch (err) {
+    } catch (err: any) {
+      const errorMessage = err?.response?.data?.message || err?.message || "Failed to send OTP. Try again.";
       setErrors((prev) => ({
         ...prev,
-        mobile: "Failed to send OTP. Try again.",
+        mobile: errorMessage,
       }));
     } finally {
       setLoading(false);
@@ -281,17 +283,31 @@ export default function PartnerLoginPage() {
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Enter OTP
                       </label>
-                      <input
-                        value={otp}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, "");
-                          if (val.length <= 6) setOtp(val);
-                          if (val.length >= 4)
-                            setErrors((prev) => ({ ...prev, otp: "" }));
-                        }}
-                        placeholder="Enter OTP"
-                        className={`w-full py-3 px-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 ${errors.otp ? "border-red-500 focus:ring-red-500/20" : "focus:ring-upleex-purple/20 focus:border-upleex-purple"}`}
-                      />
+                      <div className="mt-2 flex justify-center">
+                        <OtpInput
+                          value={otp}
+                          onChange={(val) => {
+                            const clean = val.replace(/\D/g, "").slice(0, 6);
+                            setOtp(clean);
+                            if (clean.length >= 4) {
+                              setErrors((prev) => ({ ...prev, otp: "" }));
+                            }
+                          }}
+                          numInputs={6}
+                          shouldAutoFocus
+                          renderSeparator={<span className="mx-3 text-gray-300">•</span>}
+                          renderInput={(props) => (
+                            <input
+                              {...props}
+                              onBlur={() => {
+                                const len = otp.replace(/\D/g, "").length;
+                                setErrors((prev) => ({ ...prev, otp: len < 4 ? (len === 0 ? "OTP is required" : "Enter a valid OTP") : "" }));
+                              }}
+                              className={`h-11 !w-11.5 rounded-lg border ${errors.otp ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-300 focus:border-upleex-purple focus:ring-upleex-purple/20"} bg-gray-50 text-center text-base font-medium text-gray-900 outline-none transition-all`}
+                            />
+                          )}
+                        />
+                      </div>
                       {errors.otp ? (
                         <p className="text-red-600 text-sm mt-1">
                           {errors.otp}

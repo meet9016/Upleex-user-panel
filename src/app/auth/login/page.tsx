@@ -1,3 +1,4 @@
+
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -7,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { authService } from '@/services/authService';
 import { AnimatePresence, motion } from 'framer-motion';
+import OtpInput from 'react-otp-input';
 
 const LoginPage = () => {
   const [number, setNumber] = useState('');
@@ -18,6 +20,7 @@ const LoginPage = () => {
     name: '',
     email: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ number?: string; otp?: string; name?: string; email?: string }>({});
 
   // Handle Enter key press
@@ -36,9 +39,10 @@ const LoginPage = () => {
   const handleSendNumber = async () => {
     const clean = number.replace(/\D/g, '');
     if (clean.length !== 10) {
-      setErrors(prev => ({ ...prev, number: 'Enter a valid 10-digit mobile number' }));
+      setErrors(prev => ({ ...prev }));
       return;
     }
+    setIsLoading(true);
     try {
       const result = await authService.sendOtp({
         number: clean,
@@ -46,22 +50,19 @@ const LoginPage = () => {
       });
 
       if (result?.status === 200 || result?.success === true) {
-        toast.success('OTP sent successfully 📩');
+        toast.success(result?.message || 'OTP sent successfully');
         setUserType(result?.data?.user_type);
         setStep('otp');
         setErrors(prev => ({ ...prev, number: '' }));
-        
-        // Automatically focus OTP input after step change
-        setTimeout(() => {
-          const otpInput = document.querySelector('input[placeholder="Enter OTP"]') as HTMLInputElement;
-          if (otpInput) otpInput.focus();
-        }, 100);
+
       } else {
         toast.error(result?.message || 'Failed to send OTP');
       }
     } catch (error) {
       console.error(error);
       toast.error('Something went wrong');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,6 +79,7 @@ const LoginPage = () => {
       setErrors(prev => ({ ...prev, ...newErrors }));
       return;
     }
+    setIsLoading(true);
     try {
       const result = await authService.verifyOtp({
         number: number.replace(/\D/g, ''),
@@ -107,6 +109,8 @@ const LoginPage = () => {
     } catch (error) {
       console.error(error);
       toast.error('Something went wrong');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -134,106 +138,128 @@ const LoginPage = () => {
             Sign In
           </h2>
 
-              <AnimatePresence mode="wait">
-                {step === 'number' ? (
-                  <motion.div
-                    key="step-number"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.2 }}
-                    className="space-y-4"
-                  >
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-3 text-gray-400" />
+          <AnimatePresence mode="wait">
+            {step === 'number' ? (
+              <motion.div
+                key="step-number"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                {/* Mobile Number */}
+                <div className="relative">
+                  <Phone className="absolute left-3 top-3 text-gray-400" />
+                  <input
+                    value={number}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      if (val.length <= 10) setNumber(val);
+                      if (val.length === 10) {
+                        setErrors(prev => ({ ...prev, number: '' }));
+                      }
+                    }}
+                    onBlur={() => {
+                      if (!number) {
+                        setErrors(prev => ({ ...prev, number: 'Mobile number is required' }));
+                      } else if (number.length !== 10) {
+                        setErrors(prev => ({ ...prev, number: 'Enter a valid 10-digit mobile number' }));
+                      }
+                    }}
+                    placeholder="Mobile Number"
+                    className={`w-full pl-10 py-3 border rounded-lg bg-gray-50
+  focus:outline-none focus:ring-0
+  ${errors.number
+                        ? 'border-red-500 focus:border-red-500'
+                        : 'border-gray-300 focus:border-gray-400'
+                      }`}
+                    autoFocus
+                  />
+                  {errors.number && (
+                    <p className="text-red-600 text-sm mt-1">{errors.number}</p>
+                  )}
+                </div>
+                <Button
+                  fullWidth
+                  onClick={handleSendNumber}
+                  className="cursor-pointer"
+                >
+                  {isLoading ? 'Please wait...' : 'Send OTP'} <ArrowRight className="ml-2" size={18} />
+                </Button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="step-otp"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <div className="mt-2 flex justify-center">
+                  <OtpInput
+                    value={otp}
+                    onChange={(val) => setOtp(val)}
+                    numInputs={6}
+                    shouldAutoFocus
+                    renderSeparator={<span className="mx-3 text-slate-300">•</span>}
+                    renderInput={(props) => (
                       <input
-                        value={number}
-                        onChange={(e) => {
-                          const val = e.target.value.replace(/\D/g, '');
-                          if (val.length <= 10) setNumber(val);
-                          if (val.length === 10) setErrors(prev => ({ ...prev, number: '' }));
+                        {...props}
+                        onKeyDown={handleKeyPress}
+                        onBlur={() => {
+                          const len = otp.replace(/\D/g, '').length;  
+                          setErrors(prev => ({ ...prev, otp: len < 4 ? (len === 0 ? 'OTP is required' : 'Enter a valid OTP') : '' }));
                         }}
-                        onKeyDown={handleKeyPress} // Add enter key handler
-                        placeholder="Mobile Number"
-                        className={`w-full pl-10 py-3 border rounded-lg bg-gray-50 ${errors.number ? 'border-red-500' : ''}`}
-                        autoFocus // Auto focus on page load
+                        className={`h-11 !w-11.5 rounded-lg border ${errors.otp ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-200 focus:border-[#4F46E5] focus:ring-[#4F46E5]/20'} bg-slate-50 text-center text-base font-medium text-slate-900 outline-none transition-all`}
                       />
-                      {errors.number ? (
-                        <p className="text-red-600 text-sm mt-1">{errors.number}</p>
-                      ) : null}
-                    </div>
-                    <Button
-                      fullWidth
-                      onClick={handleSendNumber}
-                      className="cursor-pointer"
-                    >
-                      Continue <ArrowRight className="ml-2" size={18} />
-                    </Button>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="step-otp"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.2 }}
-                    className="space-y-4"
-                  >
+                    )}
+                  />
+                </div>
+                {errors.otp ? (
+                  <p className="text-red-600 text-sm -mt-3">{errors.otp}</p>
+                ) : null}
+
+                {userType === 'new' && (
+                  <>
                     <input
-                      value={otp}
+                      placeholder="Full Name"
+                      value={form.name}
                       onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, '');
-                        if (val.length <= 6) setOtp(val);
-                        if (val.length >= 4) setErrors(prev => ({ ...prev, otp: '' }));
+                        setForm({ ...form, name: e.target.value });
+                        if (e.target.value.trim()) setErrors(prev => ({ ...prev, name: '' }));
                       }}
                       onKeyDown={handleKeyPress} // Add enter key handler
-                      placeholder="Enter OTP"
-                      className={`w-full py-3 px-3 border rounded-lg bg-gray-50 ${errors.otp ? 'border-red-500' : ''}`}
-                      autoFocus // Auto focus when OTP step loads
+                      className={`w-full py-3 px-3 border rounded-lg ${errors.name ? 'border-red-500' : ''}`}
                     />
-                    {errors.otp ? (
-                      <p className="text-red-600 text-sm -mt-3">{errors.otp}</p>
+                    {errors.name ? (
+                      <p className="text-red-600 text-sm -mt-3">{errors.name}</p>
                     ) : null}
-                    
-                    {userType === 'new' && (
-                      <>
-                        <input
-                          placeholder="Full Name"
-                          value={form.name}
-                          onChange={(e) => {
-                            setForm({ ...form, name: e.target.value });
-                            if (e.target.value.trim()) setErrors(prev => ({ ...prev, name: '' }));
-                          }}
-                          onKeyDown={handleKeyPress} // Add enter key handler
-                          className={`w-full py-3 px-3 border rounded-lg ${errors.name ? 'border-red-500' : ''}`}
-                        />
-                        {errors.name ? (
-                          <p className="text-red-600 text-sm -mt-3">{errors.name}</p>
-                        ) : null}
-                        
-                        <input
-                          placeholder="Email"
-                          value={form.email}
-                          onChange={(e) => {
-                            setForm({ ...form, email: e.target.value });
-                            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                            if (emailPattern.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
-                          }}
-                          onKeyDown={handleKeyPress} // Add enter key handler
-                          className={`w-full py-3 px-3 border rounded-lg ${errors.email ? 'border-red-500' : ''}`}
-                        />
-                        {errors.email ? (
-                          <p className="text-red-600 text-sm -mt-3">{errors.email}</p>
-                        ) : null}
-                      </>
-                    )}
-                    
-                    <Button fullWidth onClick={handleVerifyOtp}>
-                      Verify & Continue
-                    </Button>
-                  </motion.div>
+
+                    <input
+                      placeholder="Email"
+                      value={form.email}
+                      onChange={(e) => {
+                        setForm({ ...form, email: e.target.value });
+                        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (emailPattern.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
+                      }}
+                      onKeyDown={handleKeyPress} // Add enter key handler
+                      className={`w-full py-3 px-3 border rounded-lg ${errors.email ? 'border-red-500' : ''}`}
+                    />
+                    {errors.email ? (
+                      <p className="text-red-600 text-sm -mt-3">{errors.email}</p>
+                    ) : null}
+                  </>
                 )}
-              </AnimatePresence>
+
+                <Button fullWidth onClick={handleVerifyOtp}>
+                  {isLoading ? 'Please wait...' : 'Login'}
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <p className="text-sm text-gray-500">
             New to Upleex?{' '}
