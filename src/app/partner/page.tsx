@@ -30,12 +30,12 @@ const PartnerPage = () => {
               <p className="text-lg text-slate-600 mb-5 max-w-lg">
                 Become an Upleex partner and grow your rental business across India.
               </p>
-              <Link 
+              {/* <Link 
                 href="/auth/register" 
                 className="inline-flex items-center gap-2 bg-gradient-primary text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transform hover:-translate-y-1 transition-all shadow-lg shadow-blue-500/20"
               >
                 Start Renting <ArrowRight size={20} />
-              </Link>
+              </Link> */}
             </div>
             <div className="relative">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
