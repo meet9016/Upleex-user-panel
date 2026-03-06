@@ -55,42 +55,6 @@ const FloatingParticles = () => {
   );
 };
 
-// Add gradient background component
-const GradientBackground = () => {
-  return (
-    <div className="absolute inset-0 -z-10 overflow-hidden">
-      <div className="absolute -top-40 -right-40 w-80 h-80 bg-upleex-purple rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-upleex-blue rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-upleex-purple/10 to-upleex-blue/10 rounded-full blur-3xl"></div>
-    </div>
-  );
-};
-
-// Add animated counter component
-const AnimatedCounter = ({ end, duration = 2 }: { end: number; duration?: number }) => {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-
-  useEffect(() => {
-    if (isInView) {
-      let start = 0;
-      const increment = end / (duration * 60);
-      const timer = setInterval(() => {
-        start += increment;
-        if (start >= end) {
-          setCount(end);
-          clearInterval(timer);
-        } else {
-          setCount(Math.floor(start));
-        }
-      }, 1000 / 60);
-    }
-  }, [isInView, end, duration]);
-
-  return <span ref={ref}>{Math.floor(count).toLocaleString()}+</span>;
-};
-
 export default function Home() {
   const router = useRouter();
 

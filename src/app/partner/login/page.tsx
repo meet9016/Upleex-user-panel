@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { 
-  Mail, 
-  Smartphone, 
-  ArrowLeft, 
-  Zap, 
-  TrendingUp, 
-  Shield, 
-  Check 
+import {
+  Mail,
+  Smartphone,
+  ArrowLeft,
+  Zap,
+  TrendingUp,
+  Shield,
+  Check,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -43,18 +43,26 @@ export default function PartnerLoginPage() {
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (mobileNumber.length < 10) {
-      setErrors(prev => ({ ...prev, mobile: "Enter a valid 10-digit mobile number" }));
+      setErrors((prev) => ({
+        ...prev,
+        mobile: "Enter a valid 10-digit mobile number",
+      }));
       return;
     }
     try {
       setLoading(true);
-      setErrors(prev => ({ ...prev, mobile: "" }));
-      await api.post(endPointApi.vendorLogin as string, { number: mobileNumber });
+      setErrors((prev) => ({ ...prev, mobile: "" }));
+      await api.post(endPointApi.vendorLogin as string, {
+        number: mobileNumber,
+      });
       setStep("otp");
       setIsTimerActive(true);
       setTimer(119);
     } catch (err) {
-      setErrors(prev => ({ ...prev, mobile: "Failed to send OTP. Try again." }));
+      setErrors((prev) => ({
+        ...prev,
+        mobile: "Failed to send OTP. Try again.",
+      }));
     } finally {
       setLoading(false);
     }
@@ -63,24 +71,37 @@ export default function PartnerLoginPage() {
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     if (otp.replace(/\D/g, "").length < 4) {
-      setErrors(prev => ({ ...prev, otp: "Enter the OTP" }));
+      setErrors((prev) => ({ ...prev, otp: "Enter the OTP" }));
       return;
     }
     try {
       setLoading(true);
-      setErrors(prev => ({ ...prev, otp: "" }));
-      const res = await api.post(endPointApi.vendorLogin as string, { number: mobileNumber, otp });
+      setErrors((prev) => ({ ...prev, otp: "" }));
+      const res = await api.post(endPointApi.vendorLogin as string, {
+        number: mobileNumber,
+        otp,
+      });
       const token = res?.data?.data?.token;
       if (token) {
         if (typeof window !== "undefined") {
           localStorage.setItem("token", token);
         }
-        router.push('/partner');
+        const host = window.location.hostname;
+        let redirectUrl = "";
+
+        if (host === "localhost") {
+          redirectUrl = process.env.NEXT_PUBLIC_VENDOR_PORTAL_LOCAL || "";
+        } else {
+          redirectUrl = process.env.NEXT_PUBLIC_VENDOR_PORTAL_LIVE || "";
+        }
+        // window.location.href = redirectUrl;
+        window.location.href = `${redirectUrl}?token=${token}`;
+        // router.push('/partner');
       } else {
-        setErrors(prev => ({ ...prev, otp: "Invalid OTP or response" }));
+        setErrors((prev) => ({ ...prev, otp: "Invalid OTP or response" }));
       }
     } catch (err) {
-      setErrors(prev => ({ ...prev, otp: "Invalid OTP" }));
+      setErrors((prev) => ({ ...prev, otp: "Invalid OTP" }));
     } finally {
       setLoading(false);
     }
@@ -94,7 +115,6 @@ export default function PartnerLoginPage() {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-sans">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col md:flex-row min-h-[600px]">
-        
         {/* Left Panel - Dark Navy */}
         <div className="w-full md:w-5/12 bg-[#1e293b] p-8 md:p-12 text-white flex flex-col justify-between relative overflow-hidden hidden md:flex">
           {/* Background Gradient/Pattern overlay */}
@@ -105,7 +125,7 @@ export default function PartnerLoginPage() {
             {/* Logo Placeholder */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold tracking-tighter flex items-center gap-2">
-                 <span className="text-gradient-primary">Partner</span>Hub
+                <span className="text-gradient-primary">Partner</span>Hub
               </h1>
             </div>
 
@@ -152,8 +172,12 @@ export default function PartnerLoginPage() {
         <div className="w-full md:w-7/12 p-8 md:p-12 bg-white flex flex-col justify-center">
           <div className="max-w-md mx-auto w-full">
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-              <p className="text-gray-500">Sign in to access your Partner dashboard</p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Welcome Back
+              </h2>
+              <p className="text-gray-500">
+                Sign in to access your Partner dashboard
+              </p>
             </div>
 
             {/* Auth Method Tabs */}
@@ -195,7 +219,9 @@ export default function PartnerLoginPage() {
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
                         Mobile Number
                       </label>
-                      <div className={`flex rounded-lg border overflow-hidden focus-within:ring-2 transition-all ${errors.mobile ? 'border-red-500 focus-within:ring-red-500/20' : 'border-gray-200 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple'}`}>
+                      <div
+                        className={`flex rounded-lg border overflow-hidden focus-within:ring-2 transition-all ${errors.mobile ? "border-red-500 focus-within:ring-red-500/20" : "border-gray-200 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple"}`}
+                      >
                         <div className="bg-gray-50 px-4 py-3 border-r border-gray-200 text-gray-600 font-medium">
                           +91
                         </div>
@@ -205,14 +231,19 @@ export default function PartnerLoginPage() {
                           onChange={(e) => {
                             const val = e.target.value.replace(/\D/g, "");
                             if (val.length <= 10) setMobileNumber(val);
-                            if (val.length === 10) setErrors(prev => ({ ...prev, mobile: "" }));
+                            if (val.length === 10)
+                              setErrors((prev) => ({ ...prev, mobile: "" }));
                           }}
                           placeholder="1234567890"
                           className="flex-1 px-4 py-3 outline-none text-gray-900 placeholder-gray-400"
                           required
                         />
                       </div>
-                      {errors.mobile ? <p className="text-red-600 text-sm mt-1">{errors.mobile}</p> : null}
+                      {errors.mobile ? (
+                        <p className="text-red-600 text-sm mt-1">
+                          {errors.mobile}
+                        </p>
+                      ) : null}
                     </div>
 
                     <Button
@@ -220,7 +251,8 @@ export default function PartnerLoginPage() {
                       disabled={mobileNumber.length < 10 || loading}
                       className="w-full  text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      <span className="transform -rotate-45">➤</span> {loading ? "Sending..." : "Send OTP"}
+                      <span className="transform -rotate-45">➤</span>{" "}
+                      {loading ? "Sending..." : "Send OTP"}
                     </Button>
                   </form>
                 </motion.div>
@@ -254,30 +286,38 @@ export default function PartnerLoginPage() {
                         onChange={(e) => {
                           const val = e.target.value.replace(/\D/g, "");
                           if (val.length <= 6) setOtp(val);
-                          if (val.length >= 4) setErrors(prev => ({ ...prev, otp: "" }));
+                          if (val.length >= 4)
+                            setErrors((prev) => ({ ...prev, otp: "" }));
                         }}
                         placeholder="Enter OTP"
-                        className={`w-full py-3 px-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 ${errors.otp ? 'border-red-500 focus:ring-red-500/20' : 'focus:ring-upleex-purple/20 focus:border-upleex-purple'}`}
+                        className={`w-full py-3 px-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 ${errors.otp ? "border-red-500 focus:ring-red-500/20" : "focus:ring-upleex-purple/20 focus:border-upleex-purple"}`}
                       />
                       {errors.otp ? (
-                        <p className="text-red-600 text-sm mt-1">{errors.otp}</p>
+                        <p className="text-red-600 text-sm mt-1">
+                          {errors.otp}
+                        </p>
                       ) : (
-                        <p className="mt-2 text-sm text-gray-500">OTP sent to your mobile number</p>
+                        <p className="mt-2 text-sm text-gray-500">
+                          OTP sent to your mobile number
+                        </p>
                       )}
                     </div>
 
                     <div className="text-center mb-6">
-                        <button 
-                            type="button"
-                            onClick={handleResendOtp}
-                            disabled={isTimerActive}
-                            className={`text-sm flex items-center justify-center gap-1 mx-auto ${isTimerActive ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-700 font-medium'}`}
-                        >
-                            <span className="transform -rotate-45">➤</span> Resend OTP
-                        </button>
-                        {isTimerActive && (
-                            <p className="text-xs text-gray-400 mt-1">Resend OTP in {timer} seconds</p>
-                        )}
+                      <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        disabled={isTimerActive}
+                        className={`text-sm flex items-center justify-center gap-1 mx-auto ${isTimerActive ? "text-gray-400 cursor-not-allowed" : "text-blue-600 hover:text-blue-700 font-medium"}`}
+                      >
+                        <span className="transform -rotate-45">➤</span> Resend
+                        OTP
+                      </button>
+                      {isTimerActive && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Resend OTP in {timer} seconds
+                        </p>
+                      )}
                     </div>
 
                     <button
@@ -285,7 +325,8 @@ export default function PartnerLoginPage() {
                       disabled={otp.length < 4 || loading}
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                      <Check className="w-5 h-5" /> {loading ? "Verifying..." : "Verify & Sign In"}
+                      <Check className="w-5 h-5" />{" "}
+                      {loading ? "Verifying..." : "Verify & Sign In"}
                     </button>
                   </form>
                 </motion.div>

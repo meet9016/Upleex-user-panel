@@ -30,7 +30,7 @@ export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isDownloadPopupOpen, setIsDownloadPopupOpen] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState('Select city');
+  const [currentLocation, setCurrentLocation] = useState('Select City');
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
@@ -194,7 +194,7 @@ export const Navbar: React.FC = () => {
 
   const handleClearCity = () => {
     setSelectedCityId(null);
-    setCurrentLocation('select city');
+    setCurrentLocation('Select City');
     setCitySearchTerm('');
     setCities([]);
     setHasLoadedInitialCities(false);
