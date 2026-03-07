@@ -1,4 +1,3 @@
-
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -116,8 +115,8 @@ const LoginPage = () => {
 
   return (
     <div className="flex-grow flex">
-      {/* Left Side - Hero Image */}
-      <div className="hidden lg:flex w-1/2 bg-slate-900 relative overflow-hidden">
+      {/* Left Side - Hero Image with 55.1vh height */}
+      <div className="hidden lg:flex w-1/2 bg-slate-900 relative overflow-hidden" style={{ height: '55.1vh' }}>
         <div className="absolute inset-0 bg-gradient-to-br from-upleex-purple/90 to-upleex-blue/90 z-10"></div>
         <img
           src="https://images.unsplash.com/photo-1574634534894-89d7576c8259?q=80&w=2064&auto=format&fit=crop"
@@ -132,7 +131,8 @@ const LoginPage = () => {
         </div>
       </div>
 
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white">
+      {/* Right Side - Form with same height */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white" style={{ height: '55.1vh' }}>
         <div className="max-w-md w-full space-y-6">
           <h2 className="text-3xl font-extrabold text-slate-900">
             Sign In
@@ -230,7 +230,7 @@ const LoginPage = () => {
                         setForm({ ...form, name: e.target.value });
                         if (e.target.value.trim()) setErrors(prev => ({ ...prev, name: '' }));
                       }}
-                      onKeyDown={handleKeyPress} // Add enter key handler
+                      onKeyDown={handleKeyPress}
                       className={`w-full py-3 px-3 border rounded-lg ${errors.name ? 'border-red-500' : ''}`}
                     />
                     {errors.name ? (
@@ -245,7 +245,7 @@ const LoginPage = () => {
                         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                         if (emailPattern.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
                       }}
-                      onKeyDown={handleKeyPress} // Add enter key handler
+                      onKeyDown={handleKeyPress}
                       className={`w-full py-3 px-3 border rounded-lg ${errors.email ? 'border-red-500' : ''}`}
                     />
                     {errors.email ? (
@@ -261,12 +261,12 @@ const LoginPage = () => {
             )}
           </AnimatePresence>
 
-          <p className="text-sm text-gray-500">
+          {/* <p className="text-sm text-gray-500">
             New to Upleex?{' '}
             <Link href="/auth/register" className="text-upleex-purple font-semibold">
               Create an account
             </Link>
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

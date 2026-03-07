@@ -28,14 +28,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
         <CartProvider>
-          <Suspense fallback={null}>
-            <ProgressBar />
-          </Suspense>
-          <Navbar />
-          <ScrollToTop />
-          {children}
-          <Toaster position="top-right" />
-          <Footer />
+          <div className="min-h-screen flex flex-col">
+            <Suspense fallback={null}>
+              <ProgressBar />
+            </Suspense>
+            <Navbar />
+            <ScrollToTop />
+            <main className="flex-1">{children}</main>
+            <Toaster position="top-right" />
+            <Footer />
+          </div>
         </CartProvider>
       </body>
     </html>
