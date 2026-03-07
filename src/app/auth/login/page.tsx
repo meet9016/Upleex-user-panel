@@ -261,12 +261,12 @@ const LoginPage = () => {
             )}
           </AnimatePresence>
 
-          <p className="text-sm text-gray-500">
+          {/* <p className="text-sm text-gray-500">
             New to Upleex?{' '}
             <Link href="/auth/register" className="text-upleex-purple font-semibold">
               Create an account
             </Link>
-          </p>
+          </p> */}
         </div>
       </div>
     </div>
