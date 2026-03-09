@@ -200,7 +200,12 @@ const LoginPage = () => {
                 <div className="mt-2 flex justify-center">
                   <OtpInput
                     value={otp}
-                    onChange={(val) => setOtp(val)}
+                    onChange={(val) => {
+                      setOtp(val);
+                      if (val.length >= 4) {
+                        setErrors(prev => ({ ...prev, otp: '' }));
+                      }
+                    }}
                     numInputs={6}
                     shouldAutoFocus
                     renderSeparator={<span className="mx-3 text-slate-300">•</span>}
@@ -208,10 +213,6 @@ const LoginPage = () => {
                       <input
                         {...props}
                         onKeyDown={handleKeyPress}
-                        onBlur={() => {
-                          const len = otp.replace(/\D/g, '').length;  
-                          setErrors(prev => ({ ...prev, otp: len < 4 ? (len === 0 ? 'OTP is required' : 'Enter a valid OTP') : '' }));
-                        }}
                         className={`h-11 !w-11.5 rounded-lg border ${errors.otp ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-200 focus:border-[#4F46E5] focus:ring-[#4F46E5]/20'} bg-slate-50 text-center text-base font-medium text-slate-900 outline-none transition-all`}
                       />
                     )}

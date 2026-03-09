@@ -299,10 +299,6 @@ export default function PartnerLoginPage() {
                           renderInput={(props) => (
                             <input
                               {...props}
-                              onBlur={() => {
-                                const len = otp.replace(/\D/g, "").length;
-                                setErrors((prev) => ({ ...prev, otp: len < 4 ? (len === 0 ? "OTP is required" : "Enter a valid OTP") : "" }));
-                              }}
                               className={`h-11 !w-11.5 rounded-lg border ${errors.otp ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-gray-300 focus:border-upleex-purple focus:ring-upleex-purple/20"} bg-gray-50 text-center text-base font-medium text-gray-900 outline-none transition-all`}
                             />
                           )}
