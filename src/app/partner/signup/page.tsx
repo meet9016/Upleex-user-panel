@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
 import { partnerService } from "@/services/partnerService";
 import toast from "react-hot-toast";
+import OtpInput from "react-otp-input";
 
 export default function PartnerSignupPage() {
   const router = useRouter();
@@ -362,28 +363,27 @@ export default function PartnerSignupPage() {
                       </button>
                     )}
                   </div>
-                  <div className="relative">
-                    <input 
-                      type="text"
-                      name="otp"
+                  <div className="flex justify-center">
+                    <OtpInput
                       value={formData.otp}
-                      onChange={(e) => {
-                        const val = e.target.value.replace(/\D/g, "");
-                        if (val.length <= 6) setFormData(prev => ({ ...prev, otp: val }));
-                        if (val.length >= 4) setErrors(prev => ({ ...prev, otp: '' }));
+                      onChange={(val) => {
+                        const clean = val.replace(/\D/g, "").slice(0, 6);
+                        setFormData(prev => ({ ...prev, otp: clean }));
+                        if (clean.length >= 4) setErrors(prev => ({ ...prev, otp: '' }));
                       }}
-                      onBlur={() => {
-                        if (otpSent) {
-                          const len = (formData.otp || '').replace(/\D/g, '').length;
-                          if (len < 4) setErrors(prev => ({ ...prev, otp: len === 0 ? 'OTP is required' : 'Enter a valid OTP' }));
-                        }
-                      }}
-                      disabled={!otpSent}
-                      className={`w-full py-3 px-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 disabled:bg-gray-100 disabled:cursor-not-allowed ${errors.otp ? 'border-red-500 focus:ring-red-500/20' : 'focus:ring-upleex-purple/20 focus:border-upleex-purple'}`}
-                      placeholder="Enter OTP"
+                      numInputs={6}
+                      shouldAutoFocus={otpSent}
+                      renderSeparator={<span className="mx-2 text-gray-300">•</span>}
+                      renderInput={(props) => (
+                        <input
+                          {...props}
+                          disabled={!otpSent}
+                          className={`h-11 !w-11 rounded-lg border ${errors.otp ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-300 focus:border-upleex-purple focus:ring-upleex-purple/20'} ${!otpSent ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-50'} text-center text-base font-medium text-gray-900 outline-none transition-all`}
+                        />
+                      )}
                     />
-                    {errors.otp ? <p className="text-red-600 text-sm mt-1">{errors.otp}</p> : null}
                   </div>
+                  {errors.otp ? <p className="text-red-600 text-sm mt-1 text-center">{errors.otp}</p> : null}
                </div>
 
                {/* Buttons */}
