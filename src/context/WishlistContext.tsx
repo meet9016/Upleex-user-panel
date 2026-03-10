@@ -4,7 +4,7 @@ import { wishlistService } from '../services/wishlistService';
 import { toast } from 'react-hot-toast';
 
 interface WishlistItem {
-  _id: string;
+  id: string;
   product_id: {
     _id: string;
     product_name: string;
