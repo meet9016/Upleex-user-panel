@@ -216,7 +216,7 @@ export default function ProductDetailsPage() {
                     <img
                       src={selectedImage || allImages[0]}
                       alt={productDetails?.product_name}
-                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                      className="w-full h-full object-contain transition-transform duration-700 hover:scale-105"
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-400">
@@ -242,7 +242,7 @@ export default function ProductDetailsPage() {
                         <img
                           src={img}
                           alt=""
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       </button>
                     ))}

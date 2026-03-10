@@ -24,6 +24,7 @@ import { DownloadAppPopup } from '../features/DownloadAppPopup';
 import { Button } from '@/components/ui/Button';
 import { categoryService, Category } from '@/services/categoryService';
 import { useCart } from '@/context/CartContext';
+import { useWishlist } from '@/context/WishlistContext';
 import { searchService } from '@/services/searchService';
 
 export const Navbar: React.FC = () => {
@@ -37,6 +38,7 @@ export const Navbar: React.FC = () => {
   const [email, setEmail] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const cityDropdownRef = useRef<HTMLDivElement>(null);
   const searchWrapperRef = useRef<HTMLDivElement>(null);
@@ -805,10 +807,27 @@ export const Navbar: React.FC = () => {
               </span>
             </Link>
 
+            <Link href="/wishlist" className="relative group cursor-pointer">
+              <Heart size={24} className="text-slate-700 group-hover:text-red-500 transition-colors" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                  {wishlistCount || 0}
+                </span>
+              )}
+            </Link>
+
           </div>
 
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center gap-4">
+            <Link href="/wishlist" className="relative cursor-pointer">
+              <Heart size={24} className="text-slate-700" />
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                  {wishlistCount || 0}
+                </span>
+              )}
+            </Link>
             <Link href="/cart" className="relative cursor-pointer">
               <ShoppingCart size={24} className="text-slate-700" />
               <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
