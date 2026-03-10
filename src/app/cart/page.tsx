@@ -158,7 +158,7 @@ export default function CartPage() {
       variants={containerVariants}
       className="min-h-screen bg-gradient-to-b from-slate-50 to-white"
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
         <div className="mb-6">
           <BackButton label="Continue Shopping" />

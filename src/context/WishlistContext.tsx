@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 interface WishlistItem {
   id: string;
   product_id: {
-    _id: string;
+    id: any;
     product_name: string;
     price: string;
     cancel_price: string;
