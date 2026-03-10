@@ -13,6 +13,7 @@ function cn(...inputs: ClassValue[]) {
 }
 import { Button } from '../ui/Button';
 import { useRouter } from 'next/navigation';
+import { useWishlist } from '../../context/WishlistContext';
 
 interface ProductCardProps {
   product: Product | any;
@@ -21,9 +22,11 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
   const router = useRouter();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [liked, setLiked] = useState(false);
 
-  const productId = product.product_id || product.id;
+  const productId = product.product_id || product.id || product._id;
+  const isWishlisted = productId ? isInWishlist(productId) : false;
   const productName = product.product_name || product.title;
   const productImage = product.product_main_image;
     const listingType = (product?.product_type_name || product?.product_listing_type_name)?.toLowerCase();
@@ -52,8 +55,8 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
 
   return (
     <motion.div
-      onClick={() => router.push(`/browse-ads/${productId}`)}
-      className={`group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer ${className}`}
+      onClick={() => productId && router.push(`/browse-ads/${productId}`)}
+      className={`group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ${productId ? 'cursor-pointer' : 'cursor-default'} ${className}`}
       whileHover={{ boxShadow: '0 20px 35px -10px rgba(0,0,0,0.15)' }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >
@@ -77,7 +80,7 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
             'https://upleex.2min.cloud/upload/product_main_images/2026/01/2026-01-29/ce145a2a7c6ba13df4baceb3ac7843fd.jpg'
           }
           alt={productName}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
           initial={{ scale: 1 }}
           whileHover={{ scale: 1.12 }}
           transition={{ duration: 0.45, ease: 'easeOut' }}
@@ -93,20 +96,22 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
 
         {/* Wishlist Heart */}
         <motion.button
-          onClick={(e) => {
+          onClick={async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            setLiked(!liked);
+            if (productId) {
+              await toggleWishlist(productId);
+            }
           }}
           whileTap={{ scale: 0.85 }}
-          animate={liked ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+          animate={isWishlisted ? { scale: [1, 1.3, 1] } : { scale: 1 }}
           transition={{
             duration: 0.35,
             ease: 'easeOut',
           }}
           className="absolute top-3 right-3 z-10 bg-white/90 p-2 rounded-full shadow hover:shadow-md"
         >
-          {liked && (
+          {isWishlisted && (
             <motion.span
               className="absolute inset-0 rounded-full bg-red-400/30"
               initial={{ scale: 0, opacity: 0.6 }}
@@ -117,9 +122,9 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
 
           <Heart
             size={18}
-            className={`relative transition-colors ${liked ? 'text-red-500' : 'text-slate-500'
+            className={`relative transition-colors ${isWishlisted ? 'text-red-500' : 'text-slate-500'
               }`}
-            fill={liked ? '#ef4444' : 'none'}
+            fill={isWishlisted ? '#ef4444' : 'none'}
           />
         </motion.button>
 
@@ -161,7 +166,11 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
         <Button
           fullWidth
           variant="primary"
-          className="mt-3 rounded-xl font-semibold tracking-wide cursor-pointer"
+          className="mt-3 rounded-xl font-semibold tracking-wide cursor-pointer text-white"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (productId) router.push(`/browse-ads/${productId}`);
+          }}
         >
           {listingType === 'sell' ? 'Buy Now' : 'Take On Rent'}
         </Button>

@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import { Suspense } from 'react';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { CartProvider } from '@/context/CartContext';
+import { WishlistProvider } from '@/context/WishlistContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
         <CartProvider>
+          <WishlistProvider>
           <div className="min-h-screen flex flex-col">
             <Suspense fallback={null}>
               <ProgressBar />
@@ -38,6 +40,7 @@ export default function RootLayout({
             <Toaster position="top-right" />
             <Footer />
           </div>
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>
