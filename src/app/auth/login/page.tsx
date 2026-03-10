@@ -105,9 +105,9 @@ const LoginPage = () => {
       } else {
         toast.error(result?.message || 'Login failed');
       }
-    } catch (error) {
+    }  catch (error: any) {
       console.error(error);
-      toast.error('Something went wrong');
+      toast.error(error?.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
