@@ -49,7 +49,7 @@ const endPointApi: EndPointApi = {
     webSearchProductList: 'web-search-product-list',
 
     //Product details
-    webGetQuote: 'web-get-quote',
+    webGetQuote: 'quote/create-quote',
 
     // Content
     blogList: 'blogs/getall',

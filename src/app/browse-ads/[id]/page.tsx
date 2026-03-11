@@ -150,11 +150,22 @@ export default function ProductDetailsPage() {
 
     setIsSubmitting(true);
     try {
+      // Get the selected month data for monthly products
+      let monthsId = "";
+      if (activeTab === "monthly" && selectedMonthId && productDetails?.month_arr?.length) {
+        const selectedMonth = productDetails.month_arr.find(
+          (m: any) => m.product_months_id === selectedMonthId
+        );
+        if (selectedMonth) {
+          monthsId = selectedMonth.months_id || selectedMonth.product_months_id || "";
+        }
+      }
+
       const res = await productService.getQuote({
         product_id: String(id),
         delivery_date: String(deliveryDate),
         number_of_days: days,
-        months_id: selectedMonthId ?? "",
+        months_id: monthsId,
         qty: quantity,
         note
       });
@@ -164,7 +175,8 @@ export default function ProductDetailsPage() {
         setIsSuccessModalOpen(true);
       }
     } catch (err) {
-      console.error("Error fetching product details", err);
+      console.error("Error submitting quote:", err);
+      toast.error("Failed to submit quote. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
