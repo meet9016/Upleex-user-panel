@@ -7,6 +7,7 @@ import { MapPin, Heart } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { Product } from '../../types';
+import { AuthModal } from './AuthModal';
   
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -24,6 +25,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
   const router = useRouter();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [liked, setLiked] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const productId = product.product_id || product.id || product._id;
   const isWishlisted = productId ? isInWishlist(productId) : false;
@@ -94,13 +96,16 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
           transition={{ duration: 0.4 }}
         />
 
-        {/* Wishlist Heart */}
+        {/* Wishlist Heart - Only show if hideWishlistIcon is not true */}
+        {!product.hideWishlistIcon && (
         <motion.button
           onClick={async (e) => {
             e.preventDefault();
             e.stopPropagation();
             if (productId) {
-              await toggleWishlist(productId);
+              await toggleWishlist(productId, () => {
+                setIsAuthModalOpen(true);
+              });
             }
           }}
           whileTap={{ scale: 0.85 }}
@@ -109,7 +114,7 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
             duration: 0.35,
             ease: 'easeOut',
           }}
-          className="absolute top-3 right-3 z-10 bg-white/90 p-2 rounded-full shadow hover:shadow-md"
+          className="absolute top-3 right-3 z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md"
         >
           {isWishlisted && (
             <motion.span
@@ -122,12 +127,11 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
 
           <Heart
             size={18}
-            className={`relative transition-colors ${isWishlisted ? 'text-red-500' : 'text-slate-500'
-              }`}
+            className={`relative transition-colors ${isWishlisted ? 'text-red-500' : 'text-slate-500'}`}
             fill={isWishlisted ? '#ef4444' : 'none'}
           />
         </motion.button>
-
+        )}
 
         {/* Category */}
         {productCategory && (
@@ -175,6 +179,21 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
           {listingType === 'sell' ? 'Buy Now' : 'Take On Rent'}
         </Button>
       </div>
+      
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+        onLoginSuccess={() => {
+          setIsAuthModalOpen(false);
+          // Refresh wishlist after successful login
+          if (productId) {
+            setTimeout(() => {
+              toggleWishlist(productId);
+            }, 100);
+          }
+        }}
+      />
     </motion.div>
   );
 };

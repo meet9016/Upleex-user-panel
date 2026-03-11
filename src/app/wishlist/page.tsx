@@ -62,7 +62,6 @@ const WishlistPage = () => {
 
             // Use the 'id' field from the API response
             const productId = productData.id;
-            console.log('Product ID from API:', productId);
 
             // Create proper product object for ProductCard
             const product = {
@@ -70,16 +69,14 @@ const WishlistPage = () => {
               _id: productId,
               product_id: productId,
               id: productId,
+              hideWishlistIcon: true // This flag will hide the heart icon in ProductCard
             };
-
-            console.log('Final product object for ProductCard:', product);
 
             return (
               <div key={`wishlist-${wishlistEntry.id || index}`} className="relative group">
                 <button
                   onClick={async (e) => {
                     e.stopPropagation();
-                    console.log('Removing product:', productId);
                     await removeFromWishlist(productId);
                   }}
                   className="absolute top-4 right-4 z-20 p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 md:opacity-100"

@@ -16,7 +16,8 @@ import {
   User,
   Package,
   Heart,
-  Settings
+  Settings,
+  FileText
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -753,6 +754,7 @@ export const Navbar: React.FC = () => {
       {[
         { icon: User, label: "My Profile", href: "/profile" },
         { icon: Package, label: "My Rentals", href: "/my-rentals" },
+        { icon: FileText, label: "My Quotes", href: "/quotes" },
         { icon: Heart, label: "Wishlist", href: "/wishlist" },
         { icon: Settings, label: "Settings", href: "/settings" },
       ].map((item, i) => (

@@ -36,7 +36,9 @@ class ProductService {
         formData.append('product_id', params.product_id);
         formData.append('delivery_date', params.delivery_date);
         formData.append('number_of_days', String(params.number_of_days));
-        formData.append('months_id', params.months_id);
+        if (params.months_id && params.months_id.trim()) {
+            formData.append('months_id', params.months_id);
+        }
         formData.append('qty', String(params.qty));
         if (params.note && params.note.trim()) {
             formData.append('note', params.note.trim());
