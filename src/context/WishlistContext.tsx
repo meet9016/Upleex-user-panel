@@ -26,9 +26,9 @@ interface WishlistContextType {
   wishlistItems: WishlistItem[];
   wishlistCount: number;
   loading: boolean;
-  addToWishlist: (productId: string) => Promise<void>;
+  addToWishlist: (productId: string, onAuthRequired?: () => void) => Promise<void>;
   removeFromWishlist: (productId: string) => Promise<void>;
-  toggleWishlist: (productId: string) => Promise<boolean>;
+  toggleWishlist: (productId: string, onAuthRequired?: () => void) => Promise<boolean>;
   isInWishlist: (productId: string) => boolean;
   fetchWishlist: () => Promise<void>;
 }
@@ -76,8 +76,17 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const addToWishlist = async (productId: string) => {
+  const addToWishlist = async (productId: string, onAuthRequired?: () => void) => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found, showing auth modal');
+        if (onAuthRequired) {
+          onAuthRequired();
+        }
+        return;
+      }
+      
       console.log('Adding to wishlist:', productId);
       const response = await wishlistService.addToWishlist(productId);
       if (response.success) {
@@ -86,7 +95,14 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
     } catch (error: any) {
       console.error('Add to wishlist error:', error);
-      toast.error(error.response?.data?.message || 'Failed to add to wishlist');
+      if (error.response?.status === 401) {
+        console.log('Auth error, showing auth modal');
+        if (onAuthRequired) {
+          onAuthRequired();
+        }
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to add to wishlist');
+      }
     }
   };
 
@@ -105,8 +121,17 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const toggleWishlist = async (productId: string): Promise<boolean> => {
+  const toggleWishlist = async (productId: string, onAuthRequired?: () => void): Promise<boolean> => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found for toggle, showing auth modal');
+        if (onAuthRequired) {
+          onAuthRequired();
+        }
+        return false;
+      }
+      
       console.log('Toggling wishlist:', productId);
       const response = await wishlistService.toggleWishlist(productId);
       if (response.success) {

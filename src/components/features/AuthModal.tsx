@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { Modal } from '@/components/ui/Modal';
 import clsx from 'clsx';
 import { authService } from '@/services/authService';
+import OtpInput from 'react-otp-input';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -27,7 +28,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   });
   const [loading, setLoading] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  const [showOtp, setShowOtp] = useState(false);
   const [timer, setTimer] = useState(120);
   const [errors, setErrors] = useState<{ number?: string; otp?: string; name?: string; email?: string; agreed?: string }>({});
 
@@ -103,7 +103,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
       if (result?.status === 200 || result?.success === true) {
         localStorage.setItem('token', result.data.token);
-        localStorage.setItem('user', JSON.stringify(result.data.user.full_name));
+        localStorage.setItem('user', JSON.stringify(result.data.user.name || result.data.user.full_name));
         localStorage.setItem('email', JSON.stringify(result.data.user.email));
 
         toast.success(result.message || 'Login successful');
@@ -140,7 +140,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       noPadding
       className="min-w-[950px] overflow-hidden"
     >
-      <div className="flex flex-col md:flex-row h-full min-h-[500px]">
+      <div 
+        className="flex flex-col md:flex-row h-full min-h-[500px]"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Left Side - Image */}
         <div className="hidden md:block w-1/2 bg-gray-100 relative">
           <img 
@@ -258,30 +261,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               </div>
               
               <div className="space-y-6">
-                <div className="relative">
-                  <input
-                    type={showOtp ? "text" : "password"}
+                <div className="flex justify-center">
+                  <OtpInput
                     value={otp}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                    onChange={(val) => {
                       setOtp(val);
                       if (val.length >= 4) setErrors(prev => ({ ...prev, otp: '' }));
                     }}
-                    placeholder="Enter 6-digit OTP"
-                    className={clsx(
-                      'w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 transition-all text-gray-900 placeholder:text-gray-400 font-bold tracking-[0.2em] text-lg shadow-sm',
-                      errors.otp ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
+                    numInputs={6}
+                    shouldAutoFocus
+                    renderSeparator={<span className="mx-2 text-gray-300">•</span>}
+                    renderInput={(props) => (
+                      <input
+                        {...props}
+                        onClick={(e) => e.stopPropagation()}
+                        className={clsx(
+                          'h-12 !w-12 rounded-lg border text-center text-lg font-bold outline-none transition-all shadow-sm',
+                          errors.otp ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500/20'
+                        )}
+                      />
                     )}
-                    autoFocus
                   />
-                  <button 
-                    onClick={() => setShowOtp(!showOtp)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition-colors"
-                  >
-                    {showOtp ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
                 </div>
-                {errors.otp ? <p className="text-red-600 text-sm -mt-2">{errors.otp}</p> : null}
+                {errors.otp ? <p className="text-red-600 text-sm text-center">{errors.otp}</p> : null}
 
                 {userType === 'new' && (
                   <div className="space-y-4 pt-2 animate-in slide-in-from-top-2">
