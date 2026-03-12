@@ -22,23 +22,26 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ number?: string; otp?: string; name?: string; email?: string }>({});
 
-  // Handle Enter key press
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  // Handle Enter key press for number step
+  const handleNumberKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      e.preventDefault(); // Prevent form submission if inside a form
-      
-      if (step === 'number') {
-        handleSendNumber();
-      } else if (step === 'otp') {
-        handleVerifyOtp();
-      }
+      e.preventDefault();
+      handleSendNumber();
+    }
+  };
+
+  // Handle Enter key press for OTP step
+  const handleOtpKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleVerifyOtp();
     }
   };
 
   const handleSendNumber = async () => {
     const clean = number.replace(/\D/g, '');
     if (clean.length !== 10) {
-      setErrors(prev => ({ ...prev }));
+      setErrors(prev => ({ ...prev, number: 'Enter a valid 10-digit mobile number' }));
       return;
     }
     setIsLoading(true);
@@ -105,9 +108,9 @@ const LoginPage = () => {
       } else {
         toast.error(result?.message || 'Login failed');
       }
-    }  catch (error: any) {
+    } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }
@@ -160,6 +163,7 @@ const LoginPage = () => {
                         setErrors(prev => ({ ...prev, number: '' }));
                       }
                     }}
+                    onKeyDown={handleNumberKeyPress}
                     onBlur={() => {
                       if (!number) {
                         setErrors(prev => ({ ...prev, number: 'Mobile number is required' }));
@@ -169,8 +173,8 @@ const LoginPage = () => {
                     }}
                     placeholder="Mobile Number"
                     className={`w-full pl-10 py-3 border rounded-lg bg-gray-50
-  focus:outline-none focus:ring-0
-  ${errors.number
+                      focus:outline-none focus:ring-0
+                      ${errors.number
                         ? 'border-red-500 focus:border-red-500'
                         : 'border-gray-300 focus:border-gray-400'
                       }`}
@@ -201,9 +205,11 @@ const LoginPage = () => {
                   <OtpInput
                     value={otp}
                     onChange={(val) => {
-                      setOtp(val);
-                      if (val.length >= 4) {
-                        setErrors(prev => ({ ...prev, otp: '' }));
+                      const clean = val.replace(/\D/g, "").slice(0, 6);
+                      setOtp(clean);
+
+                      if (clean.length >= 4) {
+                        setErrors((prev) => ({ ...prev, otp: "" }));
                       }
                     }}
                     numInputs={6}
@@ -212,8 +218,12 @@ const LoginPage = () => {
                     renderInput={(props) => (
                       <input
                         {...props}
-                        onKeyDown={handleKeyPress}
-                        className={`h-11 !w-11.5 rounded-lg border ${errors.otp ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-200 focus:border-[#4F46E5] focus:ring-[#4F46E5]/20'} bg-slate-50 text-center text-base font-medium text-slate-900 outline-none transition-all`}
+                        className={`h-11 !w-11.5 rounded-lg border 
+      ${errors.otp
+                            ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+                            : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20"
+                          }
+      bg-gray-50 text-center text-base font-medium text-gray-900 outline-none transition-all`}
                       />
                     )}
                   />
@@ -231,8 +241,13 @@ const LoginPage = () => {
                         setForm({ ...form, name: e.target.value });
                         if (e.target.value.trim()) setErrors(prev => ({ ...prev, name: '' }));
                       }}
-                      onKeyDown={handleKeyPress}
-                      className={`w-full py-3 px-3 border rounded-lg ${errors.name ? 'border-red-500' : ''}`}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleVerifyOtp();
+                        }
+                      }}
+                      className={`w-full py-3 px-3 border rounded-lg ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
                     />
                     {errors.name ? (
                       <p className="text-red-600 text-sm -mt-3">{errors.name}</p>
@@ -246,8 +261,13 @@ const LoginPage = () => {
                         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                         if (emailPattern.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
                       }}
-                      onKeyDown={handleKeyPress}
-                      className={`w-full py-3 px-3 border rounded-lg ${errors.email ? 'border-red-500' : ''}`}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleVerifyOtp();
+                        }
+                      }}
+                      className={`w-full py-3 px-3 border rounded-lg ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                     />
                     {errors.email ? (
                       <p className="text-red-600 text-sm -mt-3">{errors.email}</p>
