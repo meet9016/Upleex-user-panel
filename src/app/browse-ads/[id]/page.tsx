@@ -20,6 +20,7 @@ import {
   ImageOff,
   ShoppingCart,
   Store,
+  X,
 } from "lucide-react";
 import { productService } from "@/services/productService";
 import clsx from "clsx";
@@ -55,6 +56,14 @@ export default function ProductDetailsPage() {
   const { addToCart } = useCart();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   
+  // State for magnifier
+  const [isHovering, setIsHovering] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [imageDimensions, setImageDimensions] = useState({ width: 0, height: 0 });
+  const imageContainerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const zoomContainerRef = useRef<HTMLDivElement>(null);
+  
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
@@ -85,7 +94,7 @@ export default function ProductDetailsPage() {
   })();
   
   const unitPrice = productDetails?.price || 0;
-  const totalPrice = activeTab === "monthly" ? monthlyPrice : unitPrice * days * quantity; // Include quantity in daily/hourly total
+  const totalPrice = activeTab === "monthly" ? monthlyPrice : unitPrice * days * quantity;
 
   const allImages = productDetails
     ? [
@@ -101,7 +110,6 @@ export default function ProductDetailsPage() {
         const data = res?.data || res?.product || res;
         setProductDetails(data);
 
-        // Set initial selected image
         if (data?.product_main_image) {
           setSelectedImage(data.product_main_image);
         }
@@ -115,6 +123,30 @@ export default function ProductDetailsPage() {
 
     if (id) fetchProductDetails();
   }, [id]);
+
+  // Handle mouse move for magnifier
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageContainerRef.current || !imageRef.current) return;
+    
+    const rect = imageContainerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    // Constrain values between 0 and 100
+    const constrainedX = Math.max(0, Math.min(100, x));
+    const constrainedY = Math.max(0, Math.min(100, y));
+    
+    setMousePosition({ x: constrainedX, y: constrainedY });
+  };
+
+  // Handle image load to get dimensions
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    setImageDimensions({
+      width: img.naturalWidth,
+      height: img.naturalHeight
+    });
+  };
 
   const handleGetQuoteClick = () => {
     const token = localStorage.getItem("token");
@@ -150,7 +182,6 @@ export default function ProductDetailsPage() {
 
     setIsSubmitting(true);
     try {
-      // Get the selected month data for monthly products
       let monthsId = "";
       if (activeTab === "monthly" && selectedMonthId && productDetails?.month_arr?.length) {
         const selectedMonth = productDetails.month_arr.find(
@@ -184,7 +215,6 @@ export default function ProductDetailsPage() {
 
   const handleLoginSuccess = () => {
     setIsAuthModalOpen(false);
-    // If it's a sell product, add to cart, otherwise open quote modal
     if (isSell) {
       handleAddToCart();
     } else {
@@ -195,11 +225,10 @@ export default function ProductDetailsPage() {
   const [minDate, setMinDate] = useState("");
 
   useEffect(() => {
-    // Set default delivery date to 2 days from today
     const today = new Date();
-    today.setDate(today.getDate() + 2); // add 2 days
+    today.setDate(today.getDate() + 2);
     const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0"); // months are 0-indexed
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
     const formattedDate = `${yyyy}-${mm}-${dd}`;
     setDeliveryDate(formattedDate);
@@ -220,16 +249,43 @@ export default function ProductDetailsPage() {
         </div>
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-0">
-            {/* ─── Left: Gallery ──────────────────────────────────────── */}
+            {/* ─── Left: Gallery (Bilkul same) ────────────────── */}
             <div className="bg-white p-4 lg:p-6 lg:pb-2 flex items-start justify-center border-r border-gray-100">
               <div className="w-full max-w-[520px]">
+                {/* Main image - No changes to size */}
                 <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-gray-200/50 bg-white border border-gray-100 aspect-[4/2.8]">
                   {allImages.length > 0 ? (
-                    <img
-                      src={selectedImage || allImages[0]}
-                      alt={productDetails?.product_name}
-                      className="w-full h-full object-contain transition-transform duration-700 hover:scale-105"
-                    />
+                    <div 
+                      ref={imageContainerRef}
+                      className="relative w-full h-full cursor-crosshair"
+                      onMouseEnter={() => setIsHovering(true)}
+                      onMouseLeave={() => setIsHovering(false)}
+                      onMouseMove={handleMouseMove}
+                    >
+                      <img
+                        ref={imageRef}
+                        src={selectedImage || allImages[0]}
+                        alt={productDetails?.product_name}
+                        className="w-full h-full object-contain transition-transform duration-700 hover:scale-105"
+                        onLoad={handleImageLoad}
+                      />
+                      
+                      {/* Magnifier lens overlay - shows which area is being zoomed */}
+                      {isHovering && (
+                        <div 
+                          className="absolute border-2 border-blue-500 bg-white/20 pointer-events-none"
+                          style={{
+                            width: '80px',
+                            height: '80px',
+                            left: `${mousePosition.x}%`,
+                            top: `${mousePosition.y}%`,
+                            transform: 'translate(-50%, -50%)',
+                            borderRadius: '4px',
+                            boxShadow: '0 0 0 1px rgba(255,255,255,0.5)',
+                          }}
+                        />
+                      )}
+                    </div>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-400">
                       <ImageOff size={48} strokeWidth={1.5} className="mb-2 opacity-50" />
@@ -238,12 +294,16 @@ export default function ProductDetailsPage() {
                   )}
                 </div>
 
+                {/* Thumbnail gallery */}
                 {allImages.length > 0 ? (
                   <div className="mt-5 grid grid-cols-5 gap-3">
                     {allImages.slice(0, 5).map((img, i) => (
                       <button
                         key={i}
-                        onClick={() => setSelectedImage(img)}
+                        onClick={() => {
+                          setSelectedImage(img);
+                          setIsHovering(false);
+                        }}
                         className={clsx(
                           "aspect-square rounded-xl overflow-hidden border-2 transition-all duration-200",
                           selectedImage === img || (!selectedImage && i === 0)
@@ -265,7 +325,7 @@ export default function ProductDetailsPage() {
                   </div>
                 )}
 
-                {/* Trust Badges - Show on left only for Rent */}
+                {/* Trust Badges */}
                 {!isSell && (
                   <div className="grid grid-cols-4 gap-3 mt-5 pt-4 border-t border-gray-200">
                     <div className="flex flex-col items-center text-center gap-1.5">
@@ -305,9 +365,43 @@ export default function ProductDetailsPage() {
               </div>
             </div>
 
-            {/* ─── Right: Content ─────────────────────────────────────── */}
-            <div className="p-4 lg:p-4 xl:p-3 lg:pb-2 xl:pb-2 flex flex-col">
-              <div className="flex flex-col h-full">
+            {/* ─── Right: Content with Floating Zoom Image ────────── */}
+            <div className="p-4 lg:p-4 xl:p-3 lg:pb-2 xl:pb-2 flex flex-col relative">
+              {/* Floating Zoomed Image - Pen on book effect */}
+              {isHovering && imageDimensions.width > 0 && (
+                <div 
+                  ref={zoomContainerRef}
+                  className="absolute z-50 rounded-xl overflow-hidden shadow-2xl border-2 border-white bg-white animate-in fade-in zoom-in duration-200"
+                  style={{
+                    width: '650px',
+                    height: '550px',
+                    top: '20px',
+                    right: '10px',
+                    transform: 'translateX(0)',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                  }}
+                >
+                  <div className="relative w-full h-full">
+                    <div 
+                      className="w-full h-full"
+                      style={{
+                        backgroundImage: `url(${selectedImage || allImages[0]})`,
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: `${imageDimensions.width * 2}px ${imageDimensions.height * 2}px`,
+                        backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+                        backgroundColor: '#f8fafc',
+                      }}
+                    />
+                    <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                      Zoom
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Product Details Section - Zoom image floats above this */}
+              <div className="flex flex-col h-full relative">
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">
                     {productDetails?.product_name || "Loading product..."}
@@ -514,6 +608,7 @@ export default function ProductDetailsPage() {
                               setDays(1);
                               return;
                             }
+                             if (value.length > 3) return;
                             const parsed = Number(value);
                             if (Number.isNaN(parsed)) return;
                             const clamped = Math.max(1, parsed);
@@ -605,7 +700,6 @@ export default function ProductDetailsPage() {
                   </div>
                 )}
 
-                {/* Quantity + Date */}
                 <div className={clsx(
                   "grid gap-4 pt-4",
                   isSell ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
@@ -633,13 +727,20 @@ export default function ProductDetailsPage() {
                         onFocus={(e) => e.currentTarget.select()}
                         onChange={(e) => {
                           const value = e.target.value;
-                          if (value === '') {
+
+                          // allow empty
+                          if (value === "") {
                             setQuantity(1);
                             return;
                           }
+
+                          // limit to 4 digits
+                          if (value.length > 4) return;
+
                           const parsed = Number(value);
                           if (Number.isNaN(parsed)) return;
-                            const clamped = Math.max(1, parsed);
+
+                          const clamped = Math.max(1, parsed);
                           setQuantity(clamped);
                         }}
                         className="w-14 text-center font-extrabold text-lg text-slate-900 bg-transparent focus:outline-none focus:ring-0"
@@ -727,55 +828,45 @@ export default function ProductDetailsPage() {
                   </Button> */}
                 </div>
 
-                {/* Vendor / Sold By */}
-                  <div className={clsx("mt-3", isSell ? "mb-0" : "mb-2")}>
-                    <div
-                      className={clsx(
-                        "bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4",
-                        !isSell && (isDaily || isHourly) && "py-4 min-h-[96px]"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
-                          <Store size={22} className="text-upleex-blue" />
+                <div className={clsx("mt-3", isSell ? "mb-0" : "mb-2")}>
+                  <div
+                    className={clsx(
+                      "bg-white rounded-2xl border border-gray-100/80 px-4 py-3.5 flex items-center justify-between gap-4",
+                      !isSell && (isDaily || isHourly) && "py-4 min-h-[96px]"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-11 h-11 rounded-full bg-blue-50 flex items-center justify-center">
+                        <Store size={22} className="text-upleex-blue" />
+                      </div>
+                      <div>
+                        <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.12em]">
+                          Sold By
                         </div>
-                        <div>
-                          <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.12em]">
-                            Sold By
-                          </div>
-                          <div className="text-sm font-bold text-slate-900">
-                            {productDetails?.vendor_name || 'Vendor'}
-                          </div>
-                          <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-gray-500">
-                            {/* {productDetails?.vendor_name && (
-                              <>
-                                <span className="w-1 h-1 rounded-full bg-gray-300" />
-                                
-                              </>
-                            )} */}
-                          </div>
+                        <div className="text-sm font-bold text-slate-900">
+                          {productDetails?.vendor_name || 'Vendor'}
                         </div>
                       </div>
-                      <Button
-                        variant="outline"
-                        className="h-9 px-4 rounded-full border-upleex-purple text-upleex-purple text-xs font-semibold whitespace-nowrap"
-                        onClick={() => {
-                          if (!productDetails?.vendor_id) return;
-                          router.push(
-                            `/seller?vendor_id=${encodeURIComponent(
-                              productDetails.vendor_id
-                            )}&vendor_name=${encodeURIComponent(
-                              productDetails.vendor_name || ''
-                            )}`
-                          );
-                        }}
-                      >
-                        View Shop
-                      </Button>
                     </div>
+                    <Button
+                      variant="outline"
+                      className="h-9 px-4 rounded-full border-upleex-purple text-upleex-purple text-xs font-semibold whitespace-nowrap"
+                      onClick={() => {
+                        if (!productDetails?.vendor_id) return;
+                        router.push(
+                          `/seller?vendor_id=${encodeURIComponent(
+                            productDetails.vendor_id
+                          )}&vendor_name=${encodeURIComponent(
+                            productDetails.vendor_name || ''
+                          )}`
+                        );
+                      }}
+                    >
+                      View Shop
+                    </Button>
                   </div>
+                </div>
 
-                {/* Trust Badges - Show on right only for Sell */}
                 {isSell && (
                   <div className="grid grid-cols-4 gap-3 mt-6 pt-5 border-t border-gray-100">
                     <div className="flex flex-col items-center text-center gap-2">
@@ -812,8 +903,6 @@ export default function ProductDetailsPage() {
                     </div>
                   </div>
                 )}
-
-
               </div>
             </div>
           </div>
@@ -839,7 +928,7 @@ export default function ProductDetailsPage() {
               </button>
             </div>
 
-<div className="min-h-[420px] flex flex-col">
+            <div className="min-h-[420px] flex flex-col">
               {activeDetailTab === "description" ? (
                 <div className="prose prose-slate max-w-none animate-fadeIn">
                   <h3 className="text-lg font-bold text-slate-900 mb-3">Description</h3>
