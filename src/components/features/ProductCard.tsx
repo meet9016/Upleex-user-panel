@@ -55,9 +55,33 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
     return url.replace(/\s*\)\s*$/, '').trim();
   };
 
+  // Separate function for handling card click
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on wishlist button
+    const target = e.target as HTMLElement;
+    if (target.closest('button')) {
+      return;
+    }
+    if (productId) {
+      router.push(`/browse-ads/${productId}`);
+    }
+  };
+
+  // Handle wishlist click separately
+  const handleWishlistClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation(); // Stop event from bubbling up to parent
+    
+    if (productId) {
+      await toggleWishlist(productId, () => {
+        setIsAuthModalOpen(true);
+      });
+    }
+  };
+
   return (
     <motion.div
-      onClick={() => productId && router.push(`/browse-ads/${productId}`)}
+      onClick={handleCardClick}
       className={`group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ${productId ? 'cursor-pointer' : 'cursor-default'} ${className}`}
       whileHover={{ boxShadow: '0 20px 35px -10px rgba(0,0,0,0.15)' }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
@@ -98,32 +122,24 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
 
         {/* Wishlist Heart - Only show if hideWishlistIcon is not true */}
         {!product.hideWishlistIcon && (
-        <motion.button
-          onClick={async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (productId) {
-              await toggleWishlist(productId, () => {
-                setIsAuthModalOpen(true);
-              });
-            }
-          }}
-          whileTap={{ scale: 0.85 }}
-          animate={isWishlisted ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-          transition={{
-            duration: 0.35,
-            ease: 'easeOut',
-          }}
-          className="absolute top-3 right-3 z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md"
-        >
-          {isWishlisted && (
-            <motion.span
-              className="absolute inset-0 rounded-full bg-red-400/30"
-              initial={{ scale: 0, opacity: 0.6 }}
-              animate={{ scale: 1.8, opacity: 0 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-            />
-          )}
+          <motion.button
+            onClick={handleWishlistClick}
+            whileTap={{ scale: 0.85 }}
+            animate={isWishlisted ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+            transition={{
+              duration: 0.35,
+              ease: 'easeOut',
+            }}
+            className="absolute top-3 right-3 z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md"
+          >
+            {isWishlisted && (
+              <motion.span
+                className="absolute inset-0 rounded-full bg-red-400/30"
+                initial={{ scale: 0, opacity: 0.6 }}
+                animate={{ scale: 1.8, opacity: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              />
+            )}
 
           <Heart
             size={18}
