@@ -90,16 +90,17 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
       {/* IMAGE */}
       <div className="relative h-52 overflow-hidden">
         {/* Rent/Sell Tag */}
-        {listingType && (
-          <div className="absolute top-3 left-3 z-20">
-            <span className={cn(
-              "px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider shadow-sm text-white",
-              listingType === 'sell' ? "bg-orange-500" : "bg-upleex-blue"
-            )}>
-              {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
-            </span>
-          </div>
-        )}
+       {listingType && (
+            <div className="absolute top-0 left-0 z-20 overflow-hidden w-24 h-24">
+              <span
+                className={cn(
+                  "absolute -left-11 w-28 text-center px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md rotate-[-45deg]",
+                  listingType === "sell" ? "bg-orange-500" : "bg-upleex-blue",
+                )}>
+                {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
+              </span>
+            </div>
+          )}
 
         <motion.img
           src={
