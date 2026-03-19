@@ -42,6 +42,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     return () => clearInterval(interval);
   }, [step, timer]);
 
+  // Handle Enter key for number step
+  const handleNumberKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSendNumber();
+    }
+  };
+
+  // Handle Enter key for OTP step
+  const handleOtpKeyPress = (e: React.KeyboardEvent<Element>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleVerifyOtp();
+    }
+  };
+
+  // Handle Enter key for the entire OTP form
+  const handleOtpFormKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleVerifyOtp();
+    }
+  };
+
   const handleSendNumber = async () => {
     const clean = number.replace(/\D/g, '');
     if (clean.length !== 10) {
@@ -179,6 +203,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         setNumber(val);
                         if (val.length === 10) setErrors(prev => ({ ...prev, number: '' }));
                       }}
+                      onKeyDown={handleNumberKeyPress}
                       placeholder="Enter Mobile Number"
                       className={clsx(
                         'flex-1 px-4 border rounded-lg focus:outline-none focus:ring-2 transition-all text-gray-900 placeholder:text-gray-400 font-semibold shadow-sm',
@@ -252,7 +277,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           )}
 
           {step === 'otp' && (
-            <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+            <div 
+              className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300"
+              onKeyDown={handleOtpFormKeyPress}
+            >
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Verify OTP</h2>
                 <p className="text-sm text-gray-500">
@@ -275,6 +303,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       <input
                         {...props}
                         onClick={(e) => e.stopPropagation()}
+                        onKeyDown={handleOtpKeyPress}
                         className={clsx(
                           'h-12 !w-12 rounded-lg border text-center text-lg font-bold outline-none transition-all shadow-sm',
                           errors.otp ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500/20'
@@ -294,6 +323,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         setForm({ ...form, name: e.target.value });
                         if (e.target.value.trim()) setErrors(prev => ({ ...prev, name: '' }));
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleVerifyOtp();
+                        }
+                      }}
                       className={clsx(
                         'w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 transition-all font-medium',
                         errors.name ? 'border-red-500 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500/20 focus:border-blue-500'
@@ -308,6 +343,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         setForm({ ...form, email: e.target.value });
                         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                         if (emailPattern.test(e.target.value.trim())) setErrors(prev => ({ ...prev, email: '' }));
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleVerifyOtp();
+                        }
                       }}
                       className={clsx(
                         'w-full h-12 px-4 border rounded-lg focus:outline-none focus:ring-2 transition-all font-medium',

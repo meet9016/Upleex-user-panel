@@ -31,7 +31,15 @@ const LoginPage = () => {
   };
 
   // Handle Enter key press for OTP step
-  const handleOtpKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleOtpKeyPress = (e: React.KeyboardEvent<Element>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleVerifyOtp();
+    }
+  };
+
+  // Handle Enter key for the entire OTP step form
+  const handleOtpFormKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       handleVerifyOtp();
@@ -200,6 +208,7 @@ const LoginPage = () => {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.2 }}
                 className="space-y-4"
+                onKeyDown={handleOtpFormKeyPress}
               >
                 <div className="mt-2 flex justify-center">
                   <OtpInput
@@ -209,7 +218,7 @@ const LoginPage = () => {
                       setOtp(clean);
 
                       if (clean.length >= 4) {
-                        setErrors((prev) => ({ ...prev, otp: "" }));
+                        setErrors((prev) => ({ ...prev, otp: " " }));
                       }
                     }}
                     numInputs={6}
@@ -218,6 +227,7 @@ const LoginPage = () => {
                     renderInput={(props) => (
                       <input
                         {...props}
+                        onKeyDown={handleOtpKeyPress}
                         className={`h-11 !w-11.5 rounded-lg border 
       ${errors.otp
                             ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"

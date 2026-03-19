@@ -29,6 +29,11 @@ export interface EndPointApi {
     businessRegister: string;
     // Priority plans
     getPriorityPlans?: string;
+
+    // Services
+    serviceCategoryList: string;
+    serviceList: string;
+    serviceDetails: string;
 }
 
 // Define and export the API endpoint object
@@ -63,6 +68,11 @@ const endPointApi: EndPointApi = {
     businessRegister: 'vendor/auth/business-register',
     // Priority plans
     getPriorityPlans: 'priority-plans/getall',
+
+    // Services
+    serviceCategoryList: 'service-categories/getall',
+    serviceList: 'services/getall',
+    serviceDetails: 'services/getById',
 };
 
 
