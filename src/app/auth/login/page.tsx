@@ -1,4 +1,5 @@
 'use client';
+import { setSecureToken } from '@/utils/cryptoUtils';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
@@ -100,7 +101,7 @@ const LoginPage = () => {
       });
 
       if (result?.status === 200 || result?.success === true) {
-        localStorage.setItem('token', result.data.token);
+        setSecureToken(result.data.token);
         localStorage.setItem(
           'user',
           JSON.stringify(result.data.user.name)

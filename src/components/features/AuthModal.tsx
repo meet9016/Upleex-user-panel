@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { setSecureToken } from '@/utils/cryptoUtils';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight, Phone, Mail, Chrome, Eye, EyeOff, Check, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -126,7 +127,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       });
 
       if (result?.status === 200 || result?.success === true) {
-        localStorage.setItem('token', result.data.token);
+        setSecureToken(result.data.token);
         localStorage.setItem('user', JSON.stringify(result.data.user.name || result.data.user.full_name));
         localStorage.setItem('email', JSON.stringify(result.data.user.email));
 

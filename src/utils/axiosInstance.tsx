@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getSecureToken, removeSecureToken } from './cryptoUtils'
 
 const apiAdminInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_APP_URL,
@@ -13,7 +14,7 @@ export const api = apiAdminInstance;
 
 apiAdminInstance.interceptors.request.use(
   async config => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+    const token = getSecureToken()
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -31,7 +32,7 @@ apiAdminInstance.interceptors.response.use(
     const { response } = error;
 
     if (response.status === 401) {
-      localStorage.removeItem('token');
+      removeSecureToken();
       if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
         window.location.href = '/auth/login';
       }
