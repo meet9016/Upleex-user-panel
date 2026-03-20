@@ -89,6 +89,24 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
     >
       {/* IMAGE */}
       <div className="relative h-52 overflow-hidden">
+        {/* New Product Badge - Top Right */}
+        {product.is_new && (
+          <div className="absolute top-3 right-3 z-30">
+            <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+              NEW
+            </span>
+          </div>
+        )}
+        
+        {/* Out of Stock Badge - Top Center */}
+        {product.is_out_of_stock && product.product_type_name === 'Sell' && (
+          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-30">
+            <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+              OUT OF STOCK
+            </span>
+          </div>
+        )}
+        
         {/* Rent/Sell Tag */}
        {listingType && (
             <div className="absolute top-0 left-0 z-20 overflow-hidden w-24 h-24">
@@ -134,7 +152,9 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
               duration: 0.35,
               ease: 'easeOut',
             }}
-            className="absolute top-3 right-3 z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md"
+            className={`absolute top-3 z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md ${
+              product.is_new ? 'right-16' : 'right-3'
+            }`}
           >
             {isWishlisted && (
               <motion.span
@@ -190,13 +210,23 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
         <Button
           fullWidth
           variant="primary"
-          className="mt-3 rounded-xl font-semibold tracking-wide cursor-pointer text-white"
+          className={`mt-3 rounded-xl font-semibold tracking-wide text-white ${
+            product.is_out_of_stock && product.product_type_name === 'Sell' 
+              ? 'bg-gray-400 cursor-not-allowed' 
+              : 'cursor-pointer'
+          }`}
+          disabled={product.is_out_of_stock && product.product_type_name === 'Sell'}
           onClick={(e) => {
             e.stopPropagation();
-            if (productId) router.push(`/browse-ads/${productId}`);
+            if (!(product.is_out_of_stock && product.product_type_name === 'Sell') && productId) {
+              router.push(`/browse-ads/${productId}`);
+            }
           }}
         >
-          {listingType === 'sell' ? 'Buy Now' : 'Take On Rent'}
+          {product.is_out_of_stock && product.product_type_name === 'Sell' 
+            ? 'Out of Stock' 
+            : listingType === 'sell' ? 'Buy Now' : 'Take On Rent'
+          }
         </Button>
       </div>
       
