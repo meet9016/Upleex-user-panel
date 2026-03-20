@@ -90,8 +90,8 @@ export default function PartnerSignupPage() {
       const e: { fullName?: string; businessName?: string; email?: string; mobileNumber?: string; city?: string } = {};
       if (!formData.fullName.trim()) e.fullName = "Full name is required";
       if (!formData.businessName.trim()) e.businessName = "Business name is required";
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(formData.email.trim())) e.email = "Enter a valid email";
+      const emailPattern = /^[^\s@]+@[^\s@]+\.(com|in|org)$/;
+      if (!emailPattern.test(formData.email.trim())) e.email = "Enter a valid email (example@domain.com/in/org)";
       if (formData.mobileNumber.length < 10) e.mobileNumber = "Enter a valid 10-digit mobile number";
       if (!formData.city.trim()) e.city = "City is required";
       if (Object.keys(e).length > 0) {
@@ -216,9 +216,6 @@ export default function PartnerSignupPage() {
                           handleChange(e);
                           if (e.target.value.trim()) setErrors(prev => ({ ...prev, fullName: '' }));
                         }}
-                        onBlur={() => {
-                          if (!formData.fullName.trim()) setErrors(prev => ({ ...prev, fullName: 'Full name is required' }));
-                        }}
                         className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.fullName ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                         placeholder="John Doe"
                       />
@@ -236,9 +233,6 @@ export default function PartnerSignupPage() {
                         onChange={(e) => {
                           handleChange(e);
                           if (e.target.value.trim()) setErrors(prev => ({ ...prev, businessName: '' }));
-                        }}
-                        onBlur={() => {
-                          if (!formData.businessName.trim()) setErrors(prev => ({ ...prev, businessName: 'Business name is required' }));
                         }}
                         className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.businessName ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                         placeholder="My Business Ltd"
@@ -263,11 +257,6 @@ export default function PartnerSignupPage() {
                         handleChange(e);
                         setErrors(prev => ({ ...prev, email: '' }));
                       }}
-                      onBlur={() => {
-                        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        if (!formData.email.trim()) setErrors(prev => ({ ...prev, email: 'Email is required' }));
-                        else if (!emailPattern.test(formData.email.trim())) setErrors(prev => ({ ...prev, email: 'Enter a valid email' }));
-                      }}
                       className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.email ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                       placeholder="john@example.com"
                     />
@@ -290,11 +279,6 @@ export default function PartnerSignupPage() {
                           const val = e.target.value.replace(/\D/g, "");
                           if (val.length <= 10) setFormData(prev => ({ ...prev, mobileNumber: val }));
                           if (val.length === 10) setErrors(prev => ({ ...prev, mobileNumber: '' }));
-                        }}
-                        onBlur={() => {
-                          const clean = formData.mobileNumber.replace(/\D/g, "");
-                          if (!clean) setErrors(prev => ({ ...prev, mobileNumber: 'Mobile number is required' }));
-                          else if (clean.length !== 10) setErrors(prev => ({ ...prev, mobileNumber: 'Enter a valid 10-digit mobile number' }));
                         }}
                         className="flex-1 px-4 py-3 outline-none text-gray-900 placeholder-gray-400 w-full"
                         placeholder="9876543210"
@@ -335,9 +319,6 @@ export default function PartnerSignupPage() {
                       onChange={(e) => {
                         handleChange(e);
                         if (e.target.value.trim()) setErrors(prev => ({ ...prev, city: '' }));
-                      }}
-                      onBlur={() => {
-                        if (!formData.city.trim()) setErrors(prev => ({ ...prev, city: 'City is required' }));
                       }}
                       className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.city ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                       placeholder="Ahmedabad, Gujarat"

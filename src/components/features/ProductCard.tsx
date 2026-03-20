@@ -97,7 +97,9 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
                   "absolute -left-11 w-28 text-center px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md rotate-[-45deg]",
                   listingType === "sell" ? "bg-orange-500" : "bg-upleex-blue",
                 )}>
+                  <div className='mt-1'>
                 {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
+                </div>
               </span>
             </div>
           )}
