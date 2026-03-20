@@ -12,6 +12,10 @@ export interface CartItem {
     final_amount: string;
     image: string;
     cart_id: string;
+    // Stock information for validation
+    product_type_name?: string;
+    available_quantity?: number;
+    is_out_of_stock?: boolean;
 }
 
 export interface CartListResponse {

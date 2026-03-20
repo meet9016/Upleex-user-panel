@@ -109,6 +109,33 @@ export default function CartPage() {
         return;
       }
 
+      // Check for out of stock items
+      const outOfStockItems = cartItems.filter(item => 
+        item.product_type_name === 'Sell' && 
+        (item.is_out_of_stock || (item.available_quantity !== undefined && item.available_quantity <= 0))
+      );
+      
+      if (outOfStockItems.length > 0) {
+        const itemNames = outOfStockItems.map(item => item.name).join(', ');
+        toast.error(`Please remove out of stock items from cart: ${itemNames}`);
+        return;
+      }
+
+      // Check for insufficient stock
+      const insufficientStockItems = cartItems.filter(item => 
+        item.product_type_name === 'Sell' && 
+        item.available_quantity !== undefined && 
+        parseInt(item.qty) > item.available_quantity
+      );
+      
+      if (insufficientStockItems.length > 0) {
+        const itemDetails = insufficientStockItems.map(item => 
+          `${item.name} (Available: ${item.available_quantity}, In Cart: ${item.qty})`
+        ).join(', ');
+        toast.error(`Insufficient stock for: ${itemDetails}`);
+        return;
+      }
+
       // Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
@@ -423,23 +450,79 @@ export default function CartPage() {
 
                           {/* Quantity and Actions */}
                           <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
-                            <div className="flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200">
-                              <button
-                                onClick={() => updateQuantity(item.id, Math.max(0, parseInt(item.qty) - 1))}
-                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-slate-600 disabled:opacity-50"
-                                disabled={parseInt(item.qty) <= 1}
-                              >
-                                <Minus size={16} />
-                              </button>
-                              <div className="w-10 text-center font-bold text-slate-900">
-                                {item.qty}
+                            <div className="flex flex-col gap-2">
+                              {/* Out of Stock Badge for cart items */}
+                              {item.product_type_name === 'Sell' && (item.is_out_of_stock || (item.available_quantity !== undefined && item.available_quantity <= 0)) && (
+                                <div className="mb-2">
+                                  <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                                    OUT OF STOCK
+                                  </span>
+                                </div>
+                              )}
+                              
+                             <div className={`flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200 ${
+                              item.product_type_name === 'Sell' && (item.is_out_of_stock || (item.available_quantity !== undefined && item.available_quantity <= 0)) 
+                                ? 'opacity-50' 
+                                : ''
+                            }`}>
+                                <button
+                                  onClick={() => {
+                                    const newQty = Math.max(0, parseInt(item.qty) - 1);
+                                    updateQuantity(item.id, newQty);
+                                  }}
+                                  className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-slate-600 disabled:opacity-50"
+                                  disabled={parseInt(item.qty) <= 1 || (item.product_type_name === 'Sell' && (item.is_out_of_stock || (item.available_quantity !== undefined && item.available_quantity <= 0)))}
+                                >
+                                  <Minus size={16} />
+                                </button>
+                                <div className="w-10 text-center font-bold text-slate-900">
+                                  {item.qty}
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    const currentQty = parseInt(item.qty);
+                                    const isSell = item.product_type_name === 'Sell';
+                                    const availableStock = item.available_quantity || 0;
+                                    const isOutOfStock = item.is_out_of_stock || availableStock <= 0;
+                                    
+                                    // Check if out of stock
+                                    if (isSell && isOutOfStock) {
+                                      toast.error('This product is currently out of stock');
+                                      return;
+                                    }
+                                    
+                                    // Check stock for sell products
+                                    if (isSell && currentQty >= availableStock) {
+                                      toast.error(`Only ${availableStock} units available in stock`);
+                                      return;
+                                    }
+                                    
+                                    updateQuantity(item.id, currentQty + 1);
+                                  }}
+                                  className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-slate-600 disabled:opacity-50"
+                                  disabled={item.product_type_name === 'Sell' && (item.is_out_of_stock || (item.available_quantity !== undefined && (item.available_quantity <= 0 || parseInt(item.qty) >= item.available_quantity)))}
+                                >
+                                  <Plus size={16} />
+                                </button>
                               </div>
-                              <button
-                                onClick={() => updateQuantity(item.id, parseInt(item.qty) + 1)}
-                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-slate-600"
-                              >
-                                <Plus size={16} />
-                              </button>
+                              {/* Stock indicator for sell products */}
+                              {item.product_type_name === 'Sell' && item.available_quantity !== undefined && !item.is_out_of_stock && item.available_quantity > 0 && (
+                                <div className="text-xs text-center">
+                                  <span className={`font-medium ${
+                                    item.available_quantity <= 5 ? 'text-red-600' : 'text-orange-600'
+                                  }`}>
+                                    {item.available_quantity} available
+                                  </span>
+                                </div>
+                              )}
+                              {/* Out of stock message */}
+                              {item.product_type_name === 'Sell' && (item.is_out_of_stock || (item.available_quantity !== undefined && item.available_quantity <= 0)) && (
+                                <div className="text-xs text-center">
+                                  <span className="font-medium text-red-600">
+                                    Currently out of stock
+                                  </span>
+                                </div>
+                              )}
                             </div>
 
                             <div className="flex gap-3">

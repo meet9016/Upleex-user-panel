@@ -166,6 +166,17 @@ export default function ProductDetailsPage() {
       return;
     }
 
+    // Check stock availability for sell products
+    if (isSell && productDetails) {
+      const availableStock = productDetails.available_quantity || 0;
+      const isOutOfStock = productDetails.is_out_of_stock;
+      
+      if (isOutOfStock || availableStock < quantity) {
+        toast.error(`Product "${productDetails.product_name}" is out of stock or insufficient quantity available. Available: ${availableStock}, Requested: ${quantity}`);
+        return;
+      }
+    }
+
     try {
       setIsAddingToCart(true);
       await addToCart(id, quantity);
@@ -542,10 +553,6 @@ export default function ProductDetailsPage() {
                           
                           return (
                             <div className="p-3 border border-gray-200 rounded-xl bg-gray-50/50">
-                              {/* <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                <span className="w-1 h-4 bg-blue-600 rounded-full"></span>
-                                Payment Breakdown
-                              </h3> */}
                               <div className="space-y-1">
                                 <div className="flex justify-between text-sm">
                                   <span className="text-gray-600">Plan Duration</span>
@@ -555,6 +562,12 @@ export default function ProductDetailsPage() {
                                   <span className="text-gray-600">Monthly Price</span>
                                   <span className="font-medium text-gray-900">₹{selectedMonthData.price.toLocaleString()}</span>
                                 </div>
+                                {productDetails?.deposit_amount && Number(productDetails.deposit_amount) > 0 && (
+                                  <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">Security Deposit</span>
+                                    <span className="font-medium text-orange-600">₹{Number(productDetails.deposit_amount).toLocaleString()}</span>
+                                  </div>
+                                )}
                                 <div className="flex justify-between text-sm">
                                   <span className="text-gray-600">Quantity</span>
                                   <span className="font-medium text-gray-900">{quantity} Units</span>
@@ -569,6 +582,13 @@ export default function ProductDetailsPage() {
                                     ₹{(selectedMonthData.price * quantity).toLocaleString()}
                                   </span>
                                 </div>
+                                {productDetails?.deposit_amount && Number(productDetails.deposit_amount) > 0 && (
+                                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 mt-2">
+                                    <div className="text-xs text-orange-700 font-medium">
+                                      + Security Deposit: ₹{Number(productDetails.deposit_amount).toLocaleString()} (Refundable)
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           );
@@ -636,6 +656,16 @@ export default function ProductDetailsPage() {
                               ₹{unitPrice.toLocaleString()}
                             </span>
                           </div>
+                          {productDetails?.deposit_amount && Number(productDetails.deposit_amount) > 0 && (
+                            <div className="flex justify-between items-center bg-orange-50/80 p-2.5 rounded-lg border border-orange-100">
+                              <span className="text-sm font-semibold text-orange-900">
+                                Security Deposit
+                              </span>
+                              <span className="font-bold text-lg text-orange-900">
+                                ₹{Number(productDetails.deposit_amount).toLocaleString()}
+                              </span>
+                            </div>
+                          )}
                           <div className="flex justify-between text-sm text-gray-600 px-1">
                             <span>Rental Duration</span>
                             <span className="font-medium">
@@ -660,6 +690,13 @@ export default function ProductDetailsPage() {
                               ₹{(unitPrice * days * quantity).toLocaleString()}
                             </div>
                           </div>
+                          {productDetails?.deposit_amount && Number(productDetails.deposit_amount) > 0 && (
+                            <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 mt-2">
+                              <div className="text-xs text-orange-700 font-medium">
+                                + Security Deposit: ₹{Number(productDetails.deposit_amount).toLocaleString()} (Refundable)
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ) : (
@@ -711,6 +748,11 @@ export default function ProductDetailsPage() {
                     <div className="flex flex-col">
                       <span className="font-bold text-gray-900">Quantity</span>
                       {isSell && <span className="text-[10px] text-gray-500">Select units</span>}
+                      {/* {isSell && productDetails?.available_quantity && (
+                        <span className="text-[9px] text-orange-600 font-medium">
+                          {productDetails.available_quantity} available
+                        </span>
+                      )} */}
                     </div>
                     <div className="flex items-center bg-gray-50 rounded-lg p-1">
                       <button
@@ -723,6 +765,7 @@ export default function ProductDetailsPage() {
                         <input
                         type="number"
                         min={1}
+                        max={isSell && productDetails?.available_quantity ? productDetails.available_quantity : undefined}
                         value={quantity}
                         onFocus={(e) => e.currentTarget.select()}
                         onChange={(e) => {
@@ -740,15 +783,28 @@ export default function ProductDetailsPage() {
                           const parsed = Number(value);
                           if (Number.isNaN(parsed)) return;
 
-                          const clamped = Math.max(1, parsed);
+                          let clamped = Math.max(1, parsed);
+                          
+                          // For sell products, limit to available stock
+                          if (isSell && productDetails?.available_quantity) {
+                            clamped = Math.min(clamped, productDetails.available_quantity);
+                          }
+                          
                           setQuantity(clamped);
                         }}
                         className="w-14 text-center font-extrabold text-lg text-slate-900 bg-transparent focus:outline-none focus:ring-0"
                       />
                       <button
-                        onClick={() => setQuantity(quantity + 1)}
+                        onClick={() => {
+                          let newQuantity = quantity + 1;
+                          // For sell products, limit to available stock
+                          if (isSell && productDetails?.available_quantity) {
+                            newQuantity = Math.min(newQuantity, productDetails.available_quantity);
+                          }
+                          setQuantity(newQuantity);
+                        }}
                         className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                        disabled={false}
+                        disabled={isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false}
                       >
                         <Plus size={16} className="text-gray-600" />
                       </button>
@@ -796,18 +852,25 @@ export default function ProductDetailsPage() {
                       size="lg"
                       className={clsx(
                         "shadow-xl shadow-blue-500/20 h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
-                        "text-white border-none"
+                        productDetails?.is_out_of_stock || (productDetails?.available_quantity && productDetails.available_quantity <= 0)
+                          ? "bg-gray-400 cursor-not-allowed text-white"
+                          : "text-white border-none"
                       )}
                       onClick={handleAddToCart}
-                      disabled={isAddingToCart}
+                      disabled={isAddingToCart || productDetails?.is_out_of_stock || (productDetails?.available_quantity && productDetails.available_quantity <= 0)}
                     >
                       <span className="flex items-center justify-center gap-2">
                         <ShoppingCart size={20} />
-                        {isAddingToCart ? "Adding..." : "Add to Cart"}
-                        <ArrowRight
-                          size={18}
-                          className="group-hover:translate-x-1 transition-transform"
-                        />
+                        {productDetails?.is_out_of_stock || (productDetails?.available_quantity && productDetails.available_quantity <= 0)
+                          ? "Out of Stock"
+                          : isAddingToCart ? "Adding..." : "Add to Cart"
+                        }
+                        {!(productDetails?.is_out_of_stock || (productDetails?.available_quantity && productDetails.available_quantity <= 0)) && (
+                          <ArrowRight
+                            size={18}
+                            className="group-hover:translate-x-1 transition-transform"
+                          />
+                        )}
                       </span>
                     </Button>
                   )}
