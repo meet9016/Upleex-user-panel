@@ -27,6 +27,12 @@ export interface EndPointApi {
     webCartList: string;
     webRemoveCart: string;
     businessRegister: string;
+    
+    // Payment
+    createOrder: string;
+    verifyPayment: string;
+    userOrders: string;
+    
     // Priority plans
     getPriorityPlans?: string;
 }
@@ -61,6 +67,11 @@ const endPointApi: EndPointApi = {
     webCartList: 'cart/web-cart-list',
     webRemoveCart: 'cart/web-remove-cart',
     businessRegister: 'vendor/auth/business-register',
+    
+    // Payment
+    createOrder: 'payment/create-order',
+    verifyPayment: 'payment/verify-payment',
+    userOrders: 'payment/user-orders',
     // Priority plans
     getPriorityPlans: 'priority-plans/getall',
 };

@@ -753,7 +753,7 @@ export const Navbar: React.FC = () => {
     >
       {[
         { icon: User, label: "My Profile", href: "/profile" },
-        { icon: Package, label: "My Rentals", href: "/my-rentals" },
+        { icon: Package, label: "My Orders", href: "/orders" },
         { icon: FileText, label: "My Quotes", href: "/quotes" },
         { icon: Heart, label: "Wishlist", href: "/wishlist" },
         { icon: Settings, label: "Settings", href: "/settings" },
