@@ -702,17 +702,25 @@ export const Navbar: React.FC = () => {
 
             <div className="h-4 w-px bg-gray-300"></div>
 
-            <Link
-              href="/services-list"
-              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 font-bold whitespace-nowrap
-              ${pathname === '/services-list'
-                  ? 'bg-upleex-purple text-white shadow-lg shadow-purple-200'
-                  : 'bg-purple-50 text-upleex-purple hover:bg-upleex-purple hover:text-white border border-purple-100 hover:border-upleex-purple shadow-sm hover:shadow-md'
-                }`}
-            >
-              <Briefcase size={18} className={pathname === '/services-list' ? 'text-white' : 'text-upleex-purple transition-colors duration-300 group-hover:text-white'} />
-              <span>Services</span>
-            </Link>
+           <Link
+            href="/services-list"
+            className={`group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 font-bold whitespace-nowrap
+            ${
+              pathname === '/services-list'
+                ? 'bg-upleex-purple text-white shadow-lg shadow-purple-200'
+                : 'bg-purple-50 text-upleex-purple hover:bg-upleex-purple hover:text-white border border-purple-100 hover:border-upleex-purple shadow-sm hover:shadow-md'
+            }`}
+          >
+            <Briefcase
+              size={18}
+              className={`transition-colors duration-300 ${
+                pathname === '/services-list'
+                  ? 'text-white'
+                  : 'text-upleex-purple group-hover:text-white'
+              }`}
+            />
+            <span>Services</span>
+          </Link>
 
             <div className="h-4 w-px bg-gray-300"></div>
             {user ? (
@@ -872,7 +880,7 @@ export const Navbar: React.FC = () => {
         {/* Categories Bar - Secondary Navigation with Dropdowns */}
         <div className="hidden lg:flex items-center justify-between gap-1 py-1 text-sm font-medium text-slate-600 border-t border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-1">
-            {pathname?.startsWith('/services-list') ? (
+            {pathname?.startsWith('/services-list') || pathname?.includes('/service/') ? (
               // Service Categories
               <>
                 {(() => {
