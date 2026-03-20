@@ -24,6 +24,16 @@ import { BackButton } from '@/components/ui/BackButton';
 import { motion, AnimatePresence, LayoutGroup, Variants } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
+import { api } from '@/utils/axiosInstance';
+import endPointApi from '@/utils/endPointApi';
+
+// Razorpay types
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 // ────────────────────────────────────────────────
 // Helper Components
@@ -72,9 +82,124 @@ interface PlanOption {
 // ────────────────────────────────────────────────
 export default function CartPage() {
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan>('monthly');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { cartItems, loading, totalAmount, updateQuantity, removeFromCart } = useCart();
 
   const isEmpty = cartItems.length === 0;
+
+  // Load Razorpay script
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  // Handle payment
+  const handlePayment = async () => {
+    try {
+      setIsProcessingPayment(true);
+
+      // Check if cart is empty
+      if (cartItems.length === 0) {
+        toast.error('Your cart is empty');
+        return;
+      }
+
+      // Load Razorpay script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        toast.error('Failed to load payment gateway. Please try again.');
+        return;
+      }
+
+      console.log('Creating order...');
+
+      // Create order
+      const orderResponse = await api.post(endPointApi.createOrder, {
+        delivery_address: {
+          address_line_1: '123 Main Street', // You can add address form later
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          pincode: '400001',
+          country: 'India',
+        },
+        order_notes: 'Order from cart',
+      });
+
+      console.log('Order response:', orderResponse.data);
+
+      const { data } = orderResponse.data;
+
+      if (!data.razorpay_order_id) {
+        throw new Error('Failed to create Razorpay order');
+      }
+
+      // Razorpay options
+      const options = {
+        key: data.key,
+        amount: data.amount * 100, // Amount in paise
+        currency: data.currency,
+        name: 'Upleex',
+        description: `Order #${data.order_id}`,
+        order_id: data.razorpay_order_id,
+        handler: async (response: any) => {
+          try {
+            console.log('Payment successful, verifying...');
+            // Verify payment
+            await api.post(endPointApi.verifyPayment, {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              order_id: data.order_id,
+            });
+
+            toast.success('Payment successful! Your order has been confirmed.');
+            
+            // Redirect to orders page or success page
+            setTimeout(() => {
+              window.location.href = '/orders';
+            }, 2000);
+          } catch (error: any) {
+            console.error('Payment verification failed:', error);
+            toast.error('Payment verification failed. Please contact support.');
+          }
+        },
+        prefill: {
+          name: 'Customer Name', // You can get this from user context
+          email: 'customer@example.com',
+          contact: '9999999999',
+        },
+        theme: {
+          color: '#2563eb',
+        },
+        modal: {
+          ondismiss: () => {
+            toast.info('Payment cancelled');
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error: any) {
+      console.error('Payment initiation failed:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to initiate payment';
+      
+      if (errorMessage.includes('Razorpay keys not configured')) {
+        toast.error('Payment gateway not configured. Please contact support.');
+      } else if (errorMessage.includes('Cart is empty')) {
+        toast.error('Your cart is empty. Please add items to cart.');
+      } else {
+        toast.error(errorMessage);
+      }
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
 
   // ────────────────────────────────────────────────
   // Summary Calculation
@@ -507,14 +632,29 @@ export default function CartPage() {
                     </div>
 
                     <motion.button 
-                      whileHover={{ scale: 1.02, boxShadow: "0 20px 25px -5px rgb(59 130 246 / 0.4)" }}
-                      whileTap={{ scale: 0.98 }}
-                      className="mt-6 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-500/30 relative overflow-hidden group"
+                      onClick={handlePayment}
+                      disabled={isProcessingPayment}
+                      whileHover={{ scale: isProcessingPayment ? 1 : 1.02, boxShadow: isProcessingPayment ? undefined : "0 20px 25px -5px rgb(59 130 246 / 0.4)" }}
+                      whileTap={{ scale: isProcessingPayment ? 1 : 0.98 }}
+                      className={`mt-6 w-full font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg relative overflow-hidden group transition-all ${
+                        isProcessingPayment 
+                          ? 'bg-gray-400 cursor-not-allowed' 
+                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/30 hover:shadow-blue-500/40'
+                      }`}
                     >
-                      <span className="relative z-10 flex items-center gap-2">
-                        Proceed to Checkout <ArrowRight size={20} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform" />
-                      </span>
-                      <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                      {isProcessingPayment ? (
+                        <>
+                          <Loader2 className="animate-spin" size={20} />
+                          <span>Processing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="relative z-10 flex items-center gap-2">
+                            Proceed to Checkout <ArrowRight size={20} strokeWidth={2.5} className="group-hover:translate-x-1 transition-transform" />
+                          </span>
+                          <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+                        </>
+                      )}
                     </motion.button>
 
                     <div className="flex items-center justify-center gap-2 text-xs text-slate-500 mt-4">
