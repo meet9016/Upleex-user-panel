@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
   Menu,
   X,
@@ -17,13 +17,16 @@ import {
   Package,
   Heart,
   Settings,
-  FileText
+  FileText,
+  Briefcase,
+  LayoutGrid
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { DownloadAppPopup } from '../features/DownloadAppPopup';
 import { Button } from '@/components/ui/Button';
 import { categoryService, Category } from '@/services/categoryService';
+import { serviceService, ServiceCategory } from '@/services/serviceService';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { searchService } from '@/services/searchService';
@@ -35,9 +38,11 @@ export const Navbar: React.FC = () => {
   const [currentLocation, setCurrentLocation] = useState('Select City');
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<any>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>([]);
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
   const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -101,7 +106,13 @@ export const Navbar: React.FC = () => {
       const data = await categoryService.getCategories();
       setCategories(data);
     };
+    const fetchServiceCategories = async () => {
+      const data = await serviceService.getServiceCategories();
+      setServiceCategories(data);
+    };
+
     fetchCategories();
+    fetchServiceCategories();
   }, []);
 
   useEffect(() => {
@@ -109,16 +120,16 @@ export const Navbar: React.FC = () => {
     const handleStorageChange = () => {
       readUserData();
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Auto-detect user's city
     const detectUserCity = async () => {
       try {
         const response = await fetch('https://ipapi.co/json/');
         const data = await response.json();
         const detectedCity = data.city || '';
-        
+
         if (detectedCity) {
           const cityRes = await searchService.getCities(1, detectedCity);
           if (cityRes.items && cityRes.items.length > 0) {
@@ -130,9 +141,9 @@ export const Navbar: React.FC = () => {
         console.error('Error detecting city:', error);
       }
     };
-    
+
     detectUserCity();
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
@@ -174,12 +185,12 @@ export const Navbar: React.FC = () => {
 
   const loadCities = async (page = 1, append = false, searchText?: string) => {
     if (isCityLoading || (append && !cityHasMore)) return;
-    
+
     try {
       setIsCityLoading(true);
       const query = searchText !== undefined ? searchText : citySearchTerm;
       currentCityQueryRef.current = query;
-      
+
       const res = await searchService.getCities(page, query);
       const data = res.items || [];
 
@@ -191,7 +202,7 @@ export const Navbar: React.FC = () => {
         }
         return data;
       });
-      
+
       setCityPage(page);
       setCityHasMore(page < res.totalPages);
 
@@ -246,9 +257,9 @@ export const Navbar: React.FC = () => {
     const isNearBottom = scrollHeight - scrollTop - clientHeight < threshold;
 
     if (
-      isNearBottom && 
-      cityHasMore && 
-      !isCityLoading && 
+      isNearBottom &&
+      cityHasMore &&
+      !isCityLoading &&
       !cityScrollLockRef.current &&
       currentCityQueryRef.current === citySearchTerm
     ) {
@@ -535,68 +546,67 @@ export const Navbar: React.FC = () => {
                       </div>
                     </div>
                     <div
-    className="max-h-64 overflow-y-auto"
-    ref={cityListRef}
-    onScroll={handleCityScroll}
-    style={{ maxHeight: '16rem' }} // Ensure fixed height for scrolling
-  >
-    {cities.length > 0 ? (
-      <>
-        {cities.map((city, index) => (
-          <button
-            key={`${city.id}-${index}`}
-            type="button"
-            onClick={() => handleCitySelect(city)}
-            className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${
-              selectedCityId === String(city.id)
-                ? 'bg-purple-50 text-upleex-purple'
-                : 'text-slate-600 hover:bg-gray-50 hover:text-slate-900 cursor-pointer'
-            }`}
-          >
-            {city.city_name}
-          </button>
-        ))}
-        
-        {/* Show loading indicator at bottom */}
-        {isCityLoading && (
-          <div className="px-4 py-3 text-sm text-slate-500 text-center border-t border-gray-100">
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-4 h-4 border-2 border-upleex-purple border-t-transparent rounded-full animate-spin"></div>
-              <span>Loading more cities...</span>
-            </div>
-          </div>
-        )}
-        
-        {/* Show "No more cities" message when reached end */}
-        {!isCityLoading && !cityHasMore && cities.length > 0 && (
-          <div className="px-4 py-3 text-sm text-slate-400 text-center border-t border-gray-100">
-            No more cities to load
-          </div>
-        )}
-      </>
-    ) : (
-      !isCityLoading && citySearchTerm.trim() !== '' && (
-        <div className="px-4 py-4 text-sm text-slate-500 text-center">
-          No cities found for "{citySearchTerm}"
-        </div>
-      )
-    )}
-    
-    {isCityLoading && cities.length === 0 && (
-      <div className="px-4 py-4 text-sm text-slate-500 text-center">
-        <div className="flex items-center justify-center gap-2">
-          <div className="w-4 h-4 border-2 border-upleex-purple border-t-transparent rounded-full animate-spin"></div>
-          <span>Loading cities...</span>
-        </div>
-      </div>
-    )}
-    
-    {!isCityLoading && cities.length === 0 && citySearchTerm.trim() === '' && (
-      <div className="px-4 py-4 text-sm text-slate-500 text-center">
-        Type to search cities
-      </div>
-    )}
-  </div>    
+                      className="max-h-64 overflow-y-auto"
+                      ref={cityListRef}
+                      onScroll={handleCityScroll}
+                      style={{ maxHeight: '16rem' }} // Ensure fixed height for scrolling
+                    >
+                      {cities.length > 0 ? (
+                        <>
+                          {cities.map((city, index) => (
+                            <button
+                              key={`${city.id}-${index}`}
+                              type="button"
+                              onClick={() => handleCitySelect(city)}
+                              className={`w-full text-left px-4 py-2.5 text-sm font-medium transition-colors ${selectedCityId === String(city.id)
+                                ? 'bg-purple-50 text-upleex-purple'
+                                : 'text-slate-600 hover:bg-gray-50 hover:text-slate-900 cursor-pointer'
+                                }`}
+                            >
+                              {city.city_name}
+                            </button>
+                          ))}
+
+                          {/* Show loading indicator at bottom */}
+                          {isCityLoading && (
+                            <div className="px-4 py-3 text-sm text-slate-500 text-center border-t border-gray-100">
+                              <div className="flex items-center justify-center gap-2">
+                                <div className="w-4 h-4 border-2 border-upleex-purple border-t-transparent rounded-full animate-spin"></div>
+                                <span>Loading more cities...</span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Show "No more cities" message when reached end */}
+                          {!isCityLoading && !cityHasMore && cities.length > 0 && (
+                            <div className="px-4 py-3 text-sm text-slate-400 text-center border-t border-gray-100">
+                              No more cities to load
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        !isCityLoading && citySearchTerm.trim() !== '' && (
+                          <div className="px-4 py-4 text-sm text-slate-500 text-center">
+                            No cities found for "{citySearchTerm}"
+                          </div>
+                        )
+                      )}
+
+                      {isCityLoading && cities.length === 0 && (
+                        <div className="px-4 py-4 text-sm text-slate-500 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            <div className="w-4 h-4 border-2 border-upleex-purple border-t-transparent rounded-full animate-spin"></div>
+                            <span>Loading cities...</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {!isCityLoading && cities.length === 0 && citySearchTerm.trim() === '' && (
+                        <div className="px-4 py-4 text-sm text-slate-500 text-center">
+                          Type to search cities
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -678,7 +688,7 @@ export const Navbar: React.FC = () => {
 
             <div className="h-4 w-px bg-gray-300"></div>
 
-            <Link 
+            <Link
               href="/membership"
               className="hover:text-upleex-blue transition-colors cursor-pointer"
             >
@@ -689,6 +699,28 @@ export const Navbar: React.FC = () => {
             <Link href="/partner" className="hover:text-upleex-blue transition-colors cursor-pointer">
               Partner With Us
             </Link>
+
+            <div className="h-4 w-px bg-gray-300"></div>
+
+           <Link
+            href="/services-list"
+            className={`group flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 font-bold whitespace-nowrap
+            ${
+              pathname === '/services-list'
+                ? 'bg-upleex-purple text-white shadow-lg shadow-purple-200'
+                : 'bg-purple-50 text-upleex-purple hover:bg-upleex-purple hover:text-white border border-purple-100 hover:border-upleex-purple shadow-sm hover:shadow-md'
+            }`}
+          >
+            <Briefcase
+              size={18}
+              className={`transition-colors duration-300 ${
+                pathname === '/services-list'
+                  ? 'text-white'
+                  : 'text-upleex-purple group-hover:text-white'
+              }`}
+            />
+            <span>Services</span>
+          </Link>
 
             <div className="h-4 w-px bg-gray-300"></div>
             {user ? (
@@ -848,46 +880,100 @@ export const Navbar: React.FC = () => {
         {/* Categories Bar - Secondary Navigation with Dropdowns */}
         <div className="hidden lg:flex items-center justify-between gap-1 py-1 text-sm font-medium text-slate-600 border-t border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-1">
-            {categories.slice(0, 7).map((item, index) => {
-              const isActive = pathname === `/rent-category/${item.categories_id}`;
-              const key = item.categories_id || `cat-${index}`;
-              return (
-                <div key={key} className="relative group">
-                  <Link
-                    href={`/rent-category/${item.categories_id}`}
-                    className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer 
-                    bg-gray-100 
-                    ${isActive
-                    ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
-                   :  'hover:bg-upleex-purple hover:text-white'
-                    }`}                    
-                  >
-                    {item.categories_name}
-                    {item.subcategories.length > 0 && (
-                      <ChevronDown size={14} className={`ml-1 transition-opacity ${isActive ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'
-                        }`} />
-                    )}
-                  </Link>
-
-                  {/* Dropdown Menu */}
-                  {item.subcategories.length > 0 && (
-                    <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-lg rounded-r-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0">
-                      <div className="py-2">
-                        {item.subcategories.map((sub, subIndex) => (
-                          <Link
-                            key={sub.subcategory_id || `sub-${subIndex}`}
-                            href={`/rent-category/${item.categories_id}?sub=${sub.subcategory_id}`}
-                            className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0 cursor-pointer"
-                          >
-                            {sub.subcategory_name}
-                          </Link>
-                        ))}
-                      </div>
+            {pathname?.startsWith('/services-list') || pathname?.includes('/service/') ? (
+              // Service Categories
+              <>
+                {(() => {
+                  const activeCatId = searchParams?.get('category');
+                  const isAllActive = !activeCatId || activeCatId === 'all';
+                  return (
+                    <div className="relative group">
+                      <Link
+                        href="/services-list"
+                        className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer 
+                        bg-gray-100 
+                        ${isAllActive
+                            ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
+                            : 'hover:bg-upleex-purple hover:text-white'
+                          }`}
+                      >
+                        <LayoutGrid size={18} className="mr-2" />
+                        All Services
+                      </Link>
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })()}
+                {serviceCategories.slice(0, 6).map((item, index) => {
+                  const activeCatId = searchParams?.get('category');
+                  const isActive = activeCatId === item.categories_id;
+
+                  return (
+                    <div key={item.categories_id || index} className="relative group">
+                      <Link
+                        href={`/services-list?category=${item.categories_id}`}
+                        className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer
+                      bg-gray-100
+                      ${isActive
+                            ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
+                            : 'hover:bg-upleex-purple hover:text-white'
+                          }`}
+                      >
+                        <div className={`w-5 h-5 rounded p-0.5 mr-2 ${isActive ? 'bg-white/20' : 'bg-gray-200'}`}>
+                          <img
+                            src={item.image ? (item.image.startsWith('http') ? item.image : `http://service.digitalks.co.in/s3docs/${item.image}`) : '/image/placeholder.png'}
+                            alt=""
+                            className="w-full h-full object-cover rounded-sm"
+                          />
+                        </div>
+                        {item.categories_name}
+                      </Link>
+                    </div>
+                  );
+                })}
+              </>
+            ) : (
+              // Product Categories
+              categories.slice(0, 7).map((item, index) => {
+                const isActive = pathname === `/rent-category/${item.categories_id}`;
+                const key = item.categories_id || `cat-${index}`;
+                return (
+                  <div key={key} className="relative group">
+                    <Link
+                      href={`/rent-category/${item.categories_id}`}
+                      className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer
+                      bg-gray-100
+                      ${isActive
+                          ? 'bg-upleex-purple text-white shadow-md shadow-purple-500/20'
+                          : 'hover:bg-upleex-purple hover:text-white'
+                        }`}
+                    >
+                      {item.categories_name}
+                      {item.subcategories.length > 0 && (
+                        <ChevronDown size={14} className={`ml-1 transition-opacity ${isActive ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'
+                          }`} />
+                      )}
+                    </Link>
+
+                    {/* Dropdown Menu */}
+                    {item.subcategories.length > 0 && (
+                      <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-b-lg rounded-r-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0">
+                        <div className="py-2">
+                          {item.subcategories.map((sub, subIndex) => (
+                            <Link
+                              key={sub.subcategory_id || `sub-${subIndex}`}
+                              href={`/rent-category/${item.categories_id}?sub=${sub.subcategory_id}`}
+                              className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0 cursor-pointer"
+                            >
+                              {sub.subcategory_name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
 
           {/* View All Categories Button */}
@@ -901,7 +987,6 @@ export const Navbar: React.FC = () => {
               className={`
                 rounded-full px-5 py-2 group h-auto text-xs font-semibold transition-all duration-200
                 border-upleex-purple focus:outline-none focus:ring-0 cursor-pointer
-          
               `}
               onClick={() => router.push('/categories')}
             >
@@ -951,13 +1036,11 @@ export const Navbar: React.FC = () => {
             <div className="space-y-3">
               {user ? (
                 <>
-                  {/* Email Display */}
                   <div className="p-3 bg-gray-50 rounded-lg">
                     <p className="text-sm text-gray-500 mb-1">Logged in as</p>
                     <p className="font-medium text-gray-900 truncate">{email}</p>
                   </div>
 
-                  {/* Logout Button */}
                   <button
                     onClick={handleLogout}
                     className="flex items-center justify-center gap-3 w-full py-2 px-3 text-red-600 hover:bg-red-50 rounded border border-red-100 cursor-pointer"
@@ -988,7 +1071,15 @@ export const Navbar: React.FC = () => {
             <div className="pt-2 border-t border-gray-100">
               <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Categories</div>
               <div className="grid grid-cols-2 gap-2">
-                {categories.slice(0, 6).map(item => {
+                <Link
+                  href="/services-list"
+                  className={`text-sm py-1 font-bold transition-colors cursor-pointer flex items-center gap-2 ${pathname === '/services-list' ? 'text-upleex-purple' : 'text-slate-700 hover:text-upleex-blue'}`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Briefcase size={14} />
+                  Services
+                </Link>
+                {categories.slice(0, 5).map(item => {
                   const isActive = pathname === `/rent-category/${item.categories_id}`;
                   return (
                     <Link

@@ -35,6 +35,11 @@ export interface EndPointApi {
     
     // Priority plans
     getPriorityPlans?: string;
+
+    // Services
+    serviceCategoryList: string;
+    serviceList: string;
+    serviceDetails: string;
 }
 
 // Define and export the API endpoint object
@@ -74,6 +79,11 @@ const endPointApi: EndPointApi = {
     userOrders: 'payment/user-orders',
     // Priority plans
     getPriorityPlans: 'priority-plans/getall',
+
+    // Services
+    serviceCategoryList: 'service-categories/getall',
+    serviceList: 'services/getall',
+    serviceDetails: 'services/getById',
 };
 
 

@@ -35,7 +35,9 @@ export default function RootLayout({
             <Suspense fallback={null}>
               <ProgressBar />
             </Suspense>
-            <Navbar />
+            <Suspense fallback={<div className="h-20 bg-white border-b border-gray-100" />}>
+              <Navbar />
+            </Suspense>
             <ScrollToTop />
             <QuickActions />
             <main className="flex-1">{children}</main>
