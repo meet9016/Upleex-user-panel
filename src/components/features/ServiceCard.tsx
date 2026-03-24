@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Star, Clock } from 'lucide-react';
+import { MapPin, Star, Clock, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/Button';
 
@@ -46,59 +46,58 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, className }) 
   return (
     <motion.div
       onClick={handleCardClick}
-      className={`group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer ${className}`}
-    // whileHover={{ y: -5 }}
+      className={`group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer ${className}`}
     >
-      {/* IMAGE */}
-      <div className="relative h-48 overflow-hidden bg-gray-100">
-        <img
-          src={getImageUrl(serviceImage)}
-          alt={serviceName}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
+      {/* 🔥 IMAGE */}
+      {/* 🔥 IMAGE */}
+      <div className="p-3">
+        <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
 
-        {/* Category Tag */}
-        <div className="absolute top-3 left-3 z-10">
-          <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-upleex-purple shadow-sm">
-            {serviceCategory}
-          </span>
+          <img
+            src={getImageUrl(serviceImage)}
+            alt={serviceName}
+            className="w-full h-52 object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+
+          {/* Category Tag */}
+          <div className="absolute top-3 left-3">
+            <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-upleex-purple shadow-sm border border-purple-100">
+              {serviceCategory}
+            </span>
+          </div>
+
         </div>
-
-        {/* Price Tag */}
-        <div className="absolute bottom-3 right-3 z-10 bg-gradient-to-r from-upleex-blue to-indigo-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
-          <span>₹{Number(servicePrice).toLocaleString()}</span>
-          <span className="text-[10px] opacity-90 font-medium">/ {billingLabel}</span>
-        </div>
-
-
       </div>
 
-      {/* CONTENT */}
-      <div className="p-4 space-y-3">
-        <div>
-          <h3 className="font-bold text-slate-800 line-clamp-1 group-hover:text-upleex-purple transition-colors">
-            {serviceName}
-          </h3>
+      {/* 🔥 CONTENT CENTERED */}
+      <div className="p-5 text-center">
+
+        {/* Title */}
+        <h3 className="text-lg font-bold text-slate-900 leading-snug">
+          {serviceName}
+        </h3>
+
+        {/* Price (PURPLE THEME) */}
+        <p className="text-upleex-purple font-semibold mt-2">
+          Price : ₹{Number(servicePrice).toLocaleString()} / {billingLabel}
+        </p>
+
+        {/* Location */}
+        <div className="flex items-center justify-center gap-1 text-sm text-gray-500 mt-1">
+          <MapPin size={14} className="text-upleex-purple" />
+          <span>{serviceLocation}</span>
         </div>
 
-        <div className="space-y-1.5 min-h-[40px]">
-          <div className="flex items-center text-xs text-slate-500 font-medium">
-            <MapPin size={14} className="mr-1.5 text-upleex-purple" />
-            <span className="truncate">{serviceLocation}</span>
-          </div>
-        </div>
-
-        <Button
-          fullWidth
-          variant="primary"
-          className="mt-2 rounded-xl font-bold py-2.5 text-sm btn-primary transition-all cursor-pointer"
+        {/* Button (PURPLE) */}
+        <button
           onClick={(e) => {
             e.stopPropagation();
             if (serviceId) router.push(`/service/${serviceId}`);
           }}
+          className="mt-4 w-full bg-upleex-purple hover:bg-upleex-purple/90 text-white font-semibold py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg"
         >
           Book Service
-        </Button>
+        </button>
       </div>
     </motion.div>
   );
