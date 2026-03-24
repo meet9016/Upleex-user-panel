@@ -377,7 +377,7 @@ export default function ProductDetailsPage() {
             </div>
 
             {/* ─── Right: Content with Floating Zoom Image ────────── */}
-            <div className="p-6 lg:p-8 xl:p-10 flex flex-col relative min-h-full">
+            <div className="p-6 lg:p-6 xl:p-6 flex flex-col relative min-h-full">
               {/* Floating Zoomed Image - Pen on book effect */}
               {isHovering && imageDimensions.width > 0 && (
                 <div
@@ -414,7 +414,7 @@ export default function ProductDetailsPage() {
               {/* Product Details Section - Zoom image floats above this */}
               <div className="flex flex-col h-full relative">
 
-                <div className="mb-6">
+                <div className="mb-4">
                   <h1
                     className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight truncate leading-tight"
                     title={productDetails?.product_name}
@@ -810,7 +810,7 @@ export default function ProductDetailsPage() {
                         }}
                         className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={
-                          quantity >= 9999 || 
+                          quantity >= 9999 ||
                           (isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false)
                         }
                       >

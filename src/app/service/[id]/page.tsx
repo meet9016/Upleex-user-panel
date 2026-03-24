@@ -76,7 +76,7 @@ export default function ServiceDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
 
           {/* LEFT SIDE */}
-          <div className="lg:col-span-7 flex flex-col h-full">
+          <div className="lg:col-span-6 flex flex-col h-full">
 
             {/* 🔥 FULL LEFT WHITE BOX */}
             <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/40 flex flex-col flex-1">
@@ -131,7 +131,7 @@ export default function ServiceDetailPage() {
 
           </div>
           {/* RIGHT SIDE */}
-          <div className="lg:col-span-5 flex">
+          <div className="lg:col-span-6 flex">
 
             <div className="w-full flex flex-col h-full">
 
@@ -151,7 +151,7 @@ export default function ServiceDetailPage() {
                 </div>
 
                 {/* Location */}
-                <div className="flex justify-center items-center gap-2 text-sm text-slate-600 mt-3">
+                <div className="flex justify-center items-center gap-2 text-sm text-slate-600 mt-6">
                   <MapPin size={16} className="text-upleex-purple" />
                   <span>
                     Available in{' '}
@@ -185,9 +185,9 @@ export default function ServiceDetailPage() {
                   <button className="bg-upleex-purple hover:bg-upleex-purple/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all">
                     Show Contact
                   </button>
-                  <button className="bg-upleex-purple hover:bg-upleex-purple/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all">
+                  {/* <button className="bg-upleex-purple hover:bg-upleex-purple/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all">
                     Chat Now
-                  </button>
+                  </button> */}
                 </div>
 
               </div>

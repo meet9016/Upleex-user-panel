@@ -89,15 +89,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
       >
         {/* IMAGE */}
         <div className="relative h-52 overflow-hidden">
-          {/* New Product Badge - Top Right */}
-          {product.is_new && (
-            <div className="absolute top-3 right-3 z-30">
-              <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-                NEW
-              </span>
-            </div>
-          )}
-
           {/* Out of Stock Badge - Top Center */}
           {product.is_out_of_stock && product.product_type_name === 'Sell' && (
             <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-30">
@@ -191,6 +182,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
         {/* CONTENT */}
         <div className="p-4 space-y-2">
+          {product.is_new && (
+            <div className="flex justify-start">
+              <span className="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md border border-green-200 whitespace-nowrap">
+                NEW
+              </span>
+            </div>
+          )}
           <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition">
             {productName}
           </h3>
