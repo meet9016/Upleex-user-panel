@@ -48,14 +48,14 @@ export default function ProductDetailsPage() {
 
   const [selectedImage, setSelectedImage] = useState<string>(""); // For image gallery
   const [productDetails, setProductDetails] = useState<any>(null);
-  
+
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addToCart } = useCart();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  
+
   // State for magnifier
   const [isHovering, setIsHovering] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -63,7 +63,7 @@ export default function ProductDetailsPage() {
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const zoomContainerRef = useRef<HTMLDivElement>(null);
-  
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const scroll = (direction: "left" | "right") => {
@@ -92,15 +92,15 @@ export default function ProductDetailsPage() {
       ) || productDetails.month_arr[0];
     return Number(selectedMonth.price || 0) * quantity;
   })();
-  
+
   const unitPrice = productDetails?.price || 0;
   const totalPrice = activeTab === "monthly" ? monthlyPrice : unitPrice * days * quantity;
 
   const allImages = productDetails
     ? [
-        productDetails.product_main_image,
-        ...(productDetails.images || []).map((img: any) => img.image || img),
-      ].filter(Boolean)
+      productDetails.product_main_image,
+      ...(productDetails.images || []).map((img: any) => img.image || img),
+    ].filter(Boolean)
     : [];
 
   useEffect(() => {
@@ -127,15 +127,15 @@ export default function ProductDetailsPage() {
   // Handle mouse move for magnifier
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imageContainerRef.current || !imageRef.current) return;
-    
+
     const rect = imageContainerRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
+
     // Constrain values between 0 and 100
     const constrainedX = Math.max(0, Math.min(100, x));
     const constrainedY = Math.max(0, Math.min(100, y));
-    
+
     setMousePosition({ x: constrainedX, y: constrainedY });
   };
 
@@ -150,7 +150,7 @@ export default function ProductDetailsPage() {
 
   const handleGetQuoteClick = () => {
     const token = localStorage.getItem("token");
-    
+
     if (!token) {
       setIsAuthModalOpen(true);
     } else {
@@ -160,7 +160,7 @@ export default function ProductDetailsPage() {
 
   const handleAddToCart = async () => {
     const token = localStorage.getItem("token");
-    
+
     if (!token) {
       setIsAuthModalOpen(true);
       return;
@@ -170,7 +170,7 @@ export default function ProductDetailsPage() {
     if (isSell && productDetails) {
       const availableStock = productDetails.available_quantity || 0;
       const isOutOfStock = productDetails.is_out_of_stock;
-      
+
       if (isOutOfStock || availableStock < quantity) {
         toast.error(`Product "${productDetails.product_name}" is out of stock or insufficient quantity available. Available: ${availableStock}, Requested: ${quantity}`);
         return;
@@ -261,12 +261,12 @@ export default function ProductDetailsPage() {
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-0">
             {/* ─── Left: Gallery (Bilkul same) ────────────────── */}
-            <div className="bg-white p-4 lg:p-6 lg:pb-2 flex items-start justify-center border-r border-gray-100">
+            <div className="bg-white p-6 lg:p-8 xl:p-10 flex flex-col items-center justify-center border-r border-gray-100 min-h-full">
               <div className="w-full max-w-[520px]">
                 {/* Main image - No changes to size */}
                 <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-gray-200/50 bg-white border border-gray-100 aspect-[4/2.8]">
                   {allImages.length > 0 ? (
-                    <div 
+                    <div
                       ref={imageContainerRef}
                       className="relative w-full h-full cursor-crosshair"
                       onMouseEnter={() => setIsHovering(true)}
@@ -280,10 +280,10 @@ export default function ProductDetailsPage() {
                         className="w-full h-full object-contain transition-transform duration-700 hover:scale-105"
                         onLoad={handleImageLoad}
                       />
-                      
+
                       {/* Magnifier lens overlay - shows which area is being zoomed */}
                       {isHovering && (
-                        <div 
+                        <div
                           className="absolute border-2 border-blue-500 bg-white/20 pointer-events-none"
                           style={{
                             width: '80px',
@@ -344,7 +344,7 @@ export default function ProductDetailsPage() {
                         <Shield size={16} strokeWidth={2.5} />
                       </div>
                       <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                        KYC<br/>Verified
+                        KYC<br />Verified
                       </span>
                     </div>
                     <div className="flex flex-col items-center text-center gap-1.5">
@@ -352,7 +352,7 @@ export default function ProductDetailsPage() {
                         <Shield size={16} strokeWidth={2.5} />
                       </div>
                       <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                        Secure<br/>Payment
+                        Secure<br />Payment
                       </span>
                     </div>
                     <div className="flex flex-col items-center text-center gap-1.5">
@@ -360,7 +360,7 @@ export default function ProductDetailsPage() {
                         <Truck size={16} strokeWidth={2.5} />
                       </div>
                       <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                        Verified<br/>Product
+                        Verified<br />Product
                       </span>
                     </div>
                     <div className="flex flex-col items-center text-center gap-1.5">
@@ -368,7 +368,7 @@ export default function ProductDetailsPage() {
                         <ArrowRight size={16} strokeWidth={2.5} />
                       </div>
                       <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
-                        100%<br/>Refund
+                        100%<br />Refund
                       </span>
                     </div>
                   </div>
@@ -377,10 +377,10 @@ export default function ProductDetailsPage() {
             </div>
 
             {/* ─── Right: Content with Floating Zoom Image ────────── */}
-            <div className="p-4 lg:p-4 xl:p-3 lg:pb-2 xl:pb-2 flex flex-col relative">
+            <div className="p-6 lg:p-8 xl:p-10 flex flex-col relative min-h-full">
               {/* Floating Zoomed Image - Pen on book effect */}
               {isHovering && imageDimensions.width > 0 && (
-                <div 
+                <div
                   ref={zoomContainerRef}
                   className="absolute z-50 rounded-xl overflow-hidden shadow-2xl border-2 border-white bg-white animate-in fade-in zoom-in duration-200"
                   style={{
@@ -393,7 +393,7 @@ export default function ProductDetailsPage() {
                   }}
                 >
                   <div className="relative w-full h-full">
-                    <div 
+                    <div
                       className="w-full h-full"
                       style={{
                         backgroundImage: `url(${selectedImage || allImages[0]})`,
@@ -413,13 +413,16 @@ export default function ProductDetailsPage() {
 
               {/* Product Details Section - Zoom image floats above this */}
               <div className="flex flex-col h-full relative">
-                <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight">
+
+                <div className="mb-6">
+                  <h1
+                    className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight truncate leading-tight"
+                    title={productDetails?.product_name}
+                  >
                     {productDetails?.product_name || "Loading product..."}
                   </h1>
                 </div>
-
-                <div className="flex flex-wrap items-center gap-1 text-sm mb-4">
+                <div className="flex flex-wrap items-center gap-2 mb-3">
                   {productDetails?.sub_category_name && (
                     <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-medium text-xs">
                       {productDetails.sub_category_name}
@@ -469,10 +472,10 @@ export default function ProductDetailsPage() {
                           <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
                             Select Duration
                           </label>
-                          
+
                           <div className="relative group/scroll">
                             {/* Left Scroll Button */}
-                            <button 
+                            <button
                               onClick={() => scroll("left")}
                               className="absolute left-0 top-1/2 -translate-y-1/2 -ml-3 z-10 p-1.5 rounded-full bg-white shadow-md border border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-600 transition-all opacity-0 group-hover/scroll:opacity-100 hidden sm:flex items-center justify-center"
                               aria-label="Scroll left"
@@ -480,7 +483,7 @@ export default function ProductDetailsPage() {
                               <ChevronLeft size={18} />
                             </button>
 
-                            <div 
+                            <div
                               ref={scrollContainerRef}
                               className="flex overflow-x-auto gap-3.5 pb-4 pt-3 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth"
                             >
@@ -534,7 +537,7 @@ export default function ProductDetailsPage() {
                             </div>
 
                             {/* Right Scroll Button */}
-                            <button 
+                            <button
                               onClick={() => scroll("right")}
                               className="absolute right-0 top-1/2 -translate-y-1/2 -mr-3 z-10 p-1.5 rounded-full bg-white shadow-md border border-gray-200 text-gray-600 hover:text-blue-600 hover:border-blue-600 transition-all opacity-0 group-hover/scroll:opacity-100 hidden sm:flex items-center justify-center"
                               aria-label="Scroll right"
@@ -550,7 +553,7 @@ export default function ProductDetailsPage() {
                             (m: any) => m.product_months_id === selectedMonthId
                           );
                           if (!selectedMonthData) return null;
-                          
+
                           return (
                             <div className="p-3 border border-gray-200 rounded-xl bg-gray-50/50">
                               <div className="space-y-1">
@@ -572,7 +575,7 @@ export default function ProductDetailsPage() {
                                   <span className="text-gray-600">Quantity</span>
                                   <span className="font-medium text-gray-900">{quantity} Units</span>
                                 </div>
-                                
+
                                 <div className="border-t border-gray-200 pt-3 flex justify-between items-center mt-2">
                                   <div className="flex flex-col">
                                     <span className="font-bold text-gray-900">Total Amount</span>
@@ -609,42 +612,42 @@ export default function ProductDetailsPage() {
                             {isHourly ? "Rental Hours" : "Rental Days"}
                           </span>
                           <div className="flex items-center bg-white border rounded-lg shadow-sm overflow-hidden">
-                        <button
-                          onClick={() => setDays(Math.max(1, days - 1))}
-                          className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed border-r"
-                          disabled={days <= 1}
-                        >
-                          <Minus size={14} />
-                        </button>
+                            <button
+                              onClick={() => setDays(Math.max(1, days - 1))}
+                              className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed border-r"
+                              disabled={days <= 1}
+                            >
+                              <Minus size={14} />
+                            </button>
 
-                        <input
-                          type="number"
-                          min={1}
-                          // remove 31 day max restriction
-                          value={days}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === '') {
-                              setDays(1);
-                              return;
-                            }
-                             if (value.length > 3) return;
-                            const parsed = Number(value);
-                            if (Number.isNaN(parsed)) return;
-                            const clamped = Math.max(1, parsed);
-                            setDays(clamped);
-                          }}
-                          className="w-12 text-center font-bold text-base focus:outline-none focus:ring-0"
-                        />
+                            <input
+                              type="number"
+                              min={1}
+                              // remove 31 day max restriction
+                              value={days}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === '') {
+                                  setDays(1);
+                                  return;
+                                }
+                                if (value.length > 3) return;
+                                const parsed = Number(value);
+                                if (Number.isNaN(parsed)) return;
+                                const clamped = Math.max(1, parsed);
+                                setDays(clamped);
+                              }}
+                              className="w-12 text-center font-bold text-base focus:outline-none focus:ring-0"
+                            />
 
-                        <button
-                          onClick={() => setDays(days + 1)}
-                          className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed border-l"
-                          disabled={false}
-                        >
-                          <Plus size={14} />
-                        </button>
-                      </div>  
+                            <button
+                              onClick={() => setDays(Math.min(999, days + 1))}
+                              className="px-3 py-2 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed border-l"
+                              disabled={days >= 999}
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
                         </div>
 
                         <div className="space-y-2 pt-3 border-t border-gray-200">
@@ -656,7 +659,7 @@ export default function ProductDetailsPage() {
                               ₹{unitPrice.toLocaleString()}
                             </span>
                           </div>
-                          {productDetails?.deposit_amount && Number(productDetails.deposit_amount) > 0 && (
+                          {/* {productDetails?.deposit_amount && Number(productDetails.deposit_amount) > 0 && (
                             <div className="flex justify-between items-center bg-orange-50/80 p-2.5 rounded-lg border border-orange-100">
                               <span className="text-sm font-semibold text-orange-900">
                                 Security Deposit
@@ -665,7 +668,7 @@ export default function ProductDetailsPage() {
                                 ₹{Number(productDetails.deposit_amount).toLocaleString()}
                               </span>
                             </div>
-                          )}
+                          )} */}
                           <div className="flex justify-between text-sm text-gray-600 px-1">
                             <span>Rental Duration</span>
                             <span className="font-medium">
@@ -711,7 +714,7 @@ export default function ProductDetailsPage() {
                 {isSell && (
                   <div className="mb-6 p-6 border-2 border-blue-100 rounded-2xl bg-gradient-to-br from-blue-50/50 to-white shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100/30 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700" />
-                    
+
                     <div className="relative">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="w-1.5 h-4 bg-upleex-blue rounded-full" />
@@ -762,7 +765,7 @@ export default function ProductDetailsPage() {
                       >
                         <Minus size={16} className="text-gray-600" />
                       </button>
-                        <input
+                      <input
                         type="number"
                         min={1}
                         max={isSell && productDetails?.available_quantity ? productDetails.available_quantity : undefined}
@@ -784,12 +787,12 @@ export default function ProductDetailsPage() {
                           if (Number.isNaN(parsed)) return;
 
                           let clamped = Math.max(1, parsed);
-                          
+
                           // For sell products, limit to available stock
                           if (isSell && productDetails?.available_quantity) {
                             clamped = Math.min(clamped, productDetails.available_quantity);
                           }
-                          
+
                           setQuantity(clamped);
                         }}
                         className="w-14 text-center font-extrabold text-lg text-slate-900 bg-transparent focus:outline-none focus:ring-0"
@@ -797,6 +800,8 @@ export default function ProductDetailsPage() {
                       <button
                         onClick={() => {
                           let newQuantity = quantity + 1;
+                          // Absolute max of 4 digits
+                          newQuantity = Math.min(9999, newQuantity);
                           // For sell products, limit to available stock
                           if (isSell && productDetails?.available_quantity) {
                             newQuantity = Math.min(newQuantity, productDetails.available_quantity);
@@ -804,7 +809,10 @@ export default function ProductDetailsPage() {
                           setQuantity(newQuantity);
                         }}
                         className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                        disabled={isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false}
+                        disabled={
+                          quantity >= 9999 || 
+                          (isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false)
+                        }
                       >
                         <Plus size={16} className="text-gray-600" />
                       </button>
@@ -937,7 +945,7 @@ export default function ProductDetailsPage() {
                         <Shield size={18} strokeWidth={2.5} />
                       </div>
                       <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
-                        KYC<br/>Verified
+                        KYC<br />Verified
                       </span>
                     </div>
                     <div className="flex flex-col items-center text-center gap-2">
@@ -945,7 +953,7 @@ export default function ProductDetailsPage() {
                         <Shield size={18} strokeWidth={2.5} />
                       </div>
                       <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
-                        Secure<br/>Payment
+                        Secure<br />Payment
                       </span>
                     </div>
                     <div className="flex flex-col items-center text-center gap-2">
@@ -953,7 +961,7 @@ export default function ProductDetailsPage() {
                         <Truck size={18} strokeWidth={2.5} />
                       </div>
                       <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
-                        Verified<br/>Product
+                        Verified<br />Product
                       </span>
                     </div>
                     <div className="flex flex-col items-center text-center gap-2">
@@ -961,7 +969,7 @@ export default function ProductDetailsPage() {
                         <ArrowRight size={18} strokeWidth={2.5} />
                       </div>
                       <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
-                        100%<br/>Refund
+                        100%<br />Refund
                       </span>
                     </div>
                   </div>
@@ -975,17 +983,15 @@ export default function ProductDetailsPage() {
             <div className="flex gap-8 border-b border-gray-200 mb-6">
               <button
                 onClick={() => setActiveDetailTab("description")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${
-                  activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
-                }`}
+                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+                  }`}
               >
                 Description
               </button>
               <button
                 onClick={() => setActiveDetailTab("details")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${
-                  activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
-                }`}
+                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+                  }`}
               >
                 Product Details
               </button>
@@ -1011,8 +1017,8 @@ export default function ProductDetailsPage() {
                   <h3 className="text-lg font-bold text-slate-900 mb-4">Product Details</h3>
 
                   {productDetails?.product_details &&
-                  Array.isArray(productDetails.product_details) &&
-                  productDetails.product_details.length > 0 ? (
+                    Array.isArray(productDetails.product_details) &&
+                    productDetails.product_details.length > 0 ? (
                     <div className="space-y-4">
                       {productDetails.product_details.map((spec: any, idx: number) => {
                         const label =
@@ -1064,9 +1070,9 @@ export default function ProductDetailsPage() {
       </div>
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
       />
 
@@ -1095,8 +1101,8 @@ export default function ProductDetailsPage() {
           <p className="text-gray-500 mb-8 leading-relaxed">
             Thank you for your interest. Our team will contact you shortly with the best price.
           </p>
-          <Button 
-            fullWidth 
+          <Button
+            fullWidth
             onClick={() => setIsSuccessModalOpen(false)}
             className="text-white font-bold py-3.5 rounded-xl shadow-lg shadow-gray-900/10"
           >

@@ -8,7 +8,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { Product } from '../../types';
 import { AuthModal } from './AuthModal';
-  
+
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -31,22 +31,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
   const isWishlisted = productId ? isInWishlist(productId) : false;
   const productName = product.product_name || product.title;
   const productImage = product.product_main_image;
-    const listingType = (product?.product_type_name || product?.product_listing_type_name)?.toLowerCase();
+  const listingType = (product?.product_type_name || product?.product_listing_type_name)?.toLowerCase();
 
   const isMonthly =
-  product?.product_listing_type_name?.toLowerCase() === "monthly";
+    product?.product_listing_type_name?.toLowerCase() === "monthly";
 
-let productPrice = product.price || product.pricePerMonth;
-let cancelPrice =
-  product.cancel_price ||
-  (product.pricePerMonth ? Math.round(product.pricePerMonth * 1.2) : null);
+  let productPrice = product.price || product.pricePerMonth;
+  let cancelPrice =
+    product.cancel_price ||
+    (product.pricePerMonth ? Math.round(product.pricePerMonth * 1.2) : null);
 
-if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 0) {
-  const firstMonth = product.month_arr[0];
+  if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 0) {
+    const firstMonth = product.month_arr[0];
 
-  productPrice = Number(firstMonth.price);
-  cancelPrice = Number(firstMonth.cancel_price);
-}
+    productPrice = Number(firstMonth.price);
+    cancelPrice = Number(firstMonth.cancel_price);
+  }
   const productCategory = product.sub_category_name || product.category;
   const productLocation = product.location || 'Surat';
 
@@ -71,7 +71,7 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
   const handleWishlistClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation(); // Stop event from bubbling up to parent
-    
+
     if (productId) {
       await toggleWishlist(productId, () => {
         setIsAuthModalOpen(true);
@@ -84,158 +84,156 @@ if (isMonthly && Array.isArray(product.month_arr) && product.month_arr.length > 
       <motion.div
         onClick={handleCardClick}
         className={`group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ${productId ? 'cursor-pointer' : 'cursor-default'} ${className}`}
-      whileHover={{ boxShadow: '0 20px 35px -10px rgba(0,0,0,0.15)' }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-    >
-      {/* IMAGE */}
-      <div className="relative h-52 overflow-hidden">
-        {/* New Product Badge - Top Right */}
-        {product.is_new && (
-          <div className="absolute top-3 right-3 z-30">
-            <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-              NEW
-            </span>
-          </div>
-        )}
-        
-        {/* Out of Stock Badge - Top Center */}
-        {product.is_out_of_stock && product.product_type_name === 'Sell' && (
-          <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-30">
-            <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-              OUT OF STOCK
-            </span>
-          </div>
-        )}
-        
-        {/* Rent/Sell Tag */}
-       {listingType && (
+        whileHover={{ boxShadow: '0 20px 35px -10px rgba(0,0,0,0.15)' }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      >
+        {/* IMAGE */}
+        <div className="relative h-52 overflow-hidden">
+          {/* New Product Badge - Top Right */}
+          {product.is_new && (
+            <div className="absolute top-3 right-3 z-30">
+              <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                NEW
+              </span>
+            </div>
+          )}
+
+          {/* Out of Stock Badge - Top Center */}
+          {product.is_out_of_stock && product.product_type_name === 'Sell' && (
+            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-30">
+              <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                OUT OF STOCK
+              </span>
+            </div>
+          )}
+
+          {/* Rent/Sell Tag */}
+          {listingType && (
             <div className="absolute top-0 left-0 z-20 overflow-hidden w-24 h-24">
               <span
                 className={cn(
                   "absolute -left-11 w-28 text-center px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md rotate-[-45deg]",
                   listingType === "sell" ? "bg-orange-500" : "bg-upleex-blue",
                 )}>
-                  <div className='mt-1'>
-                {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
+                <div className='mt-1'>
+                  {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
                 </div>
               </span>
             </div>
           )}
 
-        <motion.img
-          src={
-            sanitizeUrl(productImage) ||
-            'https://upleex.2min.cloud/upload/product_main_images/2026/01/2026-01-29/ce145a2a7c6ba13df4baceb3ac7843fd.jpg'
-          }
-          alt={productName}
-          className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
-          initial={{ scale: 1 }}
-          whileHover={{ scale: 1.12 }}
-          transition={{ duration: 0.45, ease: 'easeOut' }}
-        />
-
-        {/* Dark Overlay */}
-        <motion.div
-          className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition"
-          initial={{ opacity: 0.1 }}
-          whileHover={{ opacity: 0.3 }}
-          transition={{ duration: 0.4 }}
-        />
-
-        {/* Wishlist Heart - Only show if hideWishlistIcon is not true */}
-        {!product.hideWishlistIcon && (
-          <motion.button
-            onClick={handleWishlistClick}
-            whileTap={{ scale: 0.85 }}
-            animate={isWishlisted ? { scale: [1, 1.3, 1] } : { scale: 1 }}
-            transition={{
-              duration: 0.35,
-              ease: 'easeOut',
-            }}
-            className={`absolute top-3 z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md ${
-              product.is_new ? 'right-16' : 'right-3'
-            }`}
-          >
-            {isWishlisted && (
-              <motion.span
-                className="absolute inset-0 rounded-full bg-red-400/30"
-                initial={{ scale: 0, opacity: 0.6 }}
-                animate={{ scale: 1.8, opacity: 0 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              />
-            )}
-
-          <Heart
-            size={18}
-            className={`relative transition-colors ${isWishlisted ? 'text-red-500' : 'text-slate-500'}`}
-            fill={isWishlisted ? '#ef4444' : 'none'}
-          />
-        </motion.button>
-        )}
-
-        {/* Category */}
-        {productCategory && (
-          <span className="absolute bottom-3 left-3 z-10 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold">
-            {productCategory}
-          </span>
-        )}
-
-        {/* Price */}
-        <div className="absolute bottom-3 right-3 z-10 bg-gradient-to-r from-upleex-blue to-indigo-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
-          ₹{Number(productPrice ?? 0).toLocaleString()}{" "}
-          {product?.product_listing_type_name
-            ? `/ ${product.product_listing_type_name}`
-            : ""}
-        </div>
-
-      </div>
-
-      {/* CONTENT */}
-      <div className="p-4 space-y-2">
-        <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition">
-          {productName}
-        </h3>
-
-        <div className="flex items-center text-sm text-gray-500">
-          <MapPin size={14} className="mr-1" />
-          {productLocation}
-        </div>
-
-        {cancelPrice && (
-          <div className="text-xs text-gray-400 line-through">
-            ₹{cancelPrice}/Month
-          </div>
-        )}
-
-        <Button
-          fullWidth
-          variant="primary"
-          className={`mt-3 rounded-xl font-semibold tracking-wide text-white ${
-            product.is_out_of_stock && product.product_type_name === 'Sell' 
-              ? 'bg-gray-400 cursor-not-allowed' 
-              : 'cursor-pointer'
-          }`}
-          disabled={product.is_out_of_stock && product.product_type_name === 'Sell'}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!(product.is_out_of_stock && product.product_type_name === 'Sell') && productId) {
-              router.push(`/browse-ads/${productId}`);
+          <motion.img
+            src={
+              sanitizeUrl(productImage) ||
+              'https://upleex.2min.cloud/upload/product_main_images/2026/01/2026-01-29/ce145a2a7c6ba13df4baceb3ac7843fd.jpg'
             }
-          }}
-        >
-          {product.is_out_of_stock && product.product_type_name === 'Sell' 
-            ? 'Out of Stock' 
-            : listingType === 'sell' ? 'Buy Now' : 'Take On Rent'
-          }
-        </Button>
-      </div>
-      
+            alt={productName}
+            className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
+            initial={{ scale: 1 }}
+            whileHover={{ scale: 1.12 }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+          />
+
+          {/* Dark Overlay */}
+          <motion.div
+            className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition"
+            initial={{ opacity: 0.1 }}
+            whileHover={{ opacity: 0.3 }}
+            transition={{ duration: 0.4 }}
+          />
+
+          {/* Wishlist Heart - Only show if hideWishlistIcon is not true */}
+          {!product.hideWishlistIcon && (
+            <motion.button
+              onClick={handleWishlistClick}
+              whileTap={{ scale: 0.85 }}
+              animate={isWishlisted ? { scale: [1, 1.3, 1] } : { scale: 1 }}
+              transition={{
+                duration: 0.35,
+                ease: 'easeOut',
+              }}
+              className={`absolute top-3 z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md ${product.is_new ? 'right-16' : 'right-3'
+                }`}
+            >
+              {isWishlisted && (
+                <motion.span
+                  className="absolute inset-0 rounded-full bg-red-400/30"
+                  initial={{ scale: 0, opacity: 0.6 }}
+                  animate={{ scale: 1.8, opacity: 0 }}
+                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                />
+              )}
+
+              <Heart
+                size={18}
+                className={`relative transition-colors ${isWishlisted ? 'text-red-500' : 'text-slate-500'}`}
+                fill={isWishlisted ? '#ef4444' : 'none'}
+              />
+            </motion.button>
+          )}
+
+          {/* Category */}
+          {productCategory && (
+            <span className="absolute bottom-3 left-3 z-10 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold max-w-[150px] truncate">
+              {productCategory}
+            </span>
+          )}
+
+          {/* Price */}
+          <div className="absolute bottom-3 right-3 z-10 bg-gradient-to-r from-upleex-blue to-indigo-500 text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg">
+            ₹{Number(productPrice ?? 0).toLocaleString()}{" "}
+            {product?.product_listing_type_name
+              ? `/ ${product.product_listing_type_name}`
+              : ""}
+          </div>
+
+        </div>
+
+        {/* CONTENT */}
+        <div className="p-4 space-y-2">
+          <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition">
+            {productName}
+          </h3>
+
+          <div className="flex items-center text-sm text-gray-500">
+            <MapPin size={14} className="mr-1" />
+            {productLocation}
+          </div>
+
+          {cancelPrice && (
+            <div className="text-xs text-gray-400 line-through">
+              ₹{cancelPrice}/Month
+            </div>
+          )}
+
+          <Button
+            fullWidth
+            variant="primary"
+            className={`mt-3 rounded-xl font-semibold tracking-wide text-white ${product.is_out_of_stock && product.product_type_name === 'Sell'
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'cursor-pointer'
+              }`}
+            disabled={product.is_out_of_stock && product.product_type_name === 'Sell'}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!(product.is_out_of_stock && product.product_type_name === 'Sell') && productId) {
+                router.push(`/browse-ads/${productId}`);
+              }
+            }}
+          >
+            {product.is_out_of_stock && product.product_type_name === 'Sell'
+              ? 'Out of Stock'
+              : listingType === 'sell' ? 'Buy Now' : 'Take On Rent'
+            }
+          </Button>
+        </div>
+
       </motion.div>
 
       {/* Auth Modal */}
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
         onLoginSuccess={() => {
           setIsAuthModalOpen(false);
           // Refresh wishlist after successful login
