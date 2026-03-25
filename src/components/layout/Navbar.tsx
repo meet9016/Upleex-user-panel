@@ -509,16 +509,15 @@ export const Navbar: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-1">
                       {selectedCityId && (
-                        <button
-                          type="button"
+                        <div
                           onClick={(event) => {
                             event.stopPropagation();
                             handleClearCity();
                           }}
-                          className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
+                          className="p-1 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                         >
                           <X size={12} />
-                        </button>
+                        </div>
                       )}
                       <ChevronDown size={14} className="text-gray-400" />
                     </div>

@@ -97,17 +97,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const handleVerifyOtp = async () => {
     const otpString = otp.join('');
     const e: { otp?: string; name?: string; email?: string } = {};
-    
+
     if (otpString.length < 6) {
       e.otp = 'Enter the complete 6-digit OTP';
     }
-    
+
     if (userType === 'new') {
       if (!form.name.trim()) e.name = 'Name is required';
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailPattern.test(form.email.trim())) e.email = 'Enter a valid email';
     }
-    
+
     if (Object.keys(e).length > 0) {
       setErrors(prev => ({ ...prev, ...e }));
       return;
@@ -146,17 +146,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const handleOtpChange = (index: number, value: string) => {
     // Only allow digits
     if (value && !/^\d+$/.test(value)) return;
-    
+
     const newOtp = [...otp];
     // Take only the last character if multiple characters are pasted
     newOtp[index] = value.slice(-1);
     setOtp(newOtp);
-    
+
     // Clear error when user starts typing
     if (value) {
       setErrors(prev => ({ ...prev, otp: '' }));
     }
-    
+
     // Auto-focus next input if current input is filled
     if (value && index < 5) {
       otpInputs.current[index + 1]?.focus();
@@ -182,7 +182,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         setOtp(newOtp);
       }
     }
-    
+
     // Handle delete key
     if (e.key === 'Delete') {
       e.preventDefault();
@@ -190,19 +190,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       newOtp[index] = '';
       setOtp(newOtp);
     }
-    
+
     // Handle left arrow key
     if (e.key === 'ArrowLeft' && index > 0) {
       e.preventDefault();
       otpInputs.current[index - 1]?.focus();
     }
-    
+
     // Handle right arrow key
     if (e.key === 'ArrowRight' && index < 5) {
       e.preventDefault();
       otpInputs.current[index + 1]?.focus();
     }
-    
+
     // Handle Enter key
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -219,15 +219,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     const pastedData = e.clipboardData.getData('text/plain').replace(/\D/g, '').slice(0, 6);
     const pastedArray = pastedData.split('');
     const newOtp = [...otp];
-    
+
     pastedArray.forEach((digit, idx) => {
       if (idx < 6) {
         newOtp[idx] = digit;
       }
     });
-    
+
     setOtp(newOtp);
-    
+
     // Focus the next empty input or the last input
     const lastFilledIndex = newOtp.findIndex(digit => !digit);
     if (lastFilledIndex === -1) {
@@ -258,15 +258,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       noPadding
       className="min-w-[950px] overflow-hidden"
     >
-      <div 
+      <div
         className="flex flex-col md:flex-row h-full min-h-[500px]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Left Side - Image */}
         <div className="hidden md:block w-1/2 bg-gray-100 relative">
-          <img 
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-            alt="Login" 
+          <img
+            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Login"
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/10"></div>
@@ -274,7 +274,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Right Side - Form */}
         <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center relative">
-          
+
           {step === 'number' && (
             <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="space-y-2">
@@ -308,44 +308,44 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </div>
                   {errors.number ? <p className="text-red-600 text-sm mt-1 ml-23">{errors.number}</p> : null}
                 </div>
-              <div className="flex items-start gap-3">
-                     <div className="relative flex items-center justify-center">
-                      <input
-            type="checkbox"
-        checked={agreed}
-        onChange={() => {
-          setAgreed(!agreed);
-          if (!agreed) setErrors(prev => ({ ...prev, agreed: '' }));
-        }}
-        className="peer h-5 w-5 cursor-pointer appearance-none rounded-md 
+                <div className="flex items-start gap-3">
+                  <div className="relative flex items-center justify-center">
+                    <input
+                      type="checkbox"
+                      checked={agreed}
+                      onChange={() => {
+                        setAgreed(!agreed);
+                        if (!agreed) setErrors(prev => ({ ...prev, agreed: '' }));
+                      }}
+                      className="peer h-5 w-5 cursor-pointer appearance-none rounded-md 
                   border border-gray-300 bg-white 
                   checked:bg-blue-600 checked:border-blue-600 
                   transition-all duration-200"
-      />
-                      <Check 
-                        size={12} 
-                        strokeWidth={3} 
-                        className="pointer-events-none absolute text-white 
+                    />
+                    <Check
+                      size={12}
+                      strokeWidth={3}
+                      className="pointer-events-none absolute text-white 
                  opacity-0 peer-checked:opacity-100 
                  transition-opacity duration-200"
 
-                      />
-                   </div>
+                    />
+                  </div>
                   <p className="text-xs text-gray-500 leading-relaxed cursor-pointer" onClick={() => setAgreed(!agreed)}>
                     By continuing, I agree to the <span className="text-blue-600 font-semibold hover:underline">Terms of Use</span> & <span className="text-blue-600 font-semibold hover:underline">Privacy Policy</span>
                   </p>
                 </div>
                 {errors.agreed ? <p className="text-red-600 text-xs -mt-2">{errors.agreed}</p> : null}
-                <Button 
-                  fullWidth 
-                  onClick={handleSendNumber} 
+                <Button
+                  fullWidth
+                  onClick={handleSendNumber}
                   disabled={loading}
                   className="bg-gradient-primary hover:from-blue-600 hover:to-blue-700 text-white h-12 text-base font-bold rounded-lg shadow-lg shadow-blue-500/20 transition-all transform active:scale-[0.98] tracking-wide"
                 >
-                  {loading ? 'Sending...' : 'CONTINUE'}
+                  {loading ? 'Sending...' : 'Continue'}
                 </Button>
 
-                
+
               </div>
             </div>
           )}
@@ -358,7 +358,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   Enter the code sent to <span className="font-bold text-gray-900">+91 {number}</span>
                 </p>
               </div>
-              
+
               <div className="space-y-6">
                 <div className="flex justify-center gap-2 sm:gap-3">
                   {otp.map((digit, index) => (
@@ -440,32 +440,32 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </div>
                 )}
 
-                <Button 
-                  fullWidth 
-                  onClick={handleVerifyOtp} 
+                <Button
+                  fullWidth
+                  onClick={handleVerifyOtp}
                   disabled={loading || otp.join('').length !== 6}
                   className={clsx(
                     'bg-gradient-primary hover:from-blue-600 hover:to-blue-700 text-white h-12 text-base font-bold rounded-lg shadow-lg shadow-blue-500/20 transition-all transform active:scale-[0.98] tracking-wide',
                     (loading || otp.join('').length !== 6) && 'opacity-50 cursor-not-allowed'
                   )}
                 >
-                  {loading ? 'Verifying...' : 'VERIFY & LOGIN'}
+                  {loading ? 'Verifying...' : 'Verify & Login'}
                 </Button>
 
                 <div className="flex items-center justify-between text-sm font-medium pt-2">
-                  <button 
+                  {/* <button 
                     onClick={() => setStep('number')}
                     className="text-gray-500 hover:text-gray-900 transition-colors"
                   >
                     ← Change Number
-                  </button>
-                  
+                  </button> */}
+
                   {timer > 0 ? (
                     <span className="text-gray-400">
                       Resend in <span className="text-gray-900 font-bold tabular-nums">{Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}</span>
                     </span>
                   ) : (
-                    <button 
+                    <button
                       onClick={handleSendNumber}
                       className="text-blue-600 font-bold hover:text-blue-700 hover:underline"
                     >

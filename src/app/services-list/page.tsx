@@ -124,7 +124,7 @@ function ServicesListContent() {
   return (
     <div className="min-h-screen bg-gray-50/50">
       {/* Search & Breadcrumbs Header */}
-      <div className="bg-white border-b border-gray-100 shadow-sm sticky top-[80px] z-50">
+      <div className="bg-white border-b border-gray-100 shadow-sm sticky top-[80px] z-0">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-center gap-4">

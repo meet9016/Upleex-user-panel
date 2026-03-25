@@ -180,50 +180,59 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
         </div>
 
         {/* CONTENT */}
-        <div className="p-4 space-y-2">
-          {product.is_new && (
-            <div className="flex justify-start">
-              <span className="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md border border-green-200 whitespace-nowrap">
-                NEW
-              </span>
-            </div>
-          )}
-          <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition">
-            {productName}
-          </h3>
-
-          <div className="flex items-center text-sm text-gray-500">
-            <MapPin size={14} className="mr-1" />
-            {productLocation}
-          </div>
-
-          {cancelPrice && (
-            <div className="text-xs text-gray-400 line-through">
-              ₹{cancelPrice}/Month
-            </div>
-          )}
-
-          <Button
-            fullWidth
-            variant="primary"
-            className={`mt-3 rounded-xl font-semibold tracking-wide text-white ${product.is_out_of_stock && product.product_type_name === 'Sell'
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'cursor-pointer'
-              }`}
-            disabled={product.is_out_of_stock && product.product_type_name === 'Sell'}
-            onClick={(e) => {
-              e.stopPropagation();
-              if (!(product.is_out_of_stock && product.product_type_name === 'Sell') && productId) {
-                router.push(`/browse-ads/${productId}`);
-              }
-            }}
-          >
-            {product.is_out_of_stock && product.product_type_name === 'Sell'
-              ? 'Out of Stock'
-              : listingType === 'sell' ? 'Buy Now' : 'Take On Rent'
-            }
-          </Button>
-        </div>
+     {/* CONTENT */}
+<div className="p-4 space-y-3">
+  {/* New Badge - Full width */}
+  {product.is_new && (
+    <div className="flex justify-start">
+      <span className="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md border border-green-200 whitespace-nowrap">
+        NEW
+      </span>
+    </div>
+  )}
+  
+  {/* Product Name */}
+  <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition">
+    {productName}
+  </h3>
+  
+  {/* Location and Cancel Price in same row */}
+  <div className="flex items-center justify-between gap-2">
+    <div className="flex items-center text-sm text-gray-500 min-w-0 flex-1">
+      <MapPin size={14} className="mr-1 flex-shrink-0" />
+      <span className="truncate">{productLocation}</span>
+    </div>
+    
+    {cancelPrice && (
+      <div className="text-xs text-gray-400 line-through flex-shrink-0">
+        ₹{cancelPrice}/Month
+      </div>
+    )}
+  </div>
+  
+  {/* Button */}
+  <Button
+    fullWidth
+    variant="primary"
+    className={`mt-2 rounded-xl font-semibold tracking-wide text-white ${
+      product.is_out_of_stock && product.product_type_name === 'Sell'
+        ? 'bg-gray-400 cursor-not-allowed'
+        : 'cursor-pointer'
+    }`}
+    disabled={product.is_out_of_stock && product.product_type_name === 'Sell'}
+    onClick={(e) => {
+      e.stopPropagation();
+      if (!(product.is_out_of_stock && product.product_type_name === 'Sell') && productId) {
+        router.push(`/browse-ads/${productId}`);
+      }
+    }}
+  >
+    {product.is_out_of_stock && product.product_type_name === 'Sell'
+      ? 'Out of Stock'
+      : listingType === 'sell' ? 'Buy Now' : 'Take On Rent'
+    }
+  </Button>
+</div>
 
       </motion.div>
 
