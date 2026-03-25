@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail, MapPin, Send, MessageSquare, ArrowRight, Building, HelpCircle, Star } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ContactUsPage() {
   const [form, setForm] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     dialCode: '+91',
     mobile: '',
@@ -23,145 +25,164 @@ export default function ContactUsPage() {
   };
 
   return (
-      <div
-    className="min-h-[80vh] flex items-center justify-center px-4 py-10 bg-slate-900/80"
-    style={{
-      backgroundImage:
-        "url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600&auto=format&fit=crop')",
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    }}
-  >
-    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-        {/* Left Form Section */}
-        <div className="bg-white/95 rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 backdrop-blur-sm transform transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.35)] h-full flex flex-col">
-          <div className="mb-6 md:mb-8">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide text-upleex-dark uppercase">
-              Contact Us
-            </h1>
-            <div className="mt-2 h-1 w-24 bg-gradient-primary rounded-full" />
-            <p className="mt-4 text-sm md:text-base text-slate-600 max-w-md">
-              Fill in the form and our team will reach out to you within a few working hours.
+    <div className="min-h-screen bg-slate-50 relative overflow-hidden">
+      {/* Premium Background Effects */}
+      <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-slate-100 to-slate-50 pointer-events-none" />
+      <div className="absolute -top-[300px] -right-[300px] w-[800px] h-[800px] rounded-full bg-upleex-blue/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-[200px] -left-[200px] w-[600px] h-[600px] rounded-full bg-upleex-purple/5 blur-[100px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 md:pt-20 md:pb-16 relative z-10">
+        
+        {/* Header Sections */}
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+          
+          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 leading-tight">
+            Contact Us
+          </h1>
+        </div>
+
+        {/* Info Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-20">
+          {/* Card 1 */}
+          <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-100 shadow-xl shadow-slate-200/30 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 group">
+            <div className="w-12 h-12 rounded-2xl bg-upleex-purple/10 flex items-center justify-center mb-6 group-hover:bg-upleex-purple transition-colors duration-500">
+              <MessageSquare className="w-5 h-5 text-upleex-purple group-hover:text-white transition-colors duration-500" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Chat to support</h3>
+            <p className="text-slate-500 mb-6 leading-relaxed text-sm md:text-base">We're here to help with any questions or support requests.</p>
+            <a href="mailto:support@upleex.com" className="text-upleex-purple font-semibold hover:text-upleex-blue transition-colors flex items-center gap-2 group-hover:gap-3 duration-300 text-sm md:text-base">
+              support@upleex.com <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-100 shadow-xl shadow-slate-200/30 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 group">
+            <div className="w-12 h-12 rounded-2xl bg-upleex-blue/10 flex items-center justify-center mb-6 group-hover:bg-upleex-blue transition-colors duration-500">
+              <Building className="w-5 h-5 text-upleex-blue group-hover:text-white transition-colors duration-500" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Visit us</h3>
+            <p className="text-slate-500 mb-6 leading-relaxed text-sm md:text-base">Visit our headquarters for an in-person meeting.</p>
+            <p className="text-upleex-blue font-semibold flex items-start gap-2 text-sm md:text-base">
+              <MapPin className="w-5 h-5 shrink-0 mt-0.5" />
+              <span>Surat, Gujarat, India</span>
             </p>
           </div>
 
-          <form className="space-y-4 md:space-y-5 flex-1" onSubmit={handleSubmit}>
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Full Name</label>
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple bg-gray-50 transition-shadow"
-                placeholder="Enter your full name"
-              />
+          {/* Card 3 */}
+          <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-100 shadow-xl shadow-slate-200/30 hover:-translate-y-2 hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 group">
+            <div className="w-12 h-12 rounded-2xl bg-slate-900/5 flex items-center justify-center mb-6 group-hover:bg-slate-900 transition-colors duration-500">
+              <Phone className="w-5 h-5 text-slate-900 group-hover:text-white transition-colors duration-500" />
             </div>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Call us</h3>
+            <p className="text-slate-500 mb-6 leading-relaxed text-sm md:text-base">Mon-Fri from 9am to 6pm IST.</p>
+            <a href="tel:+910000000000" className="text-slate-900 font-semibold hover:text-upleex-purple transition-colors flex items-center gap-2 group-hover:gap-3 duration-300 text-sm md:text-base">
+              +91 00000 00000 <ArrowRight className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
 
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Email</label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple bg-gray-50 transition-shadow"
-                placeholder="you@example.com"
-              />
-            </div>
+        {/* Contact Form Section */}
+        <div className="bg-white rounded-[2.5rem] md:rounded-[3rem] shadow-2xl shadow-slate-200/70 border border-slate-100 overflow-hidden flex flex-col lg:flex-row">
+          
+          <div className="w-full lg:w-[45%] p-8 md:p-10 lg:p-12 bg-slate-900 text-white relative overflow-hidden flex flex-col justify-between">
+             {/* Abstract shapes for dark side */}
+             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-upleex-purple/20 rounded-full blur-[100px] -mr-20 -mt-20 pointer-events-none" />
+             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-upleex-blue/20 rounded-full blur-[100px] -ml-20 -mb-20 pointer-events-none" />
+             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>
+             
+             <div className="relative z-10 mb-12">
+               <h2 className="text-2xl lg:text-3xl font-extrabold mb-4 tracking-tight">Send us a message</h2>
+               <p className="text-slate-300 text-base leading-relaxed max-w-md">
+                 Fill out the form and our team will get back to you within 24 hours. We're excited to learn how we can help you with your rental needs.
+               </p>
+             </div>
+             
+             <div className="relative z-10 space-y-6">
+               {/* Testimonial or trust badge */}
+               <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 backdrop-blur-md hover:bg-white/10 transition-colors duration-300">
+                 <div className="flex gap-1 mb-4">
+                   {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />)}
+                 </div>
+                 <p className="text-slate-200 italic mb-6 leading-relaxed text-sm md:text-base">"The Upleex support team is incredibly responsive and helpful. They resolved my query and delivered my product the very next day. Seamless experience!"</p>
+                 <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-upleex-purple to-upleex-blue flex items-center justify-center font-bold text-white uppercase text-xs shadow-inner tracking-widest">
+                     JD
+                   </div>
+                   <div>
+                     <p className="font-semibold text-white text-sm">John Doe</p>
+                     <p className="text-slate-400 text-xs">Verified Renter</p>
+                   </div>
+                 </div>
+               </div>
+             </div>
+          </div>
 
-            {/* Combined Mobile Number Field - Updated as per screenshot */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Mobile Number</label>
-              <div className="flex items-center">
-                <div className="flex items-center bg-gray-50 border border-gray-200 rounded-l-lg px-3 py-2.5 text-sm text-gray-600">
-                  <span>{form.dialCode}</span>
+          <div className="w-full lg:w-[55%] p-8 md:p-10 lg:p-12 bg-white">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">First Name</label>
+                  <input
+                    type="text" name="firstName" value={form.firstName} onChange={handleChange}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
+                    placeholder="First name"
+                  />
                 </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Last Name</label>
+                  <input
+                    type="text" name="lastName" value={form.lastName} onChange={handleChange}
+                    className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
+                    placeholder="Last name"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Email Address</label>
                 <input
-                  type="tel"
-                  name="mobile"
-                  value={form.mobile}
-                  onChange={handleChange}
-                  className="flex-1 rounded-r-lg border border-l-0 border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple bg-gray-50"
-                  placeholder="9876543210"
+                  type="email" name="email" value={form.email} onChange={handleChange}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
+                  placeholder="you@company.com"
                 />
-                <input type="hidden" name="dialCode" value={form.dialCode} />
               </div>
-            </div>
 
-            <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Message</label>
-              <textarea
-                rows={4}
-                name="message"
-                value={form.message}
-                onChange={handleChange}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-upleex-purple/30 focus:border-upleex-purple bg-gray-50"
-                placeholder="Write your message here..."
-              />
-            </div>
-
-            <Button
-              type="submit"
-              fullWidth
-              className="mt-2 bg-gradient-primary hover:opacity-95 text-white font-semibold tracking-wide rounded-full py-2.5 transition-transform duration-200 hover:-translate-y-0.5"
-            >
-              Submit
-            </Button>
-          </form>
-        </div>
-
-        {/* Right Contact Info Section */}
-        <div className="bg-gradient-to-br from-upleex-purple to-upleex-blue text-white rounded-3xl shadow-2xl p-6 md:p-8 lg:p-10 flex flex-col justify-between transform transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.45)] h-full">
-          <div>
-            <h2 className="text-lg md:text-xl font-semibold tracking-wide">Get In Touch With Us</h2>
-            <p className="mt-3 text-xs md:text-sm text-white/85 leading-relaxed">
-              Do you have any questions? Please do not hesitate to contact us directly. Our team will get back
-              to you within a short time.
-            </p>
-
-            <div className="mt-6 space-y-5 text-sm md:text-base">
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
-                  <Phone className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-white/80 text-[11px] uppercase tracking-[0.12em]">Phone</p>
-                  <p className="font-semibold text-sm md:text-base">+91-0000000000</p>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Phone Number</label>
+                <div className="flex items-center group">
+                  <div className="flex items-center bg-slate-100 border border-slate-200 border-r-0 rounded-l-2xl px-4 py-3.5 text-sm md:text-base text-slate-600 font-medium group-focus-within:border-upleex-purple transition-colors">
+                    <span>{form.dialCode}</span>
+                  </div>
+                  <input
+                    type="tel" name="mobile" value={form.mobile} onChange={handleChange}
+                    className="flex-1 rounded-r-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
+                    placeholder="98765 43210"
+                  />
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
-                  <MapPin className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-white/80 text-[11px] uppercase tracking-[0.12em]">Address</p>
-                  <p className="font-semibold text-sm md:text-base leading-snug">
-                    Upleex Headquarters
-                    <br />
-                    Surat, Gujarat, India
-                  </p>
-                </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">Message</label>
+                <textarea
+                  rows={4} name="message" value={form.message} onChange={handleChange}
+                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base resize-none focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
+                  placeholder="Leave us a message..."
+                />
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
-                  <Mail className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-white/80 text-[11px] uppercase tracking-[0.12em]">Email</p>
-                  <p className="font-semibold text-sm md:text-base">support@upleex.com</p>
-                </div>
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  fullWidth
+                  className="h-12 md:h-14 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 shadow-xl shadow-slate-900/20 active:translate-y-0"
+                >
+                  Send Message
+                </Button>
               </div>
-            </div>
+            </form>
           </div>
-
-          <p className="mt-6 text-[11px] md:text-xs text-white/80 leading-relaxed">
-            Prefer WhatsApp or a different channel? Share it in the message and we will reach out on your
-            preferred mode of contact.
-          </p>
         </div>
+
       </div>
     </div>
   );

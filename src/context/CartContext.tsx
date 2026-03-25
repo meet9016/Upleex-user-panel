@@ -71,8 +71,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
                 toast.error(response.message || 'Failed to add to cart');
             }
-        } catch (error) {
-            toast.error('Something went wrong');
+        } catch (error: any) {
+            // Handle backend stock validation errors
+            if (error?.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error('Something went wrong');
+            }
             console.error(error);
         }
     };
@@ -116,8 +121,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
                 toast.error(response.message || 'Failed to update quantity');
             }
-        } catch (error) {
-            toast.error('Something went wrong');
+        } catch (error: any) {
+            // Handle backend stock validation errors
+            if (error?.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error('Something went wrong');
+            }
             console.error(error);
         }
     };

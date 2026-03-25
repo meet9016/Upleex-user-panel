@@ -113,7 +113,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (response.success) {
         toast.success('Product removed from wishlist');
         // Update state immediately
-        setWishlistItems(prev => prev.filter(item => item.product_id.id !== productId));
+        setWishlistItems(prev => prev.filter(item => item.product_id?.id !== productId));
       }
     } catch (error: any) {
       console.error('Remove from wishlist error:', error);
@@ -149,7 +149,7 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const isInWishlist = (productId: string): boolean => {
     if (!productId) return false;
-    const found = wishlistItems.some(item => item.product_id.id === productId);
+    const found = wishlistItems.some(item => item.product_id?.id === productId);
     console.log('isInWishlist check:', productId, 'found:', found);
     return found;
   };

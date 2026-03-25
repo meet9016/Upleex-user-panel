@@ -4,6 +4,7 @@ import './globals.css';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ScrollToTop } from '@/components/layout/ScrollToTop';
+import { QuickActions } from '@/components/ui/QuickActions';
 import { Toaster } from 'react-hot-toast';
 import { Suspense } from 'react';
 import ProgressBar from '@/components/ui/ProgressBar';
@@ -34,8 +35,11 @@ export default function RootLayout({
             <Suspense fallback={null}>
               <ProgressBar />
             </Suspense>
-            <Navbar />
+            <Suspense fallback={<div className="h-20 bg-white border-b border-gray-100" />}>
+              <Navbar />
+            </Suspense>
             <ScrollToTop />
+            <QuickActions />
             <main className="flex-1">{children}</main>
             <Toaster position="top-right" />
             <Footer />
