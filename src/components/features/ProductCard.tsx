@@ -143,8 +143,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
                 duration: 0.35,
                 ease: 'easeOut',
               }}
-              className={`absolute top-3 z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md ${product.is_new ? 'right-16' : 'right-3'
-                }`}
+              className="absolute top-3 right-3 z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md"
             >
               {isWishlisted && (
                 <motion.span
