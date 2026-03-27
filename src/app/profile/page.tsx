@@ -1,145 +1,186 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ProfileSidebar } from '@/components/features/ProfileSidebar';
+import { NavigationButtons } from '@/components/features/NavigationButtons';
 import { Button } from '@/components/ui/Button';
+import { api } from '@/utils/axiosInstance';
+import endPointApi from '@/utils/endPointApi';
+import { toast } from 'react-toastify';
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
-    mobile: '',
-    gender: 'male',
+    phone: '',
   });
+  const [loading, setLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
-    // Load data from localStorage
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
+    const loadUserData = async () => {
+      setLoading(true);
       try {
-        const userData = JSON.parse(userStr);
-        // Assuming userData structure, adjusting as needed
-        const names = (userData.full_name || userData.name || '').split(' ');
-        setFormData({
-          firstName: names[0] || '',
-          lastName: names.slice(1).join(' ') || '',
-          email: userData.email || '',
-          mobile: userData.mobile || userData.phone || '',
-          gender: userData.gender || 'male',
-        });
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          const userData = JSON.parse(userStr);
+
+          let firstName = userData.first_name || '';
+          let lastName = userData.last_name || '';
+
+          if (!firstName && !lastName) {
+            const fullName = userData.full_name || userData.name || '';
+            const names = fullName.trim().split(' ');
+            firstName = names[0] || '';
+            lastName = names.slice(1).join(' ') || '';
+          }
+
+          setFormData({
+            firstName,
+            lastName,
+            phone: userData.phone || '',
+          });
+        } else {
+          toast.error('Please login first');
+          router.push('/auth/login');
+        }
       } catch (e) {
         console.error('Error parsing user data', e);
+        toast.error('Error loading profile');
+      } finally {
+        setLoading(false);
       }
-    }
-  }, []);
+    };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    loadUserData();
+  }, [router]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Logic to update profile would go here
-    alert('Profile update functionality coming soon!');
+    setIsUpdating(true);
+
+    try {
+      const response = await api.put(endPointApi.updateUserProfile, {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+      });
+
+      if (response.data.success) {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          const userData = JSON.parse(userStr);
+          userData.first_name = formData.firstName;
+          userData.last_name = formData.lastName;
+          userData.full_name = `${formData.firstName} ${formData.lastName}`.trim();
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+
+        toast.success('Profile updated successfully!');
+      }
+    } catch (error: any) {
+      console.error('Update error:', error);
+      toast.error(error.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setIsUpdating(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar */}
-          <div className="w-full lg:w-1/4">
-            <ProfileSidebar />
-          </div>
 
           {/* Main Content */}
-          <div className="w-full lg:w-3/4">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h1 className="text-2xl font-bold text-gray-900 mb-6">Personal Information</h1>
-              
-              <form onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div className="flex-1">
+            {/* Navigation Buttons Component */}
+            <NavigationButtons />
+
+            {/* Profile Form */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+              <h1 className="text-3xl font-bold text-gray-900 mb-8">Personal Information</h1>
+
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* First Name + Last Name */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      First Name
+                    </label>
                     <input
                       type="text"
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                       placeholder="Enter first name"
                     />
                   </div>
+
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Last Name
+                    </label>
                     <input
                       type="text"
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                       placeholder="Enter last name"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      disabled
-                      className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Mobile Number</label>
-                    <input
-                      type="tel"
-                      name="mobile"
-                      value={formData.mobile}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                      placeholder="Enter mobile number"
-                    />
-                  </div>
+                {/* Phone Number - Disabled */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Mobile Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    disabled
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-100 text-gray-500 cursor-not-allowed focus:ring-0 focus:border-gray-300 outline-none"
+                    placeholder="Mobile number cannot be changed"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Phone number cannot be updated</p>
                 </div>
 
-                <div className="mb-8">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                  <div className="flex gap-6">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="gender"
-                        value="male"
-                        checked={formData.gender === 'male'}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="text-gray-700">Male</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="gender"
-                        value="female"
-                        checked={formData.gender === 'female'}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="text-gray-700">Female</span>
-                    </label>
-                  </div>
-                </div>
-
-                <div className="flex justify-end">
-                  <Button type="submit" className="px-8">
-                    Save Changes
+                {/* Buttons */}
+                <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => window.location.reload()}
+                    className="px-10 py-3"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isUpdating}
+                    className="px-10 py-3"
+                  >
+                    {isUpdating ? 'Saving...' : 'Save Changes'}
                   </Button>
                 </div>
               </form>
