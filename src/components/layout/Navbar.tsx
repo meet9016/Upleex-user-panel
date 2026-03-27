@@ -684,7 +684,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Section Actions */}
-          <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-700">
+          <div className="hidden lg:flex items-center gap-4 text-sm font-medium text-slate-700">
 
             <button
               onClick={() => setIsDownloadPopupOpen(true)}
@@ -709,7 +709,7 @@ export const Navbar: React.FC = () => {
               Partner With Us
             </Link>
 
-            <div className="h-4 w-px bg-gray-300"></div>
+            {/* <div className="h-4 w-px bg-gray-300"></div>
 
             <Link
               href="/services-list"
@@ -727,7 +727,7 @@ export const Navbar: React.FC = () => {
                   }`}
               />
               <span>Services</span>
-            </Link>
+            </Link> */}
 
             <div className="h-4 w-px bg-gray-300"></div>
             {user ? (
