@@ -171,15 +171,25 @@ export const Navbar: React.FC = () => {
       if (cityDropdownRef.current && !cityDropdownRef.current.contains(event.target as Node)) {
         setIsCityDropdownOpen(false);
       }
-      // Check if click is outside both search input and suggestion dropdown
       if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node) &&
         suggestionRef.current && !suggestionRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
     };
+    
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsProfileMenuOpen(false);
+        setIsCityDropdownOpen(false);
+        setShowSuggestions(false);
+      }
+    };
+    
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscapeKey);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
     };
   }, []);
 
@@ -736,6 +746,7 @@ export const Navbar: React.FC = () => {
                 </button>
 
                 {/* Profile Dropdown Menu - Only Email and Logout */}
+                {/* Profile Dropdown Menu - Fixed */}
                 {isProfileMenuOpen && (
                   <motion.div
                     initial={{ opacity: 0, y: 12, scale: 0.95 }}
@@ -767,25 +778,21 @@ export const Navbar: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Menu items with stagger */}
+                    {/* Menu Items */}
                     <motion.div
                       className="py-2"
-                      variants={{
-                        hidden: { opacity: 0 },
-                        show: {
-                          opacity: 1,
-                          transition: { staggerChildren: 0.07 }
-                        }
-                      }}
                       initial="hidden"
                       animate="show"
+                      variants={{
+                        hidden: { opacity: 0 },
+                        show: { opacity: 1, transition: { staggerChildren: 0.07 } }
+                      }}
                     >
                       {[
                         { icon: User, label: "My Profile", href: "/profile" },
-                        { icon: Package, label: "My Orders", href: "/orders" },
-                        { icon: FileText, label: "My Quotes", href: "/quotes" },
                         { icon: Heart, label: "Wishlist", href: "/wishlist" },
-                        { icon: Settings, label: "Settings", href: "/settings" },
+                        // { icon: Package, label: "My Orders", href: "/orders" },
+                        // { icon: FileText, label: "My Quotes", href: "/quotes" },
                       ].map((item, i) => (
                         <motion.button
                           key={i}
@@ -796,7 +803,12 @@ export const Navbar: React.FC = () => {
                           whileHover={{ x: 4, scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           className="group flex items-center gap-3.5 w-full px-6 py-3.5 text-left text-gray-700 hover:bg-gradient-to-r hover:from-purple-50/70 hover:to-indigo-50/40 transition-all duration-200"
-                          onClick={() => item.href && router.push(item.href)}
+                          onClick={() => {
+                            setIsProfileMenuOpen(false);   // ← FIXED: Close dropdown
+                            if (item.href) {
+                              router.push(item.href);
+                            }
+                          }}
                         >
                           <item.icon size={18} className="text-gray-500 group-hover:text-purple-600 transition-colors" />
                           <span className="font-medium flex-1">{item.label}</span>
@@ -810,7 +822,10 @@ export const Navbar: React.FC = () => {
                         variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
                         whileHover={{ x: 4, scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={handleLogout}
+                        onClick={() => {
+                          setIsProfileMenuOpen(false);   // ← Also close on logout
+                          handleLogout();
+                        }}
                         className="group flex items-center gap-3.5 w-full px-6 py-3.5 text-left text-red-600 hover:bg-red-50/80 transition-all duration-200"
                       >
                         <LogOut size={18} className="group-hover:rotate-12 transition-transform duration-300" />

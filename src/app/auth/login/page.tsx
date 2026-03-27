@@ -97,15 +97,27 @@ const LoginPage = () => {
 
       if (result?.status === 200 || result?.success === true) {
         setSecureToken(result.data.token);
-        localStorage.setItem(
-          'user',
-          JSON.stringify(result.data.user.name)
-        );
-        localStorage.setItem(
-          'email',
-          JSON.stringify(result.data.user.email)
-        );
+        
+        // Store complete user object with all fields
+        const userData = {
+          _id: result.data.user._id,
+          name: result.data.user.name,
+          email: result.data.user.email,
+          phone: result.data.user.phone,
+          mobile: result.data.user.mobile,
+          first_name: result.data.user.first_name,
+          last_name: result.data.user.last_name,
+          full_name: result.data.user.full_name,
+          gender: result.data.user.gender,
+          profile_photo: result.data.user.profile_photo,
+        };
+        
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('email', JSON.stringify(result.data.user.email));
+        localStorage.setItem('token', result.data.token);
 
+        console.log('User data stored in localStorage:', userData);
+        
         toast.success(result.message || 'Login successful');
         window.dispatchEvent(new Event('storage'));
         router.push('/');

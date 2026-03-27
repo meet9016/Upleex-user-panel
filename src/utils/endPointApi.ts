@@ -2,6 +2,7 @@ export interface EndPointApi {
     //Auth
     webLoginRegister: string;
     logout: string;
+    updateUserProfile: string;
 
     //Vendor
     vendorLogin?: string;
@@ -47,6 +48,7 @@ const endPointApi: EndPointApi = {
     //Auth
     webLoginRegister: 'web-login-register',
     logout: 'auth/logout',
+    updateUserProfile: 'auth/update-profile',
 
     //Vendor
     vendorLogin: 'vendor/auth/vendor-login',
