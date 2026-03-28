@@ -256,31 +256,43 @@ const LoginPage = () => {
                 className="space-y-4"
               >
                 {/* Mobile Number */}
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 text-gray-400" />
-                  <input
-                    value={number}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      if (val.length <= 10) setNumber(val);
-                      if (val.length === 10) {
-                        setErrors(prev => ({ ...prev, number: '' }));
-                      }
-                    }}
-                    onKeyDown={handleNumberKeyPress}
-                    placeholder="Mobile Number"
-                    className={`w-full pl-10 py-3 border rounded-lg bg-gray-50
-                      focus:outline-none focus:ring-0 focus:ring-indigo-500/20 focus:border-indigo-500
-                      ${errors.number
-                        ? 'border-red-500 focus:border-red-500'
-                        : 'border-gray-300'
-                      }`}
-                    autoFocus
-                  />
-                  {errors.number && (
-                    <p className="text-red-600 text-sm mt-1">{errors.number}</p>
-                  )}
-                </div>
+              <div className="relative">
+                {/* Phone Icon */}
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+
+                {/* +91 Prefix */}
+                <span className="absolute left-9 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">
+                  +91
+                </span>
+
+                {/* Divider */}
+                <div className="absolute left-16 top-1/2 -translate-y-1/2 h-5 w-px bg-gray-300" />
+
+                {/* Input */}
+                <input
+                  value={number}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    if (val.length <= 10) setNumber(val);
+                    if (val.length === 10) {
+                      setErrors(prev => ({ ...prev, number: '' }));
+                    }
+                  }}
+                  onKeyDown={handleNumberKeyPress}
+                  placeholder="Mobile Number"
+                  className={`w-full pl-20 py-3 border rounded-lg bg-gray-50
+                    focus:outline-none focus:ring-0 focus:ring-indigo-500/20 focus:border-indigo-500
+                    ${errors.number
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300'
+                    }`}
+                  autoFocus
+                />
+
+                {errors.number && (
+                  <p className="text-red-600 text-sm mt-1">{errors.number}</p>
+                )}
+              </div>
                 <Button
                   fullWidth
                   onClick={handleSendNumber}
