@@ -148,91 +148,149 @@ const PartnerPage = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary mb-4">Experiences Partners Love to Talk About</h2>
+   <section className="py-16 sm:py-20 lg:py-24 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {/* Heading */}
+    <div className="text-center mb-12 sm:mb-14 lg:mb-16">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-primary mb-4 leading-tight">
+        Experiences Partners Love to Talk About
+      </h2>
+    </div>
+
+    {/* Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      
+      {[
+        {
+          name: 'Rajesh Kumar',
+          role: 'Furniture Rental, Mumbai',
+          text: 'Our business has grown beyond our imagination, getting up to multiple orders consistently during peak seasons. We are now constantly bringing new products thanks to Upleex\'s insights.'
+        },
+        {
+          name: 'Priya Sharma',
+          role: 'Electronics Rental, Delhi',
+          text: 'I started renting on Upleex with 2-3 orders on the very first day. In no time I was getting over multiple orders a day, like a dream come true.'
+        },
+        {
+          name: 'Amit Patel',
+          role: 'Event Equipment, Bangalore',
+          text: 'Upleex made it extremely simple to transition to online business. Suddenly we were all over India to our surprise, seeing up to 5X growth on peak days.'
+        }
+      ].map((testimonial, index) => (
+        
+        <div
+          key={index}
+          className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 relative group"
+        >
+          
+          {/* Top */}
+          <div className="flex justify-between items-start mb-5 sm:mb-6">
+            <div>
+              <h4 className="font-bold text-base sm:text-lg text-slate-900">
+                {testimonial.name}
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-500">
+                {testimonial.role}
+              </p>
+            </div>
+
+            <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 
+              group-hover:bg-gradient-to-r group-hover:from-[#6366f1] group-hover:to-[#0ea5e9] 
+              group-hover:text-white transition-all">
+              <Play size={16} className="sm:w-[18px] sm:h-[18px]" fill="currentColor" />
+            </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                name: 'Rajesh Kumar',
-                role: 'Furniture Rental, Mumbai',
-                text: 'Our business has grown beyond our imagination, getting up to multiple orders consistently during peak seasons. We are now constantly bringing new products thanks to Upleex\'s insights.'
-              },
-              {
-                name: 'Priya Sharma',
-                role: 'Electronics Rental, Delhi',
-                text: 'I started renting on Upleex with 2-3 orders on the very first day. In no time I was getting over multiple orders a day, like a dream come true.'
-              },
-              {
-                name: 'Amit Patel',
-                role: 'Event Equipment, Bangalore',
-                text: 'Upleex made it extremely simple to transition to online business. Suddenly we were all over India to our surprise, seeing up to 5X growth on peak days.'
-              }
-            ].map((testimonial, index) => (
-              <div key={index} className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all relative group">
-                <div className="flex justify-between items-start mb-6">
-                  <div>
-                    <h4 className="font-bold text-lg text-slate-900">{testimonial.name}</h4>
-                    <p className="text-sm text-slate-500">{testimonial.role}</p>
-                  </div>
-                  <button className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 group-hover:bg-gradient-to-r group-hover:from-[#6366f1] group-hover:to-[#0ea5e9] group-hover:text-white transition-all">
-                    <Play size={18} fill="currentColor" />
-                  </button>
-                </div>
-                <p className="text-slate-600 leading-relaxed">
-                  "{testimonial.text}"
-                </p>
-              </div>
-            ))}
-          </div>
+          {/* Text */}
+          <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+            "{testimonial.text}"
+          </p>
+
         </div>
-      </section>
+      ))}
+    </div>
+
+  </div>
+</section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary">How it works</h2>
+  <section id="how-it-works" className="py-16 sm:py-20 lg:py-24 bg-gray-50">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {/* Heading */}
+    <div className="text-center mb-12 sm:mb-14 lg:mb-16">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-primary">
+        How it works
+      </h2>
+    </div>
+
+    {/* Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 relative">
+      
+      {/* Connector Line (ONLY Desktop) */}
+      <div className="hidden lg:block absolute top-10 left-0 right-0 h-0.5 bg-gray-200 -z-10 translate-y-1/2 mx-16"></div>
+
+      {[
+        { step: 1, title: 'Create Account', desc: 'Sign up and complete your business profile.', items: ['Business Details', 'Bank Account'] },
+        { step: 2, title: 'List Products', desc: 'List the products you want to rent in your partner panel.', active: true },
+        { step: 3, title: 'Get Orders', desc: 'Start getting orders from thousands of customers.' },
+        { step: 4, title: 'Manage Orders', desc: 'Accept orders and manage deliveries through our dashboard.' },
+        { step: 5, title: 'Receive Payments', desc: 'Payments are deposited directly to your bank account.' }
+      ].map((item, index) => (
+        
+        <div
+          key={index}
+          className={`bg-white p-5 sm:p-6 rounded-xl border text-center h-full flex flex-col items-center transition-all duration-300
+            ${item.active
+              ? 'border-blue-200 shadow-md ring-1 ring-blue-100 scale-[1.02]'
+              : 'border-gray-100 shadow-sm hover:shadow-md'
+            }`}
+        >
+          
+          {/* Step Number */}
+          <div
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg font-bold mb-5 sm:mb-6
+              ${item.active
+                ? 'bg-gradient-primary text-white shadow-lg shadow-blue-500/30'
+                : 'bg-gradient-primary text-white'
+              }`}
+          >
+            {item.step}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 relative">
-            {/* Connector Line (Desktop) */}
-            <div className="hidden md:block absolute top-10 left-0 right-0 h-0.5 bg-gray-200 -z-10 transform translate-y-1/2 mx-16"></div>
+          {/* Title */}
+          <h3 className="font-bold text-slate-900 mb-2 sm:mb-3 text-sm sm:text-base">
+            {item.title}
+          </h3>
 
-            {[
-              { step: 1, title: 'Create Account', desc: 'Sign up and complete your business profile.', items: ['Business Details', 'Bank Account'] },
-              { step: 2, title: 'List Products', desc: 'List the products you want to rent in your partner panel.', active: true },
-              { step: 3, title: 'Get Orders', desc: 'Start getting orders from thousands of customers.' },
-              { step: 4, title: 'Manage Orders', desc: 'Accept orders and manage deliveries through our dashboard.' },
-              { step: 5, title: 'Receive Payments', desc: 'Payments are deposited directly to your bank account.' }
-            ].map((item, index) => (
-              <div key={index} className={`bg-white p-6 rounded-xl border ${item.active ? 'border-blue-200 shadow-md ring-1 ring-blue-100' : 'border-gray-100 shadow-sm'} text-center h-full flex flex-col items-center`}>
-                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold mb-6 ${item.active ? 'bg-gradient-primary text-white shadow-lg shadow-blue-500/30' : 'bg-gradient-primary text-white'}`}>
-                  {item.step}
-                </div>
-                <h3 className="font-bold text-slate-900 mb-3">{item.title}</h3>
-                <p className="text-sm text-slate-500 mb-4 flex-grow">{item.desc}</p>
-                {item.items && (
-                  <div className="text-left w-full pt-4 border-t border-gray-100 mt-auto">
-                    <p className="text-xs font-semibold text-slate-700 mb-2">All you need is:</p>
-                    <ul className="space-y-1">
-                      {item.items.map((sub, i) => (
-                        <li key={i} className="text-xs text-slate-500 flex items-center gap-1.5">
-                          <span className="w-1 h-1 bg-slate-400 rounded-full"></span>
-                          {sub}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          {/* Description */}
+          <p className="text-xs sm:text-sm text-slate-500 mb-4 flex-grow">
+            {item.desc}
+          </p>
+
+          {/* Extra Items */}
+          {item.items && (
+            <div className="text-left w-full pt-4 border-t border-gray-100 mt-auto">
+              <p className="text-xs font-semibold text-slate-700 mb-2">
+                All you need is:
+              </p>
+              <ul className="space-y-1">
+                {item.items.map((sub, i) => (
+                  <li key={i} className="text-xs text-slate-500 flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-slate-400 rounded-full"></span>
+                    {sub}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* Categories Section */}
       <section id="categories" className="py-24 bg-white">

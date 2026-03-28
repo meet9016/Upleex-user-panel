@@ -91,7 +91,7 @@ export default function PartnerSignupPage() {
       if (!formData.fullName.trim()) e.fullName = "Full name is required";
       if (!formData.businessName.trim()) e.businessName = "Business name is required";
       const emailPattern = /^[^\s@]+@[^\s@]+\.(com|in|org)$/;
-      if (!emailPattern.test(formData.email.trim())) e.email = "Enter a valid email (example@domain.com/in/org)";
+      if (!emailPattern.test(formData.email.trim())) e.email = "Enter a valid email";
       if (formData.mobileNumber.length < 10) e.mobileNumber = "Enter a valid 10-digit mobile number";
       if (!formData.city.trim()) e.city = "City is required";
       if (Object.keys(e).length > 0) {
