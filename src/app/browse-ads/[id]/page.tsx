@@ -43,6 +43,10 @@ export default function ProductDetailsPage() {
   const [quantity, setQuantity] = useState(1);
   const [days, setDays] = useState(1);
   const [deliveryDate, setDeliveryDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [startTime, setStartTime] = useState("09:00");
+  const [endTime, setEndTime] = useState("09:00");
   const [selectedDuration, setSelectedDuration] = useState(); // Months
   const [selectedMonthId, setSelectedMonthId] = useState<string | null>(null);
 
@@ -151,6 +155,15 @@ export default function ProductDetailsPage() {
   const handleGetQuoteClick = () => {
     const token = localStorage.getItem("token");
 
+    // Check stock availability for rent products
+    if (!isSell && productDetails) {
+      const availableQty = productDetails.available_quantity || 0;
+      if (availableQty <= 0) {
+        toast.error(`Product "${productDetails.product_name}" is out of stock`);
+        return;
+      }
+    }
+
     if (!token) {
       setIsAuthModalOpen(true);
     } else {
@@ -173,6 +186,15 @@ export default function ProductDetailsPage() {
 
       if (isOutOfStock || availableStock < quantity) {
         toast.error(`Product "${productDetails.product_name}" is out of stock or insufficient quantity available. Available: ${availableStock}, Requested: ${quantity}`);
+        return;
+      }
+    }
+
+    // Check quantity availability for rent products
+    if (!isSell && productDetails) {
+      const availableQty = productDetails.available_quantity || 0;
+      if (availableQty < quantity) {
+        toast.error(`Only ${availableQty} units available for rent. Requested: ${quantity}`);
         return;
       }
     }
@@ -205,16 +227,24 @@ export default function ProductDetailsPage() {
 
       const res = await productService.getQuote({
         product_id: String(id),
-        delivery_date: String(deliveryDate),
         number_of_days: days,
         months_id: monthsId,
         qty: quantity,
-        note
+        note,
+        start_date: startDate,
+        end_date: endDate,
+        start_time: startTime,
+        end_time: endTime
       });
 
       if (res?.status === 200 || res?.success === true) {
         setIsQuoteModalOpen(false);
         setIsSuccessModalOpen(true);
+        // Reset form fields after successful submission
+        setQuantity(1);
+        setDays(1);
+        setStartDate(minDate);
+        setStartTime("09:00");
       }
     } catch (err) {
       console.error("Error submitting quote:", err);
@@ -237,14 +267,16 @@ export default function ProductDetailsPage() {
 
   useEffect(() => {
     const today = new Date();
-    today.setDate(today.getDate() + 2);
+    
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
-    const formattedDate = `${yyyy}-${mm}-${dd}`;
-    setDeliveryDate(formattedDate);
-    setMinDate(formattedDate);
+    const todayFormatted = `${yyyy}-${mm}-${dd}`;
+    
+    setMinDate(todayFormatted);
+    setStartDate(todayFormatted);
   }, []);
+
 
   const listingType = productDetails?.product_listing_type_name?.toLowerCase();
   const baseType = productDetails?.product_type_name?.toLowerCase();
@@ -252,6 +284,111 @@ export default function ProductDetailsPage() {
   const isDaily = listingType === "daily";
   const isHourly = listingType === "hourly";
 
+  // Auto-calculate end date based on product type (for daily and monthly only)
+  useEffect(() => {
+    if (!startDate || isSell || isHourly) return;
+
+    let calculatedEndDate = new Date(startDate);
+
+    if (activeTab === 'monthly' && selectedMonthId && productDetails?.month_arr?.length) {
+      // For monthly: add months to start date
+      const selectedMonth = productDetails.month_arr.find(
+        (m: any) => m.product_months_id === selectedMonthId
+      );
+      if (selectedMonth) {
+        const monthCount = parseInt(selectedMonth.month_name) || 1;
+        calculatedEndDate.setMonth(calculatedEndDate.getMonth() + monthCount);
+        // Set to same day of the month
+        calculatedEndDate.setDate(new Date(startDate).getDate());
+      }
+    } else if (isDaily) {
+      // For daily: add days to start date
+      calculatedEndDate.setDate(calculatedEndDate.getDate() + days);
+    }
+
+    const yyyy = calculatedEndDate.getFullYear();
+    const mm = String(calculatedEndDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(calculatedEndDate.getDate()).padStart(2, "0");
+    setEndDate(`${yyyy}-${mm}-${dd}`);
+  }, [startDate, days, activeTab, selectedMonthId, isSell, productDetails, isDaily, isHourly]);
+
+  // Calculate min end date for daily/monthly
+  const getMinEndDate = () => {
+    if (!startDate) return startDate;
+    let minEnd = new Date(startDate);
+    if (activeTab === 'monthly' && selectedMonthId && productDetails?.month_arr?.length) {
+      const selectedMonth = productDetails.month_arr.find(
+        (m: any) => m.product_months_id === selectedMonthId
+      );
+      if (selectedMonth) {
+        const monthCount = parseInt(selectedMonth.month_name) || 1;
+        minEnd.setMonth(minEnd.getMonth() + monthCount);
+        minEnd.setDate(new Date(startDate).getDate());
+      }
+    } else if (isDaily) {
+      minEnd.setDate(minEnd.getDate() + days);
+    }
+    const yyyy = minEnd.getFullYear();
+    const mm = String(minEnd.getMonth() + 1).padStart(2, "0");
+    const dd = String(minEnd.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  // Auto-calculate end date and time for hourly products
+  useEffect(() => {
+    if (!isHourly || !startTime || !startDate) return;
+    
+    const [hours, minutes] = startTime.split(':').map(Number);
+    let endHours = hours + days;
+    let endMinutes = minutes;
+    let daysToAdd = 0;
+    
+    // Handle day overflow
+    if (endHours >= 24) {
+      daysToAdd = Math.floor(endHours / 24);
+      endHours = endHours % 24;
+    }
+    
+    // Calculate end date with day overflow
+    let calculatedEndDate = new Date(startDate);
+    calculatedEndDate.setDate(calculatedEndDate.getDate() + daysToAdd);
+    
+    const yyyy = calculatedEndDate.getFullYear();
+    const mm = String(calculatedEndDate.getMonth() + 1).padStart(2, "0");
+    const dd = String(calculatedEndDate.getDate()).padStart(2, "0");
+    setEndDate(`${yyyy}-${mm}-${dd}`);
+    
+    const formattedEndTime = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+    setEndTime(formattedEndTime);
+  }, [startTime, days, isHourly, startDate]);
+
+  // Validate end date based on product type
+  const validateEndDate = (newEndDate: string) => {
+    if (!startDate || !newEndDate) return true;
+    
+    const start = new Date(startDate);
+    const end = new Date(newEndDate);
+    
+    if (activeTab === 'monthly' && productDetails?.month_arr?.length) {
+      // For monthly: end date must be in correct month
+      const selectedMonth = productDetails.month_arr.find(
+        (m: any) => m.product_months_id === selectedMonthId
+      );
+      if (selectedMonth) {
+        const monthCount = parseInt(selectedMonth.month_name) || 1;
+        const expectedEnd = new Date(start);
+        expectedEnd.setMonth(expectedEnd.getMonth() + monthCount);
+        expectedEnd.setDate(new Date(startDate).getDate());
+        return end.getTime() === expectedEnd.getTime();
+      }
+    } else if (isDaily || isHourly) {
+      // For daily/hourly: end date must be >= start date + days
+      const minEnd = new Date(start);
+      minEnd.setDate(minEnd.getDate() + days);
+      return end >= minEnd;
+    }
+    return true;
+  };
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
@@ -742,7 +879,7 @@ export default function ProductDetailsPage() {
 
                 <div className={clsx(
                   "grid gap-4 pt-4",
-                  isSell ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2"
+                  isSell ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-3"
                 )}>
                   <div className={clsx(
                     "flex items-center justify-between bg-white border rounded-xl px-4 shadow-sm transition-all hover:border-blue-200",
@@ -751,11 +888,11 @@ export default function ProductDetailsPage() {
                     <div className="flex flex-col">
                       <span className="font-bold text-gray-900">Quantity</span>
                       {isSell && <span className="text-[10px] text-gray-500">Select units</span>}
-                      {/* {isSell && productDetails?.available_quantity && (
+                      {!isSell && productDetails?.available_quantity && (
                         <span className="text-[9px] text-orange-600 font-medium">
                           {productDetails.available_quantity} available
                         </span>
-                      )} */}
+                      )}
                     </div>
                     <div className="flex items-center bg-gray-50 rounded-lg p-1">
                       <button
@@ -800,10 +937,11 @@ export default function ProductDetailsPage() {
                       <button
                         onClick={() => {
                           let newQuantity = quantity + 1;
-                          // Absolute max of 4 digits
                           newQuantity = Math.min(9999, newQuantity);
-                          // For sell products, limit to available stock
                           if (isSell && productDetails?.available_quantity) {
+                            newQuantity = Math.min(newQuantity, productDetails.available_quantity);
+                          }
+                          if (!isSell && productDetails?.available_quantity) {
                             newQuantity = Math.min(newQuantity, productDetails.available_quantity);
                           }
                           setQuantity(newQuantity);
@@ -811,7 +949,8 @@ export default function ProductDetailsPage() {
                         className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={
                           quantity >= 9999 ||
-                          (isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false)
+                          (isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false) ||
+                          (!isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false)
                         }
                       >
                         <Plus size={16} className="text-gray-600" />
@@ -820,12 +959,65 @@ export default function ProductDetailsPage() {
                   </div>
 
                   {!isSell && (
-                    <DatePicker
-                      label="Delivery Date"
-                      value={deliveryDate}
-                      onChange={setDeliveryDate}
-                      min={minDate}
-                    />
+                    <>
+                      <DatePicker
+                        label="Start Date"
+                        value={startDate}
+                        onChange={setStartDate}
+                        min={minDate}
+                        disabled={false}
+                      />
+                      {isHourly && activeTab !== 'monthly' && (
+                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3.5">
+                          <label className="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-2.5">Start Time</label>
+                          <input
+                            type="time"
+                            value={startTime}
+                            onChange={(e) => setStartTime(e.target.value)}
+                            className="w-full px-3 py-2.5 border border-amber-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-semibold text-gray-800"
+                          />
+                        </div>
+                      )}
+                      {!isHourly && (
+                        <DatePicker
+                        label="End Date"
+                        value={endDate}
+                        onChange={setEndDate}
+                        min={getMinEndDate()}
+                        max={getMinEndDate()}
+                      />
+                      )}
+                      {isHourly && activeTab !== 'monthly' && (
+                        <>
+                          <div className="flex items-center justify-between w-full h-12 pl-4 pr-4 border border-green-300 rounded-lg shadow-sm bg-gray-50 cursor-not-allowed">
+                            <div className="flex flex-col justify-center">
+                              <span className="text-[10px] text-green-700 font-bold uppercase tracking-wider leading-tight">
+                                End Date
+                              </span>
+                              <span className="text-sm font-bold text-gray-600 leading-tight">
+                                {endDate ? new Date(endDate).toLocaleDateString("en-GB", {
+                                  weekday: "short",
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                }) : "Auto-calculated"}
+                              </span>
+                            </div>
+                            <span className="text-xs text-green-700 font-medium">Auto</span>
+                          </div>
+                          <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-300 rounded-xl p-3.5">
+                          <label className="block text-xs font-bold text-green-900 uppercase tracking-wider mb-2.5">End Time</label>
+                          <input
+                            type="time"
+                            value={endTime}
+                            disabled
+                            className="w-full px-3 py-2.5 border border-green-300 rounded-lg bg-white focus:outline-none font-semibold text-gray-800 cursor-not-allowed"
+                          />
+                          <p className="text-xs text-green-700 mt-1.5 font-medium">Auto-calculated</p>
+                        </div>
+                        </>
+                      )}
+                    </>
                   )}
                 </div>
 
@@ -840,17 +1032,25 @@ export default function ProductDetailsPage() {
                     <Button
                       size="lg"
                       className={clsx(
-                        " h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
-                        "bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white"
+                        "h-14 text-base font-bold w-full sm:flex-1 rounded-xl px-8 transition-all active:scale-[0.98] group",
+                        productDetails?.available_quantity && productDetails.available_quantity <= 0
+                          ? "bg-gray-400 cursor-not-allowed text-white"
+                          : "bg-gradient-to-r from-gray-900 to-black hover:from-black hover:to-gray-900 text-white"
                       )}
                       onClick={handleGetQuoteClick}
+                      disabled={productDetails?.available_quantity && productDetails.available_quantity <= 0}
                     >
                       <span className="flex items-center justify-center gap-2">
-                        Get Quote
-                        <ArrowRight
-                          size={18}
-                          className="group-hover:translate-x-1 transition-transform"
-                        />
+                        {productDetails?.available_quantity && productDetails.available_quantity <= 0
+                          ? "Out of Stock"
+                          : "Get Quote"
+                        }
+                        {!(productDetails?.available_quantity && productDetails.available_quantity <= 0) && (
+                          <ArrowRight
+                            size={18}
+                            className="group-hover:translate-x-1 transition-transform"
+                          />
+                        )}
                       </span>
                     </Button>
                   )}
@@ -1083,6 +1283,11 @@ export default function ProductDetailsPage() {
         onSubmit={submitQuote}
         loading={isSubmitting}
         productName={productDetails?.product_name}
+        startDate={startDate}
+        endDate={endDate}
+        startTime={startTime}
+        endTime={endTime}
+        isHourly={isHourly}
       />
 
       {/* Success Modal */}

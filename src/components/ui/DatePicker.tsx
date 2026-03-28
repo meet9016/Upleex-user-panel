@@ -8,16 +8,20 @@ interface DatePickerProps {
   value: string;
   onChange: (date: string) => void;
   min?: string;
+  max?: string;
   label?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 export function DatePicker({
   value,
   onChange,
   min,
+  max,
   label = "Select Date",
   className,
+  disabled = false,
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date()); // For navigation
@@ -97,17 +101,28 @@ export function DatePicker({
   };
 
   const isDateDisabled = (day: number) => {
-    if (!min) return false;
     const dateToCheck = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
       day
     );
-    const minDate = new Date(min);
-    // Compare only dates, ignore time
     dateToCheck.setHours(0, 0, 0, 0);
-    minDate.setHours(0, 0, 0, 0);
-    return dateToCheck < minDate;
+
+    // Check min date
+    if (min) {
+      const minDate = new Date(min);
+      minDate.setHours(0, 0, 0, 0);
+      if (dateToCheck < minDate) return true;
+    }
+
+    // Check max date - only allow exact max date
+    if (max) {
+      const maxDate = new Date(max);
+      maxDate.setHours(0, 0, 0, 0);
+      if (dateToCheck.getTime() !== maxDate.getTime()) return true;
+    }
+
+    return false;
   };
 
   const isDateSelected = (day: number) => {
