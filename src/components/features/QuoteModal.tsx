@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Clock } from 'lucide-react';
 
 interface QuoteModalProps {
   isOpen: boolean;
@@ -9,6 +9,11 @@ interface QuoteModalProps {
   onSubmit: (note: string) => void;
   loading: boolean;
   productName?: string;
+  startDate?: string;
+  endDate?: string;
+  startTime?: string;
+  endTime?: string;
+  isHourly?: boolean;
 }
 
 export const QuoteModal: React.FC<QuoteModalProps> = ({
@@ -17,6 +22,11 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
   onSubmit,
   loading,
   productName,
+  startDate,
+  endDate,
+  startTime,
+  endTime,
+  isHourly,
 }) => {
   const [note, setNote] = useState('');
 
@@ -24,7 +34,6 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
     onSubmit(note);
   };
 
-  // Reset note when modal opens
   React.useEffect(() => {
     if (isOpen) {
       setNote('');
@@ -51,6 +60,41 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
           </div>
         )}
 
+        {(startDate || endDate || startTime || endTime) && (
+          <div className="p-4 bg-amber-50/50 rounded-xl border border-amber-200 space-y-3">
+            <div className="flex items-center gap-2">
+              <Clock size={16} className="text-amber-600" />
+              <span className="text-xs text-amber-700 uppercase font-bold tracking-wider">Rental Details</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              {startDate && (
+                <div>
+                  <span className="text-xs text-amber-600 font-semibold">Start Date</span>
+                  <p className="text-gray-900 font-medium">{new Date(startDate).toLocaleDateString('en-IN')}</p>
+                </div>
+              )}
+              {endDate && (
+                <div>
+                  <span className="text-xs text-amber-600 font-semibold">End Date</span>
+                  <p className="text-gray-900 font-medium">{new Date(endDate).toLocaleDateString('en-IN')}</p>
+                </div>
+              )}
+              {isHourly && startTime && (
+                <div>
+                  <span className="text-xs text-amber-600 font-semibold">Start Time</span>
+                  <p className="text-gray-900 font-medium font-mono">{startTime}</p>
+                </div>
+              )}
+              {isHourly && endTime && (
+                <div>
+                  <span className="text-xs text-amber-600 font-semibold">End Time</span>
+                  <p className="text-gray-900 font-medium font-mono">{endTime}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-bold text-gray-800 mb-2">
             Add a Note <span className="text-gray-400 font-normal ml-1">(Optional)</span>
@@ -59,7 +103,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="Any specific requirements? (e.g., Preferred delivery time, installation needed, etc.)"
-            className="w-full min-h-[140px] p-4 border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-sm placeholder:text-gray-400"
+            className="w-full min-h-[100px] p-4 border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all resize-none text-sm placeholder:text-gray-400"
           />
         </div>
 
