@@ -31,6 +31,8 @@ import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { searchService } from '@/services/searchService';
 
+const placeholders =  ["TV", "Medical", "Kurta", "Furniture", "Electronics"]
+
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -64,11 +66,22 @@ export const Navbar: React.FC = () => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSuggestionLoading, setIsSuggestionLoading] = useState(false);
+   const [index, setIndex] = useState(0);
   const suggestionTimeoutRef = useRef<number | null>(null);
   const citySearchTimeoutRef = useRef<number | null>(null);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen);
+
+  useEffect(() => {
+    if (searchTerm) return; // typing ho raha ho to stop
+
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [searchTerm]);
 
   // Function to read and parse user data from localStorage
   const readUserData = () => {
@@ -623,7 +636,7 @@ export const Navbar: React.FC = () => {
               <div className="flex-1 relative flex items-center bg-white">
                 <input
                   type="text"
-                  placeholder="Search for products, brands and more"
+                   placeholder={`Search for ${placeholders[index]}`}
                   className="w-full h-full px-4 py-2 text-sm text-gray-700 outline-none placeholder-gray-400"
                   value={searchTerm}
                   onChange={handleSearchChange}
@@ -684,7 +697,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Right Section Actions */}
-          <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-700">
+          <div className="hidden lg:flex items-center gap-4 text-sm font-medium text-slate-700">
 
             <button
               onClick={() => setIsDownloadPopupOpen(true)}
@@ -709,7 +722,7 @@ export const Navbar: React.FC = () => {
               Partner With Us
             </Link>
 
-            <div className="h-4 w-px bg-gray-300"></div>
+            {/* <div className="h-4 w-px bg-gray-300"></div>
 
             <Link
               href="/services-list"
@@ -727,7 +740,7 @@ export const Navbar: React.FC = () => {
                   }`}
               />
               <span>Services</span>
-            </Link>
+            </Link> */}
 
             <div className="h-4 w-px bg-gray-300"></div>
             {user ? (

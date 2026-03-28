@@ -30,6 +30,10 @@ interface Quote {
   calculated_price?: number;
   price_details?: any;
   month_name?: string;
+  start_date?: string;
+  end_date?: string;
+  start_time?: string;
+  end_time?: string;
 }
 
 const UserQuotesPage = () => {
@@ -81,6 +85,20 @@ const UserQuotesPage = () => {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
+    });
+  };
+
+  const formatDateTime = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }) + ' ' + date.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
     });
   };
 
@@ -167,7 +185,47 @@ const UserQuotesPage = () => {
                         </div>
                       </div>
 
-                      {quote.delivery_date && (
+                      {quote.start_date && (
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          <div>
+                            <p className="text-xs text-gray-500">Start Date</p>
+                            <p className="text-sm font-medium text-gray-900">{formatDate(quote.start_date)}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {quote.start_time && (
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-gray-400" />
+                          <div>
+                            <p className="text-xs text-gray-500">Start Time</p>
+                            <p className="text-sm font-medium text-gray-900">{quote.start_time}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {quote.end_date && (
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          <div>
+                            <p className="text-xs text-gray-500">End Date</p>
+                            <p className="text-sm font-medium text-gray-900">{formatDate(quote.end_date)}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {quote.end_time && (
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-gray-400" />
+                          <div>
+                            <p className="text-xs text-gray-500">End Time</p>
+                            <p className="text-sm font-medium text-gray-900">{quote.end_time}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {quote.delivery_date && !quote.start_date && (
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-gray-400" />
                           <div>
@@ -177,7 +235,7 @@ const UserQuotesPage = () => {
                         </div>
                       )}
 
-                      {quote.number_of_days > 0 && (
+                      {quote.number_of_days > 0 && !quote.start_date && (
                         <div className="flex items-center space-x-2">
                           <Clock className="h-4 w-4 text-gray-400" />
                           <div>
