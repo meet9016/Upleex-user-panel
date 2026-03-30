@@ -88,11 +88,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       >
         {/* IMAGE */}
-        <div className="relative h-52 overflow-hidden">
+        <div className="relative h-44 md:h-52 overflow-hidden bg-gray-50/50">
           {/* Out of Stock Badge - Top Center */}
           {product.is_out_of_stock && product.product_type_name === 'Sell' && (
-            <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-30">
-              <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+            <div className="absolute top-2 md:top-3 left-1/2 transform -translate-x-1/2 z-30">
+              <span className="bg-red-500 text-white text-[10px] md:text-xs font-bold px-2 md:px-3 py-0.5 md:py-1 rounded-full shadow-md">
                 OUT OF STOCK
               </span>
             </div>
@@ -100,13 +100,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
           {/* Rent/Sell Tag */}
           {listingType && (
-            <div className="absolute top-0 left-0 z-20 overflow-hidden w-24 h-24">
+            <div className="absolute top-0 left-0 z-20 overflow-hidden w-20 h-20 md:w-24 md:h-24">
               <span
                 className={cn(
-                  "absolute -left-11 w-28 text-center px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-md rotate-[-45deg]",
+                  "absolute -left-10 md:-left-11 w-24 md:w-28 text-center px-2 py-1 text-[8px] md:text-[10px] font-bold uppercase tracking-wider text-white shadow-md rotate-[-45deg]",
                   listingType === "sell" ? "bg-orange-500" : "bg-upleex-blue",
                 )}>
-                <div className='mt-1'>
+                <div className='mt-0.5 md:mt-1'>
                   {listingType.charAt(0).toUpperCase() + listingType.slice(1)}
                 </div>
               </span>
