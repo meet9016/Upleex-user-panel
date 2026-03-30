@@ -522,7 +522,7 @@ export default function ProductDetailsPage() {
                   className="absolute z-50 rounded-xl overflow-hidden shadow-2xl border-2 border-white bg-white animate-in fade-in zoom-in duration-200"
                   style={{
                     width: '650px',
-                    height: '550px',
+                    height: '531px',
                     top: '20px',
                     right: '10px',
                     transform: 'translateX(0)',
@@ -897,7 +897,7 @@ export default function ProductDetailsPage() {
                     <div className="flex items-center bg-gray-50 rounded-lg p-1">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="p-0.5 rounded-md  hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={quantity <= 1}
                       >
                         <Minus size={16} className="text-gray-600" />
@@ -946,7 +946,7 @@ export default function ProductDetailsPage() {
                           }
                           setQuantity(newQuantity);
                         }}
-                        className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        className=" rounded-md  hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={
                           quantity >= 9999 ||
                           (isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false) ||
@@ -1181,13 +1181,13 @@ export default function ProductDetailsPage() {
           {/* Description & Details Tabs Section */}
           <div className="border-t border-gray-100 p-6 lg:p-10">
             <div className="flex gap-8 border-b border-gray-200 mb-6">
-              <button
+              {/* <button
                 onClick={() => setActiveDetailTab("description")}
                 className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
                   }`}
               >
                 Description
-              </button>
+              </button> */}
               <button
                 onClick={() => setActiveDetailTab("details")}
                 className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
@@ -1197,72 +1197,69 @@ export default function ProductDetailsPage() {
               </button>
             </div>
 
-            <div className="min-h-[420px] flex flex-col">
-              {activeDetailTab === "description" ? (
-                <div className="prose prose-slate max-w-none animate-fadeIn">
-                  <h3 className="text-lg font-bold text-slate-900 mb-3">Description</h3>
-                  {productDetails?.description && productDetails.description.trim() !== "" ? (
-                    <div
-                      className="text-slate-600 leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: productDetails.description }}
-                    />
-                  ) : (
-                    <div className="min-h-[320px] flex items-center justify-center text-gray-400 italic">
-                      No description available for this product.
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <>
-                  <h3 className="text-lg font-bold text-slate-900 mb-4">Product Details</h3>
+         <div className=" border-gray-100 p-6 lg:p-10">
+  
+  {/* Heading */}
+  {/* <h3 className="text-lg font-bold text-slate-900 mb-6">Product Details</h3> */}
 
-                  {productDetails?.product_details &&
-                    Array.isArray(productDetails.product_details) &&
-                    productDetails.product_details.length > 0 ? (
-                    <div className="space-y-4">
-                      {productDetails.product_details.map((spec: any, idx: number) => {
-                        const label =
-                          spec.specification ||
-                          spec.label ||
-                          spec.key ||
-                          spec.name ||
-                          spec.title ||
-                          `Specification ${idx + 1}`;
-                        const value = spec.detail || spec.value || spec.description || "—";
+  <div className="min-h-[420px] flex flex-col">
 
-                        return (
-                          <div
-                            key={idx}
-                            className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-3 border-b border-gray-100 last:border-0"
-                          >
-                            <div className="font-semibold text-slate-900">{label}</div>
-                            <div className="sm:col-span-2 text-slate-600">{value}</div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="flex-1 flex items-center justify-center py-12">
-                      <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center">
-                        <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gray-50 flex items-center justify-center">
-                          <ImageOff size={28} className="text-gray-400" />
-                        </div>
+    {productDetails?.product_details &&
+      Array.isArray(productDetails.product_details) &&
+      productDetails.product_details.length > 0 ? (
+      
+      <div className="space-y-4">
+        {productDetails.product_details.map((spec: any, idx: number) => {
+          const label =
+            spec.specification ||
+            spec.label ||
+            spec.key ||
+            spec.name ||
+            spec.title ||
+            `Specification ${idx + 1}`;
 
-                        <h4 className="text-xl font-bold text-gray-800 mb-3">
-                          No Product Details Available
-                        </h4>
+          const value =
+            spec.detail ||
+            spec.value ||
+            spec.description ||
+            "—";
 
-                        <p className="text-gray-500 text-sm leading-relaxed">
-                          Detailed specifications for this product have not been added yet.
-                          <br />
-                          Please check back later or contact the seller for more information.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
+          return (
+            <div
+              key={idx}
+              className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-3 border-b border-gray-100 last:border-0"
+            >
+              <div className="font-semibold text-slate-900">{label}</div>
+              <div className="sm:col-span-2 text-slate-600">{value}</div>
             </div>
+          );
+        })}
+      </div>
+
+    ) : (
+      <div className="flex-1 flex items-center justify-center py-12">
+        <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center">
+          
+          <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gray-50 flex items-center justify-center">
+            <ImageOff size={28} className="text-gray-400" />
+          </div>
+
+          <h4 className="text-xl font-bold text-gray-800 mb-3">
+            No Product Details Available
+          </h4>
+
+          <p className="text-gray-500 text-sm leading-relaxed">
+            Detailed specifications for this product have not been added yet.
+            <br />
+            Please check back later or contact the seller for more information.
+          </p>
+
+        </div>
+      </div>
+    )}
+
+  </div>
+</div>
           </div>
         </div>
 

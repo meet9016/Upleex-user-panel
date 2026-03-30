@@ -239,11 +239,16 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side - Form with same height */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white" style={{ height: '55.1vh' }}>
-        <div className="max-w-md w-full space-y-6">
-          <h2 className="text-3xl font-extrabold text-slate-900">
-            Sign In
-          </h2>
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-24 bg-white min-h-[50vh] lg:h-[55.1vh]">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center lg:text-left">
+            <h2 className="text-3xl font-extrabold text-slate-900">
+              Sign In
+            </h2>
+            <p className="text-slate-500 mt-2 text-sm lg:hidden">
+              Log in to access your rentals and more.
+            </p>
+          </div>
 
           <AnimatePresence mode="wait">
             {step === 'number' ? (
@@ -256,31 +261,43 @@ const LoginPage = () => {
                 className="space-y-4"
               >
                 {/* Mobile Number */}
-                <div className="relative">
-                  <Phone className="absolute left-3 top-3 text-gray-400" />
-                  <input
-                    value={number}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      if (val.length <= 10) setNumber(val);
-                      if (val.length === 10) {
-                        setErrors(prev => ({ ...prev, number: '' }));
-                      }
-                    }}
-                    onKeyDown={handleNumberKeyPress}
-                    placeholder="Mobile Number"
-                    className={`w-full pl-10 py-3 border rounded-lg bg-gray-50
-                      focus:outline-none focus:ring-0 focus:ring-indigo-500/20 focus:border-indigo-500
-                      ${errors.number
-                        ? 'border-red-500 focus:border-red-500'
-                        : 'border-gray-300'
-                      }`}
-                    autoFocus
-                  />
-                  {errors.number && (
-                    <p className="text-red-600 text-sm mt-1">{errors.number}</p>
-                  )}
-                </div>
+              <div className="relative">
+                {/* Phone Icon */}
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+
+                {/* +91 Prefix */}
+                <span className="absolute left-9 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">
+                  +91
+                </span>
+
+                {/* Divider */}
+                <div className="absolute left-16 top-1/2 -translate-y-1/2 h-5 w-px bg-gray-300" />
+
+                {/* Input */}
+                <input
+                  value={number}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    if (val.length <= 10) setNumber(val);
+                    if (val.length === 10) {
+                      setErrors(prev => ({ ...prev, number: '' }));
+                    }
+                  }}
+                  onKeyDown={handleNumberKeyPress}
+                  placeholder="Mobile Number"
+                  className={`w-full pl-20 py-3 border rounded-lg bg-gray-50
+                    focus:outline-none focus:ring-0 focus:ring-indigo-500/20 focus:border-indigo-500
+                    ${errors.number
+                      ? 'border-red-500 focus:border-red-500'
+                      : 'border-gray-300'
+                    }`}
+                  autoFocus
+                />
+
+                {errors.number && (
+                  <p className="text-red-600 text-sm mt-1">{errors.number}</p>
+                )}
+              </div>
                 <Button
                   fullWidth
                   onClick={handleSendNumber}

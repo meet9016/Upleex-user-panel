@@ -5,6 +5,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ScrollToTop } from '@/components/layout/ScrollToTop';
 import { QuickActions } from '@/components/ui/QuickActions';
+import { BottomNav } from '@/components/layout/BottomNav';
 import { Toaster } from 'react-hot-toast';
 import { Suspense } from 'react';
 import ProgressBar from '@/components/ui/ProgressBar';
@@ -40,9 +41,10 @@ export default function RootLayout({
             </Suspense>
             <ScrollToTop />
             <QuickActions />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 pb-20 lg:pb-0">{children}</main>
             <Toaster position="top-right" />
             <Footer />
+            <BottomNav />
           </div>
           </WishlistProvider>
         </CartProvider>

@@ -878,27 +878,108 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center gap-4">
-            <Link href="/wishlist" className="relative cursor-pointer">
-              <Heart size={24} className="text-slate-700" />
+          <div className="lg:hidden flex items-center gap-3">
+            <button
+              onClick={() => setIsCityDropdownOpen(!isCityDropdownOpen)}
+              className="flex items-center gap-1 text-slate-700 hover:text-upleex-blue transition-colors px-2 py-1 rounded-md bg-gray-50 border border-gray-100 max-w-[100px]"
+            >
+              <MapPin size={16} className="text-upleex-purple shrink-0" />
+              <span className="text-xs truncate font-medium">{currentLocation}</span>
+            </button>
+            
+            <Link href="/wishlist" className="relative cursor-pointer p-1">
+              <Heart size={22} className="text-slate-700" />
               {wishlistCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                  {wishlistCount || 0}
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                  {wishlistCount}
                 </span>
               )}
             </Link>
-            <Link href="/cart" className="relative cursor-pointer">
-              <ShoppingCart size={24} className="text-slate-700" />
-              <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+            <Link href="/cart" className="relative cursor-pointer p-1">
+              <ShoppingCart size={22} className="text-slate-700" />
+              <span className="absolute top-0 right-0 bg-upleex-blue text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 {cartCount || 0}
               </span>
             </Link>
             <button
               onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md text-slate-700 hover:text-upleex-blue focus:outline-none cursor-pointer"
+              className="inline-flex items-center justify-center p-1.5 rounded-md text-slate-700 hover:text-upleex-blue focus:outline-none cursor-pointer bg-gray-50 border border-gray-100"
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
+          </div>
+        </div>
+
+        {/* Mobile City Dropdown - Separate from Menu */}
+        {isCityDropdownOpen && (
+          <div className="lg:hidden absolute top-20 left-0 w-full bg-white z-[60] shadow-xl border-b border-gray-100 animate-in slide-in-from-top-2 duration-200">
+            <div className="p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="Search city"
+                    className="w-full pl-9 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl outline-none focus:border-upleex-purple"
+                    value={citySearchTerm}
+                    onChange={handleCitySearchChange}
+                    onKeyDown={handleCitySearchKeyDown}
+                  />
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                </div>
+                {selectedCityId && (
+                  <button 
+                    onClick={handleClearCity}
+                    className="p-2.5 text-gray-400 hover:text-red-500 bg-gray-50 rounded-xl"
+                  >
+                    <X size={18} />
+                  </button>
+                )}
+              </div>
+              
+              <div 
+                className="max-h-[60vh] overflow-y-auto space-y-1 scrollbar-hide"
+                onScroll={handleCityScroll}
+              >
+                {cities.map((city, index) => (
+                  <button
+                    key={`${city.id}-${index}`}
+                    onClick={() => handleCitySelect(city)}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                      selectedCityId === String(city.id)
+                        ? 'bg-purple-50 text-upleex-purple ring-1 ring-purple-100'
+                        : 'text-slate-600 hover:bg-gray-50 active:scale-[0.98]'
+                    }`}
+                  >
+                    {city.city_name}
+                  </button>
+                ))}
+                {isCityLoading && (
+                  <div className="py-4 flex justify-center">
+                    <div className="w-5 h-5 border-2 border-upleex-purple border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Search Bar - Visible below Navbar on mobile */}
+        <div className="lg:hidden px-4 pb-3 pt-1">
+          <div className="relative flex items-center bg-gray-50 border border-gray-200 rounded-xl focus-within:ring-1 focus-within:ring-upleex-blue focus-within:border-upleex-blue transition-all">
+            <Search size={18} className="ml-3 text-gray-400" />
+            <input
+              type="text"
+              placeholder={`Search for ${placeholders[index]}`}
+              className="flex-1 h-11 px-3 text-sm bg-transparent outline-none text-slate-700"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
+            />
+            {searchTerm && (
+              <button onClick={() => setSearchTerm('')} className="p-2 text-gray-400">
+                <X size={16} />
+              </button>
+            )}
           </div>
         </div>
 
@@ -1019,99 +1100,121 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white border-b border-gray-100 absolute w-full shadow-lg z-50">
-          <div className="px-4 pt-4 pb-6 space-y-4">
-            {/* Mobile Search */}
-            <div className="flex w-full border border-gray-300 rounded-md overflow-hidden">
-              <div className="flex-1 relative flex items-center bg-white h-10">
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full h-full px-4 text-sm outline-none"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      handleSearchSubmit();
-                      setIsMenuOpen(false);
-                    }
-                  }}
-                />
+        <div className="lg:hidden fixed inset-0 z-[100] bg-white animate-in slide-in-from-right duration-300">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-100">
+              <Link href="/" onClick={() => setIsMenuOpen(false)}>
+                <Image src="/image/upleex-logo-dark.png" alt="Logo" width={120} height={32} />
+              </Link>
+              <button onClick={() => setIsMenuOpen(false)} className="p-2 text-gray-500">
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              {/* User Section */}
+              <div className="p-4 bg-gray-50/50">
+                {user ? (
+                  <div className="flex items-center gap-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl">
+                      {user?.full_name?.charAt(0) || email?.charAt(0)?.toUpperCase()}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-slate-900 truncate">{user?.full_name || 'User'}</p>
+                      <p className="text-xs text-slate-500 truncate">{email}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="text-sm text-slate-600 font-medium px-1">Welcome to Upleex</p>
+                    <Link
+                      href="/auth/login"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="block w-full py-3.5 text-center bg-upleex-blue text-white rounded-xl font-bold shadow-lg shadow-blue-200"
+                    >
+                      Login / Sign Up
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Links Grid */}
+              <div className="p-4 grid grid-cols-2 gap-3">
+                {[
+                  { icon: User, label: 'My Profile', href: '/profile' },
+                  { icon: Package, label: 'My Orders', href: '/orders' },
+                  { icon: Heart, label: 'Wishlist', href: '/wishlist' },
+                  { icon: Briefcase, label: 'Services', href: '/services-list' },
+                ].map((item, i) => (
+                  <Link
+                    key={i}
+                    href={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex flex-col items-center justify-center p-4 bg-white border border-gray-100 rounded-2xl gap-2 hover:bg-gray-50 active:scale-95 transition-all"
+                  >
+                    <item.icon size={20} className="text-upleex-purple" />
+                    <span className="text-xs font-bold text-slate-700">{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Categories Section */}
+              <div className="p-4 border-t border-gray-100">
+                <div className="flex items-center justify-between mb-4 px-1">
+                  <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Top Categories</h3>
+                  <Link href="/categories" onClick={() => setIsMenuOpen(false)} className="text-xs font-bold text-upleex-blue">View All</Link>
+                </div>
+                <div className="space-y-1">
+                  {categories.slice(0, 8).map((cat) => (
+                    <Link
+                      key={cat.categories_id}
+                      href={`/rent-category/${cat.categories_id}`}
+                      onClick={() => setIsMenuOpen(false)}
+                      className="flex items-center justify-between p-3.5 hover:bg-gray-50 rounded-xl group transition-colors"
+                    >
+                      <span className="text-sm font-medium text-slate-700">{cat.categories_name}</span>
+                      <ChevronRight size={16} className="text-gray-400 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Other Links */}
+              <div className="p-4 space-y-2 border-t border-gray-100">
+                <Link
+                  href="/partner"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 p-3.5 text-slate-700 font-medium hover:bg-gray-50 rounded-xl"
+                >
+                  <Briefcase size={18} className="text-gray-400" />
+                  Partner With Us
+                </Link>
                 <button
-                  className="px-3 text-gray-400 cursor-pointer"
                   onClick={() => {
-                    handleSearchSubmit();
+                    setIsDownloadPopupOpen(true);
                     setIsMenuOpen(false);
                   }}
+                  className="flex items-center gap-3 w-full p-3.5 text-left text-slate-700 font-medium hover:bg-gray-50 rounded-xl"
                 >
-                  <Search size={18} />
+                  <Smartphone size={18} className="text-gray-400" />
+                  Download App
                 </button>
               </div>
             </div>
 
-            {/* Mobile User Menu */}
-            <div className="space-y-3">
-              {user ? (
-                <>
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <p className="text-sm text-gray-500 mb-1">Logged in as</p>
-                    <p className="font-medium text-gray-900 truncate">{email}</p>
-                  </div>
-
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center justify-center gap-3 w-full py-2 px-3 text-red-600 hover:bg-red-50 rounded border border-red-100 cursor-pointer"
-                  >
-                    <LogOut size={18} />
-                    <span className="font-semibold">Logout</span>
-                  </button>
-                </>
-              ) : (
-                <Link
-                  href="/auth/login"
-                  className="block w-full text-center py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-medium cursor-pointer"
-                  onClick={() => setIsMenuOpen(false)}
+            {/* Footer */}
+            {user && (
+              <div className="p-4 border-t border-gray-100">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center justify-center gap-2 w-full py-4 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-100 transition-colors"
                 >
-                  Login / Sign Up
-                </Link>
-              )}
-
-              <Link
-                href="/partner"
-                className="block w-full text-center py-2 border border-gray-200 rounded text-slate-700 font-medium cursor-pointer"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Partner With Us
-              </Link>
-            </div>
-
-            <div className="pt-2 border-t border-gray-100">
-              <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Categories</div>
-              <div className="grid grid-cols-2 gap-2">
-                <Link
-                  href="/services-list"
-                  className={`text-sm py-1 font-bold transition-colors cursor-pointer flex items-center gap-2 ${pathname === '/services-list' ? 'text-upleex-purple' : 'text-slate-700 hover:text-upleex-blue'}`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Briefcase size={14} />
-                  Services
-                </Link>
-                {categories.slice(0, 5).map(item => {
-                  const isActive = pathname === `/rent-category/${item.categories_id}`;
-                  return (
-                    <Link
-                      key={item.categories_id}
-                      href={`/rent-category/${item.categories_id}`}
-                      className={`text-sm py-1 transition-colors cursor-pointer ${isActive ? 'text-upleex-purple font-bold' : 'text-slate-700 hover:text-upleex-blue'}`}
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      {item.categories_name}
-                    </Link>
-                  );
-                })}
+                  <LogOut size={20} />
+                  Logout
+                </button>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}
