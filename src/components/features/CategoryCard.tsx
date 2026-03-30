@@ -29,28 +29,28 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
       >
         <div
           className="relative h-full bg-white/90 backdrop-blur 
-          rounded-2xl px-4 py-6 flex flex-col items-center 
+          rounded-2xl px-2 py-4 md:px-4 md:py-6 flex flex-col items-center 
           text-center shadow-sm group-hover:shadow-xl 
           transition-all duration-300"
         >
           {/* Product Count Badge */}
           {product_count !== undefined && (
             <span
-              className="absolute -top-3 left-1/2 -translate-x-1/2 
-              text-xs font-medium bg-upleex-blue text-white 
-              px-3 py-1 rounded-full shadow-md"
+              className="absolute -top-2 md:-top-3 left-1/2 -translate-x-1/2 
+              text-[10px] md:text-xs font-bold bg-upleex-blue text-white 
+              px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-md whitespace-nowrap"
             >
               {product_count || 0} Items
             </span>
           )}
 
           {/* Image Container */}
-          <div className="relative mb-4">
+          <div className="relative mb-2 md:mb-4">
             <div
-              className="w-24 h-24 rounded-full overflow-hidden 
+              className="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden 
               bg-gradient-to-br from-blue-100 to-blue-200 
               flex items-center justify-center 
-              group-hover:scale-110 transition-transform duration-300"
+              group-hover:scale-110 transition-transform duration-300 shadow-inner"
             >
               {image ? (
                 <img

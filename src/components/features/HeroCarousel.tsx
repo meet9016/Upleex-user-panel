@@ -130,23 +130,27 @@ export const HeroCarousel = () => {
               const isNext = position === 1;
               const isHidden = position === 2;
 
+              // On mobile, we might want a simpler transition or different layout
               return (
                 <motion.div
                   key={banner._id || banner.id}
                   className={`absolute w-[88%] md:w-[82%] h-full rounded-2xl overflow-hidden shadow-2xl cursor-pointer ${isHidden ? 'pointer-events-none' : ''}`}
                   initial={false}
                   animate={{
-                    scale: isActive ? 1 : (isHidden ? 0.78 : 0.90),
-                    opacity: isActive ? 1 : (isHidden ? 0.35 : 0.70),
-                    x: isActive ? '0%' : (isPrev ? '-65%' : (isNext ? '65%' : '0%')),
+                    scale: isActive ? 1 : (isHidden ? 0.85 : 0.92),
+                    opacity: isActive ? 1 : (isHidden ? 0 : 0.6),
+                    x: isActive ? '0%' : (isPrev ? '-100%' : (isNext ? '100%' : '0%')),
                     zIndex: isActive ? 30 : (isHidden ? 10 : 20),
-                    filter: isActive ? 'blur(0px)' : (isHidden ? 'blur(4px)' : 'blur(1.5px)')
+                    filter: isActive ? 'blur(0px)' : 'blur(2px)'
                   }}
                   transition={{
-                    duration: 1.4,
-                    ease: [0.25, 0.1, 0.25, 1],
+                    duration: 0.8,
+                    ease: "circOut",
                   }}
-                  style={{ willChange: "transform, opacity, filter" }}
+                  style={{ 
+                    willChange: "transform, opacity",
+                    display: isHidden ? 'none' : 'block' 
+                  }}
                   onClick={() => {
                     if (isPrev) handlePrev();
                     if (isNext) handleNext();
@@ -162,7 +166,7 @@ export const HeroCarousel = () => {
                     <div className={`absolute inset-0 bg-gradient-to-r ${banner.color || 'bg-blue-900'} opacity-80 mix-blend-multiply`}></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
 
-                    <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-12 text-white">
+                    <div className="absolute inset-0 flex flex-col justify-end md:justify-center p-6 md:p-12 text-white">
                       <div className={`transition-all duration-700 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                         {banner.subtitle && (
                           <p className="text-sm md:text-lg font-medium text-blue-200 mb-3 uppercase tracking-widest">

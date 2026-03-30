@@ -239,11 +239,16 @@ const LoginPage = () => {
       </div>
 
       {/* Right Side - Form with same height */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white" style={{ height: '55.1vh' }}>
-        <div className="max-w-md w-full space-y-6">
-          <h2 className="text-3xl font-extrabold text-slate-900">
-            Sign In
-          </h2>
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-24 bg-white min-h-[50vh] lg:h-[55.1vh]">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center lg:text-left">
+            <h2 className="text-3xl font-extrabold text-slate-900">
+              Sign In
+            </h2>
+            <p className="text-slate-500 mt-2 text-sm lg:hidden">
+              Log in to access your rentals and more.
+            </p>
+          </div>
 
           <AnimatePresence mode="wait">
             {step === 'number' ? (

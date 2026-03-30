@@ -102,8 +102,8 @@ export default function CategoriesPage() {
       </div>
     </div>
   </div>
-
-          {/* Main Area */}
+`
+          {/* Main Area */}`
           <div className="lg:w-3/4">
             <div className="space-y-12">
               <AnimatePresence mode="popLayout">
