@@ -897,7 +897,7 @@ export default function ProductDetailsPage() {
                     <div className="flex items-center bg-gray-50 rounded-lg p-1">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="p-0.5 rounded-md  hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={quantity <= 1}
                       >
                         <Minus size={16} className="text-gray-600" />
@@ -946,7 +946,7 @@ export default function ProductDetailsPage() {
                           }
                           setQuantity(newQuantity);
                         }}
-                        className="p-1.5 rounded-md hover:bg-white hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                        className=" rounded-md  hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={
                           quantity >= 9999 ||
                           (isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false) ||
@@ -1197,10 +1197,10 @@ export default function ProductDetailsPage() {
               </button>
             </div>
 
-         <div className="border-t border-gray-100 p-6 lg:p-10">
+         <div className=" border-gray-100 p-6 lg:p-10">
   
   {/* Heading */}
-  <h3 className="text-lg font-bold text-slate-900 mb-6">Product Details</h3>
+  {/* <h3 className="text-lg font-bold text-slate-900 mb-6">Product Details</h3> */}
 
   <div className="min-h-[420px] flex flex-col">
 
