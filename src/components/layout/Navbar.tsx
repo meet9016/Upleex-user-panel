@@ -1079,7 +1079,7 @@ export const Navbar: React.FC = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center"
+            className="flex items-center px-3"
           >
             <Button
               variant="outline"

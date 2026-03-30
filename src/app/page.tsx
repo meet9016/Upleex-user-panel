@@ -168,57 +168,54 @@ export default function Home() {
         {/* <CenterModeCarousel /> */}
 
         {/* Enhanced Categories Section */}
-        <section className="py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
-          {/* <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent"></div> */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-16"
-            >
-              {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-upleex-blue text-sm font-semibold mb-4">
-                <Zap className="w-4 h-4" />
-                Popular Categories
-              </div> */}
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-                Explore Our <span className="text-gradient-primary">Premium</span> Collection
-              </h2>
-              <p className="text-slate-500 max-w-2xl mx-auto text-lg">Find exactly what you are looking for from our wide range of rental categories.</p>
-            </motion.div>
+     <section className="py-8 sm:py-12 md:py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="text-center mb-8 sm:mb-12 md:mb-16"
+    >
+      <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-3 sm:mb-4 px-4">
+        Explore Our <span className="text-gradient-primary">Premium</span> Collection
+      </h2>
+      <p className="text-slate-500 max-w-2xl mx-auto text-sm sm:text-base md:text-lg px-4">
+        Find exactly what you are looking for from our wide range of rental categories.
+      </p>
+    </motion.div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-8">
-              {categoryList?.all_categories?.slice(0, 12).map((category, index) => (
-                 <CategoryCard
-                   key={category.categories_id}
-                   categories_id={category.categories_id}
-                   categories_name={category.categories_name}
-                   image={category.image}
-                   product_count={Number(category.product_count)}
-                 />
-               ))}
-            </div>
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+      {categoryList?.all_categories?.slice(0, 12).map((category, index) => (
+        <CategoryCard
+          key={category.categories_id}
+          categories_id={category.categories_id}
+          categories_name={category.categories_name}
+          image={category.image}
+          product_count={Number(category.product_count)}
+        />
+      ))}
+    </div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              className="text-center mt-16"
-            >
-              <Button
-                variant="outline"
-                className="rounded-full px-8 py-6 border-2 group"
-               onClick={() => router.push('/categories')}
-              >
-                <span className="flex items-center gap-2">
-                  View All Categories
-                  <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </Button>
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      className="text-center mt-8 sm:mt-12 md:mt-16"
+    >
+      <Button
+        variant="outline"
+        className="rounded-full px-6 sm:px-8 py-4 sm:py-6 border-2 group w-full sm:w-auto"
+        onClick={() => router.push('/categories')}
+      >
+        <span className="flex items-center justify-center gap-2 text-sm sm:text-base">
+          View All Categories
+          <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </span>
+      </Button>
+    </motion.div>
+  </div>
+</section>
 
-            </motion.div>
-          </div>
-        </section>
 
         {/* Enhanced Featured Products */}
         {/* <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative">

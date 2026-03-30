@@ -139,7 +139,7 @@ export const HeroCarousel = () => {
                   animate={{
                     scale: isActive ? 1 : (isHidden ? 0.85 : 0.92),
                     opacity: isActive ? 1 : (isHidden ? 0 : 0.6),
-                    x: isActive ? '0%' : (isPrev ? '-100%' : (isNext ? '100%' : '0%')),
+                    x: isActive ? '0%' : (isPrev ? '-95%' : (isNext ? '95%' : '0%')),
                     zIndex: isActive ? 30 : (isHidden ? 10 : 20),
                     filter: isActive ? 'blur(0px)' : 'blur(2px)'
                   }}
