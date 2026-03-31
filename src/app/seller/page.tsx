@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Store, PackageOpen, ArrowUpDown, Calendar, ChevronDown, Check } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Store, PackageOpen, ArrowUpDown, Calendar, ChevronDown, Check, Share2, Copy, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { ProductCard } from '@/components/features/ProductCard';
 import { BackButton } from '@/components/ui/BackButton';
 import { Pagination } from '@/components/ui/Pagination';
@@ -24,6 +26,10 @@ export default function SellerPage() {
   const [isTenureOpen, setIsTenureOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState({ label: 'All Types', value: '0' });
   const [selectedTenure, setSelectedTenure] = useState({ label: 'All Durations', value: '0' });
+  const [user, setUser] = useState<any>(null);
+  const [referralLink, setReferralLink] = useState<string>('');
+  const [isCopied, setIsCopied] = useState(false);
+  const [isReferralCopied, setIsReferralCopied] = useState(false);
   const [sortOptions] = useState([
     { label: 'All Types', value: '0' },
     { label: 'Rent', value: '1' },
@@ -93,6 +99,45 @@ export default function SellerPage() {
   }, [vendorId, selectedSort, selectedTenure, currentPage]);
 
   useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        
+        // Generate referral link if user is logged in
+        if (typeof window !== 'undefined' && vendorId) {
+          const baseUrl = window.location.origin + window.location.pathname;
+          const refLink = `${baseUrl}?vendor_id=${vendorId}&ref=${parsedUser._id || parsedUser.id}`;
+          setReferralLink(refLink);
+        }
+      } catch (e) {
+        console.error('Error parsing user data', e);
+      }
+    }
+  }, [vendorId]);
+
+  const handleCopyProfile = () => {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(window.location.href);
+      setIsCopied(true);
+      toast.success('Profile link copied!');
+      setTimeout(() => setIsCopied(false), 2000);
+    }
+  };
+
+  const handleCopyReferral = () => {
+    if (referralLink) {
+      navigator.clipboard.writeText(referralLink);
+      setIsReferralCopied(true);
+      toast.success('Referral link copied!');
+      setTimeout(() => setIsReferralCopied(false), 2000);
+    } else {
+      toast.error('Please login to get your referral link');
+    }
+  };
+
+  useEffect(() => {
     if (isFirstFilterLoadRef.current) {
       isFirstFilterLoadRef.current = false;
       return;
@@ -105,26 +150,44 @@ export default function SellerPage() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
         <BackButton />
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 px-6 sm:px-8 py-5 sm:py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-6 mt-4 w-full">
-          <div className="flex items-center gap-4 sm:gap-5">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-50 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 px-6 sm:px-8 py-5 sm:py-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mt-4 w-full">
+          <div className="flex items-center gap-4 sm:gap-5 overflow-hidden">
+            <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-50 flex items-center justify-center">
               <Store size={32} className="text-upleex-blue" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-[0.18em] mb-1">
                 Sold By
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 truncate">
                 {vendorName || 'Vendor'}
               </h1>
-              {/* {productCount !== null && (
-                <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-gray-500">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold">
-                    {productCount} Products
-                  </span>
-                </div>
-              )} */}
             </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={handleCopyProfile}
+              className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-100 rounded-full text-sm font-semibold text-slate-700 hover:border-upleex-blue hover:text-upleex-blue transition-all duration-300 shadow-sm hover:shadow-md"
+            >
+              {isCopied ? <Check size={18} /> : <Share2 size={18} />}
+              <span>{isCopied ? 'Copied' : 'Share Profile'}</span>
+            </button>
+
+            {user ? (
+              <div className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-upleex-blue to-upleex-purple rounded-full text-sm font-semibold text-white shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer overflow-hidden relative group"
+                onClick={handleCopyReferral}
+              >
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                {isReferralCopied ? <Check size={18} /> : <Copy size={18} />}
+                <span>{isReferralCopied ? 'Link Copied' : 'Referral Link'}</span>
+              </div>
+            ) : (
+              <Link href="/auth/login" className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 rounded-full text-sm font-semibold text-white shadow-lg hover:bg-slate-800 transition-all duration-300 overflow-hidden">
+                <ExternalLink size={18} />
+                <span>Login for Referral</span>
+              </Link>
+            )}
           </div>
         </div>
 
