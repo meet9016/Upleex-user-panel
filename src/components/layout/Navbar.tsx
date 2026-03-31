@@ -31,7 +31,7 @@ import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
 import { searchService } from '@/services/searchService';
 
-const placeholders =  ["TV", "Medical", "Kurta", "Furniture", "Electronics"]
+const placeholders = ["TV", "Medical", "Kurta", "Furniture", "Electronics"]
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -66,7 +66,7 @@ export const Navbar: React.FC = () => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSuggestionLoading, setIsSuggestionLoading] = useState(false);
-   const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(0);
   const suggestionTimeoutRef = useRef<number | null>(null);
   const citySearchTimeoutRef = useRef<number | null>(null);
 
@@ -189,7 +189,7 @@ export const Navbar: React.FC = () => {
         setShowSuggestions(false);
       }
     };
-    
+
     const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsProfileMenuOpen(false);
@@ -197,7 +197,7 @@ export const Navbar: React.FC = () => {
         setShowSuggestions(false);
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscapeKey);
     return () => {
@@ -636,7 +636,7 @@ export const Navbar: React.FC = () => {
               <div className="flex-1 relative flex items-center bg-white">
                 <input
                   type="text"
-                   placeholder={`Search for ${placeholders[index]}`}
+                  placeholder={`Search for ${placeholders[index]}`}
                   className="w-full h-full px-4 py-2 text-sm text-gray-700 outline-none placeholder-gray-400"
                   value={searchTerm}
                   onChange={handleSearchChange}
@@ -886,7 +886,7 @@ export const Navbar: React.FC = () => {
               <MapPin size={16} className="text-upleex-purple shrink-0" />
               <span className="text-xs truncate font-medium">{currentLocation}</span>
             </button>
-            
+
             <Link href="/wishlist" className="relative cursor-pointer p-1">
               <Heart size={22} className="text-slate-700" />
               {wishlistCount > 0 && (
@@ -927,7 +927,7 @@ export const Navbar: React.FC = () => {
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 </div>
                 {selectedCityId && (
-                  <button 
+                  <button
                     onClick={handleClearCity}
                     className="p-2.5 text-gray-400 hover:text-red-500 bg-gray-50 rounded-xl"
                   >
@@ -935,8 +935,8 @@ export const Navbar: React.FC = () => {
                   </button>
                 )}
               </div>
-              
-              <div 
+
+              <div
                 className="max-h-[60vh] overflow-y-auto space-y-1 scrollbar-hide"
                 onScroll={handleCityScroll}
               >
@@ -944,11 +944,10 @@ export const Navbar: React.FC = () => {
                   <button
                     key={`${city.id}-${index}`}
                     onClick={() => handleCitySelect(city)}
-                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                      selectedCityId === String(city.id)
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${selectedCityId === String(city.id)
                         ? 'bg-purple-50 text-upleex-purple ring-1 ring-purple-100'
                         : 'text-slate-600 hover:bg-gray-50 active:scale-[0.98]'
-                    }`}
+                      }`}
                   >
                     {city.city_name}
                   </button>
@@ -1117,13 +1116,20 @@ export const Navbar: React.FC = () => {
               <div className="p-4 bg-gray-50/50">
                 {user ? (
                   <div className="flex items-center gap-4 p-4 bg-white rounded-2xl shadow-sm border border-gray-100">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl shrink-0">
                       {user?.full_name?.charAt(0) || email?.charAt(0)?.toUpperCase()}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="font-bold text-slate-900 truncate">{user?.full_name || 'User'}</p>
                       <p className="text-xs text-slate-500 truncate">{email}</p>
                     </div>
+                    <button
+                      onClick={handleLogout}
+                      className="shrink-0 p-2.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                      title="Logout"
+                    >
+                      <LogOut size={18} />
+                    </button>
                   </div>
                 ) : (
                   <div className="space-y-3">
