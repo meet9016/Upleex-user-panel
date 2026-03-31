@@ -37,8 +37,8 @@ const FloatingParticles = () => {
   if (!mounted) return null;
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => {
+    <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40 md:opacity-100">
+      {[...Array(12)].map((_, i) => {
         const x = Math.random() * 100;
         const y = Math.random() * 100;
 
@@ -48,6 +48,11 @@ const FloatingParticles = () => {
             className="absolute w-1 h-1 bg-blue-400/30 rounded-full"
             initial={{ x: `${x}vw`, y: `${y}vh` }}
             animate={{ y: ['0vh', '100vh'] }}
+            transition={{
+              duration: 10 + Math.random() * 20,
+              repeat: Infinity,
+              ease: "linear"
+            }}
           />
         );
       })}
@@ -168,57 +173,54 @@ export default function Home() {
         {/* <CenterModeCarousel /> */}
 
         {/* Enhanced Categories Section */}
-        <section className="py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
-          {/* <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent"></div> */}
+        <section className="py-8 sm:py-12 md:py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-10 sm:mb-16 md:mb-20"
             >
-              {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-upleex-blue text-sm font-semibold mb-4">
-                <Zap className="w-4 h-4" />
-                Popular Categories
-              </div> */}
-              <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-4 sm:mb-6 px-4 tracking-tight">
                 Explore Our <span className="text-gradient-primary">Premium</span> Collection
               </h2>
-              <p className="text-slate-500 max-w-2xl mx-auto text-lg">Find exactly what you are looking for from our wide range of rental categories.</p>
+              <p className="text-slate-500 max-w-2xl mx-auto text-base sm:text-lg md:text-xl px-4 leading-relaxed">
+                Find exactly what you are looking for from our wide range of rental categories.
+              </p>
             </motion.div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
               {categoryList?.all_categories?.slice(0, 12).map((category, index) => (
-                 <CategoryCard
-                   key={category.categories_id}
-                   categories_id={category.categories_id}
-                   categories_name={category.categories_name}
-                   image={category.image}
-                   product_count={Number(category.product_count)}
-                 />
-               ))}
+                <CategoryCard
+                  key={category.categories_id}
+                  categories_id={category.categories_id}
+                  categories_name={category.categories_name}
+                  image={category.image}
+                  product_count={Number(category.product_count)}
+                />
+              ))}
             </div>
 
             <motion.div
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-center mt-16"
+              className="text-center mt-8 sm:mt-12 md:mt-16"
             >
               <Button
                 variant="outline"
-                className="rounded-full px-8 py-6 border-2 group"
-               onClick={() => router.push('/categories')}
+                className="rounded-full px-6 sm:px-8 py-4 sm:py-6 border-2 group w-full sm:w-auto"
+                onClick={() => router.push('/categories')}
               >
-                <span className="flex items-center gap-2">
+                <span className="flex items-center justify-center gap-2 text-sm sm:text-base">
                   View All Categories
                   <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Button>
-
             </motion.div>
           </div>
         </section>
+
 
         {/* Enhanced Featured Products */}
         {/* <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative">
@@ -279,7 +281,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center"
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-12 text-center"
             >
               {/* First Feature Card */}
               <motion.div
@@ -404,7 +406,7 @@ export default function Home() {
         <CorporateCustomers />
 
         {/* CTA Section */}
-        <section className="py-24" suppressHydrationWarning={true}>
+        <section className="py-16 sm:py-24" suppressHydrationWarning={true}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning={true}>
             <motion.div
               initial={{ opacity: 0, y: 40 }}
@@ -413,12 +415,12 @@ export default function Home() {
               transition={{ duration: 0.7, ease: "easeOut" }}
               className="relative overflow-hidden rounded-3xl
                  bg-gradient-to-br from-upleex-dark via-slate-900 to-slate-800
-                 px-8 py-14 md:px-16 md:py-20
+                 px-6 py-12 md:px-16 md:py-20
                  text-center text-white shadow-2xl"
             >
               {/* Decorative glow */}
-              <div className="absolute -top-30 -right-32 w-96 h-96 bg-upleex-blue/20 rounded-full blur-3xl" />
-              <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-upleex-purple/20 rounded-full blur-3xl" />
+              <div className="absolute -top-30 -right-32 w-96 h-96 bg-upleex-blue/20 rounded-full blur-3xl opacity-50" />
+              <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-upleex-purple/20 rounded-full blur-3xl opacity-50" />
 
               <motion.div
                 initial="hidden"
@@ -438,7 +440,7 @@ export default function Home() {
                     hidden: { opacity: 0, y: 20 },
                     show: { opacity: 1, y: 0 },
                   }}
-                  className="text-3xl md:text-5xl font-bold leading-tight"
+                  className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight px-2"
                 >
                   Ready to upgrade your lifestyle?
                 </motion.h2>
@@ -449,7 +451,7 @@ export default function Home() {
                     hidden: { opacity: 0, y: 20 },
                     show: { opacity: 1, y: 0 },
                   }}
-                  className="text-lg md:text-xl text-slate-300"
+                  className="text-base sm:text-lg md:text-xl text-slate-300 px-4"
                 >
                   Join thousands of happy customers renting their favorite products on{" "}
                   <span className="text-white font-semibold">Upleex</span>.
@@ -463,11 +465,11 @@ export default function Home() {
                   }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.96 }}
-                  className="pt-6"
+                  className="pt-4 sm:pt-6"
                 >
                   <Button
                     size="lg"
-                    className="rounded-full px-6 sm:px-10 py-6
+                    className="rounded-full px-8 sm:px-10 py-6
                        bg-white text-slate-900 text-base sm:text-lg
                        hover:bg-slate-100
                        shadow-xl transition-all w-full sm:w-auto"

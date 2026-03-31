@@ -13,7 +13,7 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <Link href="/" className="flex-shrink-0 flex items-center gap-2">
             <Image
-              src="/image/upleex-logo-light.webp"
+              src="/image/upleex-logo-light.jpg"
               alt="Upleex Logo"
               width={150}
               height={40}

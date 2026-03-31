@@ -88,7 +88,7 @@ export const HeroCarousel = () => {
   if (loading || banners.length === 0) {
     if (loading) {
       return (
-        <div className="w-full h-[400px] md:h-[500px] bg-gray-100 animate-pulse flex items-center justify-center">
+        <div className="w-full h-[300px] sm:h-[400px] lg:h-[550px] bg-gray-100 animate-pulse flex items-center justify-center rounded-2xl">
           <span className="text-gray-400">Loading Banners...</span>
         </div>
       );
@@ -97,23 +97,25 @@ export const HeroCarousel = () => {
   }
 
   return (
-    <section className="w-full py-8 overflow-hidden bg-gray-50">
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="w-full py-4 sm:py-8 overflow-hidden bg-gray-50">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12">
         {/* Carousel Container */}
-        <div className="relative h-[400px] md:h-[500px] w-full max-w-full mx-auto mt-4 flex items-center justify-center perspective-1000">
+        <div className="relative h-[300px] sm:h-[400px] lg:h-[550px] w-full max-w-full mx-auto mt-2 sm:mt-4 flex items-center justify-center perspective-1000">
           {/* Navigation Buttons */}
           <button
             onClick={handlePrev}
-            className="absolute left-2 md:-left-6 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-white/80 shadow-xl hover:bg-white transition-all text-slate-800 backdrop-blur-md cursor-pointer"
+            className="absolute -left-2 sm:left-2 lg:-left-6 top-1/2 -translate-y-1/2 z-40 p-2 sm:p-3 rounded-full bg-white/90 shadow-xl hover:bg-white transition-all text-slate-800 backdrop-blur-md cursor-pointer group"
           >
-            <ChevronLeft size={28} />
+            <ChevronLeft size={24} className="sm:hidden" />
+            <ChevronLeft size={28} className="hidden sm:block group-hover:-translate-x-0.5 transition-transform" />
           </button>
 
           <button
             onClick={handleNext}
-            className="absolute right-2 md:-right-6 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-white/80 shadow-xl hover:bg-white transition-all text-slate-800 backdrop-blur-md cursor-pointer"
+            className="absolute -right-2 sm:right-2 lg:-right-6 top-1/2 -translate-y-1/2 z-40 p-2 sm:p-3 rounded-full bg-white/90 shadow-xl hover:bg-white transition-all text-slate-800 backdrop-blur-md cursor-pointer group"
           >
-            <ChevronRight size={28} />
+            <ChevronRight size={24} className="sm:hidden" />
+            <ChevronRight size={28} className="hidden sm:block group-hover:translate-x-0.5 transition-transform" />
           </button>
 
           {/* Slides */}
@@ -137,11 +139,12 @@ export const HeroCarousel = () => {
                   className={`absolute w-[88%] md:w-[82%] h-full rounded-2xl overflow-hidden shadow-2xl cursor-pointer ${isHidden ? 'pointer-events-none' : ''}`}
                   initial={false}
                   animate={{
-                    scale: isActive ? 1 : (isHidden ? 0.85 : 0.92),
+                    scale: isActive ? 1 : (isHidden ? 0.85 : 0.94),
                     opacity: isActive ? 1 : (isHidden ? 0 : 0.6),
-                    x: isActive ? '0%' : (isPrev ? '-100%' : (isNext ? '100%' : '0%')),
+                    x: isActive ? '0%' : (isPrev ? '-85%' : (isNext ? '85%' : '0%')),
                     zIndex: isActive ? 30 : (isHidden ? 10 : 20),
-                    filter: isActive ? 'blur(0px)' : 'blur(2px)'
+                    filter: isActive ? 'blur(0px)' : 'blur(2px)',
+                    rotateY: isPrev ? 15 : (isNext ? -15 : 0)
                   }}
                   transition={{
                     duration: 0.8,
@@ -166,18 +169,18 @@ export const HeroCarousel = () => {
                     <div className={`absolute inset-0 bg-gradient-to-r ${banner.color || 'bg-blue-900'} opacity-80 mix-blend-multiply`}></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
 
-                    <div className="absolute inset-0 flex flex-col justify-end md:justify-center p-6 md:p-12 text-white">
+                    <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 md:p-14 text-white">
                       <div className={`transition-all duration-700 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                         {banner.subtitle && (
-                          <p className="text-sm md:text-lg font-medium text-blue-200 mb-3 uppercase tracking-widest">
+                          <p className="text-xs sm:text-sm md:text-lg font-bold text-blue-200 mb-2 sm:mb-4 uppercase tracking-[0.2em]">
                             {banner.subtitle}
                           </p>
                         )}
-                        <h2 className="text-3xl md:text-5xl font-extrabold mb-5 leading-tight max-w-lg">
+                        <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-6 leading-[1.1] max-w-2xl">
                           {banner.title}
                         </h2>
                         {banner.description && (
-                          <p className="text-gray-200 text-sm md:text-base max-w-md mb-8 line-clamp-2">
+                          <p className="text-gray-200 text-sm sm:text-base lg:text-lg max-w-lg mb-6 sm:mb-10 line-clamp-2 md:line-clamp-3 leading-relaxed">
                             {banner.description}
                           </p>
                         )}

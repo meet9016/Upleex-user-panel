@@ -14,7 +14,7 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
   return (
     <section className="py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header */}
         <div className="relative mb-12 flex items-center justify-center">
           <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary text-center pb-1">
@@ -35,7 +35,7 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {latestBlogs.map((blog) => (
             <BlogCard key={blog.id} blog={blog} />
           ))}
@@ -61,10 +61,10 @@ const BlogCard = memo(({ blog }: BlogCardProps) => {
         <div className="relative overflow-hidden rounded-2xl mb-4 shadow-lg">
           <div className="aspect-square bg-gray-100 relative">
             <img
-      src={blog.image}
-      alt={blog.title}
-      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-    />
+              src={blog.image}
+              alt={blog.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
           </div>
 
           {/* Overlay */}
