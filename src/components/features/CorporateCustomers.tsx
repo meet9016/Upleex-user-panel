@@ -20,7 +20,7 @@ interface LogoItemProps {
 
 const LogoItem = memo(({ src }: LogoItemProps) => {
   return (
-    <div className="flex items-center justify-center min-w-[180px] h-24 px-6 mx-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 group/item hover:-translate-y-1">
+    <div className="flex items-center justify-center min-w-[140px] sm:min-w-[180px] h-20 sm:h-24 px-4 sm:px-6 mx-2 sm:mx-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 group/item hover:-translate-y-1">
       <div className="relative w-full h-12">
         <Image
           src={src}
@@ -45,20 +45,20 @@ export const CorporateCustomers = () => {
   }, []);
 
   return (
-    <section className="py-10 bg-gray-50 overflow-hidden relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 text-center">
-        <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary mb-6 inline-block">
+    <section className="py-10 sm:py-16 md:py-20 bg-gray-50 overflow-hidden relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 sm:mb-16 text-center">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gradient-primary mb-4 sm:mb-6 inline-block tracking-tight">
           Our Corporate Customers
         </h2>
-        <p className="text-slate-500 max-w-2xl mx-auto">
+        <p className="text-slate-500 max-w-2xl mx-auto text-sm sm:text-base md:text-lg">
           Trusted by leading companies and startups across the country
         </p>
       </div>
 
       <div className="relative flex overflow-x-hidden group marquee-group">
         {/* Gradient Masks */}
-        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none" />
 
         <div className="flex animate-marquee py-4 w-max">
           {repeatedLogos.map((logo, index) => (

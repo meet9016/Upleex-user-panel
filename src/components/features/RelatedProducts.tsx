@@ -46,33 +46,33 @@ export const RelatedProducts = () => {
         {/* Optional: View All link if needed in future */}
         {/* <a href="#" className="text-sm font-semibold text-blue-600 hover:text-blue-700">View All</a> */}
       </div>
-      
+
       {/* Products Grid */}
       <div className="p-6 lg:p-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {RELATED_PRODUCTS.map((product) => (
-            <div 
+            <div
               key={product.id}
               className="group flex flex-col h-full bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg hover:shadow-blue-500/10 hover:border-blue-200 transition-all duration-300"
             >
               {/* Image Area */}
               <div className="aspect-[4/3] bg-gray-50 p-4 relative overflow-hidden">
-                 <img 
-                   src={product.image} 
-                   alt={product.title}
-                   className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
-                 />
-                 
-                 {/* Quick action overlay (optional) */}
-                 <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className="w-full h-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-110"
+                />
+
+                {/* Quick action overlay (optional) */}
+                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-              
+
               {/* Content Area */}
               <div className="p-4 flex flex-col flex-grow">
                 <h3 className="font-bold text-gray-900 text-sm mb-2 line-clamp-2 min-h-[40px] group-hover:text-blue-600 transition-colors" title={product.title}>
                   {product.title}
                 </h3>
-                
+
                 <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
                   <div className="flex items-baseline gap-0.5">
                     <span className="text-lg font-extrabold text-blue-600 group-hover:text-blue-700 transition-colors">

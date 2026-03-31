@@ -413,7 +413,7 @@ export const Navbar: React.FC = () => {
             {/* Logo */}
             <Link href="/" className="flex-shrink-0 flex items-center gap-2">
               <Image
-                src="/image/upleex-logo-dark.png"
+                src="/image/upleex-logo-dark.jpg"
                 alt="Upleex Logo"
                 width={150}
                 height={40}
@@ -501,7 +501,7 @@ export const Navbar: React.FC = () => {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 flex items-center gap-2">
             <Image
-              src="/image/upleex-logo-dark.png"
+              src="/image/upleex-logo-dark.jpg"
               alt="Upleex Logo"
               width={150}
               height={40}
@@ -1104,7 +1104,7 @@ export const Navbar: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-100">
               <Link href="/" onClick={() => setIsMenuOpen(false)}>
-                <Image src="/image/upleex-logo-dark.png" alt="Logo" width={120} height={32} />
+                <Image src="/image/upleex-logo-dark.jpg" alt="Logo" width={120} height={32} />
               </Link>
               <button onClick={() => setIsMenuOpen(false)} className="p-2 text-gray-500">
                 <X size={24} />

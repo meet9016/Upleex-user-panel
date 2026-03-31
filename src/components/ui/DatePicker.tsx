@@ -12,6 +12,7 @@ interface DatePickerProps {
   label?: string;
   className?: string;
   disabled?: boolean;
+  align?: "left" | "right";
 }
 
 export function DatePicker({
@@ -22,6 +23,7 @@ export function DatePicker({
   label = "Select Date",
   className,
   disabled = false,
+  align = "left",
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date()); // For navigation
@@ -213,7 +215,10 @@ export function DatePicker({
 
       {/* Dropdown Calendar */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in zoom-in-95 duration-200">
+        <div className={clsx(
+          "absolute top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in zoom-in-95 duration-200",
+          align === "right" ? "right-0" : "left-0"
+        )}>
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <button

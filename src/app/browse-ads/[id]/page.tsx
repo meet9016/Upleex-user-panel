@@ -985,6 +985,7 @@ export default function ProductDetailsPage() {
                         onChange={setEndDate}
                         min={getMinEndDate()}
                         max={getMinEndDate()}
+                        align="right"
                       />
                       )}
                       {isHourly && activeTab !== 'monthly' && (
