@@ -1,41 +1,56 @@
 'use client';
-
-import { ShieldCheck, Database, Eye, Lock, Cookie, UserCog } from 'lucide-react';
-
+ 
+import { ShieldCheck, Database, Lock, Cookie, UserCog, Cpu, Users, History, Baby, RefreshCcw } from 'lucide-react';
+ 
 export default function PrivacyPolicyPage() {
   const sections = [
     {
       title: "1. Information We Collect",
       icon: <Database className="w-6 h-6 text-upleex-purple" />,
-      content: "We collect information to provide better services to all our users. Information we collect includes personal data such as your name, email address, phone number, and address that you provide when registering. We also collect transaction data when you rent products from us, including rental duration and payment method details."
+      content: "We collect various types of information to provide and improve our services: Personal Information (Name, Phone, Email), KYC Documents (Aadhaar, PAN, etc.), Transaction Details, and Device & Usage data."
     },
     {
-      title: "2. How We Use Information",
-      icon: <Eye className="w-6 h-6 text-upleex-blue" />,
-      content: "We use the information we collect to provide, maintain, protect and improve our services, to develop new ones, and to protect Upleex and our users. This includes fulfilling your requests for products, keeping you informed about the status of your rentals, and sending you relevant promotional offers (which you can opt out of)."
+      title: "2. Purpose of Data",
+      icon: <Cpu className="w-6 h-6 text-upleex-blue" />,
+      content: "We use the collected data for several purposes: To provide and maintain our services, to process your orders and rentals, to improve user experience through personalization, and to detect and prevent fraudulent activities."
     },
     {
-      title: "3. Information Security",
-      icon: <Lock className="w-6 h-6 text-emerald-500" />,
-      content: "We work hard to protect Upleex and our users from unauthorized access to or unauthorized alteration, disclosure or destruction of information we hold. We use secure servers, industry-standard firewalls, and end-to-end encryption for payment processing to ensure the safety of your information."
+      title: "3. Data Sharing",
+      icon: <Users className="w-6 h-6 text-emerald-500" />,
+      content: "We may share your information with trusted third parties to facilitate our services. This includes sharing necessary details with vendors for product fulfillment, payment gateways for secure transactions, and logistics partners for delivery."
     },
     {
-      title: "4. Your Data Rights",
-      icon: <UserCog className="w-6 h-6 text-orange-500" />,
-      content: "Depending on your location, you may have rights under privacy laws regarding your personal information, including the right to request access, correction, deletion, or portability of your personal data. You can exercise these rights by contacting us through our support channels or managing your preferences in your account settings."
-    },
-    {
-      title: "5. Cookies & Tracking",
+      title: "4. Cookies",
       icon: <Cookie className="w-6 h-6 text-amber-600" />,
-      content: "We use cookies and similar tracking technologies to track the activity on our Service and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our Service."
+      content: "We use cookies and similar tracking technologies to enhance your experience. These are used for personalization, analyzing platform traffic and usage patterns, and tracking the performance of our features."
     },
     {
-      title: "6. Changes to This Policy",
-      icon: <ShieldCheck className="w-6 h-6 text-slate-500" />,
-      content: "Our Privacy Policy may change from time to time. We will not reduce your rights under this Privacy Policy without your explicit consent. We will post any privacy policy changes on this page and, if the changes are significant, we will provide a more prominent notice."
+      title: "5. Data Security",
+      icon: <Lock className="w-6 h-6 text-blue-500" />,
+      content: "We prioritize your data security. Our platform implements industry-standard encryption, secure server environments, and restricted access protocols to protect your personal information from unauthorized access."
+    },
+    {
+      title: "6. Data Retention",
+      icon: <History className="w-6 h-6 text-indigo-500" />,
+      content: "We retain your personal data only for as long as necessary. This includes retention for legal compliance, resolution of disputes, and for legitimate business and operational purposes."
+    },
+    {
+      title: "7. User Rights",
+      icon: <UserCog className="w-6 h-6 text-orange-500" />,
+      content: "You have certain rights regarding your personal data. You can access your stored information, request corrections to inaccurate data, or request the deletion of your personal data under certain conditions."
+    },
+    {
+      title: "8. Children Policy",
+      icon: <Baby className="w-6 h-6 text-rose-500" />,
+      content: "The Upleex platform is not intended for use by individuals under the age of 18. We do not knowingly collect personal information from children."
+    },
+    {
+      title: "9. Updates",
+      icon: <RefreshCcw className="w-6 h-6 text-slate-500" />,
+      content: "Our Privacy Policy may be updated from time to time. Any changes will be posted on this page, and we encourage you to review it periodically to stay informed about how we protect your data."
     }
   ];
-
+ 
   return (
     <div className="min-h-screen bg-slate-50/50 py-12 md:py-20 px-4">
       <div className="max-w-4xl mx-auto space-y-12">
@@ -46,10 +61,10 @@ export default function PrivacyPolicyPage() {
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Privacy Policy</h1>
           <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-            Your privacy is critically important to us. This policy outlines how we collect, use, and protect your personal information on Upleex.
+            At Upleex, we value your privacy and are committed to protecting your data.
           </p>
         </div>
-
+ 
         {/* Content Section */}
         <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="p-8 md:p-12 space-y-10">
