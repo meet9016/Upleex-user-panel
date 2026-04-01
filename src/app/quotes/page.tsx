@@ -133,10 +133,10 @@ const UserQuotesPage = () => {
     ) : (
       <>
         {/* Grid Layout - 2 boxes per row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {quotes.map((quote) => (
             <div key={quote._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
-              <div className="p-6">
+              <div className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4 flex-1">
                     <div className="flex-shrink-0">
@@ -171,7 +171,7 @@ const UserQuotesPage = () => {
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-4">
+                <div className="mt-6 grid grid-cols-3 gap-4">
                   <div className="flex items-center space-x-2">
                     <Package className="h-4 w-4 text-gray-400 flex-shrink-0" />
                     <div>
@@ -273,7 +273,7 @@ const UserQuotesPage = () => {
                   </div>
                 )}
 
-                <div className="mt-4 flex justify-between items-center pt-4 border-t border-gray-200">
+                <div className="mt-1   flex justify-between items-center pt-2 border-t border-gray-200">
                   <div className="text-sm text-gray-500">
                     ID: {quote._id.slice(-8).toUpperCase()}
                   </div>
