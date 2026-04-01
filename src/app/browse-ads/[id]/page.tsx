@@ -905,7 +905,7 @@ export default function ProductDetailsPage() {
                       <input
                         type="number"
                         min={1}
-                        max={isSell && productDetails?.available_quantity ? productDetails.available_quantity : undefined}
+                        max={productDetails?.available_quantity || 9999}
                         value={quantity}
                         onFocus={(e) => e.currentTarget.select()}
                         onChange={(e) => {
@@ -925,12 +925,28 @@ export default function ProductDetailsPage() {
 
                           let clamped = Math.max(1, parsed);
 
-                          // For sell products, limit to available stock
-                          if (isSell && productDetails?.available_quantity) {
+                          // Apply stock validation for both sell and non-sell products
+                          if (productDetails?.available_quantity) {
                             clamped = Math.min(clamped, productDetails.available_quantity);
                           }
 
+                          // Apply maximum limit of 9999
+                          clamped = Math.min(clamped, 9999);
+
                           setQuantity(clamped);
+                        }}
+                        onBlur={(e) => {
+                          // Additional validation on blur
+                          const value = Number(e.target.value);
+                          if (value < 1) {
+                            setQuantity(1);
+                          } else if (productDetails?.available_quantity && value > productDetails.available_quantity) {
+                            setQuantity(productDetails.available_quantity);
+                            toast.error(`Maximum available quantity is ${productDetails.available_quantity}`);
+                          } else if (value > 9999) {
+                            setQuantity(9999);
+                            toast.error("Maximum quantity limit is 9999");
+                          }
                         }}
                         className="w-14 text-center font-extrabold text-lg text-slate-900 bg-transparent focus:outline-none focus:ring-0"
                       />
@@ -938,10 +954,7 @@ export default function ProductDetailsPage() {
                         onClick={() => {
                           let newQuantity = quantity + 1;
                           newQuantity = Math.min(9999, newQuantity);
-                          if (isSell && productDetails?.available_quantity) {
-                            newQuantity = Math.min(newQuantity, productDetails.available_quantity);
-                          }
-                          if (!isSell && productDetails?.available_quantity) {
+                          if (productDetails?.available_quantity) {
                             newQuantity = Math.min(newQuantity, productDetails.available_quantity);
                           }
                           setQuantity(newQuantity);
@@ -949,8 +962,7 @@ export default function ProductDetailsPage() {
                         className=" rounded-md  hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         disabled={
                           quantity >= 9999 ||
-                          (isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false) ||
-                          (!isSell && productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false)
+                          (productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false)
                         }
                       >
                         <Plus size={16} className="text-gray-600" />

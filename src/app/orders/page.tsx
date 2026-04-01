@@ -70,7 +70,13 @@ export default function OrdersPage() {
         setTotalPages(response.data.data.pagination?.pages || 1);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Failed to fetch orders');
+      // Handle case when user is not logged in - just show empty orders
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        setOrders([]);
+        setTotalPages(1);
+      } else {
+        toast.error(error?.response?.data?.message || 'Failed to fetch orders');
+      }
     } finally {
       setLoading(false);
     }
@@ -109,8 +115,8 @@ export default function OrdersPage() {
         {orders.length === 0 ? (
           <div className="text-center py-20">
             <ShoppingBag className="mx-auto h-20 w-20 text-gray-300 mb-6" />
-            <h3 className="text-2xl font-semibold text-gray-900">No orders yet</h3>
-            <p className="text-gray-500 mt-3">When you place an order, it will appear here.</p>
+            <h3 className="text-2xl font-semibold text-gray-900">No orders found</h3>
+            <p className="text-gray-500 mt-3">Orders will appear here when available.</p>
           </div>
         ) : (
           <>
