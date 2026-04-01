@@ -61,7 +61,7 @@ export default function CategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pt-10 pb-10">
+    <div className="min-h-screen bg-gray-50/50 pt-10 pb-12">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* <div className="text-center mb-10">
           <h1 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
@@ -72,38 +72,49 @@ export default function CategoriesPage() {
           </p>
         </div> */}
 
-        <div className="flex flex-col lg:flex-row gap-8 min-h-screen">
+        <div className="flex flex-col lg:flex-row gap-8  min-h-screen">
           {/* Sidebar */}
-           <div className="lg:w-1/4">
-    <div className="sticky top-32">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 max-h-[calc(100vh-6rem)] overflow-y-auto">
-        
-        {/* Search */}
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search categories..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-upleex-purple/20 focus:border-upleex-purple transition-all text-sm"
-          />
-        </div>
+          <div className="lg:w-1/4">
+              <div className="sticky top-32">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
+              <div className="relative mb-6">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Search categories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-upleex-purple/20 focus:border-upleex-purple transition-all text-sm"
+                />
+              </div>
 
-        {/* Categories */}
-        <div className="space-y-1 pr-2">
-          {filteredCategories.map((cat) => (
-            <label key={cat.categories_id} className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-gray-50">
-              <span className="text-sm">{cat.categories_name}</span>
-            </label>
-          ))}
-        </div>
+              <div className="space-y-1 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                {filteredCategories.map((cat) => (
+                  <label
+                    key={cat.categories_id}
+                    className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
+                      selectedCategoryIds.includes(cat.categories_id)
+                        ? 'bg-purple-50 text-upleex-purple'
+                        : 'hover:bg-gray-50 text-slate-600'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${selectedCategoryIds.includes(cat.categories_id) ? 'bg-upleex-purple' : 'bg-transparent'}`} />
+                      <span className="font-medium text-sm">{cat.categories_name}</span>
+                    </div>
+                    <Checkbox
+                      checked={selectedCategoryIds.includes(cat.categories_id)}
+                      onCheckedChange={() => toggleCategory(cat.categories_id)}
+                      className="border-gray-300 data-[state=checked]:bg-upleex-purple data-[state=checked]:border-upleex-purple"
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+          </div>
 
-      </div>
-    </div>
-  </div>
-`
-          {/* Main Area */}`
+          {/* Main Area */}
           <div className="lg:w-3/4">
             <div className="space-y-12">
               <AnimatePresence mode="popLayout">
