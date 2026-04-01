@@ -27,6 +27,7 @@ import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
+import { Button } from '@/components/ui/Button';
 
 // Razorpay types
 declare global {
@@ -377,13 +378,13 @@ export default function CartPage() {
               Looks like you haven’t added anything yet.
             </p>
             <Link href="/">
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="mt-8 inline-flex items-center gap-2 bg-blue-600 text-white px-8 py-3.5 rounded-xl font-medium hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200"
+              <Button 
+                // whileHover={{ scale: 1.05 }}
+                // whileTap={{ scale: 0.95 }}
+                className="mt-8 inline-flex items-center gap-2  px-8 py-3.5 rounded-xl font-medium blue transition-colors shadow-lg "
               >
                 Start Shopping <ArrowRight size={18} />
-              </motion.button>
+              </Button>
             </Link>
           </motion.div>
         ) : (

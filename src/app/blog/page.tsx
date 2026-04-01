@@ -54,12 +54,12 @@ export default function BlogListPage() {
               Blogs
             </h1>
           </div>
-          <Button
+          {/* <Button
             variant="outline"
             className="rounded-full px-6 hidden md:inline-flex"
           >
             {blogs.length} Articles
-          </Button>
+          </Button> */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

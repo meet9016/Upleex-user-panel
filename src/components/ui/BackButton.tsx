@@ -34,7 +34,10 @@ export const BackButton: React.FC<BackButtonProps> = ({
       variant={variant}
       size={size}
       onClick={handleBack}
-      className={cn("flex items-center gap-2", className)}
+       className={cn(
+    "flex items-center gap-2 bg-gray-300 text-white hover:bg-gray-400",
+    className
+  )}
       type="button"
       {...props}
     >
