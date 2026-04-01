@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Phone, Mail, MapPin, Send, MessageSquare, ArrowRight, Building, HelpCircle, Star } from 'lucide-react';
+import { Phone, Mail, MapPin, Send, MessageSquare, ArrowRight, Building, HelpCircle, Star, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { contactService, type ContactFormData, type ContactFormErrors } from '@/services/contactService';
+import { toast } from 'react-hot-toast';
 
 export default function ContactUsPage() {
   const [form, setForm] = useState({
@@ -14,14 +16,116 @@ export default function ContactUsPage() {
     mobile: '',
     message: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<ContactFormErrors>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const validateForm = (): boolean => {
+    const newErrors: ContactFormErrors = {};
+    
+    // Name validation
+    const fullName = `${form.firstName} ${form.lastName}`.trim();
+    if (!form.firstName.trim()) {
+      newErrors.name = 'First name is required';
+    } else if (fullName.length < 2) {
+      newErrors.name = 'Name must be at least 2 characters';
+    } else if (fullName.length > 100) {
+      newErrors.name = 'Name cannot exceed 100 characters';
+    }
+
+    // Email validation
+    if (!form.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+
+    // Phone validation (optional)
+    if (form.mobile && !/^[0-9]{10}$/.test(form.mobile)) {
+      newErrors.phone = 'Please enter a valid 10-digit phone number';
+    }
+
+    // Message validation
+    if (!form.message.trim()) {
+      newErrors.message = 'Message is required';
+    } else if (form.message.trim().length < 10) {
+      newErrors.message = 'Message must be at least 10 characters';
+    } else if (form.message.trim().length > 1000) {
+      newErrors.message = 'Message cannot exceed 1000 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Handle mobile number input - only allow numbers and limit to 10 digits
+    if (name === 'mobile') {
+      const numbersOnly = value.replace(/\D/g, '');
+      if (numbersOnly.length <= 10) {
+        setForm(prev => ({ ...prev, [name]: numbersOnly }));
+        // Clear error when user starts typing
+        if (errors.phone) {
+          setErrors(prev => ({ ...prev, phone: undefined }));
+        }
+      }
+      return;
+    }
+    
     setForm(prev => ({ ...prev, [name]: value }));
+    
+    // Clear specific error when user starts typing
+    if (errors[name as keyof ContactFormErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      toast.error('Please fix the errors below');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const contactData: ContactFormData = {
+        name: `${form.firstName} ${form.lastName}`.trim(),
+        email: form.email.trim(),
+        phone: form.mobile ? `${form.dialCode}${form.mobile}` : undefined,
+        message: form.message.trim(),
+      };
+
+      const response = await contactService.submitContact(contactData);
+      
+      if (response.success) {
+        toast.success(response.message);
+        setSubmitted(true);
+        setForm({
+          firstName: '',
+          lastName: '',
+          email: '',
+          dialCode: '+91',
+          mobile: '',
+          message: '',
+        });
+        setErrors({});
+        
+        // Reset submitted state after 5 seconds
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        toast.error(response.message || 'Failed to send message. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('Contact form error:', error);
+      const errorMessage = error?.response?.data?.message || 'Failed to send message. Please try again.';
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -118,68 +222,148 @@ export default function ContactUsPage() {
           </div>
 
           <div className="w-full lg:w-[55%] p-8 md:p-10 lg:p-12 bg-white">
+            {submitted ? (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Message Sent Successfully!</h3>
+                <p className="text-slate-600 mb-6">Thank you for contacting us. We'll get back to you within 24 hours.</p>
+                <Button
+                  onClick={() => setSubmitted(false)}
+                  className="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2 rounded-xl"
+                >
+                  Send Another Message
+                </Button>
+              </div>
+            ) : (
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">First Name</label>
+                  <label className="text-sm font-semibold text-slate-700">
+                    First Name <span className="text-red-500">*</span>
+                  </label>
                   <input
-                    type="text" name="firstName" value={form.firstName} onChange={handleChange}
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
+                    type="text" 
+                    name="firstName" 
+                    value={form.firstName} 
+                    onChange={handleChange}
+                    className={`w-full rounded-2xl border px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
+                      errors.name 
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    }`}
                     placeholder="First name"
+                    disabled={loading}
                   />
+                  {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">Last Name</label>
                   <input
-                    type="text" name="lastName" value={form.lastName} onChange={handleChange}
-                    className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
+                    type="text" 
+                    name="lastName" 
+                    value={form.lastName} 
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border border-gray-300 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     placeholder="Last name"
+                    disabled={loading}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                <label className="text-sm font-semibold text-slate-700">
+                  Email Address <span className="text-red-500">*</span>
+                </label>
                 <input
-                  type="email" name="email" value={form.email} onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
+                  type="email" 
+                  name="email" 
+                  value={form.email} 
+                  onChange={handleChange}
+                  className={`w-full rounded-2xl border px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
+                    errors.email 
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                      : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
+                  }`}
                   placeholder="you@company.com"
+                  disabled={loading}
                 />
+                {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">Phone Number</label>
-                <div className="flex items-center group">
-                  <div className="flex items-center bg-slate-100 border border-slate-200 border-r-0 rounded-l-2xl px-4 py-3.5 text-sm md:text-base text-slate-600 font-medium group-focus-within:border-upleex-purple transition-colors">
+                <div className="flex">
+                  <div className="flex items-center bg-gray-50 border border-gray-300 border-r-0 rounded-l-2xl px-4 py-3.5 text-sm md:text-base text-slate-600 font-medium">
                     <span>{form.dialCode}</span>
                   </div>
                   <input
-                    type="tel" name="mobile" value={form.mobile} onChange={handleChange}
-                    className="flex-1 rounded-r-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
+                    type="tel" 
+                    name="mobile" 
+                    value={form.mobile} 
+                    onChange={handleChange}
+                    className={`flex-1 rounded-r-2xl border px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
+                      errors.phone 
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                        : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    }`}
                     placeholder="98765 43210"
+                    disabled={loading}
+                    inputMode="numeric"
+                    maxLength={10}
                   />
                 </div>
+                {errors.phone && <p className="text-red-600 text-sm ">{errors.phone}</p>}
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Message</label>
+                <label className="text-sm font-semibold text-slate-700">
+                  Message <span className="text-red-500">*</span>
+                </label>
                 <textarea
-                  rows={4} name="message" value={form.message} onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3.5 text-slate-900 text-sm md:text-base resize-none focus:outline-none focus:ring-4 focus:ring-upleex-purple/10 focus:border-upleex-purple bg-slate-50 hover:bg-slate-100 transition-all duration-300 placeholder:text-slate-400"
-                  placeholder="Leave us a message..."
+                  rows={6} 
+                  name="message" 
+                  value={form.message} 
+                  onChange={handleChange}
+                  className={`w-full rounded-2xl border px-4 py-3.5 text-slate-900 text-sm md:text-base resize-none focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
+                    errors.message 
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                      : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
+                  }`}
+                  placeholder="Tell us how we can help you..."
+                  disabled={loading}
                 />
+                {errors.message && <p className="text-red-600 text-sm ">{errors.message}</p>}
+                <div className="text-right text-xs text-slate-400">
+                  {form.message.length}/1000 characters
+                </div>
               </div>
 
               <div className="pt-2">
                 <Button
                   type="submit"
                   fullWidth
-                  className="h-12 md:h-14 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 shadow-xl shadow-slate-900/20 active:translate-y-0"
+                  disabled={loading}
+                  className="h-12 md:h-14 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed text-white font-semibold text-base rounded-2xl transition-all duration-300 transform hover:-translate-y-1 shadow-xl shadow-slate-900/20 active:translate-y-0 disabled:transform-none disabled:shadow-none flex items-center justify-center gap-2"
                 >
-                  Send Message
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Send Message
+                    </>
+                  )}
                 </Button>
               </div>
             </form>
+            )}
           </div>
         </div>
 

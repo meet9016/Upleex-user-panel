@@ -42,6 +42,9 @@ export interface EndPointApi {
     serviceList: string;
     serviceDetails: string;
     bannerList: string;
+    
+    // Contact
+    createContact: string;
 }
 
 // Define and export the API endpoint object
@@ -88,6 +91,9 @@ const endPointApi: EndPointApi = {
     serviceList: 'services/getall',
     serviceDetails: 'services/getById',
     bannerList: 'banners/getall',
+    
+    // Contact
+    createContact: 'create-contact',
 };
 
 
