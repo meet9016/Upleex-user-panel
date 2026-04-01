@@ -406,82 +406,83 @@ export default function Home() {
         <CorporateCustomers />
 
         {/* CTA Section */}
-        <section className="py-16 sm:py-24" suppressHydrationWarning={true}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning={true}>
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-              className="relative overflow-hidden rounded-3xl
-                 bg-gradient-to-br from-upleex-dark via-slate-900 to-slate-800
-                 px-6 py-12 md:px-16 md:py-20
-                 text-center text-white shadow-2xl"
-            >
-              {/* Decorative glow */}
-              <div className="absolute -top-30 -right-32 w-96 h-96 bg-upleex-blue/20 rounded-full blur-3xl opacity-50" />
-              <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-upleex-purple/20 rounded-full blur-3xl opacity-50" />
-
+          <section className="py-16 sm:py-24" suppressHydrationWarning={true}>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning={true}>
               <motion.div
-                initial="hidden"
-                whileInView="show"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                variants={{
-                  hidden: {},
-                  show: {
-                    transition: { staggerChildren: 0.15 },
-                  },
-                }}
-                className="relative z-10 max-w-3xl mx-auto space-y-6"
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="relative overflow-hidden rounded-3xl
+                  bg-gradient-to-br from-upleex-dark via-slate-900 to-slate-800
+                  px-6 py-12 md:px-16 md:py-20
+                  text-center text-white shadow-2xl"
               >
-                {/* Heading */}
-                <motion.h2
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    show: { opacity: 1, y: 0 },
-                  }}
-                  className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight px-2"
-                >
-                  Ready to upgrade your lifestyle?
-                </motion.h2>
+                {/* Decorative glow */}
+                <div className="absolute -top-30 -right-32 w-96 h-96 bg-upleex-blue/20 rounded-full blur-3xl opacity-50" />
+                <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-upleex-purple/20 rounded-full blur-3xl opacity-50" />
 
-                {/* Description */}
-                <motion.p
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    show: { opacity: 1, y: 0 },
-                  }}
-                  className="text-base sm:text-lg md:text-xl text-slate-300 px-4"
-                >
-                  Join thousands of happy customers renting their favorite products on{" "}
-                  <span className="text-white font-semibold">Upleex</span>.
-                </motion.p>
-
-                {/* CTA */}
                 <motion.div
+                  initial="hidden"
+                  whileInView="show"
+                  viewport={{ once: true }}
                   variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    show: { opacity: 1, y: 0 },
+                    hidden: {},
+                    show: {
+                      transition: { staggerChildren: 0.15 },
+                    },
                   }}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.96 }}
-                  className="pt-4 sm:pt-6"
+                  className="relative z-10 max-w-3xl mx-auto space-y-6"
                 >
-                  <Button
-                    size="lg"
-                    className="rounded-full px-8 sm:px-10 py-6
-                       bg-white text-slate-900 text-base sm:text-lg
-                       hover:bg-slate-100
-                       shadow-xl transition-all w-full sm:w-auto"
+                  {/* Heading */}
+                  <motion.h2
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      show: { opacity: 1, y: 0 },
+                    }}
+                    className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight px-2"
                   >
-                    Start Renting Now
-                  </Button>
-                </motion.div>
+                    Ready to upgrade your lifestyle?
+                  </motion.h2>
 
+                  {/* Description */}
+                  <motion.p
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      show: { opacity: 1, y: 0 },
+                    }}
+                    className="text-base sm:text-lg md:text-xl text-slate-300 px-4"
+                  >
+                    Join thousands of happy customers renting their favorite products on{" "}
+                    <span className="text-white font-semibold">Upleex</span>.
+                  </motion.p>
+
+                  {/* CTA */}
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      show: { opacity: 1, y: 0 },
+                    }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.96 }}
+                    className="pt-4 sm:pt-6"
+                  >
+                    <Button
+                      size="lg"
+                       onClick={() => router.push("/partner")}
+                      className="rounded-full px-8 sm:px-10 py-6
+                        bg-white text-slate-900 text-base sm:text-lg
+                        hover:bg-slate-100
+                        shadow-xl transition-all w-full sm:w-auto"
+                    >
+                      Start Renting Now
+                    </Button>
+                  </motion.div>
+
+                </motion.div>
               </motion.div>
-            </motion.div>
-          </div>
-        </section>
+            </div>
+          </section>
 
       </main>
 

@@ -116,7 +116,7 @@ export default function CategoriesPage() {
 
           {/* Main Area */}
           <div className="lg:w-3/4">
-            <div className="space-y-12">
+            <div className="space-y-4">
               <AnimatePresence mode="popLayout">
                 {selectedCategories.length > 0 ? (
                   selectedCategories.map((cat) => (
@@ -126,9 +126,9 @@ export default function CategoriesPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.3 }}
-                      className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100"
+                      className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100"
                     >
-                      <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-50">
+                      <div className="flex items-center justify-between border-b border-gray-50 ">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center">
                             {cat.image && (
