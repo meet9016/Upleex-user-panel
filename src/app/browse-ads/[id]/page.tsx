@@ -52,6 +52,7 @@ export default function ProductDetailsPage() {
 
   const [selectedImage, setSelectedImage] = useState<string>(""); // For image gallery
   const [productDetails, setProductDetails] = useState<any>(null);
+  console.log("🚀 ~ ProductDetailsPage ~ productDetails:", productDetails)
 
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
