@@ -181,16 +181,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
         {/* CONTENT */}
      {/* CONTENT */}
-<div className="p-4 space-y-3">
-  {/* New Badge - Full width */}
-  {product.is_new && (
-    <div className="flex justify-start">
-      <span className="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md border border-green-200 whitespace-nowrap">
-        NEW
-      </span>
-    </div>
-  )}
-  
+    {/* CONTENT */}
+    <div className="p-4 space-y-3">
+      
+      {/* NEW Badge - Always reserve space */}
+      <div className="flex justify-start min-h-[28px]">
+        {product.is_new ? (
+          <span className="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md border border-green-200 whitespace-nowrap">
+            NEW
+          </span>
+        ) : (
+          <div className="h-[28px]" /> 
+        )}
+      </div>
+
   {/* Product Name */}
   <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition">
     {productName}

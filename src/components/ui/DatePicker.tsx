@@ -216,7 +216,7 @@ export function DatePicker({
       {/* Dropdown Calendar */}
       {isOpen && (
         <div className={clsx(
-          "absolute top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 p-4 z-50 animate-in fade-in zoom-in-95 duration-200",
+          "absolute top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 p-4 z-40 animate-in fade-in zoom-in-95 duration-200",
           align === "right" ? "right-0" : "left-0"
         )}>
           {/* Header */}

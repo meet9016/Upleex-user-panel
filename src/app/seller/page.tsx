@@ -162,6 +162,17 @@ export default function SellerPage() {
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 truncate">
                 {vendorName || 'Vendor'}
               </h1>
+              {/* Add vendor address here */}
+              {products.length > 0 && products[0]?.vendor_address && (
+                <div className="mt-2">
+                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-[0.18em] mb-1">
+                    Address
+                  </div>
+                  <p className="text-sm text-gray-600 line-clamp-2" title={products[0].vendor_address}>
+                    📍 {products[0].vendor_address}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

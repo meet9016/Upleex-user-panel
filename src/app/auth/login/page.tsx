@@ -261,7 +261,7 @@ const LoginPage = () => {
                 className="space-y-4"
               >
                 {/* Mobile Number */}
-              <div className="relative">
+              <div className="relative mb-10">
                 {/* Phone Icon */}
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
 
@@ -294,9 +294,11 @@ const LoginPage = () => {
                   autoFocus
                 />
 
-                {errors.number && (
-                  <p className="text-red-600 text-sm mt-1">{errors.number}</p>
-                )}
+               {errors.number && (
+  <p className="absolute left-0 -bottom-5 text-red-600 text-sm">
+    {errors.number}
+  </p>
+)}
               </div>
                 <Button
                   fullWidth

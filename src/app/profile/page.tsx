@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';           // ← Changed to react-hot-toast
 import { ProfileSidebar } from '@/components/features/ProfileSidebar';
 import { NavigationButtons } from '@/components/features/NavigationButtons';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
-import { toast } from 'react-toastify';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -30,6 +30,7 @@ export default function ProfilePage() {
           let firstName = userData.first_name || '';
           let lastName = userData.last_name || '';
 
+          // Fallback: split full_name if first_name and last_name are not available
           if (!firstName && !lastName) {
             const fullName = userData.full_name || userData.name || '';
             const names = fullName.trim().split(' ');
@@ -73,6 +74,7 @@ export default function ProfilePage() {
       });
 
       if (response.data.success) {
+        // Update localStorage
         const userStr = localStorage.getItem('user');
         if (userStr) {
           const userData = JSON.parse(userStr);
@@ -83,10 +85,16 @@ export default function ProfilePage() {
         }
 
         toast.success('Profile updated successfully!');
+      } else {
+        toast.error('Failed to update profile');
       }
     } catch (error: any) {
       console.error('Update error:', error);
-      toast.error(error.response?.data?.message || 'Failed to update profile');
+      toast.error(
+        error.response?.data?.message || 
+        error.message || 
+        'Failed to update profile'
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -108,13 +116,16 @@ export default function ProfilePage() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col lg:flex-row gap-8">
 
+          {/* Sidebar - Uncomment if you want to use it */}
+          {/* <ProfileSidebar /> */}
+
           {/* Main Content */}
           <div className="flex-1">
-            {/* Navigation Buttons Component */}
+            {/* Navigation Buttons */}
             <NavigationButtons />
 
             {/* Profile Form */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 mt-6">
               <h1 className="text-3xl font-bold text-gray-900 mb-8">Personal Information</h1>
 
               <form onSubmit={handleSubmit} className="space-y-8">
@@ -129,7 +140,7 @@ export default function ProfilePage() {
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                       placeholder="Enter first name"
                     />
                   </div>
@@ -143,7 +154,7 @@ export default function ProfilePage() {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                       placeholder="Enter last name"
                     />
                   </div>

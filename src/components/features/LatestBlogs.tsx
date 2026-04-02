@@ -13,7 +13,7 @@ export const LatestBlogs = ({ blogs }: LatestBlogsProps) => {
 
   return (
     <section className="py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
         <div className="relative mb-12 flex items-center justify-center">

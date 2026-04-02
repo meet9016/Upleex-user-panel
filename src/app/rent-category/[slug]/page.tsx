@@ -64,6 +64,16 @@ const [tenureOptions, setTenureOptions] = useState([
   const sortDropdownRef = useRef<HTMLDivElement | null>(null);
   const tenureDropdownRef = useRef<HTMLDivElement | null>(null);
 
+  const sellSortOptions = [
+    { label: 'All Products', value: '0' },
+    { label: 'Price: Low to High', value: 'Price: Low to High' },
+    { label: 'Price: High to Low', value: 'Price: High to Low' },
+    { label: 'Product: New', value: 'Product: New' },
+    { label: 'Product: Old', value: 'Product: Old' }
+  ];
+
+  const currentTenureOptions = selectedSort.value === '2' ? sellSortOptions : tenureOptions;
+
   // Dynamic filter categories: "All" + API data
   const filterCategories = [
     { name: 'All', slug: 'all' },
@@ -221,6 +231,16 @@ const [tenureOptions, setTenureOptions] = useState([
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // Reset tenure when sort changes
+  useEffect(() => {
+    if (selectedSort.value === '2') {
+      setSelectedTenure({ label: 'All Products', value: '0' });
+    } else {
+      setSelectedTenure({ label: 'All Durations', value: '0' });
+    }
+  }, [selectedSort.value]);
+
   const router = useRouter();
 
   const handleFilterClick = (filterSlug: string) => {
@@ -248,8 +268,9 @@ const [tenureOptions, setTenureOptions] = useState([
       </div> */}
 
       {/* Top Filter Bar - Sticky Icon Header */}
-      <div className="bg-white border-b-2 border-purple-50 sticky top-[80px] z-40 shadow-sm/50 backdrop-blur-md bg-white/95 supports-[backdrop-filter]:bg-white/80 transition-all">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-40 shadow-md backdrop-blur-none transition-all">
+       
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4">
             {filterCategories.map((cat) => {
               const matchedCat = categories.find(c => c.slug === cat.slug);
@@ -338,7 +359,7 @@ const [tenureOptions, setTenureOptions] = useState([
             >
               <div className="flex items-center gap-3">
                 <span className={`text-upleex-purple ${isTenureOpen ? 'scale-110' : ''} transition-transform duration-300`}>
-                  <Calendar size={18} />
+                  {selectedSort.value === '2' ? <ArrowUpDown size={18} /> : <Calendar size={18} />}
                 </span>
                 <span className="truncate">{selectedTenure.label}</span>
               </div>
@@ -350,7 +371,7 @@ const [tenureOptions, setTenureOptions] = useState([
               isTenureOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'
             }`}>
               <div className="p-1.5">
-                {tenureOptions.map((option) => (
+                {currentTenureOptions.map((option) => (
                   <button
                     key={option.value}
                     onClick={() => {

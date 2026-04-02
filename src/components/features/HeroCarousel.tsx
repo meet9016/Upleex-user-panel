@@ -100,7 +100,7 @@ export const HeroCarousel = () => {
     <section className="w-full py-4 sm:py-8 overflow-hidden bg-gray-50">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12">
         {/* Carousel Container */}
-        <div className="relative h-[300px] sm:h-[400px] lg:h-[550px] w-full max-w-full mx-auto mt-2 sm:mt-4 flex items-center justify-center perspective-1000">
+        <div className="relative h-[300px] sm:h-[500px] lg:h-[550px] w-full max-w-full mx-auto mt-2 sm:mt-4 flex items-center justify-center perspective-1000">
           {/* Navigation Buttons */}
           <button
             onClick={handlePrev}
