@@ -85,10 +85,10 @@ export default function ContactUsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      toast.error('Please fix the errors below');
-      return;
-    }
+    // if (!validateForm()) {
+    //   toast.error('Please fix the errors below');
+    //   return;
+    // }
 
     setLoading(true);
     try {
