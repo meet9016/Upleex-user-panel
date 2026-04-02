@@ -174,30 +174,32 @@ export default function CategoriesPage() {
                   </div>
 
                   {/* Subcategories */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                    {cat.subcategories.map((sub) => (
-                      <Link
-                        key={sub.subcategory_id}
-                        href={`/rent-category/${cat.categories_id}?sub=${sub.subcategory_id}`}
-                        className="group"
-                      >
-                        <div className="relative aspect-square rounded-2xl bg-orange-50 p-6 mb-3 transition-all group-hover:shadow-lg group-hover:shadow-orange-200/50 group-hover:-translate-y-1 overflow-hidden flex items-center justify-center">
-                          {sub.image && (
-                            <img
-                              src={sanitizeUrl(sub.image)}
-                              alt={sub.subcategory_name}
-                              className="max-w-full max-h-full object-contain p-4 transition-transform group-hover:scale-110"
-                              loading="lazy"
-                            />
-                          )}
-                        </div>
-                        <h3 className="text-sm font-bold text-slate-800 text-center group-hover:text-upleex-purple transition-colors">
-                          {sub.subcategory_name}
-                        </h3>
-                      </Link>
-                    ))}
-                  </div>
+           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+  {cat.subcategories.map((sub) => (
+    <Link
+      key={sub.subcategory_id}
+      href={`/rent-category/${cat.categories_id}?sub=${sub.subcategory_id}`}
+      className="group"
+    >
+      <div className="relative h-40 w-full rounded-2xl mb-3 overflow-hidden bg-gray-100">
+        
+        {sub.image && (
+          <img
+            src={sanitizeUrl(sub.image)}
+            alt={sub.subcategory_name}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+            loading="lazy"
+          />
+        )}
 
+      </div>
+
+      <h3 className="text-sm font-bold text-slate-800 text-center group-hover:text-upleex-purple transition-colors">
+        {sub.subcategory_name}
+      </h3>
+    </Link>
+  ))}
+</div>
                 </motion.div>
               ))
             ) : (

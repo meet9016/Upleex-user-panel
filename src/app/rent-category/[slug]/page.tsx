@@ -268,7 +268,7 @@ const [tenureOptions, setTenureOptions] = useState([
       </div> */}
 
       {/* Top Filter Bar - Sticky Icon Header */}
-      <div className="bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-40 shadow-md backdrop-blur-none transition-all">
+      <div className="bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-[49] shadow-md backdrop-blur-none transition-all">
        
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4">
@@ -300,7 +300,7 @@ const [tenureOptions, setTenureOptions] = useState([
             <BackButton/>
         </div>
         {/* Controls Bar (Sort/Tenure) */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-1">
+        <div className="relative z-[48] flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-1">
           
           {/* Custom Sort Dropdown */}
           <div className="relative z-30 w-full sm:w-auto" ref={sortDropdownRef}>
@@ -368,7 +368,7 @@ const [tenureOptions, setTenureOptions] = useState([
 
             {/* Dropdown Menu */}
             <div className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden transition-all duration-300 origin-top ${
-              isTenureOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'
+              isTenureOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none '
             }`}>
               <div className="p-1.5">
                 {currentTenureOptions.map((option) => (

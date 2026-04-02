@@ -703,12 +703,12 @@ export default function ProductDetailsPage() {
                                   <span className="text-gray-600">Monthly Price</span>
                                   <span className="font-medium text-gray-900">₹{selectedMonthData.price.toLocaleString()}</span>
                                 </div>
-                                {productDetails?.deposit_amount && Number(productDetails.deposit_amount) > 0 && (
+                                {/* {productDetails?.deposit_amount && Number(productDetails.deposit_amount) > 0 && (
                                   <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Security Deposit</span>
                                     <span className="font-medium text-orange-600">₹{Number(productDetails.deposit_amount).toLocaleString()}</span>
                                   </div>
-                                )}
+                                )} */}
                                 <div className="flex justify-between text-sm">
                                   <span className="text-gray-600">Quantity</span>
                                   <span className="font-medium text-gray-900">{quantity} Units</span>
@@ -988,15 +988,31 @@ export default function ProductDetailsPage() {
                         min={minDate}
                         disabled={false}
                       />
+                      {isHourly && (
+                        <div className="hidden sm:block" aria-hidden="true" />
+                      )}
                       {isHourly && activeTab !== 'monthly' && (
-                        <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-3.5">
-                          <label className="block text-xs font-bold text-amber-900 uppercase tracking-wider mb-2.5">Start Time</label>
-                          <input
-                            type="time"
-                            value={startTime}
-                            onChange={(e) => setStartTime(e.target.value)}
-                            className="w-full px-3 py-2.5 border border-amber-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-semibold text-gray-800"
-                          />
+                        <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-4 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400">
+                          <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+                            <Star size={80} className="text-amber-600" />
+                          </div>
+                          <div className="relative">
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+                              <label className="text-[10px] text-amber-800 font-bold uppercase tracking-wider block">
+                                Pick Start Time
+                              </label>
+                            </div>
+                            <input
+                              type="time"
+                              value={startTime}
+                              onChange={(e) => setStartTime(e.target.value)}
+                              className="w-full bg-white/80 backdrop-blur-sm border border-amber-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all cursor-pointer"
+                            />
+                            <p className="text-[9px] text-amber-700 mt-2 font-semibold uppercase tracking-tight flex items-center gap-1">
+                              <Star size={10} fill="currentColor" /> Set your preferred slot
+                            </p>
+                          </div>
                         </div>
                       )}
                       {!isHourly && (
@@ -1011,32 +1027,54 @@ export default function ProductDetailsPage() {
                       )}
                       {isHourly && activeTab !== 'monthly' && (
                         <>
-                          <div className="flex items-center justify-between w-full h-12 pl-4 pr-4 border border-green-300 rounded-lg shadow-sm bg-gray-50 cursor-not-allowed">
-                            <div className="flex flex-col justify-center">
-                              <span className="text-[10px] text-green-700 font-bold uppercase tracking-wider leading-tight">
-                                End Date
-                              </span>
-                              <span className="text-sm font-bold text-gray-600 leading-tight">
+                          {/* Auto Calculated End Date */}
+                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md">
+                            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                              <Calendar size={80} className="text-green-600" />
+                            </div>
+                            <div className="relative">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                <span className="text-[10px] text-green-800 font-bold uppercase tracking-wider">
+                                  Return Date
+                                </span>
+                              </div>
+                              <div className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
                                 {endDate ? new Date(endDate).toLocaleDateString("en-GB", {
                                   weekday: "short",
                                   day: "2-digit",
                                   month: "short",
                                   year: "numeric",
-                                }) : "Auto-calculated"}
-                              </span>
+                                }) : "Calculating..."}
+                              </div>
+                              <div className="mt-2.5 flex items-center gap-1.5 text-[9px] font-bold text-green-700 bg-green-100/60 w-fit px-2 py-1 rounded-lg">
+                                <CheckCircle size={10} /> 
+                                <span>AUTO CALCULATED</span>
+                              </div>
                             </div>
-                            <span className="text-xs text-green-700 font-medium">Auto</span>
                           </div>
-                          <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-300 rounded-xl p-3.5">
-                          <label className="block text-xs font-bold text-green-900 uppercase tracking-wider mb-2.5">End Time</label>
-                          <input
-                            type="time"
-                            value={endTime}
-                            disabled
-                            className="w-full px-3 py-2.5 border border-green-300 rounded-lg bg-white focus:outline-none font-semibold text-gray-800 cursor-not-allowed"
-                          />
-                          <p className="text-xs text-green-700 mt-1.5 font-medium">Auto-calculated</p>
-                        </div>
+
+                          {/* Auto Calculated End Time */}
+                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md">
+                            <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                              <CheckCircle size={64} className="text-green-600" />
+                            </div>
+                            <div className="relative">
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                <span className="text-[10px] text-green-800 font-bold uppercase tracking-wider">
+                                  Return Time
+                                </span>
+                              </div>
+                              <div className="text-lg font-black text-slate-900 tracking-tight">
+                                {endTime ? endTime : "--:--"}
+                              </div>
+                              <div className="mt-2.5 flex items-center gap-1.5 text-[9px] font-bold text-green-700 bg-green-100/60 w-fit px-2 py-1 rounded-lg">
+                                <CheckCircle size={10} /> 
+                                <span>AUTO CALCULATED</span>
+                              </div>
+                            </div>
+                          </div>
                         </>
                       )}
                     </>
