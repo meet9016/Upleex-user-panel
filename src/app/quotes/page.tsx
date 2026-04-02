@@ -2,9 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BackButton } from '@/components/ui/BackButton';
 import { NavigationButtons } from '@/components/features/NavigationButtons';
-import { Calendar, Package, Clock, MapPin, FileText, Eye } from 'lucide-react';
+import { Calendar, Package, Clock, Eye, Tag, AlertCircle } from 'lucide-react';
 import { api } from '@/utils/axiosInstance';
 import { toast } from 'react-hot-toast';
 
@@ -18,7 +17,6 @@ interface Quote {
     sub_category_name: string;
     vendor_name: string;
     price: string;
-    month_arr?: any[];
   };
   delivery_date: string;
   number_of_days: number;
@@ -28,7 +26,6 @@ interface Quote {
   status: string;
   createdAt: string;
   calculated_price?: number;
-  price_details?: any;
   month_name?: string;
   start_date?: string;
   end_date?: string;
@@ -61,26 +58,17 @@ const UserQuotesPage = () => {
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'approved':
-      case 'approval':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'active':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'rejected':
-      case 'reject':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'completed':
-      case 'complete':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'pending': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'approved': return 'bg-green-50 text-green-700 border-green-200';
+      case 'active': return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'rejected': return 'bg-red-50 text-red-700 border-red-200';
+      case 'completed': return 'bg-purple-50 text-purple-700 border-purple-200';
+      default: return 'bg-gray-50 text-gray-700 border-gray-200';
     }
   };
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return '—';
     return new Date(dateString).toLocaleDateString('en-IN', {
       day: '2-digit',
       month: 'short',
@@ -88,211 +76,187 @@ const UserQuotesPage = () => {
     });
   };
 
-  const formatDateTime = (dateString: string) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    }) + ' ' + date.toLocaleTimeString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-  <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-    {/* Navigation Buttons Component */}
-    <NavigationButtons />
-    
-    {quotes.length === 0 ? (
-      <div className="text-center py-12">
-        <Package className="mx-auto h-24 w-24 text-gray-300" />
-        <h2 className="mt-6 text-2xl font-bold text-gray-900">No quotes found</h2>
-        <p className="mt-2 text-gray-600">
-          You haven't requested any quotes yet. Browse products and request quotes to get started.
-        </p>
-        <button
-          onClick={() => router.push('/')}
-          className="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-        >
-          Browse Products
-        </button>
-      </div>
-    ) : (
-      <>
-        {/* Grid Layout - 2 boxes per row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {quotes.map((quote) => (
-            <div key={quote._id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
-              <div className="p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-4 flex-1">
-                    <div className="flex-shrink-0">
-                      <img
-                        src={quote.product_id.product_main_image || '/placeholder-image.jpg'}
-                        alt={quote.product_id.product_name}
-                        className="w-20 h-20 object-cover rounded-lg border"
-                        onError={(e: any) => {
-                          e.target.src = 'https://via.placeholder.com/80x80?text=No+Image';
-                        }}
-                      />
-                    </div>
+    <div className="min-h-screen bg-gray-50 py-6">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <NavigationButtons />
+        
+        {quotes.length === 0 ? (
+          <div className="text-center py-16">
+            <Package className="mx-auto h-16 w-16 text-gray-300" />
+            <h2 className="mt-4 text-xl font-semibold text-gray-900">No quotes found</h2>
+            <p className="mt-2 text-gray-500 text-sm">You haven't requested any quotes yet.</p>
+            <button
+              onClick={() => router.push('/')}
+              className="mt-6 px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
+            >
+              Browse Products
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            {quotes.map((quote) => (
+              <div key={quote._id} className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
+                
+                {/* Header */}
+                <div className="p-3 border-b border-gray-100 bg-gray-50/50">
+                  <div className="flex items-start gap-3">
+                    <img
+                      src={quote.product_id.product_main_image || '/placeholder-image.jpg'}
+                      alt={quote.product_id.product_name}
+                      className="w-12 h-12 rounded-md object-cover border border-gray-200 flex-shrink-0 bg-white"
+                      onError={(e: any) => { e.target.src = 'https://via.placeholder.com/64?text=Img'; }}
+                    />
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
-                        {quote.product_id.product_name}
-                      </h3>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {quote.product_id.category_name} • {quote.product_id.sub_category_name}
+                      <div className="flex justify-between items-start">
+                        <h3 className="text-xs font-bold text-gray-900 line-clamp-1 leading-tight">
+                          {quote.product_id.product_name}
+                        </h3>
+                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase border whitespace-nowrap ml-2 ${getStatusColor(quote.status)}`}>
+                          {quote.status}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-gray-500 mt-0.5 truncate">
+                        {quote.product_id.vendor_name}
                       </p>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Vendor: {quote.product_id.vendor_name}
+                      <p className="text-[9px] text-gray-400 mt-0.5">
+                        {quote.product_id.category_name}
                       </p>
                     </div>
-                  </div>
-                  <div className="flex flex-col items-end space-y-2 ml-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(quote.status)}`}>
-                      {quote.status.toUpperCase()}
-                    </span>
-                    <span className="text-sm text-gray-500">
-                      {formatDate(quote.createdAt)}
-                    </span>
                   </div>
                 </div>
 
-                <div className="mt-6 grid grid-cols-2 gap-4">
-                  <div className="flex items-center space-x-2">
-                    <Package className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                    <div>
-                      <p className="text-xs text-gray-500">Quantity</p>
-                      <p className="text-sm font-medium text-gray-900">{quote.qty} units</p>
+                {/* Details Section - UNIFORM WIDTH ITEMS */}
+                <div className="p-3 flex-1">
+                  
+                  {/* Flex container with wrapping. Each item is fixed width (w-[90px]). */}
+                  <div className="flex flex-wrap gap-x-2 gap-y-2">
+                    
+                    {/* 1. Quantity */}
+                    <div className="w-[90px] flex flex-col">
+                      <span className="text-[9px] text-gray-400 font-bold uppercase">Qty</span>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <Package className="h-3 w-3 text-blue-500 flex-shrink-0" />
+                        <span className="text-xs font-semibold text-gray-800 truncate">{quote.qty}</span>
+                      </div>
                     </div>
+
+                    {/* 2. Total Price */}
+                    {quote.calculated_price && (
+                      <div className="w-[90px] flex flex-col">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">Total</span>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Tag className="h-3 w-3 text-green-600 flex-shrink-0" />
+                          <span className="text-xs font-bold text-gray-900 truncate">₹{Number(quote.calculated_price).toLocaleString()}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 3. Start Date */}
+                    {quote.start_date && (
+                      <div className="w-[90px] flex flex-col">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">Start</span>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Calendar className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                          <span className="text-[11px] font-medium text-gray-700 truncate">{formatDate(quote.start_date)}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 4. End Date */}
+                    {quote.end_date && (
+                      <div className="w-[90px] flex flex-col">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">End</span>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Calendar className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                          <span className="text-[11px] font-medium text-gray-700 truncate">{formatDate(quote.end_date)}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 5. Start Time */}
+                    {quote.start_time && (
+                      <div className="w-[90px] flex flex-col">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">Time</span>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Clock className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                          <span className="text-[11px] text-gray-700 truncate">{quote.start_time}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 6. End Time */}
+                    {quote.end_time && (
+                      <div className="w-[90px] flex flex-col">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">End T</span>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Clock className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                          <span className="text-[11px] text-gray-700 truncate">{quote.end_time}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 7. Plan */}
+                    {quote.month_name && (
+                      <div className="w-[90px] flex flex-col">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">Plan</span>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Calendar className="h-3 w-3 text-purple-500 flex-shrink-0" />
+                          <span className="text-xs font-semibold text-gray-800 truncate">{quote.month_name}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Fallback Delivery */}
+                    {quote.delivery_date && !quote.start_date && (
+                       <div className="w-[90px] flex flex-col">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase">Delivery</span>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Calendar className="h-3 w-3 text-gray-500 flex-shrink-0" />
+                          <span className="text-[11px] font-medium text-gray-700 truncate">{formatDate(quote.delivery_date)}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  {quote.start_date && (
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">Start Date</p>
-                        <p className="text-sm font-medium text-gray-900">{formatDate(quote.start_date)}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {quote.start_time && (
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">Start Time</p>
-                        <p className="text-sm font-medium text-gray-900">{quote.start_time}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {quote.end_date && (
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">End Date</p>
-                        <p className="text-sm font-medium text-gray-900">{formatDate(quote.end_date)}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {quote.end_time && (
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">End Time</p>
-                        <p className="text-sm font-medium text-gray-900">{quote.end_time}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {quote.delivery_date && !quote.start_date && (
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">Delivery Date</p>
-                        <p className="text-sm font-medium text-gray-900">{formatDate(quote.delivery_date)}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {quote.number_of_days > 0 && !quote.start_date && (
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">No of Days</p>
-                        <p className="text-sm font-medium text-gray-900">{quote.number_of_days} days</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {quote.month_name && (
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">Plan</p>
-                        <p className="text-sm font-medium text-gray-900">{quote.month_name}</p>
-                      </div>
-                    </div>
-                  )}
-
-                  {quote.calculated_price && (
-                    <div className="flex items-center space-x-2">
-                      <Package className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500">Total Price</p>
-                        <p className="text-sm font-medium text-gray-900">₹{Number(quote.calculated_price).toLocaleString()}</p>
+                  {/* Note Section */}
+                  {quote.note && (
+                    <div className="mt-3 pt-2 border-t border-dashed border-gray-100 flex items-start gap-2">
+                      <AlertCircle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                      <div className="min-w-0">
+                        <p className="text-[9px] text-amber-700 font-bold uppercase">Note</p>
+                        <p className="text-[11px] text-gray-700 leading-snug line-clamp-2">{quote.note}</p>
                       </div>
                     </div>
                   )}
                 </div>
 
-                {quote.note && (
-                  <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-start space-x-2">
-                      <FileText className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs text-gray-500 mb-1">Note</p>
-                        <p className="text-sm text-gray-700 line-clamp-2">{quote.note}</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-4 flex justify-between items-center pt-4 border-t border-gray-200">
-                  <div className="text-sm text-gray-500">
-                    ID: {quote._id.slice(-8).toUpperCase()}
-                  </div>
+                {/* Footer */}
+                <div className="px-3.5 py-2 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                  <span className="text-[10px] font-mono text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
+                    #{quote._id.slice(-6).toUpperCase()}
+                  </span>
                   <button
                     onClick={() => router.push(`/browse-ads/${quote.product_id._id}`)}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                    className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
                   >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Product
+                    View Product <Eye className="h-3 w-3" />
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </>
-    )}
-  </div>
-</div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
