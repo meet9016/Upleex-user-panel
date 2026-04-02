@@ -902,6 +902,11 @@ export default function ProductDetailsPage() {
                           {productDetails.available_quantity} available
                         </span>
                       )}
+                      {isSell && (
+                        <span className="text-[9px] text-orange-600 font-medium">
+                          {productDetails.available_quantity} available
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center bg-gray-50 rounded-lg p-1">
                       <button
