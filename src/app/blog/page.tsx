@@ -50,19 +50,20 @@ export default function BlogListPage() {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <BackButton />
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900">
-              Blogs
-            </h1>
           </div>
           {/* <Button
             variant="outline"
             className="rounded-full px-6 hidden md:inline-flex"
-          >
+            >
             {blogs.length} Articles
-          </Button> */}
+            </Button> */}
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+              Blogs
+            </h2>
+            </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-3 gap-8">
           {blogs.map((blog) => (
             <Link
               key={blog.id}

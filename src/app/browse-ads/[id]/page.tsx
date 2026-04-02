@@ -730,14 +730,14 @@ export default function ProductDetailsPage() {
                                     </div>
                                   </div>
                                 )}
-                                {productDetails?.vendor_address && (
+                                {/* {productDetails?.vendor_address && (
                                   <div className="flex justify-between text-sm">
                                     <span className="text-gray-600">Vendor Address</span>
                                     <span className="font-medium text-slate-700 text-right max-w-[200px] truncate" title={productDetails.vendor_address}>
                                       {productDetails.vendor_address}
                                     </span>
                                   </div>
-                              )}
+                              )} */}
                               </div>
                             </div>
                           );

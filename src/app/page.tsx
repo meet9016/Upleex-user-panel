@@ -174,7 +174,7 @@ export default function Home() {
 
         {/* Enhanced Categories Section */}
         <section className="py-8 sm:py-12 md:py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -276,7 +276,7 @@ export default function Home() {
 
         {/* Value Props / Why Choose Us */}
         <section className="py-10 bg-white border-t border-gray-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -407,7 +407,7 @@ export default function Home() {
 
         {/* CTA Section */}
           <section className="py-16 sm:py-24" suppressHydrationWarning={true}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning={true}>
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning={true}>
               <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
