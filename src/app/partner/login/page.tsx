@@ -219,7 +219,7 @@ export default function PartnerLoginPage() {
                   <form onSubmit={handleSendOtp}>
                     <div className="mb-6">
                       <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Mobile Number
+                        Mobile Number <span className="text-red-500">*</span>
                       </label>
                       <div
                         className={`flex rounded-lg border overflow-hidden focus-within:ring-2 transition-all ${errors.mobile ? "border-red-500 focus-within:ring-red-500/20" : "border-gray-200 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple"}`}

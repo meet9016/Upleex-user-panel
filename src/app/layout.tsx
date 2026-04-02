@@ -42,7 +42,7 @@ export default function RootLayout({
             <ScrollToTop />
             <QuickActions />
             <main className="flex-1 pb-20 lg:pb-0">{children}</main>
-            <Toaster position="top-right" />
+            <Toaster position="bottom-right" />
             <Footer />
             <BottomNav />
           </div>

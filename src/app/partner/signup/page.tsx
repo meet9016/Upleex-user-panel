@@ -205,7 +205,7 @@ export default function PartnerSignupPage() {
                {/* Row 1: Names */}
                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name <span className="text-red-500">*</span></label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input 
@@ -223,7 +223,7 @@ export default function PartnerSignupPage() {
                     {errors.fullName ? <p className="text-red-600 text-sm mt-1">{errors.fullName}</p> : null}
                  </div>
                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Business Name</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Business Name <span className="text-red-500">*</span></label>
                     <div className="relative">
                       <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input 
@@ -244,7 +244,7 @@ export default function PartnerSignupPage() {
 
                {/* Row 2: Contact */}
                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email Address <span className="text-red-500">*</span></label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input 
@@ -266,7 +266,7 @@ export default function PartnerSignupPage() {
 
                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Mobile Number</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Mobile Number <span className="text-red-500">*</span></label>
                     <div className={`flex rounded-lg border overflow-hidden focus-within:ring-2 transition-all ${errors.mobileNumber ? 'border-red-500 focus-within:ring-red-500/20' : 'border-gray-200 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple'}`}>
                       <div className="bg-gray-50 px-3 py-3 border-r border-gray-200 text-gray-600 font-medium text-sm flex items-center">
                         +91
@@ -287,7 +287,7 @@ export default function PartnerSignupPage() {
                     {errors.mobileNumber ? <p className="text-red-600 text-sm mt-1">{errors.mobileNumber}</p> : null}
                  </div>
                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">Alternative Number</label>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Alternative Number <span className="text-red-500">*</span></label>
                     <div className="flex rounded-lg border border-gray-200 overflow-hidden focus-within:ring-2 focus-within:ring-upleex-purple/20 focus-within:border-upleex-purple transition-all">
                       <div className="bg-gray-50 px-3 py-3 border-r border-gray-200 text-gray-600 font-medium text-sm flex items-center">
                         +91
@@ -309,7 +309,7 @@ export default function PartnerSignupPage() {
 
                {/* City */}
                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">City / County</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">City / County <span className="text-red-500">*</span> </label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input 
