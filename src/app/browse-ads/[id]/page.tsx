@@ -730,6 +730,14 @@ export default function ProductDetailsPage() {
                                     </div>
                                   </div>
                                 )}
+                                {productDetails?.vendor_address && (
+                                  <div className="flex justify-between text-sm">
+                                    <span className="text-gray-600">Vendor Address</span>
+                                    <span className="font-medium text-slate-700 text-right max-w-[200px] truncate" title={productDetails.vendor_address}>
+                                      {productDetails.vendor_address}
+                                    </span>
+                                  </div>
+                              )}
                               </div>
                             </div>
                           );
@@ -1131,6 +1139,12 @@ export default function ProductDetailsPage() {
                         <div className="text-sm font-bold text-slate-900">
                           {productDetails?.vendor_name || 'Vendor'}
                         </div>
+                        {/* Add vendor address here */}
+                        {productDetails?.vendor_address && (
+                          <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]" title={productDetails.vendor_address}>
+                            📍 {productDetails.vendor_address}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <Button
