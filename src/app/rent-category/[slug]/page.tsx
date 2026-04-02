@@ -268,8 +268,9 @@ const [tenureOptions, setTenureOptions] = useState([
       </div> */}
 
       {/* Top Filter Bar - Sticky Icon Header */}
-      <div className="bg-white border-b-2 border-purple-50 sticky top-[80px] z-40 shadow-sm/50 backdrop-blur-md bg-white/95 supports-[backdrop-filter]:bg-white/80 transition-all">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-40 shadow-md backdrop-blur-none transition-all">
+       
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4">
             {filterCategories.map((cat) => {
               const matchedCat = categories.find(c => c.slug === cat.slug);

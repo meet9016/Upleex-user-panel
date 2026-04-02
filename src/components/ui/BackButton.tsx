@@ -23,26 +23,32 @@ export const BackButton: React.FC<BackButtonProps> = ({
   const router = useRouter();
 
   const handleBack = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (onClick) {
-      onClick(e);
-    }
+    if (onClick) onClick(e);
     router.back();
   };
 
   return (
-    <Button
-      variant={variant}
-      size={size}
-      onClick={handleBack}
-       className={cn(
-    "flex items-center gap-2 bg-gray-300 text-white hover:bg-gray-400",
+  <Button
+  variant={variant}
+  size={size}
+  onClick={handleBack}
+  type="button"
+  className={cn(
+    "group flex items-center gap-2 px-5 py-2.5",
+    "rounded-full",
+    "bg-gray-200 text-gray-800",
+    "shadow-sm border border-gray-300",
+    "hover:bg-gray-300 hover:shadow-md",
+    "active:scale-95 transition-all duration-200",
     className
   )}
-      type="button"
-      {...props}
-    >
-      <ArrowLeft size={18} />
-      {label && <span>{label}</span>}
-    </Button>
+  {...props}
+>
+  <ArrowLeft 
+    size={18} 
+    className="transition-transform duration-200 group-hover:-translate-x-1"
+  />
+  {label && <span className="font-medium">{label}</span>}
+</Button>
   );
 };
