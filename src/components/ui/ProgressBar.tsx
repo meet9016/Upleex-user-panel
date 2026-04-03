@@ -7,7 +7,7 @@ import Loader from './Loader';
 export const ProgressBar = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
