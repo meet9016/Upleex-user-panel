@@ -20,12 +20,12 @@ interface FAQItemProps {
 const FAQItem = memo(
   ({ id, question, answer, isOpen, onToggle }: FAQItemProps) => {
     return (
-      <div className="border-b border-gray-100 last:border-0 bg-gray-50 rounded-lg mb-4 overflow-hidden">
+      <div className="border-b  border-gray-100 last:border-0 bg-gray-50 rounded-lg mb-4 overflow-hidden">
         <button
           onClick={() => onToggle(id)}
           aria-expanded={isOpen}
           aria-controls={`faq-content-${id}`}
-          className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-100 transition-colors"
+          className="w-full flex items-center cursor-pointer justify-between p-6 text-left hover:bg-gray-100 transition-colors"
         >
           <span className="text-slate-700 font-medium text-lg">
             {question}

@@ -155,7 +155,7 @@ export default function ContactUsPage() {
             <h3 className="text-lg font-bold text-slate-900 mb-2">Chat to support</h3>
             <p className="text-slate-500 mb-6 leading-relaxed text-sm md:text-base">We're here to help with any questions or support requests.</p>
             <a href="mailto:support@upleex.com" className="text-upleex-purple font-semibold hover:text-upleex-blue transition-colors flex items-center gap-2 group-hover:gap-3 duration-300 text-sm md:text-base">
-              support@upleex.com <ArrowRight className="w-4 h-4" />
+              info@upleex.com <ArrowRight className="w-4 h-4" />
             </a>
           </div>
 
@@ -180,7 +180,7 @@ export default function ContactUsPage() {
             <h3 className="text-lg font-bold text-slate-900 mb-2">Call us</h3>
             <p className="text-slate-500 mb-6 leading-relaxed text-sm md:text-base">Mon-Fri from 9am to 6pm IST.</p>
             <a href="tel:+910000000000" className="text-slate-900 font-semibold hover:text-upleex-purple transition-colors flex items-center gap-2 group-hover:gap-3 duration-300 text-sm md:text-base">
-              +91 00000 00000 <ArrowRight className="w-4 h-4" />
+              +91 7359595951 <ArrowRight className="w-4 h-4" />
             </a>
           </div>
         </div>
@@ -250,7 +250,7 @@ export default function ContactUsPage() {
                     name="firstName" 
                     value={form.firstName} 
                     onChange={handleChange}
-                    className={`w-full rounded-2xl border px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
+                    className={`w-full rounded-xl border px-4 py-2 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
                       errors.name 
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
                         : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
@@ -267,7 +267,7 @@ export default function ContactUsPage() {
                     name="lastName" 
                     value={form.lastName} 
                     onChange={handleChange}
-                    className="w-full rounded-2xl border border-gray-300 px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-2 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     placeholder="Last name"
                     disabled={loading}
                   />
@@ -283,7 +283,7 @@ export default function ContactUsPage() {
                   name="email" 
                   value={form.email} 
                   onChange={handleChange}
-                  className={`w-full rounded-2xl border px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
+                  className={`w-full rounded-xl border px-4 py-2 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
                     errors.email 
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
                       : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
@@ -297,7 +297,7 @@ export default function ContactUsPage() {
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700">Phone Number</label>
                 <div className="flex">
-                  <div className="flex items-center bg-gray-50 border border-gray-300 border-r-0 rounded-l-2xl px-4 py-3.5 text-sm md:text-base text-slate-600 font-medium">
+                  <div className="flex items-center bg-gray-50 border border-gray-300 border-r-0 rounded-l-xl px-4 py-2 text-sm md:text-base text-slate-600 font-medium">
                     <span>{form.dialCode}</span>
                   </div>
                   <input
@@ -305,7 +305,7 @@ export default function ContactUsPage() {
                     name="mobile" 
                     value={form.mobile} 
                     onChange={handleChange}
-                    className={`flex-1 rounded-r-2xl border px-4 py-3.5 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
+                    className={`flex-1 rounded-r-2xl border px-4 py-2 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
                       errors.phone 
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
                         : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
