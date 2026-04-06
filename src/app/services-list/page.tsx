@@ -8,6 +8,7 @@ import { Search, ArrowUpDown, ChevronDown, Check, PackageOpen, LayoutGrid, List 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
+import { useCity } from '@/hooks/useCity';
 
 export default function ServicesListPage() {
   return (
@@ -33,6 +34,8 @@ function ServicesListContent() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState({ label: 'Newest First', value: 'newest' });
+
+  const selectedCity = useCity();
 
   // Sync state with URL params
   useEffect(() => {
@@ -84,6 +87,7 @@ function ServicesListContent() {
 
         const data = await serviceService.getServices({
           category_id: activeCategory === 'all' ? undefined : activeCategory,
+          city: selectedCity,
           search: debouncedSearch.trim() || undefined,
           ...sortParams
         });
@@ -98,7 +102,7 @@ function ServicesListContent() {
     };
 
     fetchServices();
-  }, [activeCategory, debouncedSearch, selectedSort]);
+  }, [activeCategory, debouncedSearch, selectedSort, selectedCity]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

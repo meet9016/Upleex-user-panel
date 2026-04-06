@@ -25,6 +25,7 @@ export interface VendorProductParams {
 export interface CategoryProductParams {
     category_id: string;
     sub_category_id?: string;
+    city?: string | null;
     filter_rent_sell?: string;
     filter_tenure?: string;
     page: number;
@@ -69,13 +70,17 @@ class ProductService {
         return res.data;
     }
 
-    async getSubCategories(categoryId: string): Promise<any> {
+    async getSubCategories(categoryId: string, city?: string | null): Promise<any> {
+        const params: any = {
+            categoryId,
+            page: 1,
+            limit: 1000,
+        };
+        if (city) {
+            params.city = city;
+        }
         const res = await api.get(endPointApi.webSubCategoryList, {
-            params: {
-                categoryId,
-                page: 1,
-                limit: 1000,
-            },
+            params,
         });
         return res.data;
     }
@@ -89,6 +94,10 @@ class ProductService {
 
         if (params.sub_category_id && params.sub_category_id !== 'all') {
             query.sub_category_id = params.sub_category_id;
+        }
+
+        if (params.city) {
+            query.city = params.city;
         }
 
         if (params.filter_rent_sell && params.filter_rent_sell !== '0') {

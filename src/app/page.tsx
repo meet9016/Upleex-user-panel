@@ -19,6 +19,7 @@ import { categoryService, Category as ServiceCategory, HomeResponse } from '@/se
 import { blogService, Blog } from '@/services/blogService';
 import { faqService, FAQ } from '@/services/faqService';
 import { useRouter } from 'next/navigation';
+import { useCity } from '@/hooks/useCity';
 
 interface CategoryResponse {
   slider: any[];
@@ -66,6 +67,7 @@ export default function Home() {
   const [categoryList, setCategoryList] = useState<CategoryResponse | null>(null);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const selectedCity = useCity();
 
   const [isHovered, setIsHovered] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
@@ -82,7 +84,7 @@ export default function Home() {
     const fetchData = async () => {
       try {
         const [categoryData, blogData, faqData] = await Promise.all([
-          categoryService.getHomeData(),
+          categoryService.getHomeData(selectedCity),
           blogService.getBlogList(),
           faqService.getFAQList()
         ]);
@@ -94,7 +96,7 @@ export default function Home() {
       }
     };
     fetchData();
-  }, []);
+  }, [selectedCity]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white overflow-hidden" ref={containerRef} suppressHydrationWarning={true}>

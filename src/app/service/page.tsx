@@ -166,23 +166,25 @@ const FAQS = [
 
 import { serviceService, ServiceCategory, Service } from '@/services/serviceService';
 import { useEffect } from 'react';
+import { useCity } from '@/hooks/useCity';
 
 export default function ServicePage() {
   const router = useRouter();
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [services, setServices] = useState<Service[]>([]);
+  const selectedCity = useCity();
 
   useEffect(() => {
     const fetchData = async () => {
       const [cats, servs] = await Promise.all([
         serviceService.getServiceCategories(),
-        serviceService.getServices()
+        serviceService.getServices({ city: selectedCity })
       ]);
       setCategories(cats);
       setServices(servs);
     }
     fetchData();
-  }, []);
+  }, [selectedCity]);
 
   const scrollToCategories = () => {
     const element = document.getElementById('service-categories');
