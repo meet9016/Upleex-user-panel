@@ -19,6 +19,7 @@ export interface VendorProductParams {
     filter_rent_sell?: string;
     filter_tenure?: string;
     page: number;
+    limit?: number;
 }
 
 export interface CategoryProductParams {
@@ -27,6 +28,7 @@ export interface CategoryProductParams {
     filter_rent_sell?: string;
     filter_tenure?: string;
     page: number;
+    limit?: number;
 }
 
 class ProductService {
@@ -99,7 +101,7 @@ class ProductService {
 
         if (params.page && params.page > 0) {
             query.page = params.page;
-            query.limit = 12;
+            query.limit = params.limit || 12;
         }
 
         const res = await api.get(endPointApi.webCategoryProductList, {
@@ -119,6 +121,9 @@ class ProductService {
             formData.append('filter_tenure', params.filter_tenure);
         }
         formData.append('page', String(params.page));
+        if (params.limit) {
+            formData.append('limit', String(params.limit));
+        }
         const res = await api.post(endPointApi.webVendorProductList, formData);
         return res.data;
     }
