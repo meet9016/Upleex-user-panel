@@ -156,7 +156,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
 
               <Heart
                 size={18}
-                className={`relative transition-colors ${isWishlisted ? 'text-red-500' : 'text-slate-500'}`}
+                className={`relative transition-colors cursor-pointer ${isWishlisted ? 'text-red-500' : 'text-slate-500'}`}
                 fill={isWishlisted ? '#ef4444' : 'none'}
               />
             </motion.button>
