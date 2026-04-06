@@ -1291,7 +1291,12 @@ export default function ProductDetailsPage() {
           </div>
         </div>
 
-        <RelatedProducts />
+        <RelatedProducts 
+          categoryId={productDetails?.category_id}
+          subCategoryId={productDetails?.sub_category_id}
+          vendorId={productDetails?.vendor_id || productDetails?.vendor_india_id}
+          currentProductId={productDetails?.id || id}
+        />
       </div>
 
       {/* Auth Modal */}
