@@ -252,7 +252,38 @@ const [tenureOptions, setTenureOptions] = useState([
   };
 
   const currentCategoryName = filterCategories.find(c => c.slug === activeFilter)?.name || 'Products';
-  const filteredProducts = productList;
+  
+  // Combine priority and normal products with time-based shuffling
+  const shuffledProducts = (() => {
+    if (!productList || productList.length === 0) return [];
+
+    // Tiers for Fair Rotation
+    const priority = productList.filter(p => p.is_priority);
+    const normal = productList.filter(p => !p.is_priority);
+
+    const shuffleArray = (array: any[]) => {
+      // Rotation logic (every 5 minutes)
+      const timestamp = Math.floor(Date.now() / (5 * 60 * 1000));
+      const seededRandom = (seed: number) => {
+        const x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+      };
+
+      let m = array.length, t, i;
+      let seed = timestamp;
+      while (m) {
+        i = Math.floor(seededRandom(seed++) * m--);
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+      }
+      return array;
+    };
+
+    return [...shuffleArray(priority), ...shuffleArray(normal)];
+  })();
+
+  const filteredProducts = shuffledProducts;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
