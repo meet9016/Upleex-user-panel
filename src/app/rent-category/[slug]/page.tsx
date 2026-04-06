@@ -8,6 +8,7 @@ import { ArrowRight, ChevronDown, ArrowUpDown, Calendar, Check, PackageOpen } fr
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
 import { Pagination } from '@/components/ui/Pagination';
+import { useCity } from '@/hooks/useCity';
 import { productService } from '@/services/productService';
 import { motion } from 'framer-motion';
 
@@ -60,6 +61,7 @@ const [tenureOptions, setTenureOptions] = useState([
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const ITEMS_PER_PAGE = 12;
+  const selectedCity = useCity();
 
   const sortDropdownRef = useRef<HTMLDivElement | null>(null);
   const tenureDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -87,7 +89,7 @@ const [tenureOptions, setTenureOptions] = useState([
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await productService.getSubCategories(slug);
+        const res = await productService.getSubCategories(slug, selectedCity);
         setCategoryList(res.data || res.data?.data || res || []);
         
         // Update options if available in API
@@ -107,7 +109,7 @@ const [tenureOptions, setTenureOptions] = useState([
     if (slug) {
       fetchCategories();
     }
-  }, [slug]);
+  }, [slug, selectedCity]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -115,6 +117,7 @@ const [tenureOptions, setTenureOptions] = useState([
         const res = await productService.getCategoryProducts({
           category_id: slug,
           sub_category_id: activeFilter,
+          city: selectedCity,
           filter_rent_sell: selectedSort.value,
           filter_tenure: selectedTenure.value,
           page: currentPage
@@ -209,11 +212,11 @@ const [tenureOptions, setTenureOptions] = useState([
     if (slug) {
       fetchProducts();
     }
-  }, [slug, activeFilter, selectedSort, selectedTenure, currentPage]);
+  }, [slug, activeFilter, selectedSort, selectedTenure, currentPage, selectedCity]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [slug, activeFilter, selectedSort, selectedTenure]);
+  }, [slug, activeFilter, selectedSort, selectedTenure, selectedCity]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
