@@ -84,6 +84,8 @@ interface PlanOption {
 export default function CartPage() {
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan>('monthly');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [paymentOption, setPaymentOption] = useState<'full' | '30_percent'>('full');
   const { cartItems, loading, totalAmount, updateQuantity, removeFromCart } = useCart();
 
   const isEmpty = cartItems.length === 0;
@@ -156,6 +158,7 @@ export default function CartPage() {
           country: 'India',
         },
         order_notes: 'Order from cart',
+        payment_type: paymentOption,
       });
 
       console.log('Order response:', orderResponse.data);
@@ -716,7 +719,7 @@ export default function CartPage() {
                     </div>
 
                     <motion.button 
-                      onClick={handlePayment}
+                      onClick={() => setIsPaymentModalOpen(true)}
                       disabled={isProcessingPayment}
                       whileHover={{ scale: isProcessingPayment ? 1 : 1.02, boxShadow: isProcessingPayment ? undefined : "0 20px 25px -5px rgb(59 130 246 / 0.4)" }}
                       whileTap={{ scale: isProcessingPayment ? 1 : 0.98 }}
@@ -772,6 +775,94 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      {/* Payment Options Modal */}
+      <AnimatePresence>
+        {isPaymentModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-100"
+            >
+              <div className="mb-6">
+                <h2 className="text-xl font-bold text-slate-800">Choose Payment Option</h2>
+                <p className="text-slate-500 mt-1 text-sm">
+                  Select how you would like to pay for your order.
+                </p>
+              </div>
+              
+              <div className="space-y-3 mb-8">
+                <button
+                  onClick={() => setPaymentOption('full')}
+                  className={`w-full p-4 rounded-2xl border-2 text-left transition-all duration-200 group relative overflow-hidden ${
+                    paymentOption === 'full' 
+                      ? 'border-blue-600 bg-blue-50/50 shadow-sm shadow-blue-100' 
+                      : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-1">
+                    <span className={`font-semibold ${paymentOption === 'full' ? 'text-blue-900' : 'text-slate-700'}`}>Pay Full Amount</span>
+                    {paymentOption === 'full' && (
+                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="bg-blue-600 text-white rounded-full p-1 shadow-md">
+                        <Check size={14} strokeWidth={3} />
+                      </motion.div>
+                    )}
+                  </div>
+                  <div className={`text-sm flex items-center gap-1 ${paymentOption === 'full' ? 'text-blue-700 font-medium' : 'text-slate-500'}`}>
+                    ₹{(summary?.dueToday || 0).toLocaleString('en-IN')}
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setPaymentOption('30_percent')}
+                  className={`w-full p-4 rounded-2xl border-2 text-left transition-all duration-200 group relative overflow-hidden ${
+                    paymentOption === '30_percent' 
+                      ? 'border-blue-600 bg-blue-50/50 shadow-sm shadow-blue-100' 
+                      : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-1">
+                    <div className="flex items-center gap-2">
+                       <span className={`font-semibold ${paymentOption === '30_percent' ? 'text-blue-900' : 'text-slate-700'}`}>Pay 30% Advance</span>
+                       <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Partial Pay</span>
+                    </div>
+                    {paymentOption === '30_percent' && (
+                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="bg-blue-600 text-white rounded-full p-1 shadow-md">
+                        <Check size={14} strokeWidth={3} />
+                      </motion.div>
+                    )}
+                  </div>
+                  <div className={`text-sm flex items-center gap-1 ${paymentOption === '30_percent' ? 'text-blue-700 font-medium' : 'text-slate-500'}`}>
+                    Pay ₹{Math.round((summary?.dueToday || 0) * 0.3).toLocaleString('en-IN')} now, rest later
+                  </div>
+                </button>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setIsPaymentModalOpen(false)}
+                  className="flex-1 py-3.5 rounded-xl border-2 border-slate-200 font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors"
+                  disabled={isProcessingPayment}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setIsPaymentModalOpen(false);
+                    handlePayment();
+                  }}
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/30 flex justify-center items-center gap-2 transition-all active:scale-[0.98]"
+                  disabled={isProcessingPayment}
+                >
+                  {isProcessingPayment ? <Loader2 className="animate-spin" size={18} /> : 'Proceed to Pay'}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
