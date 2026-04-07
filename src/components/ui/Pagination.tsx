@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button } from './Button';
+import {  ChevronFirst, ChevronLast, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface PaginationProps {
   currentPage: number;
@@ -65,15 +66,15 @@ export const Pagination: React.FC<PaginationProps> = ({
     <div className="mt-10 flex items-center justify-center gap-2 flex-wrap">
       
       {/* Previous Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="min-w-[2.5rem]"
-      >
-        Prev
-      </Button>
+     <Button
+  variant="outline"
+  size="sm"
+  onClick={() => onPageChange(currentPage - 1)}
+  disabled={currentPage === 1}
+  className="min-w-[2.5rem] border-0"
+>
+<ChevronFirst />
+</Button>
 
       {/* Page Numbers */}
       {pageNumbers.map((page, idx) => {
@@ -91,28 +92,28 @@ export const Pagination: React.FC<PaginationProps> = ({
         const isActive = page === currentPage;
 
         return (
-          <Button
-            key={page}
-            size="sm"
-            variant={isActive ? 'primary' : 'ghost'}
-            onClick={() => onPageChange(page as number)}
-            className="w-9 px-0"
-          >
-            {page}
-          </Button>
+         <Button
+  key={page}
+  size="sm"
+  variant={isActive ? 'primary' : 'ghost'}
+  onClick={() => onPageChange(page as number)}
+  className="w-9 px-0 border-0"
+>
+  {page}
+</Button>
         );
       })}
 
       {/* Next Button */}
       <Button
-        variant="outline"
-        size="sm"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="min-w-[2.5rem]"
-      >
-        Next
-      </Button>
+  variant="outline"
+  size="sm"
+  onClick={() => onPageChange(currentPage + 1)}
+  disabled={currentPage === totalPages}
+  className="min-w-[2.5rem] border-0"
+>
+<ChevronLast />
+</Button>
 
     </div>
   );

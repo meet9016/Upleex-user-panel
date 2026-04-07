@@ -21,6 +21,7 @@ import {
   ShoppingCart,
   Store,
   X,
+  Clock,
 } from "lucide-react";
 import { productService } from "@/services/productService";
 import clsx from "clsx";
@@ -268,12 +269,12 @@ export default function ProductDetailsPage() {
 
   useEffect(() => {
     const today = new Date();
-    
+
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
     const todayFormatted = `${yyyy}-${mm}-${dd}`;
-    
+
     setMinDate(todayFormatted);
     setStartDate(todayFormatted);
   }, []);
@@ -300,15 +301,15 @@ export default function ProductDetailsPage() {
         let monthCount = 1;
         const parsed = parseInt(String(selectedMonth.month_name).replace(/[^0-9]/g, ''));
         if (!isNaN(parsed) && parsed > 0) {
-           monthCount = parsed;
+          monthCount = parsed;
         }
 
         const startDay = calculatedEndDate.getDate();
         calculatedEndDate.setMonth(calculatedEndDate.getMonth() + monthCount);
-        
+
         // Handle end of month rollover
         if (calculatedEndDate.getDate() !== startDay) {
-          calculatedEndDate.setDate(0); 
+          calculatedEndDate.setDate(0);
         }
       }
     } else if (isDaily) {
@@ -347,27 +348,27 @@ export default function ProductDetailsPage() {
   // Auto-calculate end date and time for hourly products
   useEffect(() => {
     if (!isHourly || !startTime || !startDate) return;
-    
+
     const [hours, minutes] = startTime.split(':').map(Number);
     let endHours = hours + days;
     let endMinutes = minutes;
     let daysToAdd = 0;
-    
+
     // Handle day overflow
     if (endHours >= 24) {
       daysToAdd = Math.floor(endHours / 24);
       endHours = endHours % 24;
     }
-    
+
     // Calculate end date with day overflow
     let calculatedEndDate = new Date(startDate);
     calculatedEndDate.setDate(calculatedEndDate.getDate() + daysToAdd);
-    
+
     const yyyy = calculatedEndDate.getFullYear();
     const mm = String(calculatedEndDate.getMonth() + 1).padStart(2, "0");
     const dd = String(calculatedEndDate.getDate()).padStart(2, "0");
     setEndDate(`${yyyy}-${mm}-${dd}`);
-    
+
     const formattedEndTime = `${String(endHours).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
     setEndTime(formattedEndTime);
   }, [startTime, days, isHourly, startDate]);
@@ -375,10 +376,10 @@ export default function ProductDetailsPage() {
   // Validate end date based on product type
   const validateEndDate = (newEndDate: string) => {
     if (!startDate || !newEndDate) return true;
-    
+
     const start = new Date(startDate);
     const end = new Date(newEndDate);
-    
+
     if (activeTab === 'monthly' && productDetails?.month_arr?.length) {
       // For monthly: end date must be in correct month
       const selectedMonth = productDetails.month_arr.find(
@@ -995,87 +996,125 @@ export default function ProductDetailsPage() {
 
                   {!isSell && (
                     <>
-                      <DatePicker
-                        label="Start Date"
-                        value={startDate}
-                        onChange={setStartDate}
-                        min={minDate}
-                        disabled={false}
-                      />
-                      {isHourly && (
-                        <div className="hidden sm:block" aria-hidden="true" />
-                      )}
-                      {isHourly && activeTab !== 'monthly' && (
-                        <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-4 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400">
-                          <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
-                            <Star size={80} className="text-amber-600" />
+                      {/* Start Date - Green Theme */}
+                      <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
+                        <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+                          <Calendar size={80} className="text-green-600" />
+                        </div>
+                        <div className="relative h-full flex flex-col">
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                            <label className="text-[9px] text-green-800 font-semibold uppercase tracking-wider">
+                              Start Date
+                            </label>
                           </div>
-                          <div className="relative">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-                              <label className="text-[10px] text-amber-800 font-bold uppercase tracking-wider block">
-                                Pick Start Time
+                          <div className="text-xs font-medium text-gray-900 flex-1">
+                            <DatePicker
+                              value={startDate}
+                              onChange={setStartDate}
+                              min={minDate}
+                              disabled={false}
+                              textSize={"xs"}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Start Time - Green Theme */}
+                      {isHourly && activeTab !== 'monthly' && (
+                        <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
+                          <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+                            <Clock size={80} className="text-green-600" />
+                          </div>
+                          <div className="relative h-full flex flex-col">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                              <label className="text-[9px] text-green-800 font-semibold uppercase tracking-wider">
+                                Start Time
                               </label>
                             </div>
                             <input
                               type="time"
                               value={startTime}
                               onChange={(e) => setStartTime(e.target.value)}
-                              className="w-full bg-white/80 backdrop-blur-sm border border-amber-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all cursor-pointer"
+                              className="w-full bg-white/80 backdrop-blur-sm border border-green-200 rounded-xl px-3 py-3 text-xs font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all cursor-pointer"
                             />
-                            <p className="text-[9px] text-amber-700 mt-2 font-semibold uppercase tracking-tight flex items-center gap-1">
-                              <Star size={10} fill="currentColor" /> Set your preferred slot
-                            </p>
                           </div>
                         </div>
                       )}
-                      {/* Auto Calculated End Date for ALL non-sell */}
-                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md h-[96px] flex flex-col justify-center">
-                            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                              <Calendar size={80} className="text-green-600" />
+
+                      {/* Spacer for hourly view */}
+                      {isHourly && activeTab !== 'monthly' && (
+                        <div className="hidden sm:block" aria-hidden="true" />
+                      )}
+
+                      {/* Return Date - Orange Theme (Monthly View) */}
+                      {!isHourly && (
+                        <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
+                          <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+                            <Calendar size={80} className="text-amber-600" />
+                          </div>
+                          <div className="relative h-full flex flex-col">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+                              <label className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
+                                Return Date
+                              </label>
                             </div>
-                            <div className="relative">
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[10px] text-green-800 font-bold uppercase tracking-wider">
+                            <div className="text-xs font-medium text-gray-900 flex-1">
+                              <DatePicker
+                                value={endDate}
+                                onChange={setEndDate}
+                                min={getMinEndDate()}
+                                disabled={false}
+                                textSize={"xs"}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Return Date & Return Time - Orange Theme (Hourly View) */}
+                      {isHourly && activeTab !== 'monthly' && (
+                        <>
+                          {/* Return Date - Orange */}
+                          <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
+                            <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+                              <Calendar size={80} className="text-amber-600" />
+                            </div>
+                            <div className="relative h-full flex flex-col">
+                              <div className="flex items-center gap-2 mb-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+                                <label className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
                                   Return Date
-                                </span>
+                                </label>
                               </div>
-                              <div className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-                                {endDate ? new Date(endDate).toLocaleDateString("en-GB", {
-                                  weekday: "short",
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                }) : "Calculating..."}
-                              </div>
-                              <div className="mt-1 flex items-center gap-1.5 text-[9px] font-bold text-green-700 bg-green-100/60 w-fit px-2 py-0.5 rounded-lg">
-                                <CheckCircle size={10} /> 
-                                <span>AUTO CALCULATED</span>
+                              <div className="text-xs font-medium text-gray-900 flex-1">
+                                <DatePicker
+                                  value={endDate}
+                                  onChange={setEndDate}
+                                  min={minDate}
+                                  disabled={false}
+                                  textSize={"xs"}
+                                />
                               </div>
                             </div>
                           </div>
 
-                      {isHourly && activeTab !== 'monthly' && (
-                        <>
-                          {/* Auto Calculated End Time */}
-                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md h-[96px] flex flex-col justify-center">
+                          {/* Return Time - Orange (Read-only, no popup) */}
+                          <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all h-full min-h-[70px]">
                             <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
-                              <CheckCircle size={64} className="text-green-600" />
+                              <Clock size={64} className="text-amber-600" />
                             </div>
-                            <div className="relative">
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[10px] text-green-800 font-bold uppercase tracking-wider">
+                            <div className="relative h-full flex flex-col">
+                              <div className="flex items-center gap-2 mb-1">
+                                <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                <span className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
                                   Return Time
                                 </span>
                               </div>
-                              <div className="text-lg font-black text-slate-900 tracking-tight">
+                              <div className="text-xs font-semibold text-slate-800 bg-white/80 backdrop-blur-sm border border-amber-200 rounded-xl px-3 py-3">
                                 {endTime ? endTime : "--:--"}
-                              </div>
-                              <div className="mt-2.5 flex items-center gap-1.5 text-[9px] font-bold text-green-700 bg-green-100/60 w-fit px-2 py-1 rounded-lg">
-                                <CheckCircle size={10} /> 
-                                <span>AUTO CALCULATED</span>
                               </div>
                             </div>
                           </div>
@@ -1184,7 +1223,7 @@ export default function ProductDetailsPage() {
                         {/* Add vendor address here */}
                         {productDetails?.vendor_address && (
                           <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]" title={productDetails.vendor_address}>
-                            📍 {productDetails.vendor_address}
+                            📍 {productDetails.vendor_address} , {productDetails.vendor_city_name}
                           </div>
                         )}
                       </div>
@@ -1267,73 +1306,73 @@ export default function ProductDetailsPage() {
               </button>
             </div>
 
-         <div className=" border-gray-100 p-6 lg:p-10">
-  
-  {/* Heading */}
-  {/* <h3 className="text-lg font-bold text-slate-900 mb-6">Product Details</h3> */}
+            <div className=" border-gray-100 p-6 lg:p-10">
 
-  <div className="min-h-[420px] flex flex-col">
+              {/* Heading */}
+              {/* <h3 className="text-lg font-bold text-slate-900 mb-6">Product Details</h3> */}
 
-    {productDetails?.product_details &&
-      Array.isArray(productDetails.product_details) &&
-      productDetails.product_details.length > 0 ? (
-      
-      <div className="space-y-4">
-        {productDetails.product_details.map((spec: any, idx: number) => {
-          const label =
-            spec.specification ||
-            spec.label ||
-            spec.key ||
-            spec.name ||
-            spec.title ||
-            `Specification ${idx + 1}`;
+              <div className="min-h-[420px] flex flex-col">
 
-          const value =
-            spec.detail ||
-            spec.value ||
-            spec.description ||
-            "—";
+                {productDetails?.product_details &&
+                  Array.isArray(productDetails.product_details) &&
+                  productDetails.product_details.length > 0 ? (
 
-          return (
-            <div
-              key={idx}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-3 border-b border-gray-100 last:border-0"
-            >
-              <div className="font-semibold text-slate-900">{label}</div>
-              <div className="sm:col-span-2 text-slate-600">{value}</div>
+                  <div className="space-y-4">
+                    {productDetails.product_details.map((spec: any, idx: number) => {
+                      const label =
+                        spec.specification ||
+                        spec.label ||
+                        spec.key ||
+                        spec.name ||
+                        spec.title ||
+                        `Specification ${idx + 1}`;
+
+                      const value =
+                        spec.detail ||
+                        spec.value ||
+                        spec.description ||
+                        "—";
+
+                      return (
+                        <div
+                          key={idx}
+                          className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-3 border-b border-gray-100 last:border-0"
+                        >
+                          <div className="font-semibold text-slate-900">{label}</div>
+                          <div className="sm:col-span-2 text-slate-600">{value}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                ) : (
+                  <div className="flex-1 flex items-center justify-center py-12">
+                    <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center">
+
+                      <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gray-50 flex items-center justify-center">
+                        <ImageOff size={28} className="text-gray-400" />
+                      </div>
+
+                      <h4 className="text-xl font-bold text-gray-800 mb-3">
+                        No Product Details Available
+                      </h4>
+
+                      <p className="text-gray-500 text-sm leading-relaxed">
+                        Detailed specifications for this product have not been added yet.
+                        <br />
+                        Please check back later or contact the seller for more information.
+                      </p>
+
+                    </div>
+                  </div>
+                )}
+
+              </div>
             </div>
-          );
-        })}
-      </div>
-
-    ) : (
-      <div className="flex-1 flex items-center justify-center py-12">
-        <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center">
-          
-          <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gray-50 flex items-center justify-center">
-            <ImageOff size={28} className="text-gray-400" />
-          </div>
-
-          <h4 className="text-xl font-bold text-gray-800 mb-3">
-            No Product Details Available
-          </h4>
-
-          <p className="text-gray-500 text-sm leading-relaxed">
-            Detailed specifications for this product have not been added yet.
-            <br />
-            Please check back later or contact the seller for more information.
-          </p>
-
-        </div>
-      </div>
-    )}
-
-  </div>
-</div>
           </div>
         </div>
 
-        <RelatedProducts 
+        <RelatedProducts
           categoryId={productDetails?.category_id}
           subCategoryId={productDetails?.sub_category_id}
           vendorId={productDetails?.vendor_id || productDetails?.vendor_india_id}

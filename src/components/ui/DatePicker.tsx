@@ -13,6 +13,7 @@ interface DatePickerProps {
   className?: string;
   disabled?: boolean;
   align?: "left" | "right";
+  textSize?: string;
 }
 
 export function DatePicker({
@@ -24,6 +25,7 @@ export function DatePicker({
   className,
   disabled = false,
   align = "left",
+  textSize = "text-sm",
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date()); // For navigation
@@ -200,7 +202,7 @@ export function DatePicker({
           <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider leading-tight">
             {label}
           </span>
-          <span className="text-sm font-bold text-gray-900 leading-tight">
+          <span className={clsx("font-bold text-gray-900 leading-tight", textSize)}>
             {value ? formatDateDisplay(value) : "Select Date"}
           </span>
         </div>

@@ -43,10 +43,10 @@ const WishlistPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-10">
+        <div className="mb-6">
           <BackButton />
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 flex items-center gap-3">
-            <Heart className="h-9 w-9 text-red-500 fill-red-500" />
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-3 mt-3">
+            <Heart className="h-6 w-6 text-red-500 fill-red-500" />
             My Wishlist ({wishlistItems.length})
           </h1>
         </div>
