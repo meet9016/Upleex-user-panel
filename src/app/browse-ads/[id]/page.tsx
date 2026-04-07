@@ -21,6 +21,7 @@ import {
   ShoppingCart,
   Store,
   X,
+  Clock,
 } from "lucide-react";
 import { productService } from "@/services/productService";
 import clsx from "clsx";
@@ -984,106 +985,134 @@ export default function ProductDetailsPage() {
                     </div>
                   </div>
 
-                  {!isSell && (
-                    <>
-                      <DatePicker
-                        label="Start Date"
-                        value={startDate}
-                        onChange={setStartDate}
-                        min={minDate}
-                        disabled={false}
-                      />
-                      {isHourly && (
-                        <div className="hidden sm:block" aria-hidden="true" />
-                      )}
-                      {isHourly && activeTab !== 'monthly' && (
-                        <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-4 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400">
-                          <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
-                            <Star size={80} className="text-amber-600" />
-                          </div>
-                          <div className="relative">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-                              <label className="text-[10px] text-amber-800 font-bold uppercase tracking-wider block">
-                                Pick Start Time
-                              </label>
-                            </div>
-                            <input
-                              type="time"
-                              value={startTime}
-                              onChange={(e) => setStartTime(e.target.value)}
-                              className="w-full bg-white/80 backdrop-blur-sm border border-amber-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all cursor-pointer"
-                            />
-                            <p className="text-[9px] text-amber-700 mt-2 font-semibold uppercase tracking-tight flex items-center gap-1">
-                              <Star size={10} fill="currentColor" /> Set your preferred slot
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                      {!isHourly && (
-                        <DatePicker
-                        label="End Date"
-                        value={endDate}
-                        onChange={setEndDate}
-                        min={getMinEndDate()}
-                        max={getMinEndDate()}
-                        align="right"
-                      />
-                      )}
-                      {isHourly && activeTab !== 'monthly' && (
-                        <>
-                          {/* Auto Calculated End Date */}
-                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md">
-                            <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                              <Calendar size={80} className="text-green-600" />
-                            </div>
-                            <div className="relative">
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[10px] text-green-800 font-bold uppercase tracking-wider">
-                                  Return Date
-                                </span>
-                              </div>
-                              <div className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-                                {endDate ? new Date(endDate).toLocaleDateString("en-GB", {
-                                  weekday: "short",
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                }) : "Calculating..."}
-                              </div>
-                              <div className="mt-2.5 flex items-center gap-1.5 text-[9px] font-bold text-green-700 bg-green-100/60 w-fit px-2 py-1 rounded-lg">
-                                <CheckCircle size={10} /> 
-                                <span>AUTO CALCULATED</span>
-                              </div>
-                            </div>
-                          </div>
+{!isSell && (
+  <>
+    {/* Start Date - Green Theme */}
+    <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
+      <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+        <Calendar size={80} className="text-green-600" />
+      </div>
+      <div className="relative h-full flex flex-col">
+        <div className="flex items-center gap-2 mb-1">
+          <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+          <label className="text-[9px] text-green-800 font-semibold uppercase tracking-wider">
+            Start Date
+          </label>
+        </div>
+        <div className="text-xs font-medium text-gray-900 flex-1">
+          <DatePicker
+            value={startDate}
+            onChange={setStartDate}
+            min={minDate}
+            disabled={false}
+            textSize={"xs"}
+          />
+        </div>
+      </div>
+    </div>
 
-                          {/* Auto Calculated End Time */}
-                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md">
-                            <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
-                              <CheckCircle size={64} className="text-green-600" />
-                            </div>
-                            <div className="relative">
-                              <div className="flex items-center gap-2 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[10px] text-green-800 font-bold uppercase tracking-wider">
-                                  Return Time
-                                </span>
-                              </div>
-                              <div className="text-lg font-black text-slate-900 tracking-tight">
-                                {endTime ? endTime : "--:--"}
-                              </div>
-                              <div className="mt-2.5 flex items-center gap-1.5 text-[9px] font-bold text-green-700 bg-green-100/60 w-fit px-2 py-1 rounded-lg">
-                                <CheckCircle size={10} /> 
-                                <span>AUTO CALCULATED</span>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </>
-                  )}
+    {/* Start Time - Green Theme */}
+    {isHourly && activeTab !== 'monthly' && (
+      <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
+        <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+          <Clock size={80} className="text-green-600" />
+        </div>
+        <div className="relative h-full flex flex-col">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+            <label className="text-[9px] text-green-800 font-semibold uppercase tracking-wider">
+              Start Time
+            </label>
+          </div>
+          <input
+            type="time"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="w-full bg-white/80 backdrop-blur-sm border border-green-200 rounded-xl px-3 py-3 text-xs font-medium text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all cursor-pointer"
+          />
+        </div>
+      </div>
+    )}
+
+    {/* Spacer for hourly view */}
+    {isHourly && activeTab !== 'monthly' && (
+      <div className="hidden sm:block" aria-hidden="true" />
+    )}
+
+    {/* Return Date - Orange Theme (Monthly View) */}
+    {!isHourly && (
+      <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
+        <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+          <Calendar size={80} className="text-amber-600" />
+        </div>
+        <div className="relative h-full flex flex-col">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+            <label className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
+              Return Date
+            </label>
+          </div>
+          <div className="text-xs font-medium text-gray-900 flex-1">
+            <DatePicker
+              value={endDate}
+              onChange={setEndDate}
+              min={getMinEndDate()}
+              disabled={false}
+              textSize={"xs"}
+            />
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Return Date & Return Time - Orange Theme (Hourly View) */}
+    {isHourly && activeTab !== 'monthly' && (
+      <>
+        {/* Return Date - Orange */}
+        <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
+          <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+            <Calendar size={80} className="text-amber-600" />
+          </div>
+          <div className="relative h-full flex flex-col">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+              <label className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
+                Return Date
+              </label>
+            </div>
+            <div className="text-xs font-medium text-gray-900 flex-1">
+              <DatePicker
+                value={endDate}
+                onChange={setEndDate}
+                min={minDate}
+                disabled={false}
+                textSize={"xs"}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Return Time - Orange (Read-only, no popup) */}
+        <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all h-full min-h-[70px]">
+          <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Clock size={64} className="text-amber-600" />
+          </div>
+          <div className="relative h-full flex flex-col">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
+                Return Time
+              </span>
+            </div>
+            <div className="text-xs font-semibold text-slate-800 bg-white/80 backdrop-blur-sm border border-amber-200 rounded-xl px-3 py-3">
+              {endTime ? endTime : "--:--"}
+            </div>
+          </div>
+        </div>
+      </>
+    )}
+  </>
+)}
                 </div>
 
                 {/* CTAs */}
