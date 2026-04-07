@@ -372,31 +372,41 @@ export const Navbar: React.FC = () => {
     }
 
     citySearchTimeoutRef.current = window.setTimeout(() => {
-      setCityPage(1);
-      setCityHasMore(true);
-      loadCities(1, false, value);
+      const trimmedValue = value.trim();
+      // Only call API if value is empty (to reset) or at least 3 characters
+      if (trimmedValue.length === 0 || trimmedValue.length >= 3) {
+        setCityPage(1);
+        setCityHasMore(true);
+        loadCities(1, false, value);
+      }
     }, 300);
   };
 
   const handleCitySearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault();
+      const value = event.currentTarget.value.trim();
+      if (value.length === 0 || value.length >= 3) {
+        if (citySearchTimeoutRef.current) {
+          window.clearTimeout(citySearchTimeoutRef.current);
+        }
+        setCityPage(1);
+        setCityHasMore(true);
+        loadCities(1, false, event.currentTarget.value);
+      }
+    }
+  };
+
+  const handleCitySearchButtonClick = () => {
+    const value = citySearchTerm.trim();
+    if (value.length === 0 || value.length >= 3) {
       if (citySearchTimeoutRef.current) {
         window.clearTimeout(citySearchTimeoutRef.current);
       }
       setCityPage(1);
       setCityHasMore(true);
-      loadCities(1, false, event.currentTarget.value);
+      loadCities(1, false, citySearchTerm);
     }
-  };
-
-  const handleCitySearchButtonClick = () => {
-    if (citySearchTimeoutRef.current) {
-      window.clearTimeout(citySearchTimeoutRef.current);
-    }
-    setCityPage(1);
-    setCityHasMore(true);
-    loadCities(1, false, citySearchTerm);
   };
 
   const fetchSuggestions = async (query: string) => {

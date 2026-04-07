@@ -7,7 +7,7 @@ import endPointApi from '@/utils/endPointApi';
 import { toast } from 'react-hot-toast';
 import { BackButton } from '@/components/ui/BackButton';
 import { NavigationButtons } from '@/components/features/NavigationButtons';
-
+import { Copy } from 'lucide-react';
 interface OrderItem {
   product_id: string;
   product_name: string;
@@ -81,7 +81,10 @@ export default function OrdersPage() {
       setLoading(false);
     }
   };
-
+const handleCopy = (text: string) => {
+  navigator.clipboard.writeText(text);
+  toast.success('Payment ID copied!');
+};
   useEffect(() => {
     fetchOrders();
   }, [page]);
@@ -136,7 +139,7 @@ export default function OrdersPage() {
                   {/* Order Header */}
                   <div className="px-5 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4 bg-gray-50">
                     <div>
-                      <p className="font-semibold text-gray-900">Order #{order.order_id}</p>
+                      <p className="font-semibold text-gray-900">Order ID: {order.order_id}</p>
                       <p className="text-sm text-gray-500">
                         {new Date(order.createdAt).toLocaleDateString('en-IN', { 
                           day: 'numeric', month: 'short', year: 'numeric' 
@@ -193,12 +196,19 @@ export default function OrdersPage() {
                       <span className="font-medium text-gray-900">Total: </span>
                       <span className="font-bold text-lg text-blue-600">₹{order.total_amount.toLocaleString('en-IN')}</span>
                     </div>
+                      {order.razorpay_payment_id && (
+                        <div className="flex items-center gap-2 text-xs text-gray-500 font-bold  ">
+                          <span>Payment ID: {order.razorpay_payment_id}</span>
 
-                    {order.razorpay_payment_id && (
-                      <p className="text-xs text-gray-500 font-mono">
-                        Payment ID: {order.razorpay_payment_id}
-                      </p>
-                    )}
+                        <button
+                        onClick={() => handleCopy(order.razorpay_payment_id)}
+                        title="Copy Payment ID"
+                        className="p-1 hover:bg-gray-200 rounded transition"
+                      >
+                        <Copy size={14} />
+                      </button>
+                        </div>
+                      )}
                   </div>
                 </motion.div>
               ))}
