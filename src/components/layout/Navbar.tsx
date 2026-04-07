@@ -24,6 +24,7 @@ import {
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { DownloadAppPopup } from '../features/DownloadAppPopup';
+import { LocationModal } from '../features/LocationModal';
 import { Button } from '@/components/ui/Button';
 import { categoryService, Category } from '@/services/categoryService';
 import { serviceService, ServiceCategory } from '@/services/serviceService';
@@ -55,6 +56,33 @@ export const Navbar: React.FC = () => {
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [isCityLoading, setIsCityLoading] = useState(false);
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+
+  // Sync city with sessionStorage on mount
+  useEffect(() => {
+    const sessionCityId = sessionStorage.getItem('selectedCityId');
+    const sessionCityName = sessionStorage.getItem('currentLocation');
+    if (sessionCityId && sessionCityName) {
+      setSelectedCityId(sessionCityId);
+      setCurrentLocation(sessionCityName);
+      setIsLocationModalOpen(false);
+    } else {
+      // If no city stored in session, wait for auto-detection or show modal
+      const timer = setTimeout(() => {
+        if (!sessionStorage.getItem('selectedCityId')) {
+          setIsLocationModalOpen(true);
+        }
+      }, 2000); 
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // Update suggestions when city changes if searchTerm exists
+  useEffect(() => {
+    if (searchTerm.trim().length >= 2 && showSuggestions) {
+      fetchSuggestions(searchTerm.trim());
+    }
+  }, [selectedCityId]);
   const [cityPage, setCityPage] = useState(1);
   const [cityHasMore, setCityHasMore] = useState(true);
   const [citySearchTerm, setCitySearchTerm] = useState('');
@@ -116,7 +144,7 @@ export const Navbar: React.FC = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const data = await categoryService.getCategories();
+      const data = await categoryService.getCategories(selectedCityId);
       setCategories(data);
     };
     const fetchServiceCategories = async () => {
@@ -126,7 +154,7 @@ export const Navbar: React.FC = () => {
 
     fetchCategories();
     fetchServiceCategories();
-  }, []);
+  }, [selectedCityId]);
 
   useEffect(() => {
     readUserData();
@@ -138,16 +166,36 @@ export const Navbar: React.FC = () => {
 
     // Auto-detect user's city
     const detectUserCity = async () => {
+      // If we already have a city stored in session, don't auto-detect
+      if (sessionStorage.getItem('selectedCityId')) return;
+
       try {
-        const response = await fetch('https://ipapi.co/json/');
+        // Use ip-api.com for more city-level accuracy
+        const response = await fetch('http://ip-api.com/json/');
         const data = await response.json();
-        const detectedCity = data.city || '';
+        
+        // Use the city name from ip-api.com
+        let detectedCity = data.city || '';
 
         if (detectedCity) {
           const cityRes = await searchService.getCities(1, detectedCity);
           if (cityRes.items && cityRes.items.length > 0) {
-            setCurrentLocation(cityRes.items[0].city_name);
-            setSelectedCityId(String(cityRes.items[0].id));
+            // Find the best match:
+            // 1. Exact match for the detected city name
+            // 2. Pick the item with the shortest name (likely the main city, e.g. "Surat" instead of "Suratgarh")
+            const exactMatch = cityRes.items.find(c => c.city_name.toLowerCase() === detectedCity.toLowerCase());
+            
+            // If multiple results, prefer the one with the shortest name
+            const sortedItems = [...cityRes.items].sort((a, b) => a.city_name.length - b.city_name.length);
+            const city = exactMatch || sortedItems[0];
+            
+            setCurrentLocation(city.city_name);
+            setSelectedCityId(String(city.id));
+            sessionStorage.setItem('selectedCityId', String(city.id));
+            sessionStorage.setItem('currentLocation', city.city_name);
+            setIsLocationModalOpen(false); // Close the modal if auto-detected
+            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('cityChange'));
           }
         }
       } catch (error) {
@@ -245,19 +293,43 @@ export const Navbar: React.FC = () => {
   };
 
   const handleCitySelect = (city: any) => {
-    setSelectedCityId(String(city.id));
+    const cityId = String(city.id);
+    setSelectedCityId(cityId);
     setCurrentLocation(city.city_name);
+    sessionStorage.setItem('selectedCityId', cityId);
+    sessionStorage.setItem('currentLocation', city.city_name);
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('cityChange'));
     setIsCityDropdownOpen(false);
+    setIsLocationModalOpen(false); // Close modal when a city is selected manually
+
+    // If we are on search page, update the city param
+    if (pathname === '/search') {
+      const params = new URLSearchParams(searchParams?.toString());
+      params.set('city', cityId);
+      router.push(`/search?${params.toString()}`);
+    }
   };
 
   const handleClearCity = () => {
     setSelectedCityId(null);
     setCurrentLocation('Select City');
+    sessionStorage.removeItem('selectedCityId');
+    sessionStorage.removeItem('currentLocation');
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('cityChange'));
     setCitySearchTerm('');
     setCities([]);
     setHasLoadedInitialCities(false);
     setCityPage(1);
     setCityHasMore(true);
+
+    // If we are on search page, remove the city param
+    if (pathname === '/search') {
+      const params = new URLSearchParams(searchParams?.toString());
+      params.delete('city');
+      router.push(`/search?${params.toString()}`);
+    }
   };
 
   const handleCityToggle = () => {
@@ -1228,6 +1300,12 @@ export const Navbar: React.FC = () => {
       <DownloadAppPopup
         isOpen={isDownloadPopupOpen}
         onClose={() => setIsDownloadPopupOpen(false)}
+      />
+
+      <LocationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+        onSelectCity={handleCitySelect}
       />
     </nav>
   );

@@ -8,11 +8,24 @@ import { Pagination } from '@/components/ui/Pagination';
 import { PackageOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { searchService } from '@/services/searchService';
+import { useCity } from '@/hooks/useCity';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const search = searchParams?.get('search') ?? '';
-  const city = searchParams?.get('city') ?? '';
+  const urlCity = searchParams?.get('city');
+  const selectedCity = useCity();
+
+  const [city, setCity] = useState(urlCity || '');
+
+  useEffect(() => {
+    // If URL has city, use it. Otherwise use sessionCity from hook.
+    if (urlCity) {
+      setCity(urlCity);
+    } else {
+      setCity(selectedCity || '');
+    }
+  }, [urlCity, selectedCity]);
 
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);

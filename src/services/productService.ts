@@ -19,14 +19,17 @@ export interface VendorProductParams {
     filter_rent_sell?: string;
     filter_tenure?: string;
     page: number;
+    limit?: number;
 }
 
 export interface CategoryProductParams {
     category_id: string;
     sub_category_id?: string;
+    city?: string | null;
     filter_rent_sell?: string;
     filter_tenure?: string;
     page: number;
+    limit?: number;
 }
 
 class ProductService {
@@ -67,13 +70,17 @@ class ProductService {
         return res.data;
     }
 
-    async getSubCategories(categoryId: string): Promise<any> {
+    async getSubCategories(categoryId: string, city?: string | null): Promise<any> {
+        const params: any = {
+            categoryId,
+            page: 1,
+            limit: 1000,
+        };
+        if (city) {
+            params.city = city;
+        }
         const res = await api.get(endPointApi.webSubCategoryList, {
-            params: {
-                categoryId,
-                page: 1,
-                limit: 1000,
-            },
+            params,
         });
         return res.data;
     }
@@ -89,6 +96,10 @@ class ProductService {
             query.sub_category_id = params.sub_category_id;
         }
 
+        if (params.city) {
+            query.city = params.city;
+        }
+
         if (params.filter_rent_sell && params.filter_rent_sell !== '0') {
             query.filter_rent_sell = params.filter_rent_sell;
         }
@@ -99,7 +110,7 @@ class ProductService {
 
         if (params.page && params.page > 0) {
             query.page = params.page;
-            query.limit = 12;
+            query.limit = params.limit || 12;
         }
 
         const res = await api.get(endPointApi.webCategoryProductList, {
@@ -119,6 +130,9 @@ class ProductService {
             formData.append('filter_tenure', params.filter_tenure);
         }
         formData.append('page', String(params.page));
+        if (params.limit) {
+            formData.append('limit', String(params.limit));
+        }
         const res = await api.post(endPointApi.webVendorProductList, formData);
         return res.data;
     }

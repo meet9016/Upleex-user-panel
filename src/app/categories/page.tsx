@@ -6,17 +6,20 @@ import { Checkbox } from '@/components/ui/Checkbox';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronRight } from 'lucide-react';
+import { useCity } from '@/hooks/useCity';
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const selectedCity = useCity();
 
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoading(true);
       try {
-        const data = await categoryService.getCategories();
+        const data = await categoryService.getCategories(selectedCity);
         setCategories(data);
         // Select the first category by default if none selected
         if (data.length > 0 && selectedCategoryIds.length === 0) {
@@ -29,7 +32,7 @@ export default function CategoriesPage() {
       }
     };
     fetchCategories();
-  }, []);
+  }, [selectedCity]);
 
   const toggleCategory = (id: string) => {
     setSelectedCategoryIds(prev => 

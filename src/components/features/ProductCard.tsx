@@ -22,6 +22,7 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
+  console.log("product:", product)
   const router = useRouter();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [liked, setLiked] = useState(false);
@@ -48,7 +49,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     cancelPrice = Number(firstMonth.cancel_price);
   }
   const productCategory = product.sub_category_name || product.category;
-  const productLocation = product.location || 'Surat';
+  const productLocation = product.vendor_city_name || 'Surat';
 
   const sanitizeUrl = (url: string) => {
     if (!url) return '';
@@ -77,6 +78,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
         setIsAuthModalOpen(true);
       });
     }
+  };
+   const getListingTypeLabel = () => {
+    const type = product?.product_listing_type_name || product?.product_type_name;
+    if (!type) return '';
+    return type.charAt(0).toUpperCase() + type.slice(1);
   };
 
   return (
@@ -209,7 +215,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     
     {cancelPrice && (
       <div className="text-xs text-gray-400 line-through flex-shrink-0">
-        ₹{cancelPrice}/Month
+        ₹{cancelPrice}/{getListingTypeLabel()}
       </div>
     )}
   </div>

@@ -37,7 +37,7 @@ class ServiceService {
         }
     }
 
-    async getServices(params?: { category_id?: string; search?: string; sortBy?: string; order?: 'asc' | 'desc' }): Promise<Service[]> {
+    async getServices(params?: { category_id?: string; city?: string | null; search?: string; sortBy?: string; order?: 'asc' | 'desc' }): Promise<Service[]> {
         try {
             const res = await api.get(endPointApi.serviceList, { params });
             return res.data?.data || [];

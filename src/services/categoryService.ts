@@ -26,18 +26,17 @@ export interface HomeResponse {
 }
 
 class CategoryService {
-    private homeData: HomeResponse | null = null;
-
-    async getHomeData(): Promise<HomeResponse> {
-        if (this.homeData) {
-            return this.homeData;
-        }
+    async getHomeData(city?: string | null): Promise<HomeResponse> {
         try {
+            const params: any = {
+                page: 1,
+                limit: 100,
+            };
+            if (city) {
+                params.city = city;
+            }
             const categoryRes = await api.get(endPointApi.home, {
-                params: {
-                    page: 1,
-                    limit: 100,
-                },
+                params,
             });
 
             const categoryPayload = categoryRes.data || {};
@@ -84,17 +83,16 @@ class CategoryService {
                 },
             };
 
-            this.homeData = transformed;
             return transformed;
         } catch (error) {
-            console.error('Error fetching home data:', error);
+            console.error('Home data fetch error:', error);
             throw error;
         }
     }
 
-    async getCategories(): Promise<Category[]> {
+    async getCategories(city?: string | null): Promise<Category[]> {
         try {
-            const data = await this.getHomeData();
+            const data = await this.getHomeData(city);
             return data.data.all_categories || [];
         } catch (error) {
             console.error('Error fetching categories:', error);

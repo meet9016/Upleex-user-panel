@@ -297,10 +297,19 @@ export default function ProductDetailsPage() {
         (m: any) => m.product_months_id === selectedMonthId
       );
       if (selectedMonth) {
-        const monthCount = parseInt(selectedMonth.month_name) || 1;
+        let monthCount = 1;
+        const parsed = parseInt(String(selectedMonth.month_name).replace(/[^0-9]/g, ''));
+        if (!isNaN(parsed) && parsed > 0) {
+           monthCount = parsed;
+        }
+
+        const startDay = calculatedEndDate.getDate();
         calculatedEndDate.setMonth(calculatedEndDate.getMonth() + monthCount);
-        // Set to same day of the month
-        calculatedEndDate.setDate(new Date(startDate).getDate());
+        
+        // Handle end of month rollover
+        if (calculatedEndDate.getDate() !== startDay) {
+          calculatedEndDate.setDate(0); 
+        }
       }
     } else if (isDaily) {
       // For daily: add days to start date
@@ -1020,20 +1029,8 @@ export default function ProductDetailsPage() {
                           </div>
                         </div>
                       )}
-                      {!isHourly && (
-                        <DatePicker
-                        label="End Date"
-                        value={endDate}
-                        onChange={setEndDate}
-                        min={getMinEndDate()}
-                        max={getMinEndDate()}
-                        align="right"
-                      />
-                      )}
-                      {isHourly && activeTab !== 'monthly' && (
-                        <>
-                          {/* Auto Calculated End Date */}
-                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md">
+                      {/* Auto Calculated End Date for ALL non-sell */}
+                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md h-[96px] flex flex-col justify-center">
                             <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
                               <Calendar size={80} className="text-green-600" />
                             </div>
@@ -1052,15 +1049,17 @@ export default function ProductDetailsPage() {
                                   year: "numeric",
                                 }) : "Calculating..."}
                               </div>
-                              <div className="mt-2.5 flex items-center gap-1.5 text-[9px] font-bold text-green-700 bg-green-100/60 w-fit px-2 py-1 rounded-lg">
+                              <div className="mt-1 flex items-center gap-1.5 text-[9px] font-bold text-green-700 bg-green-100/60 w-fit px-2 py-0.5 rounded-lg">
                                 <CheckCircle size={10} /> 
                                 <span>AUTO CALCULATED</span>
                               </div>
                             </div>
                           </div>
 
+                      {isHourly && activeTab !== 'monthly' && (
+                        <>
                           {/* Auto Calculated End Time */}
-                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md">
+                          <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-4 shadow-sm transition-all hover:shadow-md h-[96px] flex flex-col justify-center">
                             <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
                               <CheckCircle size={64} className="text-green-600" />
                             </div>
@@ -1334,7 +1333,12 @@ export default function ProductDetailsPage() {
           </div>
         </div>
 
-        <RelatedProducts />
+        <RelatedProducts 
+          categoryId={productDetails?.category_id}
+          subCategoryId={productDetails?.sub_category_id}
+          vendorId={productDetails?.vendor_id || productDetails?.vendor_india_id}
+          currentProductId={productDetails?.id || id}
+        />
       </div>
 
       {/* Auth Modal */}
