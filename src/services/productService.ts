@@ -136,6 +136,18 @@ class ProductService {
         const res = await api.post(endPointApi.webVendorProductList, formData);
         return res.data;
     }
+
+    async getRelatedProducts(params: {
+        category_id: string;
+        sub_category_id?: string;
+        vendor_id?: string;
+        current_product_id?: string;
+    }): Promise<any> {
+        const res = await api.get(endPointApi.webRelatedProductList, {
+            params,
+        });
+        return res.data;
+    }
 }
 
 export const productService = new ProductService();

@@ -25,6 +25,8 @@ export interface ContactFormErrors {
     email?: string;
     phone?: string;
     message?: string;
+    firstName?: string; 
+    lastName?: string;
 }
 
 class ContactService {

@@ -14,6 +14,7 @@ export interface EndPointApi {
     webAllCityList: string;
     webProductSuggestionList: string;
     webSearchProductList: string;
+    webRelatedProductList: string;
 
     //Product details
     webGetQuote: string;
@@ -64,6 +65,7 @@ const endPointApi: EndPointApi = {
     webAllCityList: 'vendor-india-city-list',
     webProductSuggestionList: 'web-product-suggestion-list',
     webSearchProductList: 'web-search-product-list',
+    webRelatedProductList: 'products/related-products',
 
     //Product details
     webGetQuote: 'quote/create-quote',
