@@ -29,8 +29,11 @@ import { AuthModal } from "@/components/features/AuthModal";
 import { QuoteModal } from "@/components/features/QuoteModal";
 import { Modal } from "@/components/ui/Modal";
 import { RelatedProducts } from "@/components/features/RelatedProducts";
+import { ProductReviews } from "@/components/features/ProductReviews";
 import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 import { toast } from "react-hot-toast";
+import { Heart } from "lucide-react";
 
 export default function ProductDetailsPage() {
   const params = useParams();
@@ -39,8 +42,8 @@ export default function ProductDetailsPage() {
 
   const [activeTab, setActiveTab] = useState<"monthly" | "daily">("monthly");
   const [activeDetailTab, setActiveDetailTab] = useState<
-    "description" | "details"
-  >("description");
+    "description" | "details" | "reviews"
+  >("details");
   const [quantity, setQuantity] = useState(1);
   const [days, setDays] = useState(1);
   const [deliveryDate, setDeliveryDate] = useState("");
@@ -60,7 +63,9 @@ export default function ProductDetailsPage() {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
 
   // State for magnifier
   const [isHovering, setIsHovering] = useState(false);
@@ -262,6 +267,23 @@ export default function ProductDetailsPage() {
       handleAddToCart();
     } else {
       setIsQuoteModalOpen(true);
+    }
+  };
+
+  const handleWishlistToggle = async () => {
+    if (!id) return;
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    setIsWishlistLoading(true);
+    try {
+      await toggleWishlist(id, () => setIsAuthModalOpen(true));
+    } finally {
+      setIsWishlistLoading(false);
     }
   };
 
@@ -562,13 +584,34 @@ export default function ProductDetailsPage() {
               {/* Product Details Section - Zoom image floats above this */}
               <div className="flex flex-col h-full relative">
 
-                <div className="mb-4">
+                <div className="mb-4 flex items-start justify-between gap-4">
                   <h1
-                    className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight truncate leading-tight"
+                    className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight truncate leading-tight flex-1"
                     title={productDetails?.product_name}
                   >
                     {productDetails?.product_name || "Loading product..."}
                   </h1>
+                  
+                  {/* Wishlist Heart Button */}
+                  <button
+                    onClick={handleWishlistToggle}
+                    disabled={isWishlistLoading}
+                    className={clsx(
+                      "flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 border-2",
+                      isInWishlist(id)
+                        ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
+                        : "bg-gray-50 border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-red-400"
+                    )}
+                    aria-label={isInWishlist(id) ? "Remove from wishlist" : "Add to wishlist"}
+                  >
+                    <Heart
+                      size={22}
+                      className={clsx(
+                        "transition-all duration-200",
+                        isInWishlist(id) && "fill-current"
+                      )}
+                    />
+                  </button>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   {productDetails?.sub_category_name && (
@@ -1288,88 +1331,81 @@ export default function ProductDetailsPage() {
           </div>
 
           {/* Description & Details Tabs Section */}
-          <div className="border-t border-gray-100 p-6 lg:p-10">
-            <div className="flex gap-8 border-b border-gray-200 mb-6">
-              {/* <button
-                onClick={() => setActiveDetailTab("description")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
-                  }`}
-              >
-                Description
-              </button> */}
-              <button
-                onClick={() => setActiveDetailTab("details")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
-                  }`}
-              >
-                Product Details
-              </button>
+          <div className="border-t border-gray-100">
+  <div className="flex gap-8 border-b border-gray-200 mb-6 px-6 lg:px-10 pt-6">
+    <button
+      onClick={() => setActiveDetailTab("details")}
+      className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+        }`}
+    >
+      Product Details
+    </button>
+    <button
+      onClick={() => setActiveDetailTab("reviews")}
+      className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "reviews" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+        }`}
+    >
+      Reviews & Ratings
+    </button>
+  </div>
+
+  <div className="px-6 lg:px-10 pb-6 lg:pb-10">
+    {activeDetailTab === "reviews" ? (
+      <ProductReviews 
+        productId={id} 
+        onAuthRequired={() => setIsAuthModalOpen(true)}
+      />
+    ) : productDetails?.product_details &&
+      Array.isArray(productDetails.product_details) &&
+      productDetails.product_details.length > 0 ? (
+
+      <div className="space-y-4">
+        {productDetails.product_details.map((spec: any, idx: number) => {
+          const label =
+            spec.specification ||
+            spec.label ||
+            spec.key ||
+            spec.name ||
+            spec.title ||
+            `Specification ${idx + 1}`;
+
+          const value =
+            spec.detail ||
+            spec.value ||
+            spec.description ||
+            "—";
+
+          return (
+            <div
+              key={idx}
+              className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-3 border-b border-gray-100 last:border-0"
+            >
+              <div className="font-semibold text-slate-900">{label}</div>
+              <div className="sm:col-span-2 text-slate-600">{value}</div>
             </div>
+          );
+        })}
+      </div>
 
-            <div className=" border-gray-100 p-6 lg:p-10">
-
-              {/* Heading */}
-              {/* <h3 className="text-lg font-bold text-slate-900 mb-6">Product Details</h3> */}
-
-              <div className="min-h-[420px] flex flex-col">
-
-                {productDetails?.product_details &&
-                  Array.isArray(productDetails.product_details) &&
-                  productDetails.product_details.length > 0 ? (
-
-                  <div className="space-y-4">
-                    {productDetails.product_details.map((spec: any, idx: number) => {
-                      const label =
-                        spec.specification ||
-                        spec.label ||
-                        spec.key ||
-                        spec.name ||
-                        spec.title ||
-                        `Specification ${idx + 1}`;
-
-                      const value =
-                        spec.detail ||
-                        spec.value ||
-                        spec.description ||
-                        "—";
-
-                      return (
-                        <div
-                          key={idx}
-                          className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-3 border-b border-gray-100 last:border-0"
-                        >
-                          <div className="font-semibold text-slate-900">{label}</div>
-                          <div className="sm:col-span-2 text-slate-600">{value}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                ) : (
-                  <div className="flex-1 flex items-center justify-center py-12">
-                    <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center">
-
-                      <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gray-50 flex items-center justify-center">
-                        <ImageOff size={28} className="text-gray-400" />
-                      </div>
-
-                      <h4 className="text-xl font-bold text-gray-800 mb-3">
-                        No Product Details Available
-                      </h4>
-
-                      <p className="text-gray-500 text-sm leading-relaxed">
-                        Detailed specifications for this product have not been added yet.
-                        <br />
-                        Please check back later or contact the seller for more information.
-                      </p>
-
-                    </div>
-                  </div>
-                )}
-
-              </div>
-            </div>
+    ) : (
+      <div className="py-8">
+        <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center mx-auto">
+          <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gray-50 flex items-center justify-center">
+            <ImageOff size={28} className="text-gray-400" />
           </div>
+          <h4 className="text-xl font-bold text-gray-800 mb-3">
+            No Product Details Available
+          </h4>
+          <p className="text-gray-500 text-sm leading-relaxed">
+            Detailed specifications for this product have not been added yet.
+            <br />
+            Please check back later or contact the seller for more information.
+          </p>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
         </div>
 
         <RelatedProducts

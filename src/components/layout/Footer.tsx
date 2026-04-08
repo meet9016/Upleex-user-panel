@@ -53,10 +53,10 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Stay Connected</h3>
             <div className="flex space-x-4 mb-6">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Facebook size={20} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Twitter size={20} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Instagram size={20} /></a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors"><Linkedin size={20} /></a>
+              <a href="https://www.facebook.com/" className="text-gray-400 hover:text-white transition-colors"><Facebook size={20} /></a>
+              <a href="https://x.com/" className="text-gray-400 hover:text-white transition-colors"><Twitter size={20} /></a>
+              <a href="https://www.instagram.com/" className="text-gray-400 hover:text-white transition-colors"><Instagram size={20} /></a>
+              <a href="https://www.linkedin.com/" className="text-gray-400 hover:text-white transition-colors"><Linkedin size={20} /></a>
             </div>
             <p className="text-gray-500 text-xs">
               Subscribe to our newsletter for latest updates and offers.
