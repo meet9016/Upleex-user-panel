@@ -19,18 +19,29 @@ export default function ContactUsPage() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<ContactFormErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [touched, setTouched] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    mobile: false,
+    message: false,
+  });
 
   const validateForm = (): boolean => {
     const newErrors: ContactFormErrors = {};
     
-    // Name validation
-    const fullName = `${form.firstName} ${form.lastName}`.trim();
+    // First Name validation
     if (!form.firstName.trim()) {
-      newErrors.name = 'First name is required';
-    } else if (fullName.length < 2) {
-      newErrors.name = 'Name must be at least 2 characters';
-    } else if (fullName.length > 100) {
-      newErrors.name = 'Name cannot exceed 100 characters';
+      newErrors.firstName = 'First name is required';
+    } else if (form.firstName.trim().length < 2) {
+      newErrors.firstName = 'First name must be at least 2 characters';
+    } else if (form.firstName.trim().length > 50) {
+      newErrors.firstName = 'First name cannot exceed 50 characters';
+    }
+
+    // Last Name validation (optional but validate if provided)
+    if (form.lastName.trim() && form.lastName.trim().length > 50) {
+      newErrors.lastName = 'Last name cannot exceed 50 characters';
     }
 
     // Email validation
@@ -77,18 +88,45 @@ export default function ContactUsPage() {
     setForm(prev => ({ ...prev, [name]: value }));
     
     // Clear specific error when user starts typing
-    if (errors[name as keyof ContactFormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+    if (name === 'firstName' && errors.firstName) {
+      setErrors(prev => ({ ...prev, firstName: undefined }));
     }
+    if (name === 'lastName' && errors.lastName) {
+      setErrors(prev => ({ ...prev, lastName: undefined }));
+    }
+    if (name === 'email' && errors.email) {
+      setErrors(prev => ({ ...prev, email: undefined }));
+    }
+    if (name === 'message' && errors.message) {
+      setErrors(prev => ({ ...prev, message: undefined }));
+    }
+  };
+
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    // Validate on blur
+    validateForm();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // if (!validateForm()) {
-    //   toast.error('Please fix the errors below');
-    //   return;
-    // }
+    // Mark all fields as touched to show validation errors
+    setTouched({
+      firstName: true,
+      lastName: true,
+      email: true,
+      mobile: true,
+      message: true,
+    });
+
+    // Validate form before submission
+    const isValid = validateForm();
+    
+    // If validation fails, stop here - don't show toaster, don't call API
+    if (!isValid) {
+      return; // Exit early - no API call, no toaster
+    }
 
     setLoading(true);
     try {
@@ -113,6 +151,13 @@ export default function ContactUsPage() {
           message: '',
         });
         setErrors({});
+        setTouched({
+          firstName: false,
+          lastName: false,
+          email: false,
+          mobile: false,
+          message: false,
+        });
         
         // Reset submitted state after 5 seconds
         setTimeout(() => setSubmitted(false), 5000);
@@ -126,6 +171,11 @@ export default function ContactUsPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper function to check if field should show error
+  const showError = (field: string) => {
+    return touched[field as keyof typeof touched] && errors[field as keyof ContactFormErrors];
   };
 
   return (
@@ -250,15 +300,18 @@ export default function ContactUsPage() {
                     name="firstName" 
                     value={form.firstName} 
                     onChange={handleChange}
+                    onBlur={() => handleBlur('firstName')}
                     className={`w-full rounded-xl border px-4 py-2 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
-                      errors.name 
+                      showError('firstName')
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
                         : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
                     }`}
                     placeholder="First name"
                     disabled={loading}
                   />
-                  {errors.name && <p className="text-red-600 text-sm">{errors.name}</p>}
+                  {showError('firstName') && errors.firstName && (
+                    <p className="text-red-600 text-sm mt-1">{errors.firstName}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">Last Name</label>
@@ -267,10 +320,18 @@ export default function ContactUsPage() {
                     name="lastName" 
                     value={form.lastName} 
                     onChange={handleChange}
-                    className="w-full rounded-xl border border-gray-300 px-4 py-2 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    onBlur={() => handleBlur('lastName')}
+                    className={`w-full rounded-xl border px-4 py-2 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all ${
+                      showError('lastName')
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                        : 'border-gray-300'
+                    }`}
                     placeholder="Last name"
                     disabled={loading}
                   />
+                  {showError('lastName') && errors.lastName && (
+                    <p className="text-red-600 text-sm mt-1">{errors.lastName}</p>
+                  )}
                 </div>
               </div>
 
@@ -283,15 +344,18 @@ export default function ContactUsPage() {
                   name="email" 
                   value={form.email} 
                   onChange={handleChange}
+                  onBlur={() => handleBlur('email')}
                   className={`w-full rounded-xl border px-4 py-2 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
-                    errors.email 
+                    showError('email')
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
                       : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
                   }`}
                   placeholder="you@company.com"
                   disabled={loading}
                 />
-                {errors.email && <p className="text-red-600 text-sm">{errors.email}</p>}
+                {showError('email') && errors.email && (
+                  <p className="text-red-600 text-sm mt-1">{errors.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -305,8 +369,9 @@ export default function ContactUsPage() {
                     name="mobile" 
                     value={form.mobile} 
                     onChange={handleChange}
+                    onBlur={() => handleBlur('mobile')}
                     className={`flex-1 rounded-r-2xl border px-4 py-2 text-slate-900 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
-                      errors.phone 
+                      showError('mobile')
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
                         : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
                     }`}
@@ -316,7 +381,9 @@ export default function ContactUsPage() {
                     maxLength={10}
                   />
                 </div>
-                {errors.phone && <p className="text-red-600 text-sm ">{errors.phone}</p>}
+                {showError('mobile') && errors.phone && (
+                  <p className="text-red-600 text-sm mt-1">{errors.phone}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -328,16 +395,19 @@ export default function ContactUsPage() {
                   name="message" 
                   value={form.message} 
                   onChange={handleChange}
+                  onBlur={() => handleBlur('message')}
                   className={`w-full rounded-2xl border px-4 py-3.5 text-slate-900 text-sm md:text-base resize-none focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all ${
-                    errors.message 
+                    showError('message')
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
                       : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20'
                   }`}
                   placeholder="Tell us how we can help you..."
                   disabled={loading}
                 />
-                {errors.message && <p className="text-red-600 text-sm ">{errors.message}</p>}
-                <div className="text-right text-xs text-slate-400">
+                {showError('message') && errors.message && (
+                  <p className="text-red-600 text-sm mt-1">{errors.message}</p>
+                )}
+                <div className="text-right text-xs text-slate-400 mt-1">
                   {form.message.length}/1000 characters
                 </div>
               </div>

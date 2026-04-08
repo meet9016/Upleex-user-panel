@@ -1,12 +1,13 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, CreditCard, Package, Truck, CheckCircle, Calendar } from 'lucide-react';
+import { ShoppingBag, CreditCard, Package, Truck, CheckCircle, Calendar, Star } from 'lucide-react';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { toast } from 'react-hot-toast';
 import { BackButton } from '@/components/ui/BackButton';
 import { NavigationButtons } from '@/components/features/NavigationButtons';
+import { ReviewModal } from '@/components/features/ReviewModal';
 import { Copy } from 'lucide-react';
 interface OrderItem {
   product_id: string;
@@ -59,6 +60,14 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  
+  // Review modal state
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{
+    productId: string;
+    productName: string;
+    productImage?: string;
+  } | null>(null);
 
   const fetchOrders = async () => {
     try {
@@ -84,6 +93,15 @@ export default function OrdersPage() {
 const handleCopy = (text: string) => {
   navigator.clipboard.writeText(text);
   toast.success('Payment ID copied!');
+};
+
+const openReviewModal = (item: OrderItem) => {
+  setSelectedProduct({
+    productId: item.product_id,
+    productName: item.product_name,
+    productImage: item.product_image
+  });
+  setReviewModalOpen(true);
 };
   useEffect(() => {
     fetchOrders();
@@ -185,6 +203,17 @@ const handleCopy = (text: string) => {
                         <div className="text-right">
                           <p className="font-semibold text-gray-900">₹{item.final_amount.toLocaleString('en-IN')}</p>
                           <p className="text-xs text-gray-500">₹{item.price} × {item.quantity}</p>
+                          
+                          {/* Write Review Button - Only for delivered orders */}
+                          {order.order_status.toLowerCase() === 'delivered' && (
+                            <button
+                              onClick={() => openReviewModal(item)}
+                              className="mt-2 flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors"
+                            >
+                              <Star size={12} className="fill-current" />
+                              Write Review
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -239,6 +268,20 @@ const handleCopy = (text: string) => {
           </>
         )}
       </div>
+
+      {/* Review Modal */}
+      {selectedProduct && (
+        <ReviewModal
+          isOpen={reviewModalOpen}
+          onClose={() => {
+            setReviewModalOpen(false);
+            setSelectedProduct(null);
+          }}
+          productId={selectedProduct.productId}
+          productName={selectedProduct.productName}
+          productImage={selectedProduct.productImage}
+        />
+      )}
     </div>
   );
 }
