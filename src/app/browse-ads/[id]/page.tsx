@@ -66,6 +66,7 @@ export default function ProductDetailsPage() {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
+  const [localLiked, setLocalLiked] = useState<boolean | null>(null);
 
   // State for magnifier
   const [isHovering, setIsHovering] = useState(false);
@@ -279,9 +280,21 @@ export default function ProductDetailsPage() {
       return;
     }
 
+    const currentStatus = localLiked !== null ? localLiked : (isInWishlist(id) || !!productDetails?.is_wishlist);
+    const newStatus = !currentStatus;
+    setLocalLiked(newStatus);
+
     setIsWishlistLoading(true);
     try {
-      await toggleWishlist(id, () => setIsAuthModalOpen(true));
+      const success = await toggleWishlist(id, () => {
+        setIsAuthModalOpen(true);
+        setLocalLiked(null);
+      });
+      if (!success) {
+        setLocalLiked(null);
+      }
+    } catch (err) {
+      setLocalLiked(null);
     } finally {
       setIsWishlistLoading(false);
     }
@@ -300,6 +313,8 @@ export default function ProductDetailsPage() {
     setMinDate(todayFormatted);
     setStartDate(todayFormatted);
   }, []);
+
+  const isWishlisted = localLiked !== null ? localLiked : (isInWishlist(id) || !!productDetails?.is_wishlist);
 
 
   const listingType = productDetails?.product_listing_type_name?.toLowerCase();
@@ -598,17 +613,17 @@ export default function ProductDetailsPage() {
                     disabled={isWishlistLoading}
                     className={clsx(
                       "flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 border-2",
-                      isInWishlist(id)
+                      isWishlisted
                         ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100"
                         : "bg-gray-50 border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-red-400"
                     )}
-                    aria-label={isInWishlist(id) ? "Remove from wishlist" : "Add to wishlist"}
+                    aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                   >
                     <Heart
                       size={22}
                       className={clsx(
                         "transition-all duration-200",
-                        isInWishlist(id) && "fill-current"
+                        isWishlisted && "fill-current"
                       )}
                     />
                   </button>
