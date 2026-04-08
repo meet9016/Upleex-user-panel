@@ -11,6 +11,7 @@ import { Suspense } from 'react';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
+import { ReviewReminderPopup } from '@/components/features/ReviewReminderPopup';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -43,6 +44,7 @@ export default function RootLayout({
             <QuickActions />
             <main className="flex-1 pb-20 lg:pb-0">{children}</main>
             <Toaster position="bottom-right" />
+            <ReviewReminderPopup />
             <Footer />
             <BottomNav />
           </div>

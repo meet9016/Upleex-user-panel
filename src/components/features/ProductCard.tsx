@@ -24,12 +24,13 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
   console.log("product:", product)
   const router = useRouter();
+  const productId = product.product_id || product.id || product._id;
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const [liked, setLiked] = useState(false);
+  const [localLiked, setLocalLiked] = useState<boolean | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const productId = product.product_id || product.id || product._id;
-  const isWishlisted = productId ? isInWishlist(productId) : false;
+  // Determine current wishlist status: local state > context > initial product data
+  const isWishlisted = localLiked !== null ? localLiked : (productId ? isInWishlist(productId) : !!product.is_wishlist);
   const productName = product.product_name || product.title;
   const productImage = product.product_main_image;
   const listingType = (product?.product_type_name || product?.product_listing_type_name)?.toLowerCase();
@@ -74,9 +75,17 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     e.stopPropagation(); // Stop event from bubbling up to parent
 
     if (productId) {
-      await toggleWishlist(productId, () => {
+      const newStatus = !isWishlisted;
+      setLocalLiked(newStatus);
+      
+      const success = await toggleWishlist(productId, () => {
         setIsAuthModalOpen(true);
+        setLocalLiked(null); // Reset on failure/auth required
       });
+      
+      if (!success) {
+        setLocalLiked(null); // Reset if toggle failed
+      }
     }
   };
    const getListingTypeLabel = () => {
