@@ -46,6 +46,13 @@ export interface EndPointApi {
     
     // Contact
     createContact: string;
+
+    // Wishlist
+    webWishlistList: string;
+    webAddToWishlist: string;
+    webRemoveWishlist: string;
+    webToggleWishlist: string;
+    webCheckWishlist: string;
 }
 
 // Define and export the API endpoint object
@@ -96,6 +103,13 @@ const endPointApi: EndPointApi = {
     
     // Contact
     createContact: 'create-contact',
+
+    // Wishlist
+    webWishlistList: 'wishlist/web-wishlist-list',
+    webAddToWishlist: 'wishlist/web-add-to-wishlist',
+    webRemoveWishlist: 'wishlist/web-remove-wishlist',
+    webToggleWishlist: 'wishlist/web-toggle-wishlist',
+    webCheckWishlist: 'wishlist/web-check-wishlist',
 };
 
 

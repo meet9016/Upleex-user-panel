@@ -10,6 +10,7 @@ export interface Product {
     sellerName?: string;
     rating?: number;
     specifications?: { label: string; value: string }[];
+    is_wishlist?: boolean;
 }
 
 export interface Category {
