@@ -27,106 +27,16 @@ export const RelatedProducts = ({
       
       setLoading(true);
       try {
-        // Parallel fetch for Category products AND Vendor-specific products
-        const [categoryRes, vendorRes] = await Promise.all([
-          productService.getCategoryProducts({
-            category_id: categoryId,
-            page: 1,
-            limit: 100
-          }),
-          vendorId ? productService.getVendorProducts({
-            vendor_id: vendorId,
-            page: 1,
-            limit: 50
-          }) : Promise.resolve({ data: [] })
-        ]);
+        const res = await productService.getRelatedProducts({
+          category_id: categoryId,
+          sub_category_id: subCategoryId,
+          vendor_id: vendorId,
+          current_product_id: currentProductId
+        });
         
-        let allCategoryProducts = [];
-        if (Array.isArray(categoryRes?.data)) {
-          allCategoryProducts = categoryRes.data;
-        } else if (Array.isArray(categoryRes?.data?.product_data)) {
-          allCategoryProducts = categoryRes.data.product_data;
+        if (res?.success && Array.isArray(res.data)) {
+          setProducts(res.data);
         }
-
-        let allVendorProducts = [];
-        if (Array.isArray(vendorRes?.data)) {
-          allVendorProducts = vendorRes.data;
-        } else if (Array.isArray(vendorRes?.data?.product_data)) {
-          allVendorProducts = vendorRes.data.product_data;
-        }
-
-        // --- Priority Tiers ---
-
-        // Tier 0: Same Vendor + Boosted (Top Priority, Any Category)
-        let t0 = allVendorProducts.filter((p: any) => 
-          p.is_boosted === true && 
-          String(p.id || p._id || p.product_id) !== String(currentProductId)
-        );
-
-        // Tier 1: Other Vendors + Boosted (Same Category)
-        let t1 = allCategoryProducts.filter((p: any) => 
-          p.is_boosted === true && 
-          String(p.vendor_id || p.vendor_india_id) !== String(vendorId) &&
-          String(p.id || p.product_id) !== String(currentProductId)
-        );
-
-        // Tier 2: Other Vendors + Same Subcategory + Priority
-        let t2 = allCategoryProducts.filter((p: any) => 
-          String(p.sub_category_id) === String(subCategoryId) && 
-          p.is_priority === true && 
-          p.is_boosted !== true && 
-          String(p.vendor_id || p.vendor_india_id) !== String(vendorId) &&
-          String(p.id || p.product_id) !== String(currentProductId)
-        );
-
-        // Tier 3: Same Vendor + Same Category + Priority (Not Boosted)
-        let t3 = allCategoryProducts.filter((p: any) => 
-          p.is_priority === true && 
-          p.is_boosted !== true && 
-          String(p.vendor_id || p.vendor_india_id) === String(vendorId) &&
-          String(p.id || p.product_id) !== String(currentProductId)
-        );
-
-        // Tier 4: Fallback - General Category Products
-        let t4 = allCategoryProducts.filter((p: any) => 
-          String(p.id || p.product_id) !== String(currentProductId) &&
-          !p.is_priority &&
-          !p.is_boosted &&
-          !t0.find((x: any) => String(x.id || x._id) === String(p.id || p.product_id)) &&
-          !t1.find((x: any) => String(x.id || x._id) === String(p.id || p.product_id)) &&
-          !t2.find((x: any) => String(x.id || x._id) === String(p.id || p.product_id)) &&
-          !t3.find((x: any) => String(x.id || x._id) === String(p.id || p.product_id))
-        );
-
-        // --- Shuffle Logic ---
-        const shuffleArray = (array: any[]) => {
-          const timestamp = Math.floor(Date.now() / (5 * 60 * 1000));
-          const seededRandom = (seed: number) => {
-            const x = Math.sin(seed++) * 10000;
-            return x - Math.floor(x);
-          };
-
-          let m = array.length, t, i;
-          let seed = timestamp;
-          while (m) {
-            i = Math.floor(seededRandom(seed++) * m--);
-            t = array[m];
-            array[m] = array[i];
-            array[i] = t;
-          }
-          return array;
-        };
-
-        // Combine tiers and pick top 4
-        const finalPool = [
-          ...shuffleArray(t0),
-          ...shuffleArray(t1),
-          ...shuffleArray(t2),
-          ...shuffleArray(t3),
-          ...shuffleArray(t4)
-        ];
-
-        setProducts(finalPool.slice(0, 4));
       } catch (err) {
         console.error("Error fetching related products:", err);
       } finally {
