@@ -138,14 +138,14 @@ export default function OrdersPage() {
     toast.success('Payment ID copied!');
   };
 
-  const openReviewModal = (item: OrderItem) => {
-    setSelectedProduct({
-      productId: item.product_id,
-      productName: item.product_name,
-      productImage: item.product_image
-    });
-    setReviewModalOpen(true);
-  };
+  // const openReviewModal = (item: OrderItem) => {
+  //   setSelectedProduct({
+  //     productId: item.product_id,
+  //     productName: item.product_name,
+  //     productImage: item.product_image
+  //   });
+  //   setReviewModalOpen(true);
+  // };
   useEffect(() => {
     const handleVerify = async () => {
       const searchParams = new URLSearchParams(window.location.search);
