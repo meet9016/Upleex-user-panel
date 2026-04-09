@@ -34,75 +34,22 @@ interface Rental {
 }
 
 interface UserDashboardProps {
-  orders: Rental[];
+  dashboardData: {
+    currentRentals: Rental[];
+    pastRentals: Rental[];
+    purchases: Rental[];
+    cancellations: Rental[];
+  } | null;
   loading: boolean;
 }
 
-export const UserDashboard: React.FC<UserDashboardProps> = ({ orders, loading }) => {
+export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loading }) => {
   const [activeTab, setActiveTab] = useState<'current' | 'past' | 'purchases' | 'cancellations'>('current');
 
-  // Helper to categorize orders
-  const categorizeOrders = () => {
-    const currentRentals: Rental[] = [];
-    const pastRentals: Rental[] = [];
-    const purchases: Rental[] = [];
-    const cancellations: Rental[] = [];
-
-    // Normalize now date to midnight for accurate day comparison
-    const now = new Date();
-    const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-
-    orders.forEach(rental => {
-      const status = (rental.status || '').toLowerCase();
-      const vendorStatus = (rental.vendor_status || '').toLowerCase();
-      const paymentStatus = (rental.payment_status || '').toLowerCase();
-      const productType = (rental.product_id?.product_type_name || '').toLowerCase();
-      
-      const isRent = productType === 'rent';
-      const isSell = productType === 'sell';
-
-      let startDateVal = 0;
-      let endDateVal = 0;
-
-      if (rental.start_date) {
-        const d = new Date(rental.start_date);
-        startDateVal = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      }
-      if (rental.end_date) {
-        const d = new Date(rental.end_date);
-        endDateVal = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      }
-
-      // Rules from user:
-      // 1. Current Rental: 
-      // - Within start date and end date + paid + status: delivery
-      // - OR: Status is approval/approve/pending (regardless of date/payment) - handles pending payments after date
-      const isCurrent = isRent && (
-        (paymentStatus === 'paid' && status === 'delivery' && startDateVal && endDateVal && nowDate >= startDateVal && nowDate <= endDateVal) ||
-        (status === 'approval' || status === 'approve' || status === 'pending')
-      );
-
-      if (isCurrent) {
-        currentRentals.push(rental);
-      }
-      // 2. Past Rental: end_date passed and payment_status: paid + status: complete (product returned)
-      else if (isRent && paymentStatus === 'paid' && (status === 'complete' || status === 'successful') && endDateVal && nowDate > endDateVal) {
-        pastRentals.push(rental);
-      }
-      // 3. Cancellations: status: rejected (rent) or Cancelled (sell) OR vendor_status: cancelled (sell)
-      else if (status === 'rejected' || status === 'cancelled' || status === 'reject' || (isSell && vendorStatus === 'cancelled')) {
-        cancellations.push(rental);
-      }
-      // 4. Purchases: sell me product purchase ki he (payment done)
-      else if (isSell && paymentStatus === 'paid') {
-        purchases.push(rental);
-      }
-    });
-
-    return { currentRentals, pastRentals, purchases, cancellations };
-  };
-
-  const { currentRentals, pastRentals, purchases, cancellations } = categorizeOrders();
+  const currentRentals = dashboardData?.currentRentals || [];
+  const pastRentals = dashboardData?.pastRentals || [];
+  const purchases = dashboardData?.purchases || [];
+  const cancellations = dashboardData?.cancellations || [];
 
   const tabs = [
     { id: 'current', label: 'Current Rentals', icon: Clock, count: currentRentals.length },
