@@ -69,7 +69,7 @@ export default function SearchPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 pb-10">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      <div className="max-w-[1400px] w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <BackButton />
 
         {/* <div className="mt-6 flex items-center justify-between gap-4">
