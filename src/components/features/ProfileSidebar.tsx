@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { User, ShoppingBag, MapPin, LogOut } from 'lucide-react';
+import { User, ShoppingBag, MapPin, LogOut, LayoutDashboard } from 'lucide-react';
 
 export const ProfileSidebar = () => {
   const pathname = usePathname();
@@ -34,7 +34,8 @@ export const ProfileSidebar = () => {
   };
 
   const menuItems = [
-    { icon: User, label: 'My Profile', href: '/profile' },
+    { icon: LayoutDashboard, label: 'Dashboard', href: '/profile' },
+    { icon: User, label: 'Personal Info', href: '/profile/edit' },
     { icon: ShoppingBag, label: 'My Orders', href: '/orders' },
     { icon: MapPin, label: 'Saved Addresses', href: '/addresses' },
   ];

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Package, FileText } from 'lucide-react';
+import { User, Package, FileText, LayoutDashboard } from 'lucide-react';
 
 export const NavigationButtons = () => {
   const router = useRouter();
@@ -11,8 +11,8 @@ export const NavigationButtons = () => {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-      {/* My Profile */}
+    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+      {/* Dashboard */}
       <button
         onClick={() => router.push('/profile')}
         className={`flex items-center gap-3 p-5 rounded-2xl border transition-all active:scale-[0.98] ${
@@ -24,10 +24,32 @@ export const NavigationButtons = () => {
         <div className={`w-11 h-11 flex items-center justify-center rounded-xl transition-colors ${
           isActive('/profile') ? 'bg-blue-600' : 'bg-blue-100'
         }`}>
-          <User className={`w-6 h-6 ${isActive('/profile') ? 'text-white' : 'text-blue-600'}`} />
+          <LayoutDashboard className={`w-6 h-6 ${isActive('/profile') ? 'text-white' : 'text-blue-600'}`} />
         </div>
         <div className="text-left">
           <p className={`font-semibold ${isActive('/profile') ? 'text-blue-700' : 'text-gray-900'}`}>
+            Dashboard
+          </p>
+          <p className="text-sm text-gray-500">View rentals & orders</p>
+        </div>
+      </button>
+
+      {/* My Profile */}
+      <button
+        onClick={() => router.push('/profile/edit')}
+        className={`flex items-center gap-3 p-5 rounded-2xl border transition-all active:scale-[0.98] ${
+          isActive('/profile/edit')
+            ? 'border-orange-500 bg-orange-50 shadow-md'
+            : 'bg-white border-gray-200 hover:border-orange-500 hover:shadow-lg'
+        }`}
+      >
+        <div className={`w-11 h-11 flex items-center justify-center rounded-xl transition-colors ${
+          isActive('/profile/edit') ? 'bg-orange-600' : 'bg-orange-100'
+        }`}>
+          <User className={`w-6 h-6 ${isActive('/profile/edit') ? 'text-white' : 'text-orange-600'}`} />
+        </div>
+        <div className="text-left">
+          <p className={`font-semibold ${isActive('/profile/edit') ? 'text-orange-700' : 'text-gray-900'}`}>
             My Profile
           </p>
           <p className="text-sm text-gray-500">View & edit profile</p>
