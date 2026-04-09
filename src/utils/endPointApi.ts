@@ -18,6 +18,8 @@ export interface EndPointApi {
 
     //Product details
     webGetQuote: string;
+    quoteList: string;
+    quoteVerifyPayment: string;
 
     // Content
     blogList: string;
@@ -76,6 +78,8 @@ const endPointApi: EndPointApi = {
 
     //Product details
     webGetQuote: 'quote/create-quote',
+    quoteList: 'quote/getall',
+    quoteVerifyPayment: 'quote/verify-payment',
 
     // Content
     blogList: 'blogs/getall',
