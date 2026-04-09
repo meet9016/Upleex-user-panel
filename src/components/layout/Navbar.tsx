@@ -95,6 +95,7 @@ export const Navbar: React.FC = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isSuggestionLoading, setIsSuggestionLoading] = useState(false);
   const [index, setIndex] = useState(0);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
   const suggestionTimeoutRef = useRef<number | null>(null);
   const citySearchTimeoutRef = useRef<number | null>(null);
 
@@ -211,10 +212,15 @@ export const Navbar: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setSearchTerm('');
+    if (pathname === '/search') {
+      const query = searchParams?.get('search') || '';
+      setSearchTerm(query);
+    } else {
+      setSearchTerm('');
+    }
     setSuggestions([]);
     setShowSuggestions(false);
-
+    
     // setSelectedCityId(null);
     // setCurrentLocation('select city');
     // setCitySearchTerm('');
@@ -222,7 +228,7 @@ export const Navbar: React.FC = () => {
     // setHasLoadedInitialCities(false);
     // setCityPage(1);
     // setCityHasMore(true);
-  }, [pathname]);
+  }, [pathname, searchParams]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -427,6 +433,7 @@ export const Navbar: React.FC = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
+    setActiveSuggestionIndex(-1);
 
     if (value.trim().length < 2) {
       setSuggestions([]);
@@ -451,6 +458,18 @@ export const Navbar: React.FC = () => {
   const handleSuggestionClick = (item: any) => {
     setSearchTerm(item.product_name);
     setShowSuggestions(false);
+    
+    const query = item.product_name.trim();
+    if (!query && !selectedCityId) return;
+    
+    const params = new URLSearchParams();
+    if (query) {
+      params.set('search', query);
+    }
+    if (selectedCityId) {
+      params.set('city', selectedCityId);
+    }
+    router.push(`/search?${params.toString()}`);
   };
 
   const handleSearchSubmit = () => {
@@ -723,9 +742,25 @@ export const Navbar: React.FC = () => {
                   value={searchTerm}
                   onChange={handleSearchChange}
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
+                    if (event.key === 'ArrowDown') {
                       event.preventDefault();
-                      handleSearchSubmit();
+                      if (showSuggestions && suggestions.length > 0) {
+                        setActiveSuggestionIndex(prev => 
+                          prev < suggestions.length - 1 ? prev + 1 : prev
+                        );
+                      }
+                    } else if (event.key === 'ArrowUp') {
+                      event.preventDefault();
+                      if (showSuggestions && suggestions.length > 0) {
+                        setActiveSuggestionIndex(prev => prev > -1 ? prev - 1 : -1);
+                      }
+                    } else if (event.key === 'Enter') {
+                      event.preventDefault();
+                      if (showSuggestions && activeSuggestionIndex >= 0 && activeSuggestionIndex < suggestions.length) {
+                        handleSuggestionClick(suggestions[activeSuggestionIndex]);
+                      } else {
+                        handleSearchSubmit();
+                      }
                     }
                   }}
                   onFocus={() => {
@@ -759,7 +794,9 @@ export const Navbar: React.FC = () => {
                             key={item.id || `suggest-${index}`}
                             type="button"
                             onClick={() => handleSuggestionClick(item)}
-                            className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 text-gray-700 cursor-pointer"
+                            className={`w-full text-left px-3 py-2 text-sm text-gray-700 cursor-pointer ${
+                              index === activeSuggestionIndex ? 'bg-gray-100' : 'hover:bg-gray-100'
+                            }`}
                           >
                             {item.product_name}
                           </button>
