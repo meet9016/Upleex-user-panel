@@ -86,7 +86,7 @@ export default function CartPage() {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [paymentOption, setPaymentOption] = useState<'full' | '30_percent'>('full');
-  const { cartItems, loading, totalAmount, updateQuantity, removeFromCart } = useCart();
+  const { cartItems, loading, cartSummary, updateQuantity, removeFromCart } = useCart();
 
   const isEmpty = cartItems.length === 0;
 
@@ -233,27 +233,20 @@ export default function CartPage() {
   };
 
   // ────────────────────────────────────────────────
-  // Summary Calculation
+  // Summary Calculation 
   // ────────────────────────────────────────────────
   const summary: CartSummary | null = (() => {
-    if (isEmpty) return null;
-
-    const totalRent = totalAmount;
-    const taxRate = 0.18;
-    const tax = Math.round(totalRent * taxRate);
-    const delivery = 0; // Dynamic delivery if needed
-    const installation = 0;
-    const deposit = 0;
+    if (isEmpty || !cartSummary) return null;
 
     return {
       mode: 'Order Summary',
       rentLabel: 'Subtotal',
-      rentAmount: totalRent,
-      tax,
-      delivery,
-      installation,
-      deposit,
-      dueToday: totalRent + tax + delivery + installation + deposit,
+      rentAmount: parseFloat(cartSummary.subtotal),
+      tax: parseFloat(cartSummary.gst_amount),
+      delivery: parseFloat(cartSummary.delivery_charges),
+      installation: parseFloat(cartSummary.installation_charges),
+      deposit: 0,
+      dueToday: parseFloat(cartSummary.grand_total),
       totalLabel: 'Total Payable',
     };
   })();
@@ -448,7 +441,7 @@ export default function CartPage() {
                             <div className="text-2xl font-bold text-blue-700">
                               ₹{parseFloat(item.price).toLocaleString('en-IN')}
                             </div>
-                            <div className="text-sm text-slate-500">per unit</div>
+                            {/* <div className="text-sm text-slate-500">per unit</div> */}
                           </div>
                         </div>
 
@@ -551,7 +544,7 @@ export default function CartPage() {
                           {/* Price Details */}
                           <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                             {[
-                              { label: 'Subtotal', value: `₹${parseFloat(item.sub_total).toLocaleString('en-IN')}` },
+                               // { label: 'Subtotal', value: `₹${parseFloat(item.sub_total).toLocaleString('en-IN')}` },
                               { label: 'Final Amount', value: `₹${parseFloat(item.final_amount).toLocaleString('en-IN')}` },
                             ].map((d) => (
                               <div
