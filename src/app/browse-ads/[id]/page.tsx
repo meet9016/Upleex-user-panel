@@ -271,6 +271,12 @@ export default function ProductDetailsPage() {
     }
   };
 
+  // Helper function to strip HTML tags
+  const stripHtmlTags = (html: string) => {
+    if (!html) return '';
+    return html.replace(/<[^>]*>/g, '');
+  };
+
   const handleWishlistToggle = async () => {
     if (!id) return;
     
@@ -1349,6 +1355,13 @@ export default function ProductDetailsPage() {
           <div className="border-t border-gray-100">
   <div className="flex gap-8 border-b border-gray-200 mb-6 px-6 lg:px-10 pt-6">
     <button
+      onClick={() => setActiveDetailTab("description")}
+      className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+        }`}
+    >
+      Description
+    </button>
+    <button
       onClick={() => setActiveDetailTab("details")}
       className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
         }`}
@@ -1370,7 +1383,31 @@ export default function ProductDetailsPage() {
         productId={id} 
         onAuthRequired={() => setIsAuthModalOpen(true)}
       />
-    ) : productDetails?.product_details &&
+    ) : activeDetailTab === "description" ? (
+      productDetails?.description ? (
+        <div className="prose prose-slate max-w-none">
+          <p className="text-slate-700 leading-relaxed whitespace-pre-wrap text-sm">
+            {stripHtmlTags(productDetails.description)}
+          </p>
+        </div>
+      ) : (
+        <div className="py-8">
+          <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center mx-auto">
+            <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gray-50 flex items-center justify-center">
+              <ImageOff size={28} className="text-gray-400" />
+            </div>
+            <h4 className="text-xl font-bold text-gray-800 mb-3">
+              No Description Available
+            </h4>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              Product description has not been added yet.
+              <br />
+              Please check the product details or contact the seller for more information.
+            </p>
+          </div>
+        </div>
+      )
+    ) : productDetails?.description &&
       Array.isArray(productDetails.product_details) &&
       productDetails.product_details.length > 0 ? (
 
