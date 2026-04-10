@@ -110,3 +110,39 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+/* ==================== BUTTON STYLES ==================== */
+.btn-primary {
+  @apply text-white rounded-lg font-medium transition-all duration-200 cursor-pointer;
+  background: linear-gradient(to right, #6366f1, #0ea5e9);
+  border: 1px solid transparent;
+}
+
+.btn-primary:hover {
+  @apply opacity-90;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-secondary {
+  @apply bg-[#0f172a] text-white rounded-lg font-medium transition-all duration-200 cursor-pointer border border-transparent;
+}
+
+.btn-secondary:hover {
+  @apply bg-slate-800;
+}
+
+.btn-outline {
+  @apply border-2 border-[#6366f1] text-[#6366f1] rounded-lg font-medium transition-all duration-200 cursor-pointer;
+}
+
+.btn-outline:hover {
+  background-color: rgba(99, 102, 241, 0.1);
+}
+
+.btn-ghost {
+  @apply bg-transparent text-slate-600 rounded-lg font-medium transition-all duration-200 cursor-pointer border border-transparent;
+}
+
+.btn-ghost:hover {
+  @apply bg-slate-100;
+}

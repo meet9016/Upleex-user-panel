@@ -212,7 +212,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
             onClick={() => setActiveTab(tab.id)}
             className={`p-4 rounded-2xl border transition-all text-left group ${
               activeTab === tab.id
-                ? 'bg-blue-600 border-blue-600 shadow-lg shadow-blue-200 text-white'
+                ? 'btn-primary shadow-lg shadow-blue-200 text-white'
                 : 'bg-white border-gray-100 hover:border-blue-200 hover:shadow-md text-gray-600'
             }`}
           >
