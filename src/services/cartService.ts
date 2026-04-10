@@ -18,16 +18,35 @@ export interface CartItem {
     is_out_of_stock?: boolean;
 }
 
+export interface CartSummary {
+    total_items: number;
+    subtotal: string;
+    gst_amount: string;
+    gst_percentage: string;
+    delivery_charges: string;
+    installation_charges: string;
+    grand_total: string;
+    currency: string;
+}
+
 export interface CartListResponse {
     status: number;
     message: string;
     data: CartItem[];
+    summary?: CartSummary;
 }
 
 export interface AddToCartResponse {
     status: number;
     message: string;
     data: any[];
+}
+
+export interface CartUpdateResponse {
+    status: number;
+    message: string;
+    data: CartItem;
+    summary: CartSummary;
 }
 
 class CartService {
@@ -64,6 +83,20 @@ class CartService {
             return res.data;
         } catch (error) {
             console.error('Error removing from cart:', error);
+            throw error;
+        }
+    }
+
+    async updateCartItem(cartId: string, qty: number): Promise<CartUpdateResponse> {
+        try {
+            const formData = new FormData();
+            formData.append('cart_id', cartId);
+            formData.append('qty', qty.toString());
+
+            const res = await api.post(endPointApi.webUpdateCart, formData);
+            return res.data;
+        } catch (error) {
+            console.error('Error updating cart item:', error);
             throw error;
         }
     }

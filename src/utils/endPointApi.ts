@@ -19,6 +19,7 @@ export interface EndPointApi {
     //Product details
     webGetQuote: string;
     quoteList: string;
+    userDashboard: string;
     quoteVerifyPayment: string;
 
     // Content
@@ -30,6 +31,7 @@ export interface EndPointApi {
     webAddToCart: string;
     webCartList: string;
     webRemoveCart: string;
+    webUpdateCart: string;
     businessRegister: string;
     
     // Payment
@@ -79,6 +81,7 @@ const endPointApi: EndPointApi = {
     //Product details
     webGetQuote: 'quote/create-quote',
     quoteList: 'quote/getall',
+    userDashboard: 'quote/user-dashboard',
     quoteVerifyPayment: 'quote/verify-payment',
 
     // Content
@@ -90,6 +93,7 @@ const endPointApi: EndPointApi = {
     webAddToCart: 'cart/web-add-to-cart',
     webCartList: 'cart/web-cart-list',
     webRemoveCart: 'cart/web-remove-cart',
+    webUpdateCart: 'cart/web-update-cart',
     businessRegister: 'vendor/auth/business-register',
     
     // Payment

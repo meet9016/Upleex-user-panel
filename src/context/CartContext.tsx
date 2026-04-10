@@ -1,12 +1,13 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { cartService, CartItem } from '@/services/cartService';
+import { cartService, CartItem, CartSummary } from '@/services/cartService';
 import { toast } from 'react-hot-toast';
 
 interface CartContextType {
     cartItems: CartItem[];
     cartCount: number;
+    cartSummary: CartSummary | null;
     loading: boolean;
     addToCart: (productId: string, qty: number) => Promise<void>;
     updateQuantity: (productId: string, qty: number) => Promise<void>;
@@ -19,6 +20,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [cartSummary, setCartSummary] = useState<CartSummary | null>(null);
     const [loading, setLoading] = useState(false);
 
     const refreshCart = useCallback(async () => {
@@ -27,6 +29,10 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const response = await cartService.getCartList();
             if (response.status === 200) {
                 setCartItems(response.data || []);
+                // Store summary from backend
+                if (response.summary) {
+                    setCartSummary(response.summary);
+                }
             }
         } catch (error) {
             console.error('Error refreshing cart:', error);
@@ -112,14 +118,27 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 return;
             }
 
-            const delta = targetQty - current;
-            if (delta === 0) return;
+            // If quantity didn't change, do nothing
+            if (targetQty === current) {
+                return;
+            }
 
-            const response = await cartService.addToCart(productId, delta);
-            if (response.status === 200 || (response as any)?.success === true) {
-                await refreshCart();
+            // Update quantity via backend API (recalculates amounts)
+            const res = await cartService.updateCartItem(item.cart_id, targetQty);
+            if (res.status === 200) {
+                // Update local state with backend response
+                setCartItems(prev => 
+                    prev.map(ci => 
+                        ci.cart_id === item.cart_id ? res.data : ci
+                    )
+                );
+                
+                // Update summary from backend
+                if (res.summary) {
+                    setCartSummary(res.summary);
+                }
             } else {
-                toast.error(response.message || 'Failed to update quantity');
+                toast.error(res.message || 'Failed to update quantity');
             }
         } catch (error: any) {
             // Handle backend stock validation errors
@@ -174,10 +193,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [refreshCart]);
 
     const cartCount = cartItems.length;
-    const totalAmount = cartItems.reduce((acc, item) => acc + parseFloat(item.final_amount), 0);
+    const totalAmount = cartSummary ? parseFloat(cartSummary.grand_total) : 
+                       cartItems.reduce((acc, item) => acc + parseFloat(item.final_amount), 0);
 
     return (
-        <CartContext.Provider value={{ cartItems, cartCount, loading, addToCart, updateQuantity, removeFromCart, refreshCart, totalAmount }}>
+        <CartContext.Provider value={{ cartItems, cartCount, cartSummary, loading, addToCart, updateQuantity, removeFromCart, refreshCart, totalAmount }}>
             {children}
         </CartContext.Provider>
     );

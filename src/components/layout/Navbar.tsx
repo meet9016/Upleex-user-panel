@@ -46,7 +46,7 @@ export const Navbar: React.FC = () => {
   const [email, setEmail] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>([]);
-  const { cartCount } = useCart();
+  const { cartCount, refreshCart } = useCart();
   const { wishlistCount } = useWishlist();
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const cityDropdownRef = useRef<HTMLDivElement>(null);
@@ -101,6 +101,14 @@ export const Navbar: React.FC = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleProfileMenu = () => setIsProfileMenuOpen(!isProfileMenuOpen);
+
+  // Handle cart click - refresh cart data
+  const handleCartClick = async () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      await refreshCart();
+    }
+  };
 
   useEffect(() => {
     if (searchTerm) return; // typing ho raha ho to stop
@@ -978,7 +986,11 @@ export const Navbar: React.FC = () => {
 
             <div className="h-4 w-px bg-gray-300"></div>
 
-            <Link href="/cart" className="relative group cursor-pointer">
+            <Link 
+              href="/cart" 
+              className="relative group cursor-pointer"
+              onClick={handleCartClick}
+            >
               <ShoppingCart size={24} className="text-slate-700 group-hover:text-upleex-blue transition-colors" />
               <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 {cartCount || 0}
@@ -1014,7 +1026,11 @@ export const Navbar: React.FC = () => {
                 </span>
               )}
             </Link>
-            <Link href="/cart" className="relative cursor-pointer p-1">
+            <Link 
+              href="/cart" 
+              className="relative cursor-pointer p-1"
+              onClick={handleCartClick}
+            >
               <ShoppingCart size={22} className="text-slate-700" />
               <span className="absolute top-0 right-0 bg-upleex-blue text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 {cartCount || 0}
