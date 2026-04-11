@@ -57,6 +57,8 @@ const [tenureOptions, setTenureOptions] = useState([
 
   const [categoryList, setCategoryList] = useState<any[]>([]);
   const [productList, setProductList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showEmpty, setShowEmpty] = useState(false);
   const [productCount, setProductCount] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -87,9 +89,13 @@ const [tenureOptions, setTenureOptions] = useState([
   ];
 
   useEffect(() => {
+    let isCancelled = false;
+
     const fetchCategories = async () => {
       try {
         const res = await productService.getSubCategories(slug, selectedCity);
+        if (isCancelled) return;
+
         setCategoryList(res.data || res.data?.data || res || []);
         
         // Update options if available in API
@@ -101,6 +107,7 @@ const [tenureOptions, setTenureOptions] = useState([
           setTenureOptions([{ label: 'All Durations', value: '0' }, ...root.tenure_options]);
         }
       } catch (err) {
+        if (isCancelled) return;
         console.error("Error fetching categories", err);
         setCategoryList([]);
       }
@@ -109,10 +116,17 @@ const [tenureOptions, setTenureOptions] = useState([
     if (slug) {
       fetchCategories();
     }
+
+    return () => {
+      isCancelled = true;
+    };
   }, [slug, selectedCity]);
 
   useEffect(() => {
+    let isCancelled = false;
+
     const fetchProducts = async () => {
+      setLoading(true);
       try {
         const res = await productService.getCategoryProducts({
           category_id: slug,
@@ -122,6 +136,9 @@ const [tenureOptions, setTenureOptions] = useState([
           filter_tenure: selectedTenure.value,
           page: currentPage
         });
+
+        if (isCancelled) return;
+
         const payload = res?.data;
         const root = res || {};
 
@@ -202,16 +219,25 @@ const [tenureOptions, setTenureOptions] = useState([
           }
         }
       } catch (err) {
+        if (isCancelled) return;
         console.error("Error fetching products", err);
         setProductList([]);
         setProductCount(null);
         setTotalPages(1);
+      } finally {
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
 
     if (slug) {
       fetchProducts();
     }
+
+    return () => {
+      isCancelled = true;
+    };
   }, [slug, activeFilter, selectedSort, selectedTenure, currentPage, selectedCity]);
 
   useEffect(() => {
@@ -287,6 +313,15 @@ const [tenureOptions, setTenureOptions] = useState([
   })();
 
   const filteredProducts = shuffledProducts;
+
+  useEffect(() => {
+    if (!loading && filteredProducts.length === 0) {
+      const timer = setTimeout(() => setShowEmpty(true), 400); // 400ms debounce for empty state flash
+      return () => clearTimeout(timer);
+    } else {
+      setShowEmpty(false);
+    }
+  }, [loading, filteredProducts.length]);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -427,7 +462,13 @@ const [tenureOptions, setTenureOptions] = useState([
           </div>
         </div>
 
-        {filteredProducts.length === 0 && (
+        {loading && filteredProducts.length === 0 && (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-upleex-purple"></div>
+          </div>
+        )}
+
+        {showEmpty && (
           <div className="flex flex-col items-center justify-center py-20 px-4">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
               <PackageOpen className="w-12 h-12 text-gray-300" />

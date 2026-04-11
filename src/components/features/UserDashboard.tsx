@@ -11,6 +11,7 @@ import {
   Calendar,
   ChevronRight
 } from 'lucide-react';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 interface Rental {
   _id: string;
@@ -74,10 +75,25 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
     return isNaN(num) ? '0' : num.toLocaleString('en-IN');
   };
 
+  const calculateDays = (start: string, end: string) => {
+    if (!start || !end) return 0;
+    const s = new Date(start);
+    const e = new Date(end);
+    // If the dates are invalid, return 0
+    if (isNaN(s.getTime()) || isNaN(e.getTime())) return 0;
+    
+    const diffTime = Math.abs(e.getTime() - s.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays || 1; // At least 1 day if dates are same
+  };
+
   const renderOrderCard = (rental: Rental) => {
     const isSell = (rental.product_id?.product_type_name || '').toLowerCase() === 'sell';
     const status = (rental.status || '').toLowerCase();
     const paymentStatus = (rental.payment_status || '').toLowerCase();
+
+    // Fallback: if product_id is missing price (common for past orders where reference is lost), calculate it from total
+    const unitPrice = rental.product_id?.price ? rental.product_id.price : (rental.calculated_price / (rental.qty || 1));
 
     return (
       <motion.div
@@ -114,32 +130,40 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
                 className="w-full h-full object-contain p-1"
               />
             </div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-bold text-gray-900 truncate mb-1">
-                {rental.product_id?.product_name}
-              </h4>
-              <div className="flex items-center gap-2 text-[11px] text-gray-500 font-medium">
-                <span>Qty: {rental.qty}</span>
-                <span className="w-1 h-1 bg-gray-300 rounded-full" />
-                <span>₹{formatPrice(rental.product_id?.price)}</span>
+            <div className="flex-1 min-w-0 flex justify-between items-start gap-3">
+              <div className="flex-1 min-w-0">
+                <h4 className="text-sm font-bold text-gray-900 truncate mb-1">
+                  {rental.product_id?.product_name}
+                </h4>
+                <div className="flex items-center gap-2 text-[11px] text-gray-500 font-bold">
+                  <span>₹{formatPrice(unitPrice)} × {rental.qty}</span>
+                </div>
+
+                {/* Sell label */}
+                {isSell && (
+                  <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-orange-600 bg-orange-50/50 w-fit px-2 py-0.5 rounded-md border border-orange-100/50">
+                    <ShoppingBag size={10} />
+                    <span>Purchase</span>
+                  </div>
+                )}
               </div>
               
-              {/* Rental Dates - Only for Rentals */}
+              {/* Rental Dates - Right Aligned */}
               {!isSell && (
-                <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-blue-600 bg-blue-50/50 w-fit px-2 py-0.5 rounded-md border border-blue-100/50">
-                  <Calendar size={10} />
-                  <span>
-                    {rental.start_date ? new Date(rental.start_date).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit' }) : 'N/A'} - 
-                    {rental.end_date ? new Date(rental.end_date).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit' }) : 'N/A'}
-                  </span>
-                </div>
-              )}
-
-              {/* Sell label */}
-              {isSell && (
-                <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-orange-600 bg-orange-50/50 w-fit px-2 py-0.5 rounded-md border border-orange-100/50">
-                  <ShoppingBag size={10} />
-                  <span>Purchase</span>
+                <div className="flex flex-col items-end gap-1.5 flex-shrink-0 mt-0.5">
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-700 bg-blue-50/80 px-2 py-1 rounded-md border border-blue-100/50">
+                    <Calendar size={12} className="text-blue-500" />
+                    <div className="flex flex-col items-end leading-tight tracking-wide">
+                      <span>{rental.start_date ? new Date(rental.start_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
+                      <span className="text-gray-400 text-[8px] my-[1px]">to</span>
+                      <span>{rental.end_date ? new Date(rental.end_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
+                    </div>
+                  </div>
+                  {rental.start_date && rental.end_date && (
+                    <span className="text-[9px] font-black px-2 py-0.5 bg-blue-600 text-white w-full text-center rounded-md blur-none tracking-wider shadow-sm">
+                      {calculateDays(rental.start_date, rental.end_date)} DAYS
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -147,23 +171,14 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
         </div>
 
         <div className="px-3 py-2 bg-gray-50/80 border-t border-gray-100 flex justify-between items-center">
-          <div className="flex gap-1.5">
-            <span className={`px-2 py-0.5 text-[10px] font-black rounded-md uppercase tracking-tighter ${
-              (status === 'successful' || status === 'complete') ? 'bg-green-100 text-green-700' :
-              (status === 'rejected' || status === 'cancelled' || status === 'reject') ? 'bg-red-100 text-red-700' :
-              'bg-blue-100 text-blue-700'
-            }`}>
-              {status}
-            </span>
-            <span className={`px-2 py-0.5 text-[10px] font-black rounded-md uppercase tracking-tighter ${
-              paymentStatus === 'paid' ? 'bg-green-100 text-green-700' :
-              'bg-yellow-100 text-yellow-700'
-            }`}>
-              {paymentStatus || 'pending'}
-            </span>
+          <div className="flex gap-3">
+            <StatusBadge status={status} label="Order" />
+            <StatusBadge status={paymentStatus || 'pending'} label="Payment" />
           </div>
           <div className="text-right flex items-center gap-3">
-            <p className="text-sm font-black text-blue-600">₹{formatPrice(rental.calculated_price)}</p>
+            <div className="flex flex-col items-end">
+              <p className="text-sm font-black text-blue-600">₹{formatPrice(rental.calculated_price)}</p>
+            </div>
             {paymentStatus !== 'paid' && rental.razorpay_payment_link && (
               <a 
                 href={rental.razorpay_payment_link} 

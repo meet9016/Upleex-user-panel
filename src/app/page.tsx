@@ -20,6 +20,18 @@ import { blogService, Blog } from '@/services/blogService';
 import { faqService, FAQ } from '@/services/faqService';
 import { useRouter } from 'next/navigation';
 import { useCity } from '@/hooks/useCity';
+import { Loader } from '@/components/ui/Loader';
+
+interface Banner {
+  id: string | number;
+  _id?: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  image: string;
+  color: string;
+  status: string;
+}
 
 interface CategoryResponse {
   slider: any[];
@@ -67,6 +79,9 @@ export default function Home() {
   const [categoryList, setCategoryList] = useState<CategoryResponse | null>(null);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const isInitialDataLoaded = useRef(false);
   const selectedCity = useCity();
 
   const [isHovered, setIsHovered] = useState(false);
@@ -82,17 +97,36 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
+      // Only show loader on initial mount or if we have no data yet
+      if (!isInitialDataLoaded.current) {
+        setIsLoading(true);
+      }
+      
       try {
-        const [categoryData, blogData, faqData] = await Promise.all([
+        const [categoryData, blogData, faqData, bannerRes] = await Promise.all([
           categoryService.getHomeData(selectedCity),
           blogService.getBlogList(),
-          faqService.getFAQList()
+          faqService.getFAQList(),
+          api.get(endPointApi.bannerList)
         ]);
+
         setCategoryList(categoryData.data);
         setBlogs(blogData);
         setFaqs(faqData);
+
+        if (bannerRes.data?.success && bannerRes.data?.data) {
+          const activeBanners = bannerRes.data.data.filter((b: any) => b.status === 'active');
+          setBanners(activeBanners);
+        }
+        
+        isInitialDataLoaded.current = true;
       } catch (err) {
         console.error("Error fetching data", err);
+      } finally {
+        // Controlled exit to prevent blinking
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 800);
       }
     };
     fetchData();
@@ -100,6 +134,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white overflow-hidden" ref={containerRef} suppressHydrationWarning={true}>
+      <AnimatePresence>
+        {isLoading && <Loader key="loader" />}
+      </AnimatePresence>
       <FloatingParticles />
 
       <main className="flex-grow" suppressHydrationWarning={true}>
@@ -171,7 +208,7 @@ export default function Home() {
         {/* Promotional Banner Section */}
         {/* <PromotionalBanner /> */}
         {/* <ContinuousBanner /> */}
-        <HeroCarousel />
+        <HeroCarousel banners={banners} />
         {/* <CenterModeCarousel /> */}
 
         {/* Enhanced Categories Section */}

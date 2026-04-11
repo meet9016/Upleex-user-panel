@@ -192,10 +192,13 @@ export function DatePicker({
     >
       {/* Trigger */}
       <div 
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!disabled) setIsOpen(!isOpen);
+        }}
         className={clsx(
-          "flex items-center justify-between w-full h-12 pl-4 pr-4 border rounded-lg shadow-sm bg-white transition-colors cursor-pointer",
-          isOpen ? "border-blue-500 ring-1 ring-blue-200" : "border-gray-200 hover:border-blue-400"
+          "flex items-center justify-between w-full h-12 pl-4 pr-4 border rounded-lg shadow-sm bg-white transition-colors",
+          disabled ? "bg-gray-50 opacity-80 cursor-not-allowed border-gray-200" : "cursor-pointer hover:border-blue-400",
+          isOpen && !disabled ? "border-blue-500 ring-1 ring-blue-200" : ""
         )}
       >
         <div className="flex flex-col justify-center">
