@@ -177,7 +177,7 @@ export default function ServicePage() {
   useEffect(() => {
     const fetchData = async () => {
       const [cats, servs] = await Promise.all([
-        serviceService.getServiceCategories(),
+        serviceService.getServiceCategories(selectedCity),
         serviceService.getServices({ city: selectedCity })
       ]);
       setCategories(cats);
@@ -319,7 +319,7 @@ export default function ServicePage() {
             <h2 className="text-3xl font-bold text-gradient-primary">Trending Services</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
             {services.slice(0, 4).map((service) => (
               <ServiceCard key={service.id} service={service} />
             ))}

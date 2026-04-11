@@ -21,15 +21,20 @@ export interface Service {
     sub_images: string[];
     vendor_id: string;
     vendor_name: string;
+    vendor_address?: string;
     status: string;
     approval_status: string;
     createdAt: string;
 }
 
 class ServiceService {
-    async getServiceCategories(): Promise<ServiceCategory[]> {
+    async getServiceCategories(city?: string | null): Promise<ServiceCategory[]> {
         try {
-            const res = await api.get(endPointApi.serviceCategoryList);
+            const params: any = {};
+            if (city) {
+                params.city = city;
+            }
+            const res = await api.get(endPointApi.serviceCategoryList, { params });
             return res.data?.data || [];
         } catch (error) {
             console.error('Error fetching service categories:', error);
@@ -37,7 +42,7 @@ class ServiceService {
         }
     }
 
-    async getServices(params?: { category_id?: string; city?: string | null; search?: string; sortBy?: string; order?: 'asc' | 'desc' }): Promise<Service[]> {
+    async getServices(params?: { category_id?: string; vendor_id?: string; city?: string | null; search?: string; sortBy?: string; order?: 'asc' | 'desc' }): Promise<Service[]> {
         try {
             const res = await api.get(endPointApi.serviceList, { params });
             return res.data?.data || [];

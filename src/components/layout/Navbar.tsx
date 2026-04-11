@@ -157,13 +157,13 @@ export const Navbar: React.FC = () => {
       setCategories(data);
     };
     const fetchServiceCategories = async () => {
-      const data = await serviceService.getServiceCategories();
+      const data = await serviceService.getServiceCategories(currentLocation);
       setServiceCategories(data);
     };
 
     fetchCategories();
     fetchServiceCategories();
-  }, [selectedCityId]);
+  }, [selectedCityId, currentLocation]);
 
   useEffect(() => {
     readUserData();

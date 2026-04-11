@@ -3,14 +3,15 @@ import { useState, useEffect } from 'react';
 export const useCity = () => {
   const [selectedCity, setSelectedCity] = useState<string | null>(() => {
     if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('selectedCityId');
+      // Return city NAME instead of ID for backend filtering
+      return sessionStorage.getItem('currentLocation');
     }
     return null;
   });
 
   useEffect(() => {
     const handleCityChange = () => {
-      setSelectedCity(sessionStorage.getItem('selectedCityId'));
+      setSelectedCity(sessionStorage.getItem('currentLocation'));
     };
 
     window.addEventListener('cityChange', handleCityChange);
