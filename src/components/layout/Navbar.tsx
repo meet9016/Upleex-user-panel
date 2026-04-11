@@ -1143,12 +1143,13 @@ export const Navbar: React.FC = () => {
                     </div>
                   );
                 })()}
-                {serviceCategories.slice(0, 6).map((item, index) => {
+                {serviceCategories.slice(0, 5).map((item, index) => {
                   const activeCatId = searchParams?.get('category');
                   const isActive = activeCatId === item.categories_id;
+                  const displayClass = index > 2 ? "hidden xl:block" : "block";
 
                   return (
-                    <div key={item.categories_id || index} className="relative group">
+                    <div key={item.categories_id || index} className={`relative group ${displayClass}`}>
                       <Link
                         href={`/services-list?category=${item.categories_id}`}
                         className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer
@@ -1166,11 +1167,13 @@ export const Navbar: React.FC = () => {
               </>
             ) : (
               // Product Categories
-              categories.slice(0, 7).map((item, index) => {
+              categories.slice(0, 6).map((item, index) => {
                 const isActive = pathname === `/rent-category/${item.categories_id}`;
                 const key = item.categories_id || `cat-${index}`;
+                const displayClass = index > 3 ? "hidden xl:block" : "block";
+
                 return (
-                  <div key={key} className="relative group">
+                  <div key={key} className={`relative group ${displayClass}`}>
                     <Link
                       href={`/rent-category/${item.categories_id}`}
                       className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer
