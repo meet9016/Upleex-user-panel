@@ -49,7 +49,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, className }) 
       className={`group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer ${className}`}
     >
       {/* 🔥 IMAGE */}
-      {/* 🔥 IMAGE */}
       <div className="p-3">
         <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
 
