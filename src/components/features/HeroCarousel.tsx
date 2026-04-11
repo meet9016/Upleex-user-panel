@@ -17,31 +17,13 @@ interface Banner {
   status: string;
 }
 
-export const HeroCarousel = () => {
+interface HeroCarouselProps {
+  banners: Banner[];
+}
+
+export const HeroCarousel = ({ banners }: HeroCarouselProps) => {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [banners, setBanners] = useState<Banner[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBanners = async () => {
-      try {
-        const res = await api.get(endPointApi.bannerList);
-        if (res.data?.success && res.data?.data) {
-          const activeBanners = res.data.data.filter((b: any) => b.status === 'active');
-          if (activeBanners.length > 0) {
-            setBanners(activeBanners);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching banners:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBanners();
-  }, []);
 
   useEffect(() => {
     if (banners.length === 0) return;
@@ -85,14 +67,7 @@ export const HeroCarousel = () => {
     return imagePath;
   };
 
-  if (loading || banners.length === 0) {
-    if (loading) {
-      return (
-        <div className="w-full h-[300px] sm:h-[400px] lg:h-[550px] bg-gray-100 animate-pulse flex items-center justify-center rounded-2xl">
-          <span className="text-gray-400">Loading Banners...</span>
-        </div>
-      );
-    }
+  if (!banners || banners.length === 0) {
     return null;
   }
 

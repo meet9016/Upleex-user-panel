@@ -6,6 +6,7 @@ import { NavigationButtons } from '@/components/features/NavigationButtons';
 import { Calendar, Package, Clock, Eye, Tag, AlertCircle } from 'lucide-react';
 import { api } from '@/utils/axiosInstance';
 import { toast } from 'react-hot-toast';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 interface Quote {
   _id: string;
@@ -56,16 +57,6 @@ const UserQuotesPage = () => {
     fetchQuotes();
   }, []);
 
-  const getStatusColor = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'pending': return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      case 'approved': return 'bg-green-50 text-green-700 border-green-200';
-      case 'active': return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'rejected': return 'bg-red-50 text-red-700 border-red-200';
-      case 'completed': return 'bg-purple-50 text-purple-700 border-purple-200';
-      default: return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '—';
@@ -120,14 +111,12 @@ const UserQuotesPage = () => {
                         <h3 className="text-xs font-bold text-gray-900 line-clamp-1 leading-tight">
                           {quote.product_id.product_name}
                         </h3>
-                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase border whitespace-nowrap ml-2 ${getStatusColor(quote.status)}`}>
-                          {quote.status}
-                        </span>
+                        <StatusBadge status={quote.status} label="Quote Status" />
                       </div>
-                      <p className="text-[10px] text-gray-500 mt-0.5 truncate">
+                      <p className="text-[10px] text-gray-500 mt-0.5 truncate font-bold">
                         {quote.product_id.vendor_name}
                       </p>
-                      <p className="text-[9px] text-gray-400 mt-0.5">
+                      <p className="text-[10px] text-gray-400 mt-0.5 font-bold">
                         {quote.product_id.category_name}
                       </p>
                     </div>
@@ -152,12 +141,12 @@ const UserQuotesPage = () => {
                     {/* 2. Total Price */}
                     {quote.calculated_price && (
                       <div className="w-[90px] flex flex-col">
-                        <span className="text-[9px] text-gray-400 font-bold uppercase">Total</span>
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <Tag className="h-3 w-3 text-green-600 flex-shrink-0" />
-                          <span className="text-xs font-bold text-gray-900 truncate">₹{Number(quote.calculated_price).toLocaleString()}</span>
-                        </div>
+                      <span className="text-[9px] text-gray-400 font-bold uppercase">Total</span>
+                      <div className="flex flex-col mt-0.5 min-w-0">
+                        <span className="text-xs font-bold text-gray-900">₹{Number(quote.calculated_price).toLocaleString()}</span>
+                        <span className="text-[10px] text-gray-400 font-bold">₹{Number(quote.product_id?.price || 0).toLocaleString()} × {quote.qty}</span>
                       </div>
+                    </div>
                     )}
 
                     {/* 3. Start Date */}

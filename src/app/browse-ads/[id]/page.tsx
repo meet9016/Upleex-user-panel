@@ -254,9 +254,10 @@ export default function ProductDetailsPage() {
         setStartDate(minDate);
         setStartTime("09:00");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error submitting quote:", err);
-      toast.error("Failed to submit quote. Please try again.");
+      const errorMessage = err.response?.data?.message || "Failed to submit quote. Please try again.";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -971,101 +972,104 @@ export default function ProductDetailsPage() {
                     <div className="flex flex-col">
                       <span className="font-bold text-gray-900">Quantity</span>
                       {isSell && <span className="text-[10px] text-gray-500">Select units</span>}
-                      {!isSell && productDetails?.available_quantity && (
-                        <span className="text-[9px] text-orange-600 font-medium">
-                          {productDetails.available_quantity} available
-                        </span>
-                      )}
-                      {isSell && (
+                      {productDetails && (!productDetails.is_out_of_stock && productDetails.available_quantity > 0) && (
                         <span className="text-[9px] text-orange-600 font-medium">
                           {productDetails.available_quantity} available
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center bg-gray-50 rounded-lg p-1">
-                      <button
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-0.5 rounded-md  hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                        disabled={quantity <= 1}
-                      >
-                        <Minus size={16} className="text-gray-600" />
-                      </button>
-                      <input
-                        type="number"
-                        min={1}
-                        max={productDetails?.available_quantity || 9999}
-                        value={quantity}
-                        onFocus={(e) => e.currentTarget.select()}
-                        onChange={(e) => {
-                          const value = e.target.value;
+                    {productDetails && (productDetails.is_out_of_stock || productDetails.available_quantity <= 0) ? (
+                      <div className="font-bold text-red-500 text-sm">
+                        Out of stock
+                      </div>
+                    ) : (
+                      <div className="flex items-center bg-gray-50 rounded-lg p-1">
+                        <button
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          className="p-0.5 rounded-md hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                          disabled={quantity <= 1}
+                        >
+                          <Minus size={16} className="text-gray-600" />
+                        </button>
+                        <input
+                          type="number"
+                          min={1}
+                          max={productDetails?.available_quantity || 9999}
+                          value={quantity}
+                          onFocus={(e) => e.currentTarget.select()}
+                          onChange={(e) => {
+                            const value = e.target.value;
 
-                          // allow empty
-                          if (value === "") {
-                            setQuantity(1);
-                            return;
+                            // allow empty
+                            if (value === "") {
+                              setQuantity(1);
+                              return;
+                            }
+
+                            // limit to 4 digits
+                            if (value.length > 4) return;
+
+                            const parsed = Number(value);
+                            if (Number.isNaN(parsed)) return;
+
+                            let clamped = Math.max(1, parsed);
+
+                            // Apply stock validation for both sell and non-sell products
+                            if (productDetails?.available_quantity) {
+                              clamped = Math.min(clamped, productDetails.available_quantity);
+                            }
+
+                            // Apply maximum limit of 9999
+                            clamped = Math.min(clamped, 9999);
+
+                            setQuantity(clamped);
+                          }}
+                          onBlur={(e) => {
+                            // Additional validation on blur
+                            const value = Number(e.target.value);
+                            if (value < 1) {
+                              setQuantity(1);
+                            } else if (productDetails?.available_quantity && value > productDetails.available_quantity) {
+                              setQuantity(productDetails.available_quantity);
+                              toast.error(`Maximum available quantity is ${productDetails.available_quantity}`);
+                            } else if (value > 9999) {
+                              setQuantity(9999);
+                              toast.error("Maximum quantity limit is 9999");
+                            }
+                          }}
+                          className="w-14 text-center font-extrabold text-lg text-slate-900 bg-transparent focus:outline-none focus:ring-0"
+                        />
+                        <button
+                          onClick={() => {
+                            let newQuantity = quantity + 1;
+                            newQuantity = Math.min(9999, newQuantity);
+                            if (productDetails?.available_quantity) {
+                              newQuantity = Math.min(newQuantity, productDetails.available_quantity);
+                            }
+                            setQuantity(newQuantity);
+                          }}
+                          className="rounded-md hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                          disabled={
+                            quantity >= 9999 ||
+                            (productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false)
                           }
-
-                          // limit to 4 digits
-                          if (value.length > 4) return;
-
-                          const parsed = Number(value);
-                          if (Number.isNaN(parsed)) return;
-
-                          let clamped = Math.max(1, parsed);
-
-                          // Apply stock validation for both sell and non-sell products
-                          if (productDetails?.available_quantity) {
-                            clamped = Math.min(clamped, productDetails.available_quantity);
-                          }
-
-                          // Apply maximum limit of 9999
-                          clamped = Math.min(clamped, 9999);
-
-                          setQuantity(clamped);
-                        }}
-                        onBlur={(e) => {
-                          // Additional validation on blur
-                          const value = Number(e.target.value);
-                          if (value < 1) {
-                            setQuantity(1);
-                          } else if (productDetails?.available_quantity && value > productDetails.available_quantity) {
-                            setQuantity(productDetails.available_quantity);
-                            toast.error(`Maximum available quantity is ${productDetails.available_quantity}`);
-                          } else if (value > 9999) {
-                            setQuantity(9999);
-                            toast.error("Maximum quantity limit is 9999");
-                          }
-                        }}
-                        className="w-14 text-center font-extrabold text-lg text-slate-900 bg-transparent focus:outline-none focus:ring-0"
-                      />
-                      <button
-                        onClick={() => {
-                          let newQuantity = quantity + 1;
-                          newQuantity = Math.min(9999, newQuantity);
-                          if (productDetails?.available_quantity) {
-                            newQuantity = Math.min(newQuantity, productDetails.available_quantity);
-                          }
-                          setQuantity(newQuantity);
-                        }}
-                        className=" rounded-md  hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-                        disabled={
-                          quantity >= 9999 ||
-                          (productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false)
-                        }
-                      >
-                        <Plus size={16} className="text-gray-600" />
-                      </button>
-                    </div>
+                        >
+                          <Plus size={16} className="text-gray-600" />
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {!isSell && (
                     <>
                       {/* Start Date - Green Theme */}
-                      <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
-                        <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
-                          <Calendar size={80} className="text-green-600" />
+                      <div className="relative group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
+                        <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+                          <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+                            <Calendar size={80} className="text-green-600" />
+                          </div>
                         </div>
-                        <div className="relative h-full flex flex-col">
+                        <div className="relative z-10 h-full flex flex-col">
                           <div className="flex items-center gap-2 mb-1">
                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
                             <label className="text-[9px] text-green-800 font-semibold uppercase tracking-wider">
@@ -1086,11 +1090,13 @@ export default function ProductDetailsPage() {
 
                       {/* Start Time - Green Theme */}
                       {isHourly && activeTab !== 'monthly' && (
-                        <div className="relative overflow-hidden group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
-                          <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
-                            <Clock size={80} className="text-green-600" />
+                        <div className="relative group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
+                          <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+                            <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+                              <Clock size={80} className="text-green-600" />
+                            </div>
                           </div>
-                          <div className="relative h-full flex flex-col">
+                          <div className="relative z-10 h-full flex flex-col">
                             <div className="flex items-center gap-2 mb-1">
                               <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
                               <label className="text-[9px] text-green-800 font-semibold uppercase tracking-wider">
@@ -1114,11 +1120,13 @@ export default function ProductDetailsPage() {
 
                       {/* Return Date - Orange Theme (Monthly View) */}
                       {!isHourly && (
-                        <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
-                          <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
-                            <Calendar size={80} className="text-amber-600" />
+                        <div className="relative group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
+                          <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+                            <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+                              <Calendar size={80} className="text-amber-600" />
+                            </div>
                           </div>
-                          <div className="relative h-full flex flex-col">
+                          <div className="relative z-10 h-full flex flex-col">
                             <div className="flex items-center gap-2 mb-1">
                               <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
                               <label className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
@@ -1130,7 +1138,7 @@ export default function ProductDetailsPage() {
                                 value={endDate}
                                 onChange={setEndDate}
                                 min={getMinEndDate()}
-                                disabled={false}
+                                disabled={true}
                                 textSize={"xs"}
                               />
                             </div>
@@ -1142,11 +1150,13 @@ export default function ProductDetailsPage() {
                       {isHourly && activeTab !== 'monthly' && (
                         <>
                           {/* Return Date - Orange */}
-                          <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
-                            <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
-                              <Calendar size={80} className="text-amber-600" />
+                          <div className="relative group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
+                            <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+                              <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
+                                <Calendar size={80} className="text-amber-600" />
+                              </div>
                             </div>
-                            <div className="relative h-full flex flex-col">
+                            <div className="relative z-10 h-full flex flex-col">
                               <div className="flex items-center gap-2 mb-1">
                                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
                                 <label className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
@@ -1158,7 +1168,7 @@ export default function ProductDetailsPage() {
                                   value={endDate}
                                   onChange={setEndDate}
                                   min={minDate}
-                                  disabled={false}
+                                  disabled={true}
                                   textSize={"xs"}
                                 />
                               </div>
@@ -1166,11 +1176,13 @@ export default function ProductDetailsPage() {
                           </div>
 
                           {/* Return Time - Orange (Read-only, no popup) */}
-                          <div className="relative overflow-hidden group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all h-full min-h-[70px]">
-                            <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
-                              <Clock size={64} className="text-amber-600" />
+                          <div className="relative group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all h-full min-h-[70px]">
+                            <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+                              <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                                <Clock size={64} className="text-amber-600" />
+                              </div>
                             </div>
-                            <div className="relative h-full flex flex-col">
+                            <div className="relative z-10 h-full flex flex-col">
                               <div className="flex items-center gap-2 mb-1">
                                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                                 <span className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">

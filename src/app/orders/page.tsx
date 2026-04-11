@@ -9,6 +9,9 @@ import { BackButton } from '@/components/ui/BackButton';
 import { NavigationButtons } from '@/components/features/NavigationButtons';
 import { Copy } from 'lucide-react';
 import { Pagination } from '@/components/ui/Pagination';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { useRouter } from 'next/navigation';
+
 interface OrderItem {
   product_id: string;
   product_name: string;
@@ -33,19 +36,6 @@ interface Order {
   razorpay_payment_link?: string;
 }
 
-const getStatusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case 'paid':
-    case 'confirmed':
-    case 'delivered': return 'text-green-700 bg-green-100';
-    case 'pending':
-    case 'processing': return 'text-yellow-700 bg-yellow-100';
-    case 'shipped': return 'text-blue-700 bg-blue-100';
-    case 'cancelled':
-    case 'failed': return 'text-red-700 bg-red-100';
-    default: return 'text-gray-700 bg-gray-100';
-  }
-};
 
 const getStatusIcon = (status: string) => {
   switch (status.toLowerCase()) {
@@ -58,6 +48,7 @@ const getStatusIcon = (status: string) => {
 };
 
 export default function OrdersPage() {
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -210,36 +201,55 @@ export default function OrdersPage() {
           <h1 className="text-3xl font-bold text-gray-900">My Orders</h1>
         </div> */}
 
-        {orders.length === 0 && loading === false ? (
-          <div className="text-center py-20">
-            <ShoppingBag className="mx-auto h-20 w-20 text-gray-300 mb-6" />
-            <h3 className="text-2xl font-semibold text-gray-900">No orders found</h3>
-            <p className="text-gray-500 mt-3">Orders will appear here when available.</p>
-          </div>
-        ) : (
-          <>
-            {/* Navigation Buttons Component */}
-            <NavigationButtons />
+        {/* Navigation Buttons Component */}
+        <NavigationButtons />
 
-            {/* Tabs for Orders and Quotes */}
-            <div className="flex border-b border-gray-200 mb-6">
-              <button
-                className={`py-3 px-6 text-sm font-medium border-b-2 transition-colors ${activeTab === 'orders' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                onClick={() => { setActiveTab('orders'); setPage(1); }}
-              >
-                Purchased Products
-              </button>
-              <button
-                className={`py-3 px-6 text-sm font-medium border-b-2 transition-colors ${activeTab === 'quotes' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                onClick={() => { setActiveTab('quotes'); setPage(1); }}
-              >
-                Rent / Quotes
-              </button>
-            </div>
+        {/* Tabs for Orders and Quotes */}
+        <div className="flex border-b border-gray-200 mb-6">
+          <button
+            className={`py-3 px-6 text-sm font-medium border-b-2 transition-colors ${activeTab === 'orders' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            onClick={() => { setActiveTab('orders'); setPage(1); }}
+          >
+            Purchased Products
+          </button>
+          <button
+            className={`py-3 px-6 text-sm font-medium border-b-2 transition-colors ${activeTab === 'quotes' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            onClick={() => { setActiveTab('quotes'); setPage(1); }}
+          >
+            Rent / Quotes
+          </button>
+        </div>
 
-            {/* 2 Columns Grid - Desktop ma 2 orders side by side */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {orders.filter(o => o.type === (activeTab === 'orders' ? 'order' : 'quote')).map((order, index) => (
+        {(() => {
+          const filteredOrders = orders.filter(o => o.type === (activeTab === 'orders' ? 'order' : 'quote'));
+
+          if (filteredOrders.length === 0 && !loading) {
+            return (
+              <div className="text-center py-20 bg-white rounded-xl border border-gray-100 shadow-sm mt-4">
+                <ShoppingBag className="mx-auto h-20 w-20 text-gray-200 mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900">
+                  No {activeTab === 'orders' ? 'purchased products' : 'rentals or quotes'} found
+                </h3>
+                <p className="text-gray-500 mt-2 font-medium">
+                  {activeTab === 'orders' 
+                    ? "You haven't purchased any products yet."
+                    : "You haven't requested any quotes or rentals yet."}
+                </p>
+                <button
+                  onClick={() => router.push('/')}
+                  className="mt-6 px-5 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition"
+                >
+                  Browse Products
+                </button>
+              </div>
+            );
+          }
+
+          return (
+            <>
+              {/* 2 Columns Grid - Desktop ma 2 orders side by side */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {filteredOrders.map((order, index) => (
                 <motion.div
                   key={order._id}
                   initial={{ opacity: 0, y: 10 }}
@@ -258,13 +268,13 @@ export default function OrdersPage() {
                       </p>
                     </div>
 
-                    <div className="flex gap-2 flex-wrap">
-                      <span className={`px-3 py-1 text-xs font-medium rounded-full flex items-center gap-1 ${getStatusColor(order.payment_status)}`}>
-                        <CreditCard size={14} /> {order.payment_status}
-                      </span>
-                      <span className={`px-3 py-1 text-xs font-medium rounded-full flex items-center gap-1 ${getStatusColor(order.order_status)}`}>
-                        {getStatusIcon(order.order_status)} {order.order_status}
-                      </span>
+                    <div className="flex gap-4 flex-wrap">
+                      <StatusBadge status={order.payment_status} label="Payment">
+                        <CreditCard size={12} />
+                      </StatusBadge>
+                      <StatusBadge status={order.order_status} label="Order">
+                        {getStatusIcon(order.order_status)}
+                      </StatusBadge>
                     </div>
                   </div>
 
@@ -354,8 +364,9 @@ export default function OrdersPage() {
               totalPages={totalPages}
               onPageChange={setPage}
             />
-          </>
-        )}
+            </>
+          );
+        })()}
       </div>
 
       {/* Review Modal */}
