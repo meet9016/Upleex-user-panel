@@ -36,12 +36,15 @@ export function ReviewReminderPopup() {
       if (!response.data.success) return;
 
       const quotes = response.data.data || [];
+      console.log("🚀 ~ checkPendingReviews ~ quotes:", quotes)
 
       for (const quote of quotes) {
-        const isCompleted = ['successful', 'complete', 'completed', 'delivered'].includes(
-          quote.status?.toLowerCase()
-        );
-        if (!isCompleted) continue;
+        // Show reminder if payment is confirmed
+        const isPaid = quote.payment_status?.toLowerCase() === 'paid' || 
+                       quote.payment_status?.toLowerCase() === 'success' ||
+                       quote.payment_status?.toLowerCase() === 'successful';
+
+        if (!isPaid) continue;
 
         const productId = quote.product_id._id || quote.product_id;
 

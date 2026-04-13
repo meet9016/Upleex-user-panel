@@ -100,6 +100,16 @@ class CartService {
             throw error;
         }
     }
+
+    async clearCart(): Promise<AddToCartResponse> {
+        try {
+            const res = await api.post(endPointApi.webClearCart, {});
+            return res.data;
+        } catch (error) {
+            console.error('Error clearing cart:', error);
+            throw error;
+        }
+    }
 }
 
 export const cartService = new CartService();

@@ -104,10 +104,13 @@ const UserQuotesPage = () => {
                 <div className="p-3 border-b border-gray-100 bg-gray-50/50">
                   <div className="flex items-start gap-3">
                     <img
-                      src={product.product_main_image || '/placeholder-image.jpg'}
+                      src={product.product_main_image || ''}
                       alt={product.product_name || 'Product'}
-                      className="w-12 h-12 rounded-md object-cover border border-gray-200 flex-shrink-0 bg-white"
-                      onError={(e: any) => { e.target.src = 'https://via.placeholder.com/64?text=Img'; }}
+                      className="w-12 h-12 rounded-md object-cover border border-gray-200 flex-shrink-0 bg-gray-50 text-[8px] flex items-center justify-center overflow-hidden"
+                      onError={(e: any) => { 
+                        e.currentTarget.onerror = null; 
+                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%23ccc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='3' rx='2' ry='2'%3E%3C/rect%3E%3Ccircle cx='9' cy='9' r='2'%3E%3C/circle%3E%3Cpath d='m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21'%3E%3C/path%3E%3C/svg%3E";
+                      }}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start">
