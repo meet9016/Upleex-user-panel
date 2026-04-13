@@ -83,7 +83,7 @@ export default function BlogDetailPage() {
         {/* Breadcrumb / Header Meta */}
         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
             <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-medium text-xs uppercase tracking-wide">
+                <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-medium text-sm">
                     {blog.blog_date}
                 </span>
             </div>

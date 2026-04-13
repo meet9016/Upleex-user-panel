@@ -7,6 +7,7 @@ import { NavigationButtons } from '@/components/features/NavigationButtons';
 import { UserDashboard } from '@/components/features/UserDashboard';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
+import Loader from '@/components/ui/Loader';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -54,9 +55,10 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+        <div className="text-center">.
+          <Loader/>
+          {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div> */}
+          {/* <p className="text-gray-600">Loading dashboard...</p> */}
         </div>
       </div>
     );

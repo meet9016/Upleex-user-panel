@@ -15,11 +15,17 @@ export interface FAQListResponse {
 
 class FAQService {
     private faqList: FAQ[] | null = null;
+    private faqListPromise: Promise<FAQ[]> | null = null;
 
     async getFAQList(): Promise<FAQ[]> {
         if (this.faqList) {
             return this.faqList;
         }
+        if (this.faqListPromise) {
+            return this.faqListPromise;
+        }
+
+        this.faqListPromise = (async () => {
         try {
             const res = await api.get(endPointApi.faqList);
             const payload = res.data;
@@ -32,8 +38,12 @@ class FAQService {
             return data;
         } catch (error) {
             console.error('Error fetching FAQ list:', error);
-            return [];
-        }
+                this.faqListPromise = null;
+                return [];
+            }
+        })();
+
+        return this.faqListPromise;
     }
 }
 

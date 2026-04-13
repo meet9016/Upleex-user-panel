@@ -17,7 +17,7 @@ export const PromotionalBanner = () => {
             <div className="flex-1 text-center lg:text-left space-y-6">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/15 text-white text-sm font-medium backdrop-blur-md border border-white/10 shadow-sm">
                 <Sparkles size={14} className="text-yellow-300" />
-                <span className="tracking-wide uppercase text-xs font-bold">Special Launch Offer</span>
+                <span className="text-xs font-bold">Special Launch Offer</span>
               </div>
               
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white leading-tight tracking-tight">

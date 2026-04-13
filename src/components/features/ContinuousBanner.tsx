@@ -53,7 +53,7 @@ export const ContinuousBanner = () => {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                 </span>
-                <span className="text-red-500 font-bold text-sm tracking-wide uppercase">Live Offers</span>
+                <span className="text-red-500 font-bold text-sm tracking-wide">Live Offers</span>
              </div>
              <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
                 Exclusive <span className="text-gradient-primary">Limited Time</span> Deals
@@ -108,7 +108,7 @@ export const ContinuousBanner = () => {
                         </div>
                         
                         <div>
-                            <p className="text-indigo-200 font-medium text-sm mb-1 uppercase tracking-wider">{offer.subtitle}</p>
+                            <p className="text-indigo-200 font-medium text-sm mb-1">{offer.subtitle}</p>
                             <h3 className="text-2xl md:text-3xl font-bold mb-2 leading-tight">{offer.title}</h3>
                             <p className="text-gray-200 text-sm md:text-base line-clamp-2 opacity-90">{offer.description}</p>
                         </div>

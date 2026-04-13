@@ -119,7 +119,7 @@ const UserQuotesPage = () => {
                         </h3>
                         <StatusBadge status={quote.status} label="Quote Status" />
                       </div>
-                      <p className="text-[10px] text-gray-500 mt-0.5 truncate font-bold">
+                      <p className="text-[10px] text-gray-500  truncate font-bold">
                         {product.vendor_name || '-'}
                       </p>
                       <p className="text-[10px] text-gray-400 mt-0.5 font-bold">
@@ -137,9 +137,9 @@ const UserQuotesPage = () => {
                     
                     {/* 1. Quantity */}
                     <div className="w-[90px] flex flex-col">
-                      <span className="text-[9px] text-gray-400 font-bold uppercase">Qty</span>
+                      <span className="text-[11px] text-gray-400 font-bold ">Qty</span>
                       <div className="flex items-center gap-1 mt-0.5">
-                        <Package className="h-3 w-3 text-blue-500 flex-shrink-0" />
+                        {/* <Package className="h-3 w-3 text-blue-500 flex-shrink-0" /> */}
                         <span className="text-xs font-semibold text-gray-800 truncate">{quote.qty}</span>
                       </div>
                     </div>
@@ -147,7 +147,7 @@ const UserQuotesPage = () => {
                     {/* 2. Total Price */}
                     {quote.calculated_price && (
                       <div className="w-[90px] flex flex-col">
-                      <span className="text-[9px] text-gray-400 font-bold uppercase">Total</span>
+                      <span className="text-[11px] text-gray-400 font-bold ">Total</span>
                       <div className="flex flex-col mt-0.5 min-w-0">
                         <span className="text-xs font-bold text-gray-900">₹{Number(quote.calculated_price).toLocaleString()}</span>
                         <span className="text-[10px] text-gray-400 font-bold">₹{Number(product.price || 0).toLocaleString()} × {quote.qty}</span>
@@ -158,7 +158,7 @@ const UserQuotesPage = () => {
                     {/* 3. Start Date */}
                     {quote.start_date && (
                       <div className="w-[90px] flex flex-col">
-                        <span className="text-[9px] text-gray-400 font-bold uppercase">Start</span>
+                        <span className="text-[11px] text-gray-400 font-bold ">Start</span>
                         <div className="flex items-center gap-1 mt-0.5">
                           <Calendar className="h-3 w-3 text-gray-500 flex-shrink-0" />
                           <span className="text-[11px] font-medium text-gray-700 truncate">{formatDate(quote.start_date)}</span>
@@ -169,7 +169,7 @@ const UserQuotesPage = () => {
                     {/* 4. End Date */}
                     {quote.end_date && (
                       <div className="w-[90px] flex flex-col">
-                        <span className="text-[9px] text-gray-400 font-bold uppercase">End</span>
+                        <span className="text-[11px] text-gray-400 font-bold ">End</span>
                         <div className="flex items-center gap-1 mt-0.5">
                           <Calendar className="h-3 w-3 text-gray-500 flex-shrink-0" />
                           <span className="text-[11px] font-medium text-gray-700 truncate">{formatDate(quote.end_date)}</span>
@@ -180,7 +180,7 @@ const UserQuotesPage = () => {
                     {/* 5. Start Time */}
                     {quote.start_time && (
                       <div className="w-[90px] flex flex-col">
-                        <span className="text-[9px] text-gray-400 font-bold uppercase">Time</span>
+                        <span className="text-[11px] text-gray-400 font-bold ">Time</span>
                         <div className="flex items-center gap-1 mt-0.5">
                           <Clock className="h-3 w-3 text-gray-500 flex-shrink-0" />
                           <span className="text-[11px] text-gray-700 truncate">{quote.start_time}</span>
@@ -191,7 +191,7 @@ const UserQuotesPage = () => {
                     {/* 6. End Time */}
                     {quote.end_time && (
                       <div className="w-[90px] flex flex-col">
-                        <span className="text-[9px] text-gray-400 font-bold uppercase">End T</span>
+                        <span className="text-[11px] text-gray-400 font-bold ">End T</span>
                         <div className="flex items-center gap-1 mt-0.5">
                           <Clock className="h-3 w-3 text-gray-500 flex-shrink-0" />
                           <span className="text-[11px] text-gray-700 truncate">{quote.end_time}</span>
@@ -202,7 +202,7 @@ const UserQuotesPage = () => {
                     {/* 7. Plan */}
                     {quote.month_name && (
                       <div className="w-[90px] flex flex-col">
-                        <span className="text-[9px] text-gray-400 font-bold uppercase">Plan</span>
+                        <span className="text-[11px] text-gray-400 font-bold ">Plan</span>
                         <div className="flex items-center gap-1 mt-0.5">
                           <Calendar className="h-3 w-3 text-purple-500 flex-shrink-0" />
                           <span className="text-xs font-semibold text-gray-800 truncate">{quote.month_name}</span>
@@ -213,7 +213,7 @@ const UserQuotesPage = () => {
                     {/* Fallback Delivery */}
                     {quote.delivery_date && !quote.start_date && (
                        <div className="w-[90px] flex flex-col">
-                        <span className="text-[9px] text-gray-400 font-bold uppercase">Delivery</span>
+                        <span className="text-[11px] text-gray-400 font-bold ">Delivery</span>
                         <div className="flex items-center gap-1 mt-0.5">
                           <Calendar className="h-3 w-3 text-gray-500 flex-shrink-0" />
                           <span className="text-[11px] font-medium text-gray-700 truncate">{formatDate(quote.delivery_date)}</span>
@@ -227,7 +227,7 @@ const UserQuotesPage = () => {
                     <div className="mt-3 pt-2 border-t border-dashed border-gray-100 flex items-start gap-2">
                       <AlertCircle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
                       <div className="min-w-0">
-                        <p className="text-[9px] text-amber-700 font-bold uppercase">Note</p>
+                        <p className="text-[9px] text-amber-700 font-bold ">Note</p>
                         <p className="text-[11px] text-gray-700 leading-snug line-clamp-2">{quote.note}</p>
                       </div>
                     </div>
@@ -241,7 +241,7 @@ const UserQuotesPage = () => {
                   </span>
                   <button
                     onClick={() => router.push(`/browse-ads/${quote.product_id._id}`)}
-                    className="text-[11px] font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
+                    className="text-[11px] cursor-pointer font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
                   >
                     View Product <Eye className="h-3 w-3" />
                   </button>

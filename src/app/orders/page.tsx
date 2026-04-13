@@ -270,7 +270,7 @@ export default function OrdersPage() {
 
                     <div className="flex gap-4 flex-wrap">
                       <StatusBadge status={order.payment_status} label="Payment">
-                        <CreditCard size={12} />
+                        {/* <CreditCard size={12} /> */}
                       </StatusBadge>
                       <StatusBadge status={order.order_status} label="Order">
                         {getStatusIcon(order.order_status)}

@@ -118,7 +118,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
             <div className="absolute top-0 left-0 z-20 overflow-hidden w-20 h-20 md:w-24 md:h-24">
               <span
                 className={cn(
-                  "absolute -left-10 md:-left-11 w-24 md:w-28 text-center px-2 py-1 text-[8px] md:text-[10px] font-bold uppercase tracking-wider text-white shadow-md rotate-[-45deg]",
+                  "absolute -left-10 md:-left-11 w-24 md:w-28 text-center px-2 py-1 text-[8px] md:text-[10px] font-bold text-white shadow-md rotate-[-45deg]",
                   listingType === "sell" ? "bg-orange-500" : "bg-upleex-blue",
                 )}>
                 <div className='mt-0.5 md:mt-1'>

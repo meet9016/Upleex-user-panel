@@ -7,38 +7,47 @@ interface StatusBadgeProps {
   children?: React.ReactNode;
 }
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, label, className = '', children }) => {
+export const StatusBadge: React.FC<StatusBadgeProps> = ({
+  status,
+  label,
+  className = '',
+  children,
+}) => {
   const s = (status || '').toLowerCase();
 
   const getStatusStyles = () => {
     // Green
-    if (['successful', 'complete', 'paid', 'confirmed', 'delivered', 'approved'].includes(s)) {
-      return 'bg-green-100 text-green-700';
+    if (['successful', 'complete', 'paid', 'confirmed', 'delivered', 'approved','approval'].includes(s)) {
+      return 'text-green-700 bg-green-50 border-green-200';
     }
     // Red
     if (['rejected', 'cancelled', 'reject', 'failed'].includes(s)) {
-      return 'bg-red-100 text-red-700';
+      return 'text-rose-700 bg-rose-50 border-rose-200';
     }
     // Yellow
     if (['pending', 'awaiting', 'processing'].includes(s)) {
-      return 'bg-yellow-100 text-yellow-700';
+      return 'text-amber-700 bg-amber-50 border-amber-200';
     }
     // Blue
     if (['shipped', 'shaping', 'dispatched'].includes(s)) {
-      return 'bg-blue-100 text-blue-700';
+      return 'text-blue-700 bg-blue-50 border-blue-200';
     }
-    // Default Blue
-    return 'bg-blue-100 text-blue-700';
+
+    // Default
+    return 'text-gray-600 bg-gray-100 border-gray-200';
   };
 
   return (
     <div className={`flex flex-col gap-0.5 ${className}`}>
       {label && (
-        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider leading-none">
+        <span className="text-[10px] font-medium text-gray-400 leading-none">
           {label}
         </span>
       )}
-      <span className={`px-2 py-0.5 text-[10px] font-black rounded-md uppercase tracking-tighter flex items-center gap-1 w-fit ${getStatusStyles()}`}>
+
+      <span
+        className={`inline-flex items-center px-2 py-1 rounded-full text-[12px] font-medium border leading-none whitespace-nowrap ${getStatusStyles()}`}
+      >
         {children}
         {status}
       </span>

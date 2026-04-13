@@ -15,7 +15,7 @@ export const NavigationButtons = () => {
       {/* Dashboard */}
       <button
         onClick={() => router.push('/profile')}
-        className={`flex items-center gap-3 p-5 rounded-2xl border transition-all active:scale-[0.98] ${
+        className={`flex items-center cursor-pointer  gap-3 p-5 rounded-2xl border transition-all active:scale-[0.98] ${
           isActive('/profile')
             ? 'border-blue-500 bg-blue-50 shadow-md'
             : 'bg-white border-gray-200 hover:border-blue-500 hover:shadow-lg'
@@ -37,7 +37,7 @@ export const NavigationButtons = () => {
       {/* My Profile */}
       <button
         onClick={() => router.push('/profile/edit')}
-        className={`flex items-center gap-3 p-5 rounded-2xl border transition-all active:scale-[0.98] ${
+        className={`flex items-center gap-3 cursor-pointer p-5 rounded-2xl border transition-all active:scale-[0.98] ${
           isActive('/profile/edit')
             ? 'border-orange-500 bg-orange-50 shadow-md'
             : 'bg-white border-gray-200 hover:border-orange-500 hover:shadow-lg'
@@ -59,7 +59,7 @@ export const NavigationButtons = () => {
       {/* My Orders */}
       <button
         onClick={() => router.push('/orders')}
-        className={`flex items-center gap-3 p-5 rounded-2xl border transition-all active:scale-[0.98] ${
+        className={`flex items-center gap-3 cursor-pointer p-5 rounded-2xl border transition-all active:scale-[0.98] ${
           isActive('/orders')
             ? 'border-green-500 bg-green-50 shadow-md'
             : 'bg-white border-gray-200 hover:border-green-500 hover:shadow-lg'
@@ -81,7 +81,7 @@ export const NavigationButtons = () => {
       {/* My Quotes */}
       <button
         onClick={() => router.push('/quotes')}
-        className={`flex items-center gap-3 p-5 rounded-2xl border transition-all active:scale-[0.98] ${
+        className={`flex items-center gap-3 cursor-pointer p-5 rounded-2xl border transition-all active:scale-[0.98] ${
           isActive('/quotes')
             ? 'border-purple-500 bg-purple-50 shadow-md'
             : 'bg-white border-gray-200 hover:border-purple-500 hover:shadow-lg'

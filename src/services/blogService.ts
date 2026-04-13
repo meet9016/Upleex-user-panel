@@ -43,18 +43,24 @@ const buildImageUrl = (path: string | undefined | null): string => {
 
 class BlogService {
     private blogList: Blog[] | null = null;
+    private blogListPromise: Promise<Blog[]> | null = null;
 
     async getBlogList(): Promise<Blog[]> {
         if (this.blogList) {
             return this.blogList;
         }
-        try {
-            const res = await api.get(endPointApi.blogList, {
-                params: {
-                    page: 1,
-                    limit: 100,
-                },
-            });
+        if (this.blogListPromise) {
+            return this.blogListPromise;
+        }
+
+        this.blogListPromise = (async () => {
+            try {
+                const res = await api.get(endPointApi.blogList, {
+                    params: {
+                        page: 1,
+                        limit: 100,
+                    },
+                });
 
             const payload = res.data;
             const rawList = Array.isArray(payload?.data) ? payload.data : [];
@@ -67,12 +73,16 @@ class BlogService {
                 image: buildImageUrl(item.image),
             }));
 
-            this.blogList = mapped;
-            return mapped;
-        } catch (error) {
-            console.error('Error fetching blog list:', error);
-            return [];
-        }
+                this.blogList = mapped;
+                return mapped;
+            } catch (error) {
+                console.error('Error fetching blog list:', error);
+                this.blogListPromise = null;
+                return [];
+            }
+        })();
+
+        return this.blogListPromise;
     }
 
     async getSingleBlog(id: string): Promise<SingleBlogData | null> {
