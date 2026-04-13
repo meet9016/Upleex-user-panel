@@ -21,6 +21,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { BackButton } from '@/components/ui/BackButton';
+import { SuccessModal } from '@/components/features/SuccessModal';
 import { motion, AnimatePresence, LayoutGroup, Variants } from 'framer-motion';
 import { useCart } from '@/context/CartContext';
 import Image from 'next/image';
@@ -85,8 +86,14 @@ export default function CartPage() {
   const [selectedPlan, setSelectedPlan] = useState<PaymentPlan>('monthly');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [completedOrderDetails, setCompletedOrderDetails] = useState<{
+    orderId: string;
+    amount: number;
+    items: any[];
+  } | null>(null);
   const [paymentOption, setPaymentOption] = useState<'full' | '30_percent'>('full');
-  const { cartItems, loading, cartSummary, updateQuantity, removeFromCart } = useCart();
+  const { cartItems, loading, cartSummary, updateQuantity, removeFromCart, refreshCart, clearCart } = useCart();
 
   const isEmpty = cartItems.length === 0;
 
@@ -190,10 +197,16 @@ export default function CartPage() {
 
             toast.success('Payment successful! Your order has been confirmed.');
             
-            // Redirect to orders page or success page
-            setTimeout(() => {
-              window.location.href = '/orders';
-            }, 2000);
+            // Clear cart after successful payment
+            await clearCart();
+            
+            // Set order details and show success modal
+            setCompletedOrderDetails({
+              orderId: data.order_id,
+              amount: data.amount,
+              items: cartItems,
+            });
+            setIsSuccessModalOpen(true);
           } catch (error: any) {
             console.error('Payment verification failed:', error);
             toast.error('Payment verification failed. Please contact support.');
@@ -712,7 +725,8 @@ export default function CartPage() {
                     </div>
 
                     <motion.button 
-                      onClick={() => setIsPaymentModalOpen(true)}
+                      // onClick={() => setIsPaymentModalOpen(true)}
+                      onClick={() => handlePayment()}
                       disabled={isProcessingPayment}
                       whileHover={{ scale: isProcessingPayment ? 1 : 1.02, boxShadow: isProcessingPayment ? undefined : "0 20px 25px -5px rgb(59 130 246 / 0.4)" }}
                       whileTap={{ scale: isProcessingPayment ? 1 : 0.98 }}
@@ -770,7 +784,7 @@ export default function CartPage() {
       </div>
 
       {/* Payment Options Modal */}
-      <AnimatePresence>
+      {/* <AnimatePresence>
         {isPaymentModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
             <motion.div
@@ -855,7 +869,18 @@ export default function CartPage() {
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
+      </AnimatePresence> */}
+
+      {/* Success Modal */}
+      <SuccessModal 
+        isOpen={isSuccessModalOpen} 
+        orderDetails={completedOrderDetails}
+        onClose={() => {
+          setIsSuccessModalOpen(false);
+          // Refresh cart to ensure count is updated
+          refreshCart();
+        }}
+      />
     </motion.div>
   );
 }
