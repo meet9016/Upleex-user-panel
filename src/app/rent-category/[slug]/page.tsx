@@ -13,6 +13,7 @@ import { productService } from '@/services/productService';
 import { motion } from 'framer-motion';
 
 import { CategorySEOContent } from '@/components/features/CategorySEOContent';
+import Loader from '@/components/ui/Loader';
 
 export default function RentCategoryPage() {
   return (
@@ -324,7 +325,7 @@ const [tenureOptions, setTenureOptions] = useState([
   }, [loading, filteredProducts.length]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50" style={{ overflow: 'visible' }}>
       {/* Header Section */}
       {/* <div className="bg-white border-b border-gray-100 pt-4 pb-6">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -337,7 +338,7 @@ const [tenureOptions, setTenureOptions] = useState([
       </div> */}
 
       {/* Top Filter Bar - Sticky Icon Header */}
-      <div className="bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-[49] shadow-md backdrop-blur-none transition-all">
+      <div className="bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-[49] shadow-md backdrop-blur-none transition-all" style={{ position: 'sticky' }}>
        
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4">
@@ -464,7 +465,7 @@ const [tenureOptions, setTenureOptions] = useState([
 
         {loading && filteredProducts.length === 0 && (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-upleex-purple"></div>
+            <Loader />
           </div>
         )}
 
