@@ -94,30 +94,33 @@ const UserQuotesPage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-            {quotes.map((quote) => (
+            {quotes.map((quote) => {
+              const product = quote.product_id || {};
+                          
+              return (
               <div key={quote._id} className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
-                
+                            
                 {/* Header */}
                 <div className="p-3 border-b border-gray-100 bg-gray-50/50">
                   <div className="flex items-start gap-3">
                     <img
-                      src={quote.product_id.product_main_image || '/placeholder-image.jpg'}
-                      alt={quote.product_id.product_name}
+                      src={product.product_main_image || '/placeholder-image.jpg'}
+                      alt={product.product_name || 'Product'}
                       className="w-12 h-12 rounded-md object-cover border border-gray-200 flex-shrink-0 bg-white"
                       onError={(e: any) => { e.target.src = 'https://via.placeholder.com/64?text=Img'; }}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start">
                         <h3 className="text-xs font-bold text-gray-900 line-clamp-1 leading-tight">
-                          {quote.product_id.product_name}
+                          {product.product_name || '-'}
                         </h3>
                         <StatusBadge status={quote.status} label="Quote Status" />
                       </div>
                       <p className="text-[10px] text-gray-500 mt-0.5 truncate font-bold">
-                        {quote.product_id.vendor_name}
+                        {product.vendor_name || '-'}
                       </p>
                       <p className="text-[10px] text-gray-400 mt-0.5 font-bold">
-                        {quote.product_id.category_name}
+                        {product.category_name || '-'}
                       </p>
                     </div>
                   </div>
@@ -144,7 +147,7 @@ const UserQuotesPage = () => {
                       <span className="text-[9px] text-gray-400 font-bold uppercase">Total</span>
                       <div className="flex flex-col mt-0.5 min-w-0">
                         <span className="text-xs font-bold text-gray-900">₹{Number(quote.calculated_price).toLocaleString()}</span>
-                        <span className="text-[10px] text-gray-400 font-bold">₹{Number(quote.product_id?.price || 0).toLocaleString()} × {quote.qty}</span>
+                        <span className="text-[10px] text-gray-400 font-bold">₹{Number(product.price || 0).toLocaleString()} × {quote.qty}</span>
                       </div>
                     </div>
                     )}
@@ -241,7 +244,8 @@ const UserQuotesPage = () => {
                   </button>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
