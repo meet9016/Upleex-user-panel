@@ -31,9 +31,13 @@ apiAdminInstance.interceptors.response.use(
   error => {
     const { response } = error;
 
-    if (response.status === 401) {
+    if (response?.status === 401) {
       removeSecureToken();
       if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
+        localStorage.removeItem('user');
+        localStorage.removeItem('email');
+        localStorage.removeItem('token');
+        window.dispatchEvent(new Event('storage'));
         window.location.href = '/auth/login';
       }
     }

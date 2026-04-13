@@ -13,6 +13,7 @@ interface CartContextType {
     updateQuantity: (productId: string, qty: number) => Promise<void>;
     removeFromCart: (cartId: string) => Promise<void>;
     refreshCart: () => Promise<void>;
+    clearCart: () => Promise<void>;
     totalAmount: number;
 }
 
@@ -167,6 +168,22 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
+    const clearCart = async () => {
+        try {
+            const response = await cartService.clearCart();
+            if (response.status === 200) {
+                setCartItems([]);
+                setCartSummary(null);
+                toast.success('Cart cleared successfully');
+            } else {
+                toast.error(response.message || 'Failed to clear cart');
+            }
+        } catch (error) {
+            toast.error('Something went wrong');
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         if (token) {
@@ -197,7 +214,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
                        cartItems.reduce((acc, item) => acc + parseFloat(item.final_amount), 0);
 
     return (
-        <CartContext.Provider value={{ cartItems, cartCount, cartSummary, loading, addToCart, updateQuantity, removeFromCart, refreshCart, totalAmount }}>
+        <CartContext.Provider value={{ cartItems, cartCount, cartSummary, loading, addToCart, updateQuantity, removeFromCart, refreshCart, clearCart, totalAmount }}>
             {children}
         </CartContext.Provider>
     );

@@ -32,6 +32,7 @@ export interface EndPointApi {
     webCartList: string;
     webRemoveCart: string;
     webUpdateCart: string;
+    webClearCart: string;
     businessRegister: string;
     
     // Payment
@@ -94,6 +95,7 @@ const endPointApi: EndPointApi = {
     webCartList: 'cart/web-cart-list',
     webRemoveCart: 'cart/web-remove-cart',
     webUpdateCart: 'cart/web-update-cart',
+    webClearCart: 'cart/web-clear-cart',
     businessRegister: 'vendor/auth/business-register',
     
     // Payment
