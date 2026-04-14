@@ -564,7 +564,7 @@ export default function CartPage() {
                                 key={d.label}
                                 className="bg-slate-50/50 rounded-lg px-3 py-2 border border-slate-100"
                               >
-                                <div className="text-[10px] text-slate-500 uppercase tracking-wide font-bold">
+                                <div className="text-[10px] text-slate-500 font-bold">
                                   {d.label}
                                 </div>
                                 <div className="font-bold text-slate-900 mt-0.5">{d.value}</div>

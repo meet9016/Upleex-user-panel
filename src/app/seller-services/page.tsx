@@ -66,7 +66,7 @@ function SellerServicesContent() {
                   <Store size={32} className="text-upleex-blue" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-bold text-upleex-blue uppercase tracking-widest mb-1">Service Provider</div>
+                  <div className="text-[10px] font-bold text-upleex-blue  mb-1">Service Provider</div>
                   <h1 className="text-2xl font-bold text-slate-900">{vendorName || 'Vendor'}</h1>
                   {vendorAddress && (
                     <div className="flex items-center gap-1.5 text-sm text-slate-500 mt-1 font-medium">

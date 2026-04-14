@@ -60,7 +60,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, className }) 
 
           {/* Category Tag */}
           <div className="absolute top-3 left-3">
-            <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-upleex-purple shadow-sm border border-purple-100">
+            <span className="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-upleex-purple shadow-sm border border-purple-100">
               {serviceCategory}
             </span>
           </div>

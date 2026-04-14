@@ -28,18 +28,31 @@ export interface Service {
 }
 
 class ServiceService {
+    private serviceCategoryPromises = new Map<string, Promise<ServiceCategory[]>>();
+
     async getServiceCategories(city?: string | null): Promise<ServiceCategory[]> {
-        try {
-            const params: any = {};
-            if (city) {
-                params.city = city;
-            }
-            const res = await api.get(endPointApi.serviceCategoryList, { params });
-            return res.data?.data || [];
-        } catch (error) {
-            console.error('Error fetching service categories:', error);
-            return [];
+        const cacheKey = city || 'all';
+        if (this.serviceCategoryPromises.has(cacheKey)) {
+            return this.serviceCategoryPromises.get(cacheKey)!;
         }
+
+        const fetchPromise = (async () => {
+            try {
+                const params: any = {};
+                if (city) {
+                    params.city = city;
+                }
+                const res = await api.get(endPointApi.serviceCategoryList, { params });
+                return res.data?.data || [];
+            } catch (error) {
+                console.error('Error fetching service categories:', error);
+                this.serviceCategoryPromises.delete(cacheKey);
+                return [];
+            }
+        })();
+
+        this.serviceCategoryPromises.set(cacheKey, fetchPromise);
+        return fetchPromise;
     }
 
     async getServices(params?: { category_id?: string; vendor_id?: string; city?: string | null; search?: string; sortBy?: string; order?: 'asc' | 'desc' }): Promise<Service[]> {

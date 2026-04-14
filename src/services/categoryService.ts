@@ -26,7 +26,15 @@ export interface HomeResponse {
 }
 
 class CategoryService {
+    private homeDataPromises = new Map<string, Promise<HomeResponse>>();
+
     async getHomeData(city?: string | null): Promise<HomeResponse> {
+        const cacheKey = city || 'all';
+        if (this.homeDataPromises.has(cacheKey)) {
+            return this.homeDataPromises.get(cacheKey)!;
+        }
+
+        const fetchPromise = (async () => {
         try {
             const params: any = {
                 page: 1,
@@ -83,11 +91,17 @@ class CategoryService {
                 },
             };
 
-            return transformed;
-        } catch (error) {
-            console.error('Home data fetch error:', error);
-            throw error;
-        }
+                return transformed;
+            } catch (error) {
+                console.error('Home data fetch error:', error);
+                // Clear the promise from cache if it fails so it can be retried
+                this.homeDataPromises.delete(cacheKey);
+                throw error;
+            }
+        })();
+
+        this.homeDataPromises.set(cacheKey, fetchPromise);
+        return fetchPromise;
     }
 
     async getCategories(city?: string | null): Promise<Category[]> {

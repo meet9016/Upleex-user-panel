@@ -54,7 +54,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
                <MessageSquare size={20} />
             </div>
             <div>
-               <span className="text-xs text-blue-600 uppercase font-bold tracking-wider">Requesting For</span>
+               <span className="text-xs text-blue-600  font-bold ">Requesting For</span>
                <p className="text-gray-900 font-bold text-base leading-tight mt-0.5">{productName}</p>
             </div>
           </div>
@@ -64,7 +64,7 @@ export const QuoteModal: React.FC<QuoteModalProps> = ({
           <div className="p-4 bg-amber-50/50 rounded-xl border border-amber-200 space-y-3">
             <div className="flex items-center gap-2">
               <Clock size={16} className="text-amber-600" />
-              <span className="text-xs text-amber-700 uppercase font-bold tracking-wider">Rental Details</span>
+              <span className="text-xs text-amber-700  font-bold ">Rental Details</span>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               {startDate && (

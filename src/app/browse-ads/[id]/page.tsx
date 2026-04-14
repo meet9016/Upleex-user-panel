@@ -538,7 +538,7 @@ export default function ProductDetailsPage() {
                       <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
                         <Shield size={16} strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                      <span className="text-[10px] font-bold text-gray-700  leading-tight">
                         KYC<br />Verified
                       </span>
                     </div>
@@ -546,7 +546,7 @@ export default function ProductDetailsPage() {
                       <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
                         <Shield size={16} strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                      <span className="text-[10px] font-bold text-gray-700  leading-tight">
                         Secure<br />Payment
                       </span>
                     </div>
@@ -554,7 +554,7 @@ export default function ProductDetailsPage() {
                       <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
                         <Truck size={16} strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                      <span className="text-[10px] font-bold text-gray-700  leading-tight">
                         Verified<br />Product
                       </span>
                     </div>
@@ -562,7 +562,7 @@ export default function ProductDetailsPage() {
                       <div className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
                         <ArrowRight size={16} strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-700 uppercase leading-tight">
+                      <span className="text-[10px] font-bold text-gray-700  leading-tight">
                         100%<br />Refund
                       </span>
                     </div>
@@ -685,7 +685,7 @@ export default function ProductDetailsPage() {
                     {productDetails?.month_arr?.length > 0 ? (
                       <>
                         <div>
-                          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
+                          <label className="text-xs font-bold text-gray-500  block">
                             Select Duration
                           </label>
 
@@ -942,7 +942,7 @@ export default function ProductDetailsPage() {
                     <div className="relative">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="w-1.5 h-4 bg-upleex-blue rounded-full" />
-                        <label className="text-xs font-bold text-upleex-blue uppercase tracking-wider block">
+                        <label className="text-xs font-bold text-upleex-blue  block">
                           Selling Price
                         </label>
                       </div>
@@ -1075,7 +1075,7 @@ export default function ProductDetailsPage() {
                         <div className="relative z-10 h-full flex flex-col">
                           <div className="flex items-center gap-2 mb-1">
                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                            <label className="text-[9px] text-green-800 font-semibold uppercase tracking-wider">
+                            <label className="text-[9px] text-green-800 font-semibold ">
                               Start Date
                             </label>
                           </div>
@@ -1102,7 +1102,7 @@ export default function ProductDetailsPage() {
                           <div className="relative z-10 h-full flex flex-col">
                             <div className="flex items-center gap-2 mb-1">
                               <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
-                              <label className="text-[9px] text-green-800 font-semibold uppercase tracking-wider">
+                              <label className="text-[9px] text-green-800 font-semibold ">
                                 Start Time
                               </label>
                             </div>
@@ -1132,7 +1132,7 @@ export default function ProductDetailsPage() {
                           <div className="relative z-10 h-full flex flex-col">
                             <div className="flex items-center gap-2 mb-1">
                               <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-                              <label className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
+                              <label className="text-[9px] text-amber-800 font-semibold ">
                                 Return Date
                               </label>
                             </div>
@@ -1162,7 +1162,7 @@ export default function ProductDetailsPage() {
                             <div className="relative z-10 h-full flex flex-col">
                               <div className="flex items-center gap-2 mb-1">
                                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-                                <label className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
+                                <label className="text-[9px] text-amber-800 font-semibold ">
                                   Return Date
                                 </label>
                               </div>
@@ -1188,7 +1188,7 @@ export default function ProductDetailsPage() {
                             <div className="relative z-10 h-full flex flex-col">
                               <div className="flex items-center gap-2 mb-1">
                                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                <span className="text-[9px] text-amber-800 font-semibold uppercase tracking-wider">
+                                <span className="text-[9px] text-amber-800 font-semibold ">
                                   Return Time
                                 </span>
                               </div>
@@ -1293,7 +1293,7 @@ export default function ProductDetailsPage() {
                         <Store size={22} className="text-upleex-blue" />
                       </div>
                       <div>
-                        <div className="text-[11px] font-semibold text-gray-500 uppercase tracking-[0.12em]">
+                        <div className="text-[11px] font-semibold text-gray-500  tracking-[0.12em]">
                           Sold By
                         </div>
                         <div className="text-sm font-bold text-slate-900">
@@ -1332,7 +1332,7 @@ export default function ProductDetailsPage() {
                       <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-upleex-blue border border-blue-100">
                         <Shield size={18} strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                      <span className="text-[10px] font-bold text-gray-700  leading-tight">
                         KYC<br />Verified
                       </span>
                     </div>
@@ -1340,7 +1340,7 @@ export default function ProductDetailsPage() {
                       <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600 border border-green-100">
                         <Shield size={18} strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                      <span className="text-[10px] font-bold text-gray-700  leading-tight">
                         Secure<br />Payment
                       </span>
                     </div>
@@ -1348,7 +1348,7 @@ export default function ProductDetailsPage() {
                       <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100">
                         <Truck size={18} strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                      <span className="text-[10px] font-bold text-gray-700  leading-tight">
                         Verified<br />Product
                       </span>
                     </div>
@@ -1356,7 +1356,7 @@ export default function ProductDetailsPage() {
                       <div className="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 border border-purple-100">
                         <ArrowRight size={18} strokeWidth={2.5} />
                       </div>
-                      <span className="text-[10px] font-bold text-gray-700 uppercase tracking-wider leading-tight">
+                      <span className="text-[10px] font-bold text-gray-700  leading-tight">
                         100%<br />Refund
                       </span>
                     </div>
@@ -1371,21 +1371,21 @@ export default function ProductDetailsPage() {
             <div className="flex gap-8 border-b border-gray-200 mb-6 px-6 lg:px-10 pt-6">
               <button
                 onClick={() => setActiveDetailTab("description")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+                className={`pb-3 text-sm font-bold  transition-colors border-b-2 ${activeDetailTab === "description" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
                   }`}
               >
                 Description
               </button>
               <button
                 onClick={() => setActiveDetailTab("details")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+                className={`pb-3 text-sm font-bold  transition-colors border-b-2 ${activeDetailTab === "details" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
                   }`}
               >
                 Product Details
               </button>
               <button
                 onClick={() => setActiveDetailTab("reviews")}
-                className={`pb-3 text-sm font-bold uppercase tracking-wider transition-colors border-b-2 ${activeDetailTab === "reviews" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
+                className={`pb-3 text-sm font-bold  transition-colors border-b-2 ${activeDetailTab === "reviews" ? "border-upleex-blue text-upleex-blue" : "border-transparent text-gray-500 hover:text-slate-800"
                   }`}
               >
                 Reviews & Ratings

@@ -157,7 +157,7 @@ export const Navbar: React.FC = () => {
       setCategories(data);
     };
     const fetchServiceCategories = async () => {
-      const data = await serviceService.getServiceCategories(currentLocation);
+      const data = await serviceService.getServiceCategories(selectedCityId);
       setServiceCategories(data);
     };
 
@@ -885,7 +885,6 @@ export const Navbar: React.FC = () => {
                   />
                 </button>
 
-                {/* Profile Dropdown Menu - Only Email and Logout */}
                 {/* Profile Dropdown Menu - Fixed */}
                 {isProfileMenuOpen && (
                   <motion.div
@@ -896,7 +895,7 @@ export const Navbar: React.FC = () => {
                     className="absolute right-0 top-full mt-3 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/60 overflow-hidden z-50"
                   >
                     {/* Header */}
-                    <div className="px-6 py-5 bg-gradient-to-br from-gray-50/80 via-white to-gray-50/40 border-b border-gray-100/80">
+                    <div className="px-6 py-5 bg-gradient-to-br  from-gray-50/80 via-white to-gray-50/40 border-b border-gray-100/80">
                       <div className="flex items-center gap-4">
                         <motion.div
                           initial={{ scale: 0.8 }}
@@ -942,7 +941,7 @@ export const Navbar: React.FC = () => {
                           }}
                           whileHover={{ x: 4, scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          className="group flex items-center gap-3.5 w-full px-6 py-3.5 text-left text-gray-700 hover:bg-gradient-to-r hover:from-purple-50/70 hover:to-indigo-50/40 transition-all duration-200"
+                          className="group flex cursor-pointer items-center gap-3.5 w-full px-6 py-3.5 text-left text-gray-700 hover:bg-gradient-to-r hover:from-purple-50/70 hover:to-indigo-50/40 transition-all duration-200"
                           onClick={() => {
                             setIsProfileMenuOpen(false);   // ← FIXED: Close dropdown
                             if (item.href) {
@@ -1306,7 +1305,7 @@ export const Navbar: React.FC = () => {
               {/* Categories Section */}
               <div className="p-4 border-t border-gray-100">
                 <div className="flex items-center justify-between mb-4 px-1">
-                  <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Top Categories</h3>
+                  <h3 className="text-sm font-extrabold text-slate-900">Top Categories</h3>
                   <Link href="/categories" onClick={() => setIsMenuOpen(false)} className="text-xs font-bold text-upleex-blue">View All</Link>
                 </div>
                 <div className="space-y-1">

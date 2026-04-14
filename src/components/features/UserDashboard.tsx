@@ -104,13 +104,13 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
       >
         <div className="px-3 py-2 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
           <div>
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+            <p className="text-[10px] text-gray-400 font-bold ">
               {isSell ? 'Order ID' : 'Rental ID'}
             </p>
             <p className="text-xs font-black text-gray-700">#{rental._id.slice(-6).toUpperCase()}</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Date</p>
+            <p className="text-[10px] text-gray-400 font-bold ">Date</p>
             <p className="text-xs font-bold text-gray-600">
               {new Date(rental.createdAt).toLocaleDateString('en-IN', {
                 day: 'numeric', month: 'short'
@@ -160,7 +160,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
                     </div>
                   </div>
                   {rental.start_date && rental.end_date && (
-                    <span className="text-[9px] font-black px-2 py-0.5 bg-blue-600 text-white w-full text-center rounded-md blur-none tracking-wider shadow-sm">
+                    <span className="text-[9px] font-black px-2 py-0.5 bg-blue-600 text-white w-full text-center rounded-md blur-none shadow-sm">
                       {calculateDays(rental.start_date, rental.end_date)} DAYS
                     </span>
                   )}
@@ -184,7 +184,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
                 href={rental.razorpay_payment_link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-[10px] font-black text-white bg-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-700 transition-colors uppercase"
+                className="text-[10px] font-black text-white bg-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-700 transition-colors "
               >
                 Pay
               </a>
@@ -236,7 +236,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
             }`}>
               <tab.icon className={activeTab === tab.id ? 'text-white' : 'text-blue-600'} size={20} />
             </div>
-            <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${
+            <p className={`text-lg font-bold  mb-1 ${
               activeTab === tab.id ? 'text-blue-50' : 'text-gray-400'
             }`}>
               {tab.label}

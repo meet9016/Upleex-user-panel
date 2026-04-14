@@ -156,7 +156,7 @@ export default function SellerPage() {
               <Store size={32} className="text-upleex-blue" />
             </div>
             <div className="min-w-0">
-              <div className="text-xs font-semibold text-gray-500 uppercase tracking-[0.18em] mb-1">
+              <div className="text-xs font-semibold text-gray-500  tracking-[0.18em] mb-1">
                 Sold By
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 truncate">
@@ -165,7 +165,7 @@ export default function SellerPage() {
               {/* Add vendor address here */}
               {products.length > 0 && products[0]?.vendor_address && (
                 <div className="mt-2">
-                  <div className="text-xs font-semibold text-gray-500 uppercase tracking-[0.18em] mb-1">
+                  <div className="text-xs font-semibold text-gray-500  tracking-[0.18em] mb-1">
                     Address
                   </div>
                   <p className="text-sm text-gray-600 line-clamp-2" title={products[0].vendor_address}>

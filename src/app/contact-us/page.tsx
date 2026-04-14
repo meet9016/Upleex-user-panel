@@ -259,7 +259,7 @@ export default function ContactUsPage() {
                  </div>
                  <p className="text-slate-200 italic mb-6 leading-relaxed text-sm md:text-base">"The Upleex support team is incredibly responsive and helpful. They resolved my query and delivered my product the very next day. Seamless experience!"</p>
                  <div className="flex items-center gap-3">
-                   <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-upleex-purple to-upleex-blue flex items-center justify-center font-bold text-white uppercase text-xs shadow-inner tracking-widest">
+                   <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-upleex-purple to-upleex-blue flex items-center justify-center font-bold text-white text-xs shadow-inner tracking-widest">
                      JD
                    </div>
                    <div>

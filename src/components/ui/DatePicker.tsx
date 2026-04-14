@@ -202,7 +202,7 @@ export function DatePicker({
         )}
       >
         <div className="flex flex-col justify-center">
-          <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider leading-tight">
+          <span className="text-[10px] text-gray-500 font-bold  leading-tight">
             {label}
           </span>
           <span className={clsx("font-bold text-gray-900 leading-tight", textSize)}>

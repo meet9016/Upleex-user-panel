@@ -147,7 +147,7 @@ export const HeroCarousel = ({ banners }: HeroCarouselProps) => {
                     <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 md:p-14 text-white">
                       <div className={`transition-all duration-700 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                         {banner.subtitle && (
-                          <p className="text-xs sm:text-sm md:text-lg font-bold text-blue-200 mb-2 sm:mb-4 uppercase tracking-[0.2em]">
+                          <p className="text-xs sm:text-sm md:text-lg font-bold text-blue-200 mb-2 sm:mb-4 tracking-[0.2em]">
                             {banner.subtitle}
                           </p>
                         )}

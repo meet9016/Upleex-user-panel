@@ -219,7 +219,7 @@ const MembershipPage = () => {
                   }`}
                 >
                     {plan.tag && (
-                        <div className="absolute top-0 right-0 bg-gradient-primary text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wide">
+                        <div className="absolute top-0 right-0 bg-gradient-primary text-white text-xs font-bold px-3 py-1 rounded-bl-lg ">
                             {plan.tag}
                         </div>
                     )}
