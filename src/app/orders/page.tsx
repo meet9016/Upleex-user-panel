@@ -82,7 +82,12 @@ export default function OrdersPage() {
       }
 
       if (quotesRes.status === 'fulfilled' && quotesRes.value.data.success) {
-        const mappedQuotes = (quotesRes.value.data.data || []).map((quote: any) => ({
+        const mappedQuotes = (quotesRes.value.data.data || [])
+          .filter((quote: any) => 
+            String(quote.payment_status).toLowerCase() === 'paid' && 
+            String(quote.status).toLowerCase() === 'complete'
+          )
+          .map((quote: any) => ({
           _id: quote._id,
           order_id: `QUOTE-${quote._id.slice(-6).toUpperCase()}`,
           items: [{
@@ -273,7 +278,7 @@ export default function OrdersPage() {
                         {/* <CreditCard size={12} /> */}
                       </StatusBadge>
                       <StatusBadge status={order.order_status} label="Order">
-                        {getStatusIcon(order.order_status)}
+                        {/* {getStatusIcon(order.order_status)} */}
                       </StatusBadge>
                     </div>
                   </div>
