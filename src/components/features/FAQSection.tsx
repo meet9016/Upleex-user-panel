@@ -78,8 +78,7 @@ export const FAQSection = ({ data, title }: FAQSectionProps) => {
             <span className="text-gradient-primary">{title}</span>
           ) : (
             <>
-              <span className="text-gradient-primary">Got Questions?</span>{' '}
-              We've Got Answers!
+              <span className="text-gradient-primary"> Have Questions? We Can Help!</span>{' '}
             </>
           )}
         </h2>

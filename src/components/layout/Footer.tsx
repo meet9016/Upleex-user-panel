@@ -22,7 +22,7 @@ export const Footer: React.FC = () => {
           </Link>
 
             <p className="text-gray-400 text-sm leading-relaxed">
-              The smartest way to rent everything you need. Quality products, flexible terms, and hassle-free experience.
+              Your local marketplace for renting and selling made simple.
             </p>
           </div>
 

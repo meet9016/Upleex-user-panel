@@ -221,10 +221,10 @@ export default function Home() {
               className="text-center mb-10 sm:mb-16 md:mb-20"
             >
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-4 sm:mb-6 px-4 tracking-tight">
-                Explore Our <span className="text-gradient-primary">Premium</span> Collection
+                Explore <span className="text-gradient-primary">Premium</span> Categories
               </h2>
               <p className="text-slate-500 max-w-2xl mx-auto text-base sm:text-lg md:text-xl px-4 leading-relaxed">
-                Find exactly what you are looking for from our wide range of rental categories.
+                Pick from top categories available in your city.
               </p>
             </motion.div>
 
@@ -424,7 +424,7 @@ export default function Home() {
                   transition={{ delay: 0.2 }}
                   className="text-xl font-bold text-slate-900 mb-3"
                 >
-                  Quality Assured
+                  Quality Checked
                 </motion.h3>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -433,7 +433,7 @@ export default function Home() {
                   transition={{ delay: 0.3 }}
                   className="text-slate-500 leading-relaxed"
                 >
-                  Every product is quality checked, sanitized, and maintained to ensure you get the best experience.
+                  We review listings to keep the platform safe and trusted.
                 </motion.p>
               </motion.div>
 
@@ -465,7 +465,7 @@ export default function Home() {
                   transition={{ delay: 0.3 }}
                   className="text-xl font-bold text-slate-900 mb-3"
                 >
-                  Flexible Tenure
+                  Flexible Plans
                 </motion.h3>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -474,7 +474,7 @@ export default function Home() {
                   transition={{ delay: 0.4 }}
                   className="text-slate-500 leading-relaxed"
                 >
-                  Rent for a month or a year. Upgrade or return anytime. You choose what works for you.
+                  Choose a rental duration that fits your needs and budget.
                 </motion.p>
               </motion.div>
 
@@ -503,7 +503,7 @@ export default function Home() {
                   transition={{ delay: 0.4 }}
                   className="text-xl font-bold text-slate-900 mb-3"
                 >
-                  Free Maintenance
+                  Easy Support
                 </motion.h3>
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -512,7 +512,7 @@ export default function Home() {
                   transition={{ delay: 0.5 }}
                   className="text-slate-500 leading-relaxed"
                 >
-                  We take care of repairs and maintenance throughout your rental period at no extra cost.
+                  Get quick help for listings, rentals, and bookings.
                 </motion.p>
               </motion.div>
             </motion.div>
