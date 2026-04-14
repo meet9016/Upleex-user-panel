@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { serviceService, Service } from '@/services/serviceService';
-import { MapPin, Clock, Star, ShieldCheck, CheckCircle2, ArrowLeft, Share2, Heart, MessageSquare, Store } from 'lucide-react';
+import { MapPin, Clock, Star, ShieldCheck, CheckCircle2, ArrowLeft, Share2, Heart, MessageSquare, Store, Copy, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
 import clsx from 'clsx';
+import { AuthModal } from '@/components/features/AuthModal';
 
 export default function ServiceDetailPage() {
   const params = useParams();
@@ -16,6 +17,25 @@ export default function ServiceDetailPage() {
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [isHovering, setIsHovering] = useState(false);
+  const [showContact, setShowContact] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const handleShowContactClick = () => {
+    const isLogged = typeof window !== 'undefined' && !!localStorage.getItem('user');
+    if (!isLogged) {
+      setIsAuthModalOpen(true);
+    } else {
+      setShowContact(true);
+    }
+  };
+
+  const handleCopy = () => {
+    const num = (service as any)?.vendor_phone || '+91 80000 00000'; // Fallback logic
+    navigator.clipboard.writeText(num);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -93,7 +113,7 @@ export default function ServiceDetailPage() {
                       transition={{ duration: 0.35 }}
                       src={getImageUrl(selectedImage)}
                       alt={service.service_name}
-                      className="max-h-full object-contain"
+                      className="w-full h-full max-w-[450px] object-contain"
                     />
                   </AnimatePresence>
                 </div>
@@ -170,7 +190,7 @@ export default function ServiceDetailPage() {
                     Description
                   </h2>
 
-                  <div className="border border-gray-300 rounded-lg p-4 text-sm text-slate-600 leading-relaxed bg-gray-50">
+                  <div className="border border-gray-300 rounded-lg p-4 text-sm text-slate-600 leading-relaxed bg-gray-50 h-[250px] overflow-y-auto">
                     <div
                       dangerouslySetInnerHTML={{ __html: service.description }}
                     />
@@ -180,11 +200,23 @@ export default function ServiceDetailPage() {
                 {/* 🔥 PUSH CONTENT UP */}
                 <div className="flex-1"></div>
 
-                {/* Buttons (ALWAYS BOTTOM) */}
                 <div className="flex gap-3 justify-center pt-4">
-                  <button className="bg-upleex-purple hover:bg-upleex-purple/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all">
-                    Show Contact
-                  </button>
+                  {showContact ? (
+                    <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 px-6  rounded-lg shadow-sm">
+                      <Phone size={18} className="text-upleex-purple" />
+                      <span className="font-semibold text-slate-700 tracking-wide text-sm">
+                        {(service as any)?.vendor_phone || 'Not Available'}
+                      </span>
+                      <button onClick={handleCopy} className="ml-2 hover:bg-gray-200 p-1.5 rounded-md transition-colors" title="Copy Number">
+                        {copied ? <CheckCircle2 size={18} className="text-green-500" /> : <Copy size={18} className="text-slate-500" />}
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={handleShowContactClick} className="bg-upleex-purple cursor-pointer hover:bg-upleex-purple/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all flex items-center gap-2">
+                       <Phone size={18} />
+                       Show Contact
+                    </button>
+                  )}
                   {/* <button className="bg-upleex-purple hover:bg-upleex-purple/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-md hover:shadow-lg transition-all">
                     Chat Now
                   </button> */}
@@ -197,6 +229,15 @@ export default function ServiceDetailPage() {
 
         </div>
       </div>
+      
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+        onLoginSuccess={() => {
+          setIsAuthModalOpen(false);
+          setShowContact(true);
+        }} 
+      />
     </div>
   );
 }

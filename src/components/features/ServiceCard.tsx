@@ -93,7 +93,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, className }) 
             e.stopPropagation();
             if (serviceId) router.push(`/service/${serviceId}`);
           }}
-          className="mt-4 w-full bg-upleex-purple hover:bg-upleex-purple/90 text-white font-semibold py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg"
+          className="mt-4 w-full cursor-pointer bg-upleex-purple hover:bg-upleex-purple/90 text-white font-semibold py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg"
         >
           Book Service
         </button>
