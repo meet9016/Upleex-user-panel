@@ -8,6 +8,7 @@ import { api } from '@/utils/axiosInstance';
 import { toast } from 'react-hot-toast';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { SuccessModal } from '@/components/features/SuccessModal';
+import { Pagination } from '@/components/ui/Pagination';
 import endPointApi from '@/utils/endPointApi';
 
 // Razorpay types
@@ -50,6 +51,8 @@ const UserQuotesPage = () => {
   const router = useRouter();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [completedOrderDetails, setCompletedOrderDetails] = useState<{
     orderId: string;
@@ -60,7 +63,8 @@ const UserQuotesPage = () => {
 
   const fetchQuotes = async () => {
     try {
-      const response = await api.get('/quote/getall');
+      setLoading(true);
+      const response = await api.get(`/quote/getall?view_type=quote&page=${page}&limit=10`);
       if (response.data.success) {
         const filtered = (response.data.data || []).filter((quote: any) => {
           const isPaid = String(quote.payment_status || '').toLowerCase() === 'paid';
@@ -68,6 +72,7 @@ const UserQuotesPage = () => {
           return !(isPaid && isComplete);
         });
         setQuotes(filtered);
+        setTotalPages(response.data.totalPages || 1);
       }
     } catch (error) {
       console.error('Error fetching quotes:', error);
@@ -79,7 +84,7 @@ const UserQuotesPage = () => {
 
   useEffect(() => {
     fetchQuotes();
-  }, []);
+  }, [page]);
 
   // Load Razorpay script
   const loadRazorpayScript = () => {
@@ -224,7 +229,8 @@ const UserQuotesPage = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             {quotes.map((quote) => {
               const product = quote.product_id || {};
               const isNewQuote = quote.isNew === true;
@@ -398,8 +404,18 @@ const UserQuotesPage = () => {
               );
             })}
           </div>
-        )}
-      </div>
+          
+          {/* Pagination */}
+          <div className="mt-8">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </div>
+        </>
+      )}
+    </div>
 
       <SuccessModal 
         isOpen={isSuccessModalOpen}
