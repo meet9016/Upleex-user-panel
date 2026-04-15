@@ -39,34 +39,37 @@ class ProductService {
     }
 
     async getQuote(params: QuoteParams): Promise<any> {
-        const formData = new FormData();
-        formData.append('product_id', params.product_id);
+        const payload: any = {
+            product_id: params.product_id,
+            qty: Number(params.qty),
+        };
+
         if (params.delivery_date) {
-            formData.append('delivery_date', params.delivery_date);
+            payload.delivery_date = params.delivery_date;
         }
-        if (params.number_of_days) {
-            formData.append('number_of_days', String(params.number_of_days));
+        if (params.number_of_days !== undefined && params.number_of_days !== null) {
+            payload.number_of_days = Number(params.number_of_days);
         }
         if (params.months_id && params.months_id.trim()) {
-            formData.append('months_id', params.months_id);
+            payload.months_id = params.months_id;
         }
-        formData.append('qty', String(params.qty));
         if (params.note && params.note.trim()) {
-            formData.append('note', params.note.trim());
+            payload.note = params.note.trim();
         }
         if (params.start_date) {
-            formData.append('start_date', params.start_date);
+            payload.start_date = params.start_date;
         }
         if (params.end_date) {
-            formData.append('end_date', params.end_date);
+            payload.end_date = params.end_date;
         }
         if (params.start_time && params.start_time.trim()) {
-            formData.append('start_time', params.start_time.trim());
+            payload.start_time = params.start_time.trim();
         }
         if (params.end_time && params.end_time.trim()) {
-            formData.append('end_time', params.end_time.trim());
+            payload.end_time = params.end_time.trim();
         }
-        const res = await api.post(endPointApi.webGetQuote, formData);
+
+        const res = await api.post(endPointApi.webGetQuote, payload);
         return res.data;
     }
 

@@ -40,6 +40,12 @@ interface UserDashboardProps {
     pastRentals: Rental[];
     purchases: Rental[];
     cancellations: Rental[];
+    counts?: {
+      currentRentals: number;
+      pastRentals: number;
+      purchases: number;
+      cancellations: number;
+    };
   } | null;
   loading: boolean;
 }
@@ -52,11 +58,19 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
   const purchases = dashboardData?.purchases || [];
   const cancellations = dashboardData?.cancellations || [];
 
+  // Use counts from backend if available, otherwise fallback to array length
+  const counts = dashboardData?.counts || {
+    currentRentals: currentRentals.length,
+    pastRentals: pastRentals.length,
+    purchases: purchases.length,
+    cancellations: cancellations.length,
+  };
+
   const tabs = [
-    { id: 'current', label: 'Current Rentals', icon: Clock, count: currentRentals.length },
-    { id: 'past', label: 'Past Rentals', icon: CheckCircle, count: pastRentals.length },
-    { id: 'purchases', label: 'Purchases', icon: ShoppingBag, count: purchases.length },
-    { id: 'cancellations', label: 'Cancellations', icon: XCircle, count: cancellations.length },
+    { id: 'current', label: 'Current Rentals', icon: Clock, count: counts.currentRentals },
+    { id: 'past', label: 'Past Rentals', icon: CheckCircle, count: counts.pastRentals },
+    { id: 'purchases', label: 'Purchases', icon: ShoppingBag, count: counts.purchases },
+    { id: 'cancellations', label: 'Cancellations', icon: XCircle, count: counts.cancellations },
   ] as const;
 
   // Safe number parsing to avoid #NAN
