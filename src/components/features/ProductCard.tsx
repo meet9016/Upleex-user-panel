@@ -29,6 +29,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
   const [localLiked, setLocalLiked] = useState<boolean | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  const isOutOfStock = product.is_out_of_stock || (product.available_quantity !== undefined && product.available_quantity <= 0);
+
   // Determine current wishlist status: local state > context > initial product data
   const isWishlisted = localLiked !== null ? localLiked : (productId ? isInWishlist(productId) : !!product.is_wishlist);
   const productName = product.product_name || product.title;
@@ -105,7 +107,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
         {/* IMAGE */}
         <div className="relative h-44 md:h-52 overflow-hidden bg-gray-50/50">
           {/* Out of Stock Badge - Top Center */}
-          {product.is_out_of_stock && product.product_type_name === 'Sell' && (
+          {isOutOfStock  && (
             <div className="absolute top-2 md:top-3 left-1/2 transform -translate-x-1/2 z-30">
               <span className="bg-red-500 text-white text-[10px] md:text-xs font-bold px-2 md:px-3 py-0.5 md:py-1 rounded-full shadow-md">
                 OUT OF STOCK
@@ -234,19 +236,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     fullWidth
     variant="primary"
     className={`mt-2 rounded-xl font-semibold tracking-wide text-white ${
-      product.is_out_of_stock && product.product_type_name === 'Sell'
+      isOutOfStock && product.product_type_name === 'Sell'
         ? 'bg-gray-400 cursor-not-allowed'
         : 'cursor-pointer'
     }`}
-    disabled={product.is_out_of_stock && product.product_type_name === 'Sell'}
+    disabled={isOutOfStock && product.product_type_name === 'Sell'}
     onClick={(e) => {
       e.stopPropagation();
-      if (!(product.is_out_of_stock && product.product_type_name === 'Sell') && productId) {
+      if (!(isOutOfStock && product.product_type_name === 'Sell') && productId) {
         router.push(`/browse-ads/${productId}`);
       }
     }}
   >
-    {product.is_out_of_stock && product.product_type_name === 'Sell'
+    {isOutOfStock && product.product_type_name === 'Sell'
       ? 'Out of Stock'
       : listingType === 'sell' ? 'Buy Now' : 'Take On Rent'
     }

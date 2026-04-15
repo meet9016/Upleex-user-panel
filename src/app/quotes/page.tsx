@@ -7,6 +7,16 @@ import { Calendar, Package, Clock, Eye, Tag, AlertCircle } from 'lucide-react';
 import { api } from '@/utils/axiosInstance';
 import { toast } from 'react-hot-toast';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { SuccessModal } from '@/components/features/SuccessModal';
+import { Pagination } from '@/components/ui/Pagination';
+import endPointApi from '@/utils/endPointApi';
+
+// Razorpay types
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 interface Quote {
   _id: string;
@@ -34,16 +44,27 @@ interface Quote {
   end_date?: string;
   start_time?: string;
   end_time?: string;
+  isNew?: boolean;
 }
 
 const UserQuotesPage = () => {
   const router = useRouter();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [completedOrderDetails, setCompletedOrderDetails] = useState<{
+    orderId: string;
+    amount: number;
+    items: any[];
+  } | null>(null);
+  const [processingQuoteId, setProcessingQuoteId] = useState<string | null>(null);
 
   const fetchQuotes = async () => {
     try {
-      const response = await api.get('/quote/getall');
+      setLoading(true);
+      const response = await api.get(`/quote/getall?view_type=quote&page=${page}&limit=10`);
       if (response.data.success) {
         const filtered = (response.data.data || []).filter((quote: any) => {
           const isPaid = String(quote.payment_status || '').toLowerCase() === 'paid';
@@ -51,6 +72,7 @@ const UserQuotesPage = () => {
           return !(isPaid && isComplete);
         });
         setQuotes(filtered);
+        setTotalPages(response.data.totalPages || 1);
       }
     } catch (error) {
       console.error('Error fetching quotes:', error);
@@ -62,7 +84,114 @@ const UserQuotesPage = () => {
 
   useEffect(() => {
     fetchQuotes();
-  }, []);
+  }, [page]);
+
+  // Load Razorpay script
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  // Handle quote payment
+  const handleQuotePayment = async (quoteId: string, quote: Quote) => {
+    try {
+      setProcessingQuoteId(quoteId);
+
+      // Load Razorpay script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        toast.error('Failed to load payment gateway. Please try again.');
+        return;
+      }
+
+      console.log('Creating quote order...');
+
+      // Create order for quote payment
+      const orderResponse = await api.post(`${endPointApi.quoteCreateOrder}`, {
+        quote_id: quoteId,
+        amount: quote.calculated_price || quote.product_id?.price || 0,
+      });
+
+      console.log('Quote order response:', orderResponse.data);
+
+      const { data } = orderResponse.data;
+
+      if (!data.razorpay_order_id) {
+        throw new Error('Failed to create Razorpay order');
+      }
+
+      // Razorpay options
+      const options = {
+        key: data.key,
+        amount: data.amount * 100, // Amount in paise
+        currency: data.currency,
+        name: 'Upleex',
+        description: `Quote #${quote._id}`,
+        order_id: data.razorpay_order_id,
+        handler: async (response: any) => {
+          try {
+            // Verify payment
+            await api.post('/quote/verify-payment', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              quote_id: quoteId,
+            });
+
+            toast.success('Payment successful! Quote confirmed.');
+            
+            // Set order details and show success modal
+            setCompletedOrderDetails({
+              orderId: quote._id,
+              amount: quote.calculated_price || 0,
+              items: [
+                {
+                  name: quote.product_id?.product_name,
+                  qty: quote.qty,
+                  price: quote.product_id?.price,
+                  image: quote.product_id?.product_main_image,
+                }
+              ],
+            });
+            setIsSuccessModalOpen(true);
+            
+            // Refresh quotes after successful payment
+            await fetchQuotes();
+          } catch (error: any) {
+            console.error('Quote payment verification failed:', error);
+            toast.error('Payment verification failed. Please contact support.');
+          }
+        },
+        prefill: {
+          name: 'Customer Name',
+          email: 'customer@example.com',
+          contact: '9999999999',
+        },
+        theme: {
+          color: '#2563eb',
+        },
+        modal: {
+          ondismiss: () => {
+          toast('Payment cancelled');
+          },
+        },
+      };
+
+      const razorpay = new (window as any).Razorpay(options);
+      razorpay.open();
+    } catch (error: any) {
+      console.error('Quote payment initiation failed:', error);
+      const errorMessage = error?.response?.data?.message || error?.message || 'Failed to initiate payment';
+      toast.error(errorMessage);
+    } finally {
+      setProcessingQuoteId(null);
+    }
+  };
 
 
   const formatDate = (dateString: string) => {
@@ -100,12 +229,14 @@ const UserQuotesPage = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             {quotes.map((quote) => {
               const product = quote.product_id || {};
+              const isNewQuote = quote.isNew === true;
                           
               return (
-              <div key={quote._id} className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
+             <div key={quote._id} className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
                             
                 {/* Header */}
                 <div className="p-3 border-b border-gray-100 bg-gray-50/50">
@@ -252,15 +383,14 @@ const UserQuotesPage = () => {
                     <span className="text-[10px] font-mono text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
                       #{quote._id.slice(-6).toUpperCase()}
                     </span>
-                    {quote.payment_status?.toLowerCase() !== 'paid' && quote.razorpay_payment_link && (
-                      <a 
-                        href={quote.razorpay_payment_link} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-[10px] font-black text-white bg-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-700 transition-colors"
+                    {quote.payment_status?.toLowerCase() !== 'paid' && (
+                      <button
+                        onClick={() => handleQuotePayment(quote._id, quote)}
+                        disabled={processingQuoteId === quote._id}
+                        className="text-[10px] font-black text-white bg-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Pay
-                      </a>
+                        {processingQuoteId === quote._id ? 'Processing...' : 'Pay'}
+                      </button>
                     )}
                   </div>
                   <button
@@ -274,8 +404,27 @@ const UserQuotesPage = () => {
               );
             })}
           </div>
-        )}
-      </div>
+          
+          {/* Pagination */}
+          <div className="mt-8">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </div>
+        </>
+      )}
+    </div>
+
+      <SuccessModal 
+        isOpen={isSuccessModalOpen}
+        orderDetails={completedOrderDetails}
+        onClose={() => {
+          setIsSuccessModalOpen(false);
+          setCompletedOrderDetails(null);
+        }}
+      />
     </div>
   );
 };
