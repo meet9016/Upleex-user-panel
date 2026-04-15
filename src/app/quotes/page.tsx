@@ -230,9 +230,7 @@ const UserQuotesPage = () => {
               const isNewQuote = quote.isNew === true;
                           
               return (
-              <div key={quote._id} className={`rounded-lg border shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col ${
-                isNewQuote ? 'bg-yellow-50 border-yellow-300' : 'bg-white border-gray-200'
-              }`}>
+             <div key={quote._id} className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
                             
                 {/* Header */}
                 <div className="p-3 border-b border-gray-100 bg-gray-50/50">
