@@ -197,8 +197,8 @@ export default function CartPage() {
 
             toast.success('Payment successful! Your order has been confirmed.');
             
-            // Clear cart after successful payment
-            await clearCart();
+            // Refresh cart state to update count globally (backend has already cleared it)
+            await refreshCart();
             
             // Set order details and show success modal
             setCompletedOrderDetails({
