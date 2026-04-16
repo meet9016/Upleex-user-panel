@@ -66,12 +66,7 @@ const UserQuotesPage = () => {
       setLoading(true);
       const response = await api.get(`/quote/getall?view_type=quote&page=${page}&limit=10`);
       if (response.data.success) {
-        const filtered = (response.data.data || []).filter((quote: any) => {
-          const isPaid = String(quote.payment_status || '').toLowerCase() === 'paid';
-          const isComplete = String(quote.status || '').toLowerCase() === 'complete';
-          return !(isPaid && isComplete);
-        });
-        setQuotes(filtered);
+        setQuotes(response.data.data || []);
         setTotalPages(response.data.totalPages || 1);
       }
     } catch (error) {
