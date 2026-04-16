@@ -44,24 +44,20 @@ export function ReviewReminderPopup() {
 
         if (!isPaid) continue;
 
+        // Skip if already reviewed (using the new flag from backend)
+        if (quote.has_reviewed) continue;
+
         const productId = quote.product_id._id || quote.product_id;
 
         // Skip if permanently dismissed
         if (localStorage.getItem(`review_dismissed_${productId}`) === 'true') continue;
 
-        try {
-          const reviewCheck = await reviewService.checkUserReview(productId);
-          if (reviewCheck?.success && !reviewCheck.data?.hasReviewed) {
-            setPendingProduct({
-              productId,
-              productName: quote.product_id.product_name || "Product",
-              productImage: quote.product_id.product_main_image || "",
-            });
-            break;
-          }
-        } catch {
-          // silently ignore
-        }
+        setPendingProduct({
+          productId,
+          productName: quote.product_id.product_name || "Product",
+          productImage: quote.product_id.product_main_image || "",
+        });
+        break;
       }
     } catch {
       // silently ignore
