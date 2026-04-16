@@ -134,54 +134,56 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
         </div>
 
         <div className="p-3 flex-1">
-          <div className="flex gap-3">
-            <div className="w-14 h-14 bg-gray-50 rounded-lg flex-shrink-0 overflow-hidden border border-gray-100">
-              <img
-                src={rental.product_id?.product_main_image?.startsWith('http') 
-                  ? rental.product_id.product_main_image 
-                  : `https://upleex.2min.cloud/${rental.product_id?.product_main_image}`}
-                alt={rental.product_id?.product_name}
-                className="w-full h-full object-contain p-1"
-              />
-            </div>
-            <div className="flex-1 min-w-0 flex justify-between items-start gap-3">
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-bold text-gray-900 truncate mb-1">
-                  {rental.product_id?.product_name}
-                </h4>
-                <div className="flex items-center gap-2 text-[11px] text-gray-500 font-bold">
-                  <span>₹{formatPrice(unitPrice)} × {rental.qty}</span>
-                </div>
+         <div className="flex gap-3">
+  <div className="w-14 h-14 bg-gray-50 rounded-lg flex-shrink-0 overflow-hidden border border-gray-100">
+    <img
+      src={rental.product_id?.product_main_image?.startsWith('http') 
+        ? rental.product_id.product_main_image 
+        : `https://upleex.2min.cloud/${rental.product_id?.product_main_image}`}
+      alt={rental.product_id?.product_name}
+      className="w-full h-full object-contain p-1"
+    />
+  </div>
+  <div className="flex-1 min-w-0">
+    <div className="flex justify-between items-start gap-3">
+      <div className="flex-1 min-w-0">
+        <h4 className="text-sm font-bold text-gray-900 truncate mb-1">
+          {rental.product_id?.product_name}
+        </h4>
+        <div className="flex items-center gap-2 text-[11px] text-gray-500 font-bold">
+          <span>₹{formatPrice(unitPrice)} × {rental.qty}</span>
+        </div>
 
-                {/* Sell label */}
-                {isSell && (
-                  <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-orange-600 bg-orange-50/50 w-fit px-2 py-0.5 rounded-md border border-orange-100/50">
-                    <ShoppingBag size={10} />
-                    <span>Purchase</span>
-                  </div>
-                )}
-              </div>
-              
-              {/* Rental Dates - Right Aligned */}
-              {!isSell && (
-                <div className="flex flex-col items-end gap-1.5 flex-shrink-0 mt-0.5">
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-700 bg-blue-50/80 px-2 py-1 rounded-md border border-blue-100/50">
-                    <Calendar size={12} className="text-blue-500" />
-                    <div className="flex flex-col items-end leading-tight tracking-wide">
-                      <span>{rental.start_date ? new Date(rental.start_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
-                      <span className="text-gray-400 text-[8px] my-[1px]">to</span>
-                      <span>{rental.end_date ? new Date(rental.end_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
-                    </div>
-                  </div>
-                  {rental.start_date && rental.end_date && (
-                    <span className="text-[9px] font-black px-2 py-0.5 bg-blue-600 text-white w-full text-center rounded-md blur-none shadow-sm">
-                      {calculateDays(rental.start_date, rental.end_date)} DAYS
-                    </span>
-                  )}
-                </div>
-              )}
-            </div>
+        {/* Sell label */}
+        {isSell && (
+          <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-orange-600 bg-orange-50/50 w-fit px-2 py-0.5 rounded-md border border-orange-100/50">
+            <ShoppingBag size={10} />
+            <span>Purchase</span>
           </div>
+        )}
+      </div>
+    </div>
+    
+    {/* Rental Dates - Below Price in Single Row */}
+    {!isSell && (
+      <div className="flex items-center gap-2 mt-2 flex-wrap">
+        <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-700 bg-blue-50/80 px-2 py-1 rounded-md border border-blue-100/50">
+          <Calendar size={12} className="text-blue-500" />
+          <div className="flex items-center gap-1 leading-tight tracking-wide">
+            <span>{rental.start_date ? new Date(rental.start_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
+            <span className="text-gray-400 text-[8px]">→</span>
+            <span>{rental.end_date ? new Date(rental.end_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
+          </div>
+        </div>
+        {rental.start_date && rental.end_date && (
+          <span className="text-[9px] font-black px-2 py-1 bg-blue-600 text-white rounded-md shadow-sm">
+            {calculateDays(rental.start_date, rental.end_date)} DAYS
+          </span>
+        )}
+      </div>
+    )}
+  </div>
+</div>
         </div>
 
         <div className="px-3 py-2 bg-gray-50/80 border-t border-gray-100 flex justify-between items-center">
@@ -198,7 +200,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
                 href={rental.razorpay_payment_link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-[10px] font-black text-white bg-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-700 transition-colors "
+                className="text-[11px] font-black text-white bg-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-700 transition-colors "
               >
                 Pay
               </a>

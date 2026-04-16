@@ -66,12 +66,7 @@ const UserQuotesPage = () => {
       setLoading(true);
       const response = await api.get(`/quote/getall?view_type=quote&page=${page}&limit=10`);
       if (response.data.success) {
-        const filtered = (response.data.data || []).filter((quote: any) => {
-          const isPaid = String(quote.payment_status || '').toLowerCase() === 'paid';
-          const isComplete = String(quote.status || '').toLowerCase() === 'complete';
-          return !(isPaid && isComplete);
-        });
-        setQuotes(filtered);
+        setQuotes(response.data.data || []);
         setTotalPages(response.data.totalPages || 1);
       }
     } catch (error) {
@@ -380,14 +375,14 @@ const UserQuotesPage = () => {
                 {/* Footer */}
                 <div className="px-3.5 py-2 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-mono text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
+                    <span className="text-[11px] font-mono text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
                       #{quote._id.slice(-6).toUpperCase()}
                     </span>
                     {quote.payment_status?.toLowerCase() !== 'paid' && (
                       <button
                         onClick={() => handleQuotePayment(quote._id, quote)}
                         disabled={processingQuoteId === quote._id}
-                        className="text-[10px] font-black text-white bg-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="text-[11px] font-black text-white bg-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {processingQuoteId === quote._id ? 'Processing...' : 'Pay'}
                       </button>
