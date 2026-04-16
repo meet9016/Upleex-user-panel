@@ -49,7 +49,8 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({
         className={`inline-flex items-center px-2 py-1 rounded-full text-[12px] font-medium border leading-none whitespace-nowrap ${getStatusStyles()}`}
       >
         {children}
-        {status}
+          {/* {status} */}
+        {s.charAt(0).toUpperCase() + s.slice(1)}
       </span>
     </div>
   );
