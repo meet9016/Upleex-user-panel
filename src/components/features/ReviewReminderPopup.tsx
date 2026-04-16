@@ -40,9 +40,7 @@ export function ReviewReminderPopup() {
 
       for (const quote of quotes) {
         // Show reminder if payment is confirmed
-        const isPaid = quote.payment_status?.toLowerCase() === 'paid' || 
-                       quote.payment_status?.toLowerCase() === 'success' ||
-                       quote.payment_status?.toLowerCase() === 'successful';
+        const isPaid = quote.payment_status?.toLowerCase() === 'paid' && quote.status?.toLowerCase() === 'complete';
 
         if (!isPaid) continue;
 
