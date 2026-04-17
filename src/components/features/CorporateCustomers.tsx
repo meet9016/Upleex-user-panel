@@ -34,7 +34,6 @@ LogoItem.displayName = 'LogoItem';
 
 export const CorporateCustomers = () => {
   const [vendorLogos, setVendorLogos] = useState<any[]>([]);
-console.log(vendorLogos,"vendorLogos");
   useEffect(() => {
     const fetchLogos = async () => {
       try {

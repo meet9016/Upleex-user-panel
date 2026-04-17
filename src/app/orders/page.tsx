@@ -30,22 +30,13 @@ interface Order {
   total_amount: number;
   payment_status: string;
   order_status: string;
+  vendor_status: string;
   createdAt: string;
   razorpay_payment_id: string;
   type?: 'order' | 'quote';
   razorpay_payment_link?: string;
 }
 
-
-const getStatusIcon = (status: string) => {
-  switch (status.toLowerCase()) {
-    case 'confirmed':
-    case 'delivered': return <CheckCircle size={16} />;
-    case 'processing': return <Package size={16} />;
-    case 'shipped': return <Truck size={16} />;
-    default: return <Calendar size={16} />;
-  }
-};
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -68,7 +59,11 @@ export default function OrdersPage() {
       let maxPages = 1;
 
       if (ordersRes.status === 'fulfilled' && ordersRes.value.data.success) {
-        const fetchedOrders = (ordersRes.value.data.data.orders || []).map((o: any) => ({ ...o, type: 'order' }));
+        const fetchedOrders = (ordersRes.value.data.data.orders || []).map((o: any) => ({ 
+          ...o, 
+          type: 'order',
+          order_status: o.vendor_status || o.order_status 
+        }));
         combined = [...combined, ...fetchedOrders];
         maxPages = Math.max(maxPages, ordersRes.value.data.data.pagination?.pages || 1);
       }
@@ -90,7 +85,7 @@ export default function OrdersPage() {
             gst_amount: 0,
             total_amount: quote.calculated_price || 0,
             payment_status: quote.payment_status || 'pending',
-            order_status: (quote.status === 'approval' ? 'approved' : quote.status === 'successful' ? 'confirmed' : quote.status) || 'pending',
+            order_status: quote.status || 'pending',
             createdAt: quote.createdAt,
             razorpay_payment_id: quote.razorpay_payment_id || '',
             type: 'quote',

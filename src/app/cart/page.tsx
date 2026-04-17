@@ -153,8 +153,6 @@ export default function CartPage() {
         return;
       }
 
-      console.log('Creating order...');
-
       // Create order
       const orderResponse = await api.post(endPointApi.createOrder, {
         delivery_address: {
@@ -167,8 +165,6 @@ export default function CartPage() {
         order_notes: 'Order from cart',
         payment_type: paymentOption,
       });
-
-      console.log('Order response:', orderResponse.data);
 
       const { data } = orderResponse.data;
 
@@ -186,7 +182,6 @@ export default function CartPage() {
         order_id: data.razorpay_order_id,
         handler: async (response: any) => {
           try {
-            console.log('Payment successful, verifying...');
             // Verify payment
             await api.post(endPointApi.verifyPayment, {
               razorpay_order_id: response.razorpay_order_id,

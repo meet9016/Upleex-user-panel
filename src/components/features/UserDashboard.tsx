@@ -202,7 +202,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
             <div className="flex flex-col items-end">
               <p className="text-sm font-black text-blue-600">₹{formatPrice(rental.calculated_price)}</p>
             </div>
-            {paymentStatus !== 'paid' && rental.razorpay_payment_link && (
+            {activeTab !== 'cancellations' && paymentStatus !== 'paid' && rental.razorpay_payment_link && (
               <a 
                 href={rental.razorpay_payment_link} 
                 target="_blank" 

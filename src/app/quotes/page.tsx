@@ -104,15 +104,11 @@ const UserQuotesPage = () => {
         return;
       }
 
-      console.log('Creating quote order...');
-
       // Create order for quote payment
       const orderResponse = await api.post(`${endPointApi.quoteCreateOrder}`, {
         quote_id: quoteId,
         amount: quote.calculated_price || quote.product_id?.price || 0,
       });
-
-      console.log('Quote order response:', orderResponse.data);
 
       const { data } = orderResponse.data;
 

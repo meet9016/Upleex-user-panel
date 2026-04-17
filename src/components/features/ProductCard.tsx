@@ -22,7 +22,6 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
-  console.log("product:", product)
   const router = useRouter();
   const productId = product.product_id || product.id || product._id;
   const { toggleWishlist, isInWishlist } = useWishlist();

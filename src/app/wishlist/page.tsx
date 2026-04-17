@@ -20,8 +20,8 @@ const WishlistPage = () => {
 
   if (wishlistItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gray-50 py-12 ">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white rounded-xl shadow-md p-20">
           <div className="text-center">
             <Heart className="mx-auto h-24 w-24 text-gray-300" />
             <h2 className="mt-6 text-3xl font-bold text-gray-900">Your wishlist is empty</h2>
@@ -56,7 +56,6 @@ const WishlistPage = () => {
             const productData = wishlistEntry.product_id;
             
             if (!productData) {
-              console.log('No product data for wishlist item:', wishlistEntry);
               return null;
             }
 
