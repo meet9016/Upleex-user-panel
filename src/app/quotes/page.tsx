@@ -212,7 +212,7 @@ const UserQuotesPage = () => {
         <NavigationButtons />
         
         {quotes.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="text-center py-16 bg-white rounded-lg shadow-md">
             <Package className="mx-auto h-16 w-16 text-gray-300" />
             <h2 className="mt-4 text-xl font-semibold text-gray-900">No quotes found</h2>
             <p className="mt-2 text-gray-500 text-sm">You haven't requested any quotes yet.</p>
