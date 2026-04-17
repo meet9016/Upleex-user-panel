@@ -119,7 +119,7 @@ class ProductService {
 
         // Always send rotation_seed so backend handles per-tier shuffle
         // Seed changes every 1 minute — same seed = same order within that minute
-        query.rotation_seed = params.rotation_seed ?? Math.floor(Date.now() / (60 * 1000));
+        query.rotation_seed = params.rotation_seed ?? Math.floor(Date.now() / (2 * 60 * 1000));
 
         const res = await api.get(endPointApi.webCategoryProductList, {
             params: query,

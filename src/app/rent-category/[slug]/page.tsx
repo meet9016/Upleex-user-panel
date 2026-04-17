@@ -63,7 +63,7 @@ const [tenureOptions, setTenureOptions] = useState([
   const [productCount, setProductCount] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [rotationSeed, setRotationSeed] = useState(() => Math.floor(Date.now() / (60 * 1000)));
+  const [rotationSeed, setRotationSeed] = useState(() => Math.floor(Date.now() / (2 * 60 * 1000)));
   const ITEMS_PER_PAGE = 12;
   const selectedCity = useCity();
 
@@ -243,12 +243,12 @@ const [tenureOptions, setTenureOptions] = useState([
     };
   }, [slug, activeFilter, selectedSort, selectedTenure, currentPage, selectedCity, rotationSeed]);
 
-  // Update rotationSeed every 1 minute to trigger a re-fetch with a new seed
+  // Update rotationSeed every 2 minutes to trigger a re-fetch with a new seed
   // Backend will re-shuffle each tier using the new seed — no frontend shuffle needed
   useEffect(() => {
     const interval = setInterval(() => {
-      setRotationSeed(Math.floor(Date.now() / (60 * 1000)));
-    }, 60 * 1000);
+      setRotationSeed(Math.floor(Date.now() / (2 * 60 * 1000)));
+    }, 2 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
