@@ -49,6 +49,7 @@ export interface EndPointApi {
     serviceList: string;
     serviceDetails: string;
     bannerList: string;
+    approvedLogos: string;
     
     // Contact
     createContact: string;
@@ -112,6 +113,7 @@ const endPointApi: EndPointApi = {
     serviceList: 'services/getall',
     serviceDetails: 'services/getById',
     bannerList: 'banners/getall',
+    approvedLogos: 'vendor-kyc/approved-logos',
     
     // Contact
     createContact: 'create-contact',

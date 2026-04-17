@@ -46,6 +46,7 @@ interface UserDashboardProps {
       purchases: number;
       cancellations: number;
     };
+    purchases_total_amount?: number;
   } | null;
   loading: boolean;
 }
@@ -66,13 +67,6 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
     cancellations: cancellations.length,
   };
 
-  const tabs = [
-    { id: 'current', label: 'Current Rentals', icon: Clock, count: counts.currentRentals },
-    { id: 'past', label: 'Past Rentals', icon: CheckCircle, count: counts.pastRentals },
-    { id: 'purchases', label: 'Purchases', icon: ShoppingBag, count: counts.purchases },
-    { id: 'cancellations', label: 'Cancellations', icon: XCircle, count: counts.cancellations },
-  ] as const;
-
   // Safe number parsing to avoid #NAN
   const formatPrice = (price: any) => {
     if (price === null || price === undefined) return '0';
@@ -88,6 +82,19 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
     
     return isNaN(num) ? '0' : num.toLocaleString('en-IN');
   };
+
+  const tabs = [
+    { id: 'current', label: 'Current Rentals', icon: Clock, count: counts.currentRentals },
+    { id: 'past', label: 'Past Rentals', icon: CheckCircle, count: counts.pastRentals },
+    { 
+      id: 'purchases', 
+      label: 'Purchases', 
+      icon: ShoppingBag, 
+      count: counts.purchases,
+      amount: `₹${formatPrice(dashboardData?.purchases_total_amount || 0)}`
+    },
+    { id: 'cancellations', label: 'Cancellations', icon: XCircle, count: counts.cancellations },
+  ] as const;
 
   const calculateDays = (start: string, end: string) => {
     if (!start || !end) return 0;
@@ -252,13 +259,23 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
             }`}>
               <tab.icon className={activeTab === tab.id ? 'text-white' : 'text-blue-600'} size={20} />
             </div>
-            <p className={`text-lg font-bold  mb-1 ${
-              activeTab === tab.id ? 'text-blue-50' : 'text-gray-400'
-            }`}>
-              {tab.label}
-            </p>
+           <p className={`text-lg font-bold mb-1 flex items-center justify-between ${
+  activeTab === tab.id ? 'text-blue-50' : 'text-gray-400'
+}`}>
+  {tab.label}
+
+  {'amount' in tab && (
+    <span className={`text-[20px] font-bold ${
+      activeTab === tab.id ? 'text-blue-100' : 'text-blue-600'
+    }`}>
+      {tab.amount}
+    </span>
+  )}
+</p>
             <div className="flex items-end justify-between">
-              <span className="text-2xl font-black">{tab.count}</span>
+              <div className="flex flex-col items-start">
+                <span className="text-2xl font-black">{tab.count}</span>
+              </div>
               <ChevronRight size={16} className={`transition-transform ${activeTab === tab.id ? 'translate-x-1' : 'text-gray-300'}`} />
             </div>
           </button>
