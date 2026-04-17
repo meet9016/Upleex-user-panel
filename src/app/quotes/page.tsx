@@ -28,6 +28,7 @@ interface Quote {
     sub_category_name: string;
     vendor_name: string;
     price: string;
+    product_listing_type_name?: string;
   };
   delivery_date: string;
   number_of_days: number;
@@ -233,7 +234,7 @@ const UserQuotesPage = () => {
                 <div className="p-3 border-b border-gray-100 bg-gray-50/50">
                   <div className="flex items-start gap-3">
                     <img
-                      src={product.product_main_image || ''}
+                      src={product.product_main_image || undefined}
                       alt={product.product_name || 'Product'}
                       className="w-12 h-12 rounded-md object-cover border border-gray-200 flex-shrink-0 bg-gray-50 text-[8px] flex items-center justify-center overflow-hidden"
                       onError={(e: any) => { 
@@ -312,7 +313,7 @@ const UserQuotesPage = () => {
                     )}
 
                     {/* 5. Start Time */}
-                    {quote.start_time && (
+                    {quote.start_time && product.product_listing_type_name === 'Hourly' && (
                       <div className="w-[90px] flex flex-col">
                         <span className="text-[11px] text-gray-400 font-bold ">Time</span>
                         <div className="flex items-center gap-1 mt-0.5">
@@ -323,7 +324,7 @@ const UserQuotesPage = () => {
                     )}
 
                     {/* 6. End Time */}
-                    {quote.end_time && (
+                    {quote.end_time && product.product_listing_type_name === 'Hourly' && (
                       <div className="w-[90px] flex flex-col">
                         <span className="text-[11px] text-gray-400 font-bold ">End T</span>
                         <div className="flex items-center gap-1 mt-0.5">
@@ -374,7 +375,10 @@ const UserQuotesPage = () => {
                     <span className="text-[11px] font-mono text-gray-400 bg-gray-200 px-1.5 py-0.5 rounded">
                       #{quote._id.slice(-6).toUpperCase()}
                     </span>
-                    {quote.payment_status?.toLowerCase() !== 'paid' && (
+                {
+                    quote.payment_status?.toLowerCase() !== 'paid' &&
+                    quote.status?.toLowerCase() !== 'pending' &&
+                    quote.status?.toLowerCase() !== 'reject' && (
                       <button
                         onClick={() => handleQuotePayment(quote._id, quote)}
                         disabled={processingQuoteId === quote._id}
