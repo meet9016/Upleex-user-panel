@@ -116,8 +116,6 @@ const LoginPage = () => {
         localStorage.setItem('email', JSON.stringify(result.data.user.email));
         localStorage.setItem('token', result.data.token);
 
-        console.log('User data stored in localStorage:', userData);
-        
         toast.success(result.message || 'Login successful');
         window.dispatchEvent(new Event('storage'));
         router.push('/');

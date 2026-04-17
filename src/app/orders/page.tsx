@@ -30,22 +30,13 @@ interface Order {
   total_amount: number;
   payment_status: string;
   order_status: string;
+  vendor_status: string;
   createdAt: string;
   razorpay_payment_id: string;
   type?: 'order' | 'quote';
   razorpay_payment_link?: string;
 }
 
-
-const getStatusIcon = (status: string) => {
-  switch (status.toLowerCase()) {
-    case 'confirmed':
-    case 'delivered': return <CheckCircle size={16} />;
-    case 'processing': return <Package size={16} />;
-    case 'shipped': return <Truck size={16} />;
-    default: return <Calendar size={16} />;
-  }
-};
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -68,7 +59,11 @@ export default function OrdersPage() {
       let maxPages = 1;
 
       if (ordersRes.status === 'fulfilled' && ordersRes.value.data.success) {
-        const fetchedOrders = (ordersRes.value.data.data.orders || []).map((o: any) => ({ ...o, type: 'order' }));
+        const fetchedOrders = (ordersRes.value.data.data.orders || []).map((o: any) => ({ 
+          ...o, 
+          type: 'order',
+          order_status: o.vendor_status || o.order_status 
+        }));
         combined = [...combined, ...fetchedOrders];
         maxPages = Math.max(maxPages, ordersRes.value.data.data.pagination?.pages || 1);
       }
@@ -90,7 +85,7 @@ export default function OrdersPage() {
             gst_amount: 0,
             total_amount: quote.calculated_price || 0,
             payment_status: quote.payment_status || 'pending',
-            order_status: (quote.status === 'approval' ? 'approved' : quote.status === 'successful' ? 'confirmed' : quote.status) || 'pending',
+            order_status: quote.status || 'pending',
             createdAt: quote.createdAt,
             razorpay_payment_id: quote.razorpay_payment_id || '',
             type: 'quote',
@@ -247,10 +242,11 @@ export default function OrdersPage() {
                     </div>
 
                     {/* Order Items */}
-                    <div className="p-5 space-y-4">
+                  <div className="p-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {order.items.map((item, i) => (
-                        <div key={i} className="flex gap-4">
-                          <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden border border-gray-200">
+                        <div key={i} className="flex gap-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                          <div className="w-16 h-16 bg-white rounded-lg flex-shrink-0 overflow-hidden border border-gray-200">
                             {item.product_image ? (
                               <img
                                 src={item.product_image.startsWith('http')
@@ -260,54 +256,62 @@ export default function OrdersPage() {
                                 className="w-full h-full object-contain p-1"
                               />
                             ) : (
-                              <Package className="m-auto text-gray-400" size={32} />
+                              <Package className="m-auto text-gray-400" size={28} />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-gray-900 line-clamp-2 text-[15px] leading-tight">
+                            <p className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight">
                               {item.product_name}
                             </p>
-                            <p className="text-sm text-gray-500 mt-1">Qty: {item.quantity}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-gray-900">₹{item.final_amount.toLocaleString('en-IN')}</p>
-                            <p className="text-xs text-gray-500">₹{item.price} × {item.quantity}</p>
+                            <p className="text-xs text-gray-500 mt-1">Qty: {item.quantity}</p>
+                            <div className="mt-1">
+                              <span className="font-semibold text-gray-900 text-sm">
+                                ₹{item.final_amount.toLocaleString('en-IN')}
+                              </span>
+                              <span className="text-xs text-gray-400 ml-1">
+                                (₹{item.price} × {item.quantity})
+                              </span>
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
+                  </div>
 
                     {/* Footer */}
-                    <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
-                      <div>
-                        <span className="font-medium text-gray-900">Total: </span>
-                        <span className="font-bold text-lg text-blue-600">₹{order.total_amount.toLocaleString('en-IN')}</span>
+                <div className="px-5 py-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-900">Total Amount: </span>
+                    <span className="font-bold text-lg text-blue-600">₹{order.total_amount.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex items-center gap-4 flex-wrap">
+                    {order.razorpay_payment_id && (
+                      <div className="flex items-center gap-2 text-xs text-gray-500 font-bold">
+                        <span>Payment ID: {order.razorpay_payment_id.slice(-8)}</span>
+                        <button
+                          onClick={() => handleCopy(order.razorpay_payment_id)}
+                          title="Copy Payment ID"
+                          className="p-1 hover:bg-gray-200 rounded transition"
+                        >
+                          <Copy size={14} />
+                        </button>
                       </div>
-                      <div className="flex items-center gap-4">
-                        {order.razorpay_payment_id && (
-                          <div className="flex items-center gap-2 text-xs text-gray-500 font-bold">
-                            <span>Payment ID: {order.razorpay_payment_id}</span>
-                            <button
-                              onClick={() => handleCopy(order.razorpay_payment_id)}
-                              title="Copy Payment ID"
-                              className="p-1 hover:bg-gray-200 rounded transition"
-                            >
-                              <Copy size={14} />
-                            </button>
-                          </div>
-                        )}
-                        {order.type === 'quote' && order.payment_status?.toLowerCase() !== 'paid' && ['approved', 'approval'].includes(order.order_status?.toLowerCase()) && order.razorpay_payment_link && (
-                          <a
-                            href={order.razorpay_payment_link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition"
-                          >
-                            Pay Now
-                          </a>
-                        )}
-                      </div>
-                    </div>
+                    )}
+                    {order.type === 'quote' && 
+                    order.payment_status?.toLowerCase() !== 'paid' && 
+                    ['approved', 'approval'].includes(order.order_status?.toLowerCase()) && 
+                    order.razorpay_payment_link && (
+                      <a
+                        href={order.razorpay_payment_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition"
+                      >
+                        Pay Now
+                      </a>
+                    )}
+                  </div>
+                </div>
                   </motion.div>
                 ))}
               </div>

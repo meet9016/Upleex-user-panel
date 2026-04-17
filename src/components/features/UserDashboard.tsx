@@ -85,7 +85,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
 
   const tabs = [
     { id: 'current', label: 'Current Rentals', icon: Clock, count: counts.currentRentals },
-    { id: 'past', label: 'Past Rentals', icon: CheckCircle, count: counts.pastRentals },
+    // { id: 'past', label: 'Past Rentals', icon: CheckCircle, count: counts.pastRentals },
     { 
       id: 'purchases', 
       label: 'Purchases', 
@@ -202,7 +202,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
             <div className="flex flex-col items-end">
               <p className="text-sm font-black text-blue-600">₹{formatPrice(rental.calculated_price)}</p>
             </div>
-            {paymentStatus !== 'paid' && rental.razorpay_payment_link && (
+            {activeTab !== 'cancellations' && paymentStatus !== 'paid' && rental.razorpay_payment_link && (
               <a 
                 href={rental.razorpay_payment_link} 
                 target="_blank" 
@@ -243,7 +243,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
   return (
     <div className="space-y-6">
       {/* Dashboard Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-10">
         {tabs.map((tab) => (
           <button
             key={tab.id}

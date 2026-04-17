@@ -910,7 +910,7 @@ export const Navbar: React.FC = () => {
 
                         <div className="min-w-0">
                           <p className="font-semibold text-gray-900 truncate text-lg leading-tight">
-                            {user?.full_name || "User"}
+                            {user?.name || ""}
                           </p>
                           <p className="text-sm text-gray-500 truncate">{email}</p>
                         </div>

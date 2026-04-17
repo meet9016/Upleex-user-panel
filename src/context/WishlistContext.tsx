@@ -58,7 +58,6 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       
       setLoading(true);
       const response = await wishlistService.getWishlist(1, 100);
-      console.log('Wishlist response:', response);
       
       if (response.success) {
         setWishlistItems(response.data.items || []);
@@ -80,14 +79,12 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        console.log('No token found, showing auth modal');
         if (onAuthRequired) {
           onAuthRequired();
         }
         return;
       }
       
-      console.log('Adding to wishlist:', productId);
       const response = await wishlistService.addToWishlist(productId);
       if (response.success) {
         toast.success('Product added to wishlist');
@@ -96,7 +93,6 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     } catch (error: any) {
       console.error('Add to wishlist error:', error);
       if (error.response?.status === 401) {
-        console.log('Auth error, showing auth modal');
         if (onAuthRequired) {
           onAuthRequired();
         }
@@ -108,7 +104,6 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const removeFromWishlist = async (productId: string) => {
     try {
-      console.log('Removing from wishlist:', productId);
       const response = await wishlistService.removeFromWishlist(productId);
       if (response.success) {
         toast.success('Product removed from wishlist');
@@ -125,14 +120,12 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        console.log('No token found for toggle, showing auth modal');
         if (onAuthRequired) {
           onAuthRequired();
         }
         return false;
       }
       
-      console.log('Toggling wishlist:', productId);
       const response = await wishlistService.toggleWishlist(productId);
       if (response.success) {
         toast.success(response.message);
@@ -150,7 +143,6 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const isInWishlist = (productId: string): boolean => {
     if (!productId) return false;
     const found = wishlistItems.some(item => item.product_id?.id === productId);
-    console.log('isInWishlist check:', productId, 'found:', found);
     return found;
   };
 

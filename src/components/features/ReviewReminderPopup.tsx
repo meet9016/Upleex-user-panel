@@ -36,7 +36,6 @@ export function ReviewReminderPopup() {
       if (!response.data.success) return;
 
       const quotes = response.data.data || [];
-      console.log("🚀 ~ checkPendingReviews ~ quotes:", quotes)
 
       for (const quote of quotes) {
         // Show reminder if payment is confirmed

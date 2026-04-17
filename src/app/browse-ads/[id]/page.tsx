@@ -56,8 +56,6 @@ export default function ProductDetailsPage() {
 
   const [selectedImage, setSelectedImage] = useState<string>(""); // For image gallery
   const [productDetails, setProductDetails] = useState<any>(null);
-  console.log("🚀 ~ ProductDetailsPage ~ productDetails:", productDetails)
-
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -969,7 +967,7 @@ export default function ProductDetailsPage() {
                   isSell ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-3"
                 )}>
                   <div className={clsx(
-                    "flex items-center justify-between bg-white border rounded-xl px-4 shadow-sm transition-all hover:border-blue-200",
+                    "relative z-[20] flex items-center justify-between bg-white border rounded-xl px-4 shadow-sm transition-all hover:border-blue-200 focus-within:z-[40]",
                     isSell ? "h-14" : "h-12"
                   )}>
                     <div className="flex flex-col">
@@ -1066,7 +1064,7 @@ export default function ProductDetailsPage() {
                   {!isSell && (
                     <>
                       {/* Start Date - Green Theme */}
-                      <div className="relative group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
+                      <div className="relative z-[20] group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 focus-within:z-[40] h-full min-h-[70px]">
                         <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
                           <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
                             <Calendar size={80} className="text-green-600" />
@@ -1093,7 +1091,7 @@ export default function ProductDetailsPage() {
 
                       {/* Start Time - Green Theme */}
                       {isHourly && activeTab !== 'monthly' && (
-                        <div className="relative group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 h-full min-h-[70px]">
+                        <div className="relative z-[20] group bg-gradient-to-br from-green-50 to-emerald-50/50 border border-green-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-green-400 focus-within:z-[40] h-full min-h-[70px]">
                           <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
                             <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
                               <Clock size={80} className="text-green-600" />
@@ -1123,7 +1121,7 @@ export default function ProductDetailsPage() {
 
                       {/* Return Date - Orange Theme (Monthly View) */}
                       {!isHourly && (
-                        <div className="relative group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
+                        <div className="relative z-[10] group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 focus-within:z-[40] h-full min-h-[70px]">
                           <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
                             <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
                               <Calendar size={80} className="text-amber-600" />
@@ -1153,7 +1151,7 @@ export default function ProductDetailsPage() {
                       {isHourly && activeTab !== 'monthly' && (
                         <>
                           {/* Return Date - Orange */}
-                          <div className="relative group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 h-full min-h-[70px]">
+                          <div className="relative z-[10] group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:shadow-md focus-within:border-amber-400 focus-within:z-[40] h-full min-h-[70px]">
                             <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
                               <div className="absolute -right-4 -top-4 opacity-5 group-focus-within:opacity-10 transition-opacity">
                                 <Calendar size={80} className="text-amber-600" />
@@ -1179,7 +1177,7 @@ export default function ProductDetailsPage() {
                           </div>
 
                           {/* Return Time - Orange (Read-only, no popup) */}
-                          <div className="relative group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all h-full min-h-[70px]">
+                          <div className="relative z-[10] group bg-gradient-to-br from-amber-50 to-orange-50/50 border border-amber-200 rounded-2xl p-2.5 shadow-sm transition-all focus-within:z-[40] h-full min-h-[70px]">
                             <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
                               <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
                                 <Clock size={64} className="text-amber-600" />
