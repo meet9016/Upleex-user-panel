@@ -1,7 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
-import { Facebook, Twitter, Instagram, Linkedin, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
+import { FaFacebookF, FaInstagram, FaTwitter, FaLinkedinIn } from 'react-icons/fa';
 import Image from 'next/image';
+import { TfiYoutube } from 'react-icons/tfi';
 
 export const Footer: React.FC = () => {
   return (
@@ -54,10 +56,11 @@ export const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Stay Connected</h3>
             <div className="flex space-x-4 mb-6">
               
-              <a href="https://www.facebook.com/" className="text-gray-400 hover:text-white transition-colors"><Facebook size={20} /></a>
-              <a href="https://x.com/" className="text-gray-400 hover:text-white transition-colors"><Twitter size={20} /></a>
-              <a href="https://www.instagram.com/" className="text-gray-400 hover:text-white transition-colors"><Instagram size={20} /></a>
-              <a href="https://www.linkedin.com/" className="text-gray-400 hover:text-white transition-colors"><Linkedin size={20} /></a>
+              <a href="https://www.facebook.com/" className="text-white  transition-colors"><FaFacebookF size={20} /></a>
+              <a href="https://www.instagram.com/upleex_official/" className="text-white  transition-colors"><FaInstagram size={20} /></a>
+              <a href="https://x.com/" className="text-white  transition-colors"><FaTwitter size={20} /></a>
+              <a href="https://www.linkedin.com/" className="text-white transition-colors"><FaLinkedinIn size={20} /></a>
+              <a href="https://www.youtube.com/" className="text-white  transition-colors"><TfiYoutube  size={20} /></a>
             </div>
             <p className="text-gray-500 text-xs">
               Subscribe to our newsletter for latest updates and offers.

@@ -7,6 +7,8 @@ import { blogService, SingleBlogData } from '@/services/blogService';
 import { Twitter, Share2, Search, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from 'react-icons/fa';
+import { TfiYoutube } from 'react-icons/tfi';
 
 export default function BlogDetailPage() {
   const params = useParams();
@@ -88,20 +90,52 @@ export default function BlogDetailPage() {
                 </span>
             </div>
             
-            <div className="flex items-center gap-4">
-                <button className="p-2 rounded-full hover:bg-blue-50 text-gray-400 hover:text-blue-500 transition-colors">
-                    <Twitter className="w-5 h-5" />
-                </button>
-                <button className="p-2 rounded-full hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors">
-                    <Share2 className="w-5 h-5" />
-                </button>
-                <button className="p-2 rounded-full hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors">
-                     <span className="font-bold font-serif text-lg leading-none">P</span>
-                </button>
-                 <button className="p-2 rounded-full hover:bg-green-50 text-gray-400 hover:text-green-500 transition-colors">
-                    <Share2 className="w-5 h-5 rotate-90" />
-                </button>
-            </div>
+                  <div className="flex items-center">
+          <a
+            href="https://www.facebook.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-full hover:bg-blue-50 text-gray-400 transition-colors"
+          >
+            <FaFacebookF className="w-5 h-5" />
+          </a>
+
+          <a
+            href="https://www.instagram.com/upleex_official/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
+          >
+            <FaInstagram className="w-5 h-5" />
+          </a>
+
+          <a
+            href="https://x.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
+          >
+            <FaTwitter className="w-5 h-5" />
+          </a>
+
+          <a
+            href="https://www.linkedin.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
+          >
+            <FaLinkedinIn className="w-5 h-5" />
+          </a>
+
+          <a
+            href="https://www.youtube.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
+          >
+            <TfiYoutube className="w-5 h-5" />
+          </a>
+        </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
