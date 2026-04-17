@@ -1398,11 +1398,10 @@ export default function ProductDetailsPage() {
                 />
               ) : activeDetailTab === "description" ? (
                 productDetails?.description ? (
-                  <div className="prose prose-slate max-w-none">
-                    <p className="text-slate-700 leading-relaxed whitespace-pre-wrap text-sm">
-                      {stripHtmlTags(productDetails.description)}
-                    </p>
-                  </div>
+                  <div
+                    className="prose prose-slate max-w-none text-sm text-slate-700 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: productDetails.description }}
+                  />
                 ) : (
                   <div className="py-8">
                     <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-lg p-8 text-center mx-auto">
