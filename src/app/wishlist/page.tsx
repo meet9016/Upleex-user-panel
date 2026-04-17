@@ -21,7 +21,7 @@ const WishlistPage = () => {
   if (wishlistItems.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-12 ">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-white rounded-xl shadow-md p-20">
+        <div className="max-w-[1350px] mx-auto px-4 sm:px-6 lg:px-8 bg-white rounded-xl shadow-md p-20">
           <div className="text-center">
             <Heart className="mx-auto h-24 w-24 text-gray-300" />
             <h2 className="mt-6 text-3xl font-bold text-gray-900">Your wishlist is empty</h2>
