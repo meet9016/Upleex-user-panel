@@ -121,98 +121,98 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
         key={rental._id}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full"
+        className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full"
       >
-        <div className="px-3 py-2 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+        {/* Card Header */}
+        <div className="px-4 py-3 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3 bg-gray-50">
           <div>
-            <p className="text-[10px] text-gray-400 font-bold ">
-              {isSell ? 'Order ID' : 'Rental ID'}
+            <p className="font-semibold text-gray-900 text-sm">
+              {isSell ? 'Order' : 'Rental'} ID: #{rental._id.slice(-6).toUpperCase()}
             </p>
-            <p className="text-xs font-black text-gray-700">#{rental._id.slice(-6).toUpperCase()}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[10px] text-gray-400 font-bold ">Date</p>
-            <p className="text-xs font-bold text-gray-600">
+            <p className="text-xs text-gray-500">
               {new Date(rental.createdAt).toLocaleDateString('en-IN', {
-                day: 'numeric', month: 'short'
+                day: 'numeric', month: 'short', year: 'numeric'
               })}
             </p>
           </div>
-        </div>
-
-        <div className="p-3 flex-1">
-         <div className="flex gap-3">
-  <div className="w-14 h-14 bg-gray-50 rounded-lg flex-shrink-0 overflow-hidden border border-gray-100">
-    <img
-      src={rental.product_id?.product_main_image?.startsWith('http') 
-        ? rental.product_id.product_main_image 
-        : `https://upleex.2min.cloud/${rental.product_id?.product_main_image}`}
-      alt={rental.product_id?.product_name}
-      className="w-full h-full object-contain p-1"
-    />
-  </div>
-  <div className="flex-1 min-w-0">
-    <div className="flex justify-between items-start gap-3">
-      <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-bold text-gray-900 truncate mb-1">
-          {rental.product_id?.product_name}
-        </h4>
-        <div className="flex items-center gap-2 text-[11px] text-gray-500 font-bold">
-          <span>₹{formatPrice(unitPrice)} × {rental.qty}</span>
-        </div>
-
-        {/* Sell label */}
-        {isSell && (
-          <div className="flex items-center gap-1.5 mt-2 text-[10px] font-bold text-orange-600 bg-orange-50/50 w-fit px-2 py-0.5 rounded-md border border-orange-100/50">
-            <ShoppingBag size={10} />
-            <span>Purchase</span>
-          </div>
-        )}
-      </div>
-    </div>
-    
-    {/* Rental Dates - Below Price in Single Row */}
-    {!isSell && (
-      <div className="flex items-center gap-2 mt-2 flex-wrap">
-        <div className="flex items-center gap-1.5 text-[10px] font-bold text-blue-700 bg-blue-50/80 px-2 py-1 rounded-md border border-blue-100/50">
-          <Calendar size={12} className="text-blue-500" />
-          <div className="flex items-center gap-1 leading-tight tracking-wide">
-            <span>{rental.start_date ? new Date(rental.start_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
-            <span className="text-gray-400 text-[8px]">→</span>
-            <span>{rental.end_date ? new Date(rental.end_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
-          </div>
-        </div>
-        {rental.start_date && rental.end_date && (
-          <span className="text-[9px] font-black px-2 py-1 bg-blue-600 text-white rounded-md shadow-sm">
-            {calculateDays(rental.start_date, rental.end_date)} DAYS
-          </span>
-        )}
-      </div>
-    )}
-  </div>
-</div>
-        </div>
-
-        <div className="px-3 py-2 bg-gray-50/80 border-t border-gray-100 flex justify-between items-center">
-          <div className="flex gap-3">
+          <div className="flex gap-2 flex-wrap">
             <StatusBadge status={status} label="Order" />
             <StatusBadge status={paymentStatus || 'pending'} label="Payment" />
           </div>
-          <div className="text-right flex items-center gap-3">
-            <div className="flex flex-col items-end">
-              <p className="text-sm font-black text-blue-600">₹{formatPrice(rental.calculated_price)}</p>
+        </div>
+
+        {/* Card Body */}
+        <div className="p-4 flex-1">
+          <div className="flex gap-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <div className="w-16 h-16 bg-white rounded-lg flex-shrink-0 overflow-hidden border border-gray-200">
+              <img
+                src={rental.product_id?.product_main_image?.startsWith('http') 
+                  ? rental.product_id.product_main_image 
+                  : `https://upleex.2min.cloud/${rental.product_id?.product_main_image}`}
+                alt={rental.product_id?.product_name}
+                className="w-full h-full object-contain p-1"
+              />
             </div>
-            {activeTab !== 'cancellations' && paymentStatus !== 'paid' && rental.razorpay_payment_link && (
-              <a 
-                href={rental.razorpay_payment_link} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[11px] font-black text-white bg-blue-600 px-2.5 py-1 rounded-lg hover:bg-blue-700 transition-colors "
-              >
-                Pay
-              </a>
-            )}
+            <div className="flex-1 min-w-0">
+              <h4 className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight mb-1">
+                {rental.product_id?.product_name}
+              </h4>
+              <div className="flex items-center gap-2 text-xs text-gray-500 font-medium">
+                <span>Qty: {rental.qty}</span>
+                <span>•</span>
+                <span>₹{formatPrice(unitPrice)} / unit</span>
+              </div>
+
+              {/* Purchase/Rental Label */}
+              <div className={`mt-2 flex items-center gap-1.5 text-[10px] font-bold w-fit px-2 py-0.5 rounded-md border ${
+                isSell 
+                ? 'text-orange-600 bg-orange-50 border-orange-100' 
+                : 'text-blue-600 bg-blue-50 border-blue-100'
+              }`}>
+                {isSell ? <ShoppingBag size={10} /> : <Calendar size={10} />}
+                <span>{isSell ? 'Purchase' : 'Rental'}</span>
+              </div>
+             {/* Rental Dates if not Sell */}
+          {!isSell && (rental.start_date || rental.end_date) && (
+            <div className="mt-3 flex items-center gap-2">
+              <div className="flex items-center gap-2 text-[11px] font-semibold text-blue-700  px-2.5 py-1.5 rounded-lg  flex-1">
+                <Calendar size={12} className="text-blue-500" />
+                <div className="flex items-center gap-1.5">
+                  <span>{rental.start_date ? new Date(rental.start_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
+                  <span className="text-gray-400 text-[10px]">→</span>
+                  <span>{rental.end_date ? new Date(rental.end_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'N/A'}</span>
+                </div>
+              </div>
+              {rental.start_date && rental.end_date && (
+                <span className="text-[10px] font-bold px-2.5 py-1.5 bg-blue-600 text-white rounded-lg shadow-sm">
+                  {calculateDays(rental.start_date, rental.end_date)} DAYS
+                </span>
+              )}
+            </div>
+          )}
+            </div>
           </div>
+
+         
+        </div>
+
+        {/* Card Footer */}
+        <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+          <div>
+            <span className="text-xs font-medium text-gray-900">Total: </span>
+            <span className="text-base font-bold text-blue-600">₹{formatPrice(rental.calculated_price)}</span>
+          </div>
+          
+          {activeTab !== 'cancellations' && paymentStatus !== 'paid' && rental.razorpay_payment_link && (
+            <a 
+              href={rental.razorpay_payment_link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-xs font-bold text-white bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-all shadow-sm"
+            >
+              Pay Now
+            </a>
+          )}
         </div>
       </motion.div>
     );
