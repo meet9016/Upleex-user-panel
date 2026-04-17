@@ -22,7 +22,14 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'service.digitalks.co.in',
-        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.service.digitalks.co.in',
+      },
+      {
+        protocol: 'http',
+        hostname: 'service.digitalks.co.in',
       }
     ],
   },

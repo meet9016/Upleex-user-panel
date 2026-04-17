@@ -5,17 +5,6 @@ import Image from 'next/image';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 
-const DEFAULT_LOGOS: readonly string[] = [
-  '/Asset-6.png',
-  '/Asset-7.png',
-  '/Asset-8.png',
-  '/Asset-9.png',
-  '/Asset-10.png',
-  '/Asset-30.webp',
-  '/Asset-31.webp',
-  '/Asset-32.webp',
-] as const;
-
 interface LogoItemProps {
   src: string;
   name?: string;
@@ -61,20 +50,25 @@ console.log(vendorLogos,"vendorLogos");
   }, []);
 
   const logosToShow = useMemo(() => {
-    // Mix vendor logos with default ones if needed
-    const apiLogos = vendorLogos.map(v => ({
-      src: v.logo?.startsWith('http') ? v.logo : `https://upleex.2min.cloud/${v.logo}`,
-      name: v.name
-    }));
+    // Only use vendor logos from API as requested
+    const apiLogos = vendorLogos
+      .filter(v => v.logo)
+      .map(v => {
+        const trimmedLogo = v.logo.trim();
+        return {
+          src: trimmedLogo.startsWith('http') ? trimmedLogo : `https://upleex.2min.cloud/${trimmedLogo}`,
+          name: v.name
+        };
+      });
 
-    const defaultLogos = DEFAULT_LOGOS.map(src => ({ src, name: 'Corporate Logo' }));
+    if (apiLogos.length === 0) return [];
     
-    // Combine both, prioritized API logos
-    const combined = [...apiLogos, ...defaultLogos];
-    
-    const REPEAT_COUNT = combined.length < 5 ? 4 : 2;
-    return Array.from({ length: REPEAT_COUNT }).flatMap(() => combined);
+    // Repeat logos to ensure continuous marquee effect
+    const REPEAT_COUNT = apiLogos.length < 5 ? 8 : 4;
+    return Array.from({ length: REPEAT_COUNT }).flatMap(() => apiLogos);
   }, [vendorLogos]);
+
+  if (logosToShow.length === 0) return null;
 
   return (
     <section className="py-10 sm:py-16 md:py-20 bg-gray-50 overflow-hidden relative">

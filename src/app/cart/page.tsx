@@ -374,7 +374,7 @@ export default function CartPage() {
         </motion.div> */}
 
         {isEmpty ? (
-          <motion.div variants={itemVariants} className="text-center py-24">
+          <motion.div variants={itemVariants} className="text-center py-24 bg-white rounded-lg shadow-md">
             <motion.div 
               initial={{ rotate: -10, scale: 0.9 }}
               animate={{ rotate: 0, scale: 1 }}
