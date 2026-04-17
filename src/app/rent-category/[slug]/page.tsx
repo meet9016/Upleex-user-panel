@@ -63,6 +63,7 @@ const [tenureOptions, setTenureOptions] = useState([
   const [productCount, setProductCount] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [rotationSeed, setRotationSeed] = useState(() => Math.floor(Date.now() / (60 * 1000)));
   const ITEMS_PER_PAGE = 12;
   const selectedCity = useCity();
 
@@ -135,7 +136,8 @@ const [tenureOptions, setTenureOptions] = useState([
           city: selectedCity,
           filter_rent_sell: selectedSort.value,
           filter_tenure: selectedTenure.value,
-          page: currentPage
+          page: currentPage,
+          rotation_seed: rotationSeed,
         });
 
         if (isCancelled) return;
@@ -239,7 +241,16 @@ const [tenureOptions, setTenureOptions] = useState([
     return () => {
       isCancelled = true;
     };
-  }, [slug, activeFilter, selectedSort, selectedTenure, currentPage, selectedCity]);
+  }, [slug, activeFilter, selectedSort, selectedTenure, currentPage, selectedCity, rotationSeed]);
+
+  // Update rotationSeed every 1 minute to trigger a re-fetch with a new seed
+  // Backend will re-shuffle each tier using the new seed — no frontend shuffle needed
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRotationSeed(Math.floor(Date.now() / (60 * 1000)));
+    }, 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -283,37 +294,9 @@ const [tenureOptions, setTenureOptions] = useState([
 
   const currentCategoryName = filterCategories.find(c => c.slug === activeFilter)?.name || 'Products';
   
-  // Combine priority and normal products with time-based shuffling
-  const shuffledProducts = (() => {
-    if (!productList || productList.length === 0) return [];
-
-    // Tiers for Fair Rotation
-    const priority = productList.filter(p => p.is_priority);
-    const normal = productList.filter(p => !p.is_priority);
-
-    const shuffleArray = (array: any[]) => {
-      // Rotation logic (every 5 minutes)
-      const timestamp = Math.floor(Date.now() / (5 * 60 * 1000));
-      const seededRandom = (seed: number) => {
-        const x = Math.sin(seed++) * 10000;
-        return x - Math.floor(x);
-      };
-
-      let m = array.length, t, i;
-      let seed = timestamp;
-      while (m) {
-        i = Math.floor(seededRandom(seed++) * m--);
-        t = array[m];
-        array[m] = array[i];
-        array[i] = t;
-      }
-      return array;
-    };
-
-    return [...shuffleArray(priority), ...shuffleArray(normal)];
-  })();
-
-  const filteredProducts = shuffledProducts;
+  // Backend already returns products in correct tier order (priority → paid → free)
+  // with time-based shuffle applied via rotation_seed — use productList directly
+  const filteredProducts = productList;
 
   useEffect(() => {
     if (!loading && filteredProducts.length === 0) {

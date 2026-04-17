@@ -157,13 +157,6 @@ export default function CartPage() {
 
       // Create order
       const orderResponse = await api.post(endPointApi.createOrder, {
-        delivery_address: {
-          address_line_1: '123 Main Street', // You can add address form later
-          city: 'Mumbai',
-          state: 'Maharashtra',
-          pincode: '400001',
-          country: 'India',
-        },
         order_notes: 'Order from cart',
         payment_type: paymentOption,
       });
@@ -199,6 +192,7 @@ export default function CartPage() {
             
             // Refresh cart state to update count globally (backend has already cleared it)
             await refreshCart();
+            // await clearCart();
             
             // Set order details and show success modal
             setCompletedOrderDetails({

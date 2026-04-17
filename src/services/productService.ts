@@ -30,6 +30,7 @@ export interface CategoryProductParams {
     filter_tenure?: string;
     page: number;
     limit?: number;
+    rotation_seed?: number;
 }
 
 class ProductService {
@@ -115,6 +116,10 @@ class ProductService {
             query.page = params.page;
             query.limit = params.limit || 12;
         }
+
+        // Always send rotation_seed so backend handles per-tier shuffle
+        // Seed changes every 1 minute — same seed = same order within that minute
+        query.rotation_seed = params.rotation_seed ?? Math.floor(Date.now() / (60 * 1000));
 
         const res = await api.get(endPointApi.webCategoryProductList, {
             params: query,
