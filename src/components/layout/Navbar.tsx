@@ -921,8 +921,6 @@ export const Navbar: React.FC = () => {
                       {[
                         { icon: User, label: "My Profile", href: "/profile" },
                         { icon: Heart, label: "Wishlist", href: "/wishlist" },
-                        // { icon: Package, label: "My Orders", href: "/orders" },
-                        // { icon: FileText, label: "My Quotes", href: "/quotes" },
                       ].map((item, i) => (
                         <motion.button
                           key={i}

@@ -85,7 +85,6 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
 
   const tabs = [
     { id: 'current', label: 'Current Rentals', icon: Clock, count: counts.currentRentals },
-    // { id: 'past', label: 'Past Rentals', icon: CheckCircle, count: counts.pastRentals },
     { 
       id: 'purchases', 
       label: 'Purchases', 

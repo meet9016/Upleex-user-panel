@@ -541,7 +541,6 @@ export default function CartPage() {
                           {/* Price Details */}
                           <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                             {[
-                               // { label: 'Subtotal', value: `₹${parseFloat(item.sub_total).toLocaleString('en-IN')}` },
                               { label: 'Final Amount', value: `₹${parseFloat(item.final_amount).toLocaleString('en-IN')}` },
                             ].map((d) => (
                               <div
@@ -562,68 +561,6 @@ export default function CartPage() {
                 </div>
               </motion.div>
 
-              {/* Payment Plan Selector */}
-              {/* <motion.div variants={itemVariants} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-slate-100">
-                  <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
-                    <PaymentIcon className="text-blue-600" size={22} />
-                    Payment Plan
-                  </h2>
-                </div>
-
-                <div className="p-6 grid sm:grid-cols-3 gap-4">
-                  <LayoutGroup>
-                  {plans.map((plan) => {
-                    const isSelected = selectedPlan === plan.id;
-                    return (
-                    <motion.button
-                      key={plan.id}
-                      layout
-                      onClick={() => setSelectedPlan(plan.id)}
-                      whileHover={{ y: -4 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`relative p-5 rounded-xl border-2 transition-all duration-300 text-left group h-full flex flex-col
-                        ${isSelected ? 'border-transparent bg-blue-50/30' : 'border-slate-100 hover:border-blue-200 bg-white'}`}
-                    >
-                      {isSelected && (
-                        <motion.div
-                          layoutId="active-plan-border"
-                          className="absolute -inset-[2px] border-2 border-blue-500 rounded-xl pointer-events-none"
-                          initial={false}
-                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        />
-                      )}
-                      
-                      {isSelected && (
-                        <motion.div 
-                          layoutId="selected-check"
-                          className="absolute -top-2.5 -right-2.5 bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 z-10"
-                        >
-                          <Check size={12} strokeWidth={3} /> Selected
-                        </motion.div>
-                      )}
-
-                      {plan.badge && (
-                        <div
-                          className={`absolute -top-2.5 left-4 px-2.5 py-1 text-xs font-bold rounded-full shadow-sm z-10 ${
-                            plan.id === 'upfront' ? 'bg-purple-600 text-white' : 'bg-green-600 text-white'
-                          }`}
-                        >
-                          {plan.badge}
-                        </div>
-                      )}
-
-                      <div className={`p-3 rounded-lg inline-block mb-3 ${plan.bg} ${plan.color}`}>
-                        <plan.icon size={22} />
-                      </div>
-
-                      <div className={`font-semibold ${isSelected ? 'text-blue-900' : 'text-slate-900'}`}>{plan.title}</div>
-                      <div className="text-sm text-slate-500 mt-1">{plan.subtitle}</div>
-                    </motion.button>
-                  )})} 
-                  </LayoutGroup>
-                </div>
-              </motion.div> */}
             </div>
 
             {/* ─── RIGHT ─── Sticky Summary ───────────────────────────────────── */}
