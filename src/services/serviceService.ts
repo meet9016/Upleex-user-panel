@@ -45,7 +45,6 @@ class ServiceService {
                 const res = await api.get(endPointApi.serviceCategoryList, { params });
                 return res.data?.data || [];
             } catch (error) {
-                console.error('Error fetching service categories:', error);
                 this.serviceCategoryPromises.delete(cacheKey);
                 return [];
             }
@@ -60,7 +59,6 @@ class ServiceService {
             const res = await api.get(endPointApi.serviceList, { params });
             return res.data?.data || [];
         } catch (error) {
-            console.error('Error fetching services:', error);
             return [];
         }
     }
@@ -70,7 +68,6 @@ class ServiceService {
             const res = await api.get(`${endPointApi.serviceDetails}/${id}`);
             return res.data?.data || null;
         } catch (error) {
-            console.error('Error fetching service details:', error);
             return null;
         }
     }

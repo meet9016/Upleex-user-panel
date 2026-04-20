@@ -39,7 +39,6 @@ function SellerServicesContent() {
         });
         setServices(data);
       } catch (error) {
-        console.error('Error fetching vendor services:', error);
         setServices([]);
       } finally {
         setLoading(false);

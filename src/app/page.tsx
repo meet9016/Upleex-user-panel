@@ -140,76 +140,11 @@ export default function Home() {
       <FloatingParticles />
 
       <main className="flex-grow" suppressHydrationWarning={true}>
-        {/* <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50/40 min-h- flex items-center">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50/50 -z-10" />
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 md:pt-32 md:pb-32">
-            <div className="text-center md:text-left md:flex md:items-center md:justify-between md:gap-16">
-              <div className="md:w-1/2 space-y-6">
-                <div className="inline-flex items-center px-4 py-2 rounded-full bg-blue-100 text-upleex-blue text-sm font-semibold mb-2">
-                  <span className="relative flex h-3 w-3 mr-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-                  </span>
-                  #1 Rental Marketplace in India
-                </div>
-
-                <h1 className="text-4xl sm:text-4xl md:text-6xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-snug md:leading-tight">
-                  Don't Buy.{' '}
-                  <span className="relative inline-block text-gradient-primary animate-gradient-x">
-                    Just Rent It.
-                    <span className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 opacity-30 blur-xl rounded-lg mix-blend-overlay"></span>
-                  </span>
-                </h1>
+        
 
 
-                <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto md:mx-0">
-                  Access premium lifestyle products without the commitment. From furniture to fitness, rent everything you need at a fraction of the cost.
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-6">
-                  <Button size="lg" className="rounded-full px-8 shadow-blue-500/20 shadow-xl">
-                    Explore Products
-                  </Button>
-                  <Button size="lg" variant="outline" className="rounded-full px-8 bg-white/50">
-                    Become a Seller
-                  </Button>
-                </div>
-
-                <div className="pt-8 flex flex-wrap items-center justify-center md:justify-start gap-6 text-slate-500 text-sm font-medium">
-                  <div className="flex items-center gap-2"><CheckCircle size={18} className="text-green-500" /> Verified Products</div>
-                  <div className="flex items-center gap-2"><CheckCircle size={18} className="text-green-500" /> Free Delivery</div>
-                </div>
-              </div>
-
-              <div className="mt-12 md:mt-0 md:w-1/2 relative">
-                <div className="relative z-10 w-full rounded-2xl bg-white shadow-2xl p-4 md:p-6 transform md:rotate-2 hover:rotate-0 transition-transform duration-500">
-                  <img
-                    src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?q=80&w=2070&auto=format&fit=crop"
-                    alt="Modern Living Room"
-                    className="rounded-xl w-full h-64 md:h-80 object-cover"
-                  />
-                  <div className="mt-4 flex items-center justify-between">
-                    <div>
-                      <h3 className="font-bold text-lg">Modern Living Setup</h3>
-                      <p className="text-gray-500 text-sm">Full Room Package</p>
-                    </div>
-                    <Button size="sm">Rent @ ₹2499/mo</Button>
-                  </div>
-                </div>
-
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
-              </div>
-            </div>
-          </div>
-        </section> */}
-
-
-        {/* Promotional Banner Section */}
-        {/* <PromotionalBanner /> */}
-        {/* <ContinuousBanner /> */}
+       
         <HeroCarousel banners={banners} />
-        {/* <CenterModeCarousel /> */}
 
         {/* Enhanced Categories Section */}
         <section className="py-8 sm:py-12 md:py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
@@ -261,58 +196,7 @@ export default function Home() {
         </section>
 
 
-        {/* Enhanced Featured Products */}
-        {/* <section className="py-16 bg-gradient-to-b from-gray-50 to-white relative">
-          <div className="absolute top-0 left-0 w-full h-20 bg-gradient-to-b from-gray-50 to-transparent"></div>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16"
-            >
-              <div>
-
-                <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
-                  Trending Rentals
-                </h2>
-                <p className="text-slate-500 text-lg">Popular items being rented right now. Don't miss out!</p>
-              </div>
-              <Button
-                variant="ghost"
-                className="mt-6 md:mt-0 rounded-full px-8 py-6
-             bg-gradient-to-r from-blue-50 to-indigo-50
-             text-upleex-blue hover:text-indigo-700
-             hover:shadow-md transition-all group"
-              >
-                <span className="flex items-center gap-2">
-                  View All
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
-                </span>
-              </Button>
-
-            </motion.div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-              {featuredProducts.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -10 }}
-                >
-                  <ProductCard
-                    product={product}
-                    className="transform transition-all duration-300 hover:shadow-2xl hover:shadow-orange-500/10"
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section> */}
-
+       
    {/* CTA Section */}
           <section className="py-16 sm:py-24" suppressHydrationWarning={true}>
             <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8" suppressHydrationWarning={true}>

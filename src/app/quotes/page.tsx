@@ -71,7 +71,6 @@ const UserQuotesPage = () => {
         setTotalPages(response.data.totalPages || 1);
       }
     } catch (error) {
-      console.error('Error fetching quotes:', error);
       toast.error('Failed to fetch quotes');
     } finally {
       setLoading(false);
@@ -155,7 +154,6 @@ const UserQuotesPage = () => {
             // Refresh quotes after successful payment
             await fetchQuotes();
           } catch (error: any) {
-            console.error('Quote payment verification failed:', error);
             toast.error('Payment verification failed. Please contact support.');
           }
         },
@@ -177,7 +175,6 @@ const UserQuotesPage = () => {
       const razorpay = new (window as any).Razorpay(options);
       razorpay.open();
     } catch (error: any) {
-      console.error('Quote payment initiation failed:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to initiate payment';
       toast.error(errorMessage);
     } finally {

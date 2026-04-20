@@ -55,7 +55,6 @@ export default function SearchPage() {
         const hasFullPage = result.length >= ITEMS_PER_PAGE;
         setTotalPages(hasFullPage ? currentPage + 1 : currentPage);
       } catch (error) {
-        console.error('Error fetching search products', error);
         setProducts([]);
         setTotalPages(1);
       } finally {

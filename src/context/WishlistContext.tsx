@@ -63,7 +63,6 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setWishlistItems(response.data.items || []);
       }
     } catch (error: any) {
-      console.error('Error fetching wishlist:', error);
       if (error.response?.status === 401) {
         // Clear wishlist on auth error
         setWishlistItems([]);
@@ -91,7 +90,6 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         await fetchWishlist();
       }
     } catch (error: any) {
-      console.error('Add to wishlist error:', error);
       if (error.response?.status === 401) {
         if (onAuthRequired) {
           onAuthRequired();
@@ -111,7 +109,6 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setWishlistItems(prev => prev.filter(item => item.product_id?.id !== productId));
       }
     } catch (error: any) {
-      console.error('Remove from wishlist error:', error);
       toast.error(error.response?.data?.message || 'Failed to remove from wishlist');
     }
   };
@@ -134,7 +131,6 @@ export const WishlistProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
       return false;
     } catch (error: any) {
-      console.error('Toggle wishlist error:', error);
       toast.error(error.response?.data?.message || 'Failed to update wishlist');
       return false;
     }

@@ -61,7 +61,6 @@ const LoginPage = () => {
         toast.error(result?.message || 'Failed to send OTP');
       }
     } catch (error) {
-      console.error(error);
       toast.error('Something went wrong');
     } finally {
       setIsLoading(false);
@@ -123,7 +122,6 @@ const LoginPage = () => {
         toast.error(result?.message || 'Login failed');
       }
     } catch (error: any) {
-      console.error(error);
       toast.error(error?.response?.data?.message || 'Login failed');
     } finally {
       setIsLoading(false);

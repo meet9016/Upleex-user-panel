@@ -19,11 +19,6 @@ export const QuickActions: React.FC = () => {
     if (token) {
       router.push('/orders');
     } else {
-      // toast.error('Please login to view your orders', {
-      //   icon: '🔒',
-      //   duration: 3000,
-      //   position: 'top-center',
-      // });
       setTimeout(() => {
         router.push('/auth/login');
       }, 800);

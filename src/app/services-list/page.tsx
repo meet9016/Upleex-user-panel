@@ -100,7 +100,6 @@ function ServicesListContent() {
 
         setServices(data);
       } catch (error) {
-        console.error("Error fetching services", error);
         setServices([]);
       } finally {
         setLoading(false);

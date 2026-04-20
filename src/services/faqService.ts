@@ -37,7 +37,6 @@ class FAQService {
             this.faqList = data;
             return data;
         } catch (error) {
-            console.error('Error fetching FAQ list:', error);
                 this.faqListPromise = null;
                 return [];
             }

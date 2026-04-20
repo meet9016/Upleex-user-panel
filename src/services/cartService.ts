@@ -59,7 +59,6 @@ class CartService {
             const res = await api.post(endPointApi.webAddToCart, formData);
             return res.data;
         } catch (error) {
-            console.error('Error adding to cart:', error);
             throw error;
         }
     }
@@ -69,7 +68,6 @@ class CartService {
             const res = await api.post(endPointApi.webCartList, {});
             return res.data;
         } catch (error) {
-            console.error('Error fetching cart list:', error);
             throw error;
         }
     }
@@ -82,7 +80,6 @@ class CartService {
             const res = await api.post(endPointApi.webRemoveCart, formData);
             return res.data;
         } catch (error) {
-            console.error('Error removing from cart:', error);
             throw error;
         }
     }
@@ -96,7 +93,6 @@ class CartService {
             const res = await api.post(endPointApi.webUpdateCart, formData);
             return res.data;
         } catch (error) {
-            console.error('Error updating cart item:', error);
             throw error;
         }
     }
@@ -106,7 +102,6 @@ class CartService {
             const res = await api.post(endPointApi.webClearCart, {});
             return res.data;
         } catch (error) {
-            console.error('Error clearing cart:', error);
             throw error;
         }
     }

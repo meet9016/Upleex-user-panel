@@ -3,8 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Clock, 
-  CheckCircle, 
+  Clock,
   ShoppingBag, 
   XCircle, 
   Package, 
@@ -85,7 +84,6 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
 
   const tabs = [
     { id: 'current', label: 'Current Rentals', icon: Clock, count: counts.currentRentals },
-    // { id: 'past', label: 'Past Rentals', icon: CheckCircle, count: counts.pastRentals },
     { 
       id: 'purchases', 
       label: 'Purchases', 
@@ -248,7 +246,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ dashboardData, loa
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`p-4 rounded-2xl border transition-all text-left group ${
+            className={`p-4 rounded-2xl border transition-all text-left group cursor-pointer ${
               activeTab === tab.id
                 ? 'btn-primary shadow-lg shadow-blue-200 text-white'
                 : 'bg-white border-gray-100 hover:border-blue-200 hover:shadow-md text-gray-600'

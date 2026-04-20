@@ -110,7 +110,6 @@ const [tenureOptions, setTenureOptions] = useState([
         }
       } catch (err) {
         if (isCancelled) return;
-        console.error("Error fetching categories", err);
         setCategoryList([]);
       }
     };
@@ -223,7 +222,6 @@ const [tenureOptions, setTenureOptions] = useState([
         }
       } catch (err) {
         if (isCancelled) return;
-        console.error("Error fetching products", err);
         setProductList([]);
         setProductCount(null);
         setTotalPages(1);

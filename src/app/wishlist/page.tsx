@@ -81,7 +81,7 @@ const WishlistPage = () => {
                   className="absolute top-4 right-4 z-20 p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 md:opacity-100"
                   title="Remove from wishlist"
                 >
-                  <Trash2 className="h-5 w-5 text-red-600" />
+                  <Trash2 className="h-5 w-5 text-red-600 cursor-pointer" />
                 </button>
 
                 <ProductCard product={product} />
