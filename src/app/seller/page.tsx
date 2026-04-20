@@ -86,7 +86,6 @@ export default function SellerPage() {
           setVendorName(inferredVendorName);
         }
       } catch (error) {
-        console.error('Error fetching vendor products', error);
         setProducts([]);
         setProductCount(null);
         setTotalPages(1);

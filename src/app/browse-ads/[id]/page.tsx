@@ -256,7 +256,6 @@ export default function ProductDetailsPage() {
         setStartTime("09:00");
       }
     } catch (err: any) {
-      console.error("Error submitting quote:", err);
       const errorMessage = err.response?.data?.message || "Failed to submit quote. Please try again.";
       toast.error(errorMessage);
     } finally {
@@ -1262,21 +1261,6 @@ export default function ProductDetailsPage() {
                       </span>
                     </Button>
                   )}
-
-                  {/* <Button
-                    size="lg"
-                    variant="outline"
-                    className={clsx(
-                      "h-14 border-2 font-bold flex items-center justify-center gap-2 w-full sm:flex-1 rounded-xl bg-white text-base px-8 transition-all",
-                      isSell
-                        ? "border-blue-100 text-blue-600 hover:border-upleex-blue hover:bg-blue-50"
-                        : "border-gray-200 hover:border-gray-800 text-gray-700"
-                    )}
-                    // onClick={() => router.push('/cart')}
-                  >
-                    <MapPin size={18} className="text-blue-500" />
-                    Check Availability
-                  </Button> */}
                 </div>
 
                 <div className={clsx("mt-3", isSell ? "mb-0" : "mb-2")}>

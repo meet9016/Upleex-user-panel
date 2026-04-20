@@ -15,7 +15,6 @@ export const useOrders = () => {
         setOrderCount(response.data.data.pagination?.total || 0);
       }
     } catch (error) {
-      console.error('Error fetching order count:', error);
       setOrderCount(0);
     } finally {
       setLoading(false);

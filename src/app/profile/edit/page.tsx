@@ -46,7 +46,6 @@ export default function EditProfilePage() {
           router.push('/auth/login');
         }
       } catch (e) {
-        console.error('Error parsing user data', e);
         toast.error('Error loading profile');
       } finally {
         setLoading(false);
@@ -86,7 +85,6 @@ export default function EditProfilePage() {
         toast.error('Failed to update profile');
       }
     } catch (error: any) {
-      console.error('Update error:', error);
       toast.error(
         error.response?.data?.message || 
         error.message || 

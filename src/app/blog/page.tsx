@@ -51,12 +51,6 @@ export default function BlogListPage() {
           <div className="flex items-center gap-4">
             <BackButton />
           </div>
-          {/* <Button
-            variant="outline"
-            className="rounded-full px-6 hidden md:inline-flex"
-            >
-            {blogs.length} Articles
-            </Button> */}
         </div>
             <div className="mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900">

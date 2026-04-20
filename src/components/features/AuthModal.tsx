@@ -87,7 +87,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         toast.error(result?.message || 'Failed to send OTP');
       }
     } catch (error) {
-      console.error(error);
       toast.error('Something went wrong');
     } finally {
       setLoading(false);
@@ -135,7 +134,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         toast.error(result?.message || 'Login failed');
       }
     } catch (error) {
-      console.error(error);
       toast.error('Something went wrong');
     } finally {
       setLoading(false);

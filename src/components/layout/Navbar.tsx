@@ -145,7 +145,6 @@ export const Navbar: React.FC = () => {
         setEmail(null);
       }
     } catch (error) {
-      console.error('Error reading localStorage:', error);
       setUser(null);
       setEmail(null);
     }
@@ -229,13 +228,6 @@ export const Navbar: React.FC = () => {
     setSuggestions([]);
     setShowSuggestions(false);
     
-    // setSelectedCityId(null);
-    // setCurrentLocation('select city');
-    // setCitySearchTerm('');
-    // setCities([]);
-    // setHasLoadedInitialCities(false);
-    // setCityPage(1);
-    // setCityHasMore(true);
   }, [pathname, searchParams]);
 
   useEffect(() => {
@@ -430,7 +422,6 @@ export const Navbar: React.FC = () => {
       setSuggestions(data);
       setShowSuggestions(true);
     } catch (error) {
-      console.error('Error fetching suggestions', error);
       setSuggestions([]);
       setShowSuggestions(true);
     } finally {

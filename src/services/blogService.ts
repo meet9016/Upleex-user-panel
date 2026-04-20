@@ -76,7 +76,6 @@ class BlogService {
                 this.blogList = mapped;
                 return mapped;
             } catch (error) {
-                console.error('Error fetching blog list:', error);
                 this.blogListPromise = null;
                 return [];
             }
@@ -121,7 +120,6 @@ class BlogService {
                 related_blogs: mappedRelated,
             };
         } catch (error) {
-            console.error('Error fetching single blog:', error);
             return null;
         }
     }

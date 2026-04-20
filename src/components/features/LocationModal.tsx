@@ -34,7 +34,6 @@ export const LocationModal: React.FC<LocationModalProps> = ({
       setCities(res.items || []);
       setShowResults(true);
     } catch (error) {
-      console.error('Error fetching cities:', error);
       setCities([]);
     } finally {
       setIsLoading(false);

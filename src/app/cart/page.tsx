@@ -187,7 +187,6 @@ export default function CartPage() {
             
             // Refresh cart state to update count globally (backend has already cleared it)
             await refreshCart();
-            // await clearCart();
             
             // Set order details and show success modal
             setCompletedOrderDetails({
@@ -197,7 +196,6 @@ export default function CartPage() {
             });
             setIsSuccessModalOpen(true);
           } catch (error: any) {
-            console.error('Payment verification failed:', error);
             toast.error('Payment verification failed. Please contact support.');
           }
         },
@@ -219,7 +217,6 @@ export default function CartPage() {
       const razorpay = new window.Razorpay(options);
       razorpay.open();
     } catch (error: any) {
-      console.error('Payment initiation failed:', error);
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to initiate payment';
       
       if (errorMessage.includes('Razorpay keys not configured')) {
@@ -377,8 +374,6 @@ export default function CartPage() {
             </p>
             <Link href="/">
               <Button 
-                // whileHover={{ scale: 1.05 }}
-                // whileTap={{ scale: 0.95 }}
                 className="mt-8 inline-flex items-center gap-2  px-8 py-3.5 rounded-xl font-medium blue transition-colors shadow-lg "
               >
                 Start Shopping <ArrowRight size={18} />
@@ -714,7 +709,6 @@ export default function CartPage() {
                     </div>
 
                     <motion.button 
-                      // onClick={() => setIsPaymentModalOpen(true)}
                       onClick={() => handlePayment()}
                       disabled={isProcessingPayment}
                       whileHover={{ scale: isProcessingPayment ? 1 : 1.02, boxShadow: isProcessingPayment ? undefined : "0 20px 25px -5px rgb(59 130 246 / 0.4)" }}

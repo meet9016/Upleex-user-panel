@@ -165,7 +165,6 @@ export default function ContactUsPage() {
         toast.error(response.message || 'Failed to send message. Please try again.');
       }
     } catch (error: any) {
-      console.error('Contact form error:', error);
       const errorMessage = error?.response?.data?.message || 'Failed to send message. Please try again.';
       toast.error(errorMessage);
     } finally {

@@ -85,7 +85,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
                 toast.error('Something went wrong');
             }
-            console.error(error);
         }
     };
 
@@ -148,7 +147,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             } else {
                 toast.error('Something went wrong');
             }
-            console.error(error);
         }
     };
 
@@ -164,7 +162,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         } catch (error) {
             toast.error('Something went wrong');
-            console.error(error);
         }
     };
 
@@ -180,7 +177,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
             }
         } catch (error) {
             toast.error('Something went wrong');
-            console.error(error);
         }
     };
 

@@ -93,7 +93,6 @@ class CategoryService {
 
                 return transformed;
             } catch (error) {
-                console.error('Home data fetch error:', error);
                 // Clear the promise from cache if it fails so it can be retried
                 this.homeDataPromises.delete(cacheKey);
                 throw error;
@@ -109,7 +108,6 @@ class CategoryService {
             const data = await this.getHomeData(city);
             return data.data.all_categories || [];
         } catch (error) {
-            console.error('Error fetching categories:', error);
             return [];
         }
     }
