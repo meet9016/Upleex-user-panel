@@ -51,19 +51,20 @@ const BillingInvoice: React.FC<InvoiceProps> = ({ data: rawData, vendorProfile, 
   };
 
   const data = toCamel(rawData.order || rawData.quote || rawData.data || rawData);
-  const displayId = isQuote ? (data._id || data.id) : (data.order_id || data._id || data.id);
+  const camelVendorProfile = toCamel(vendorProfile);
+  const displayId = isQuote ? ( data.orderId) : (data.orderId || data._id || data.id);
   const dateStr = data.createdAt;
   const dateObj = new Date(dateStr);
   const formattedDate = !isNaN(dateObj.getTime()) 
     ? dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })
     : 'N/A';
 
-  const customer = data.user_id || {};
+  const customer = data.userId || {};
   const items = data.items || (isQuote ? [data] : []);
-  const subTotal = isQuote ? (data.total_price || data.calculated_price || 0) : (data.total_amount || 0);
+  const subTotal = isQuote ? ( data.calculatedPrice || 0) : (data.totalAmount || 0);
   
   // eCommerce specific details (fallback values)
-  let paymentMethod = data.payment_mode || data.payment_method || (data.payment_status?.toLowerCase() === 'paid' ? 'Online / Prepaid' : 'Pending');
+  let paymentMethod = data.paymentMode || data.paymentMethod || (data.paymentStatus?.toLowerCase() === 'paid' ? 'Online / Prepaid' : 'Pending');
   const normalizedPaymentMethod = String(paymentMethod).toLowerCase();
   if (normalizedPaymentMethod === 'razorpay' || normalizedPaymentMethod === 'online' || normalizedPaymentMethod === 'prepaid') {
     paymentMethod = 'Online / Prepaid';
@@ -73,14 +74,14 @@ const BillingInvoice: React.FC<InvoiceProps> = ({ data: rawData, vendorProfile, 
   const subtotalExclGst = subTotal - totalGst;
   
   // Table sync data
-  const orderStatus = data.vendor_status || data.status || 'Pending';
+  const orderStatus = data.vendorStatus || data.status || 'Pending';
   
   // Robust admin payout status
-  const adminPaymentStatus = data.payment_status_info?.payment_status || data.vendor_payment_info?.payment_status || 'Unprocessed';
-  const adminPaymentAmount = data.vendor_payment_info?.vendor_amount || data.payment_status_info?.vendor_amount || 0;
+  const adminPaymentStatus = data.paymentStatusInfo?.paymentStatus || data.vendorPaymentInfo?.paymentStatus || data.adminPaymentStatus || 'Pending';
+  const adminPaymentAmount = data.vendorPaymentInfo?.vendorAmount || data.paymentStatusInfo?.vendorAmount || 0;
 
   // Use vendor logo if available, else fallback to default logo
-  const logoSrc = vendorProfile?.business_logo_image || "/images/logo/logo.webp";
+  const logoSrc = camelVendorProfile?.businessLogoImage || "/image/upleex-logo-light.webp";
 
   const handleDownload = async () => {
     try {
@@ -146,10 +147,10 @@ const BillingInvoice: React.FC<InvoiceProps> = ({ data: rawData, vendorProfile, 
         <div className="flex justify-between items-start mb-2 pb-4 border-b border-gray-100">
           <div>
             <img src={logoSrc} alt="Upleex" className="h-12 w-auto mb-2 object-contain" onError={(e) => {
-              (e.target as HTMLImageElement).src = "/images/logo/logo.webp";
+              (e.target as HTMLImageElement).src = "/image/upleex-logo-light.webp";
             }} />
             <div className="text-xl font-black text-gray-900 tracking-tight leading-none">
-              {vendorProfile?.business_name || '-'}
+              {camelVendorProfile?.businessName || '-'}
             </div>
           </div>
           <div className="text-right">
@@ -185,7 +186,7 @@ const BillingInvoice: React.FC<InvoiceProps> = ({ data: rawData, vendorProfile, 
            </div>
            {!isCustomerView && (
              <div className="bg-gray-50/50 p-2.5 rounded-lg border border-gray-100/50">
-                 <span className="block text-[10px] font-black text-gray-400 ">Admin Payout</span>
+                 <span className="block text-[10px] font-black text-gray-400 ">Admin Payment</span>
                 <div className="flex flex-col">
                   <span className={`text-[10px] font-black capitalize ${adminPaymentStatus.toLowerCase() === 'completed' || adminPaymentStatus.toLowerCase() === 'paid' || adminPaymentStatus.toLowerCase() === 'released' ? 'text-emerald-600' : 'text-gray-400'}`}>
                     {adminPaymentStatus === 'no_payment' ? 'Unprocessed' : adminPaymentStatus}
@@ -247,30 +248,30 @@ const BillingInvoice: React.FC<InvoiceProps> = ({ data: rawData, vendorProfile, 
             </thead>
             <tbody className="divide-y divide-gray-100">
               {items.map((item: any, index: number) => {
-                const product = isQuote ? (item.product_id || item.product || {}) : (item.product_id || {});
-                const name = isQuote ? (product.product_name || item.product_name) : (product.name || item.product_name || item.name);
-                const sku = product.sku || item.sku || (isQuote ? item.product_sku : null) || 'N/A';
-                const typeLabel = product.product_type_name || item.product_type_name || 'Sell';
+                const product = isQuote ? (item.productId || item.product || {}) : (item.productId || {});
+                const name = isQuote ? (product.productName || item.productName) : (product.name || item.productName || item.name);
+                const sku = product.sku || item.sku || (isQuote ? item.productSku : null) || 'N/A';
+                const typeLabel = product.productTypeName || item.productTypeName || 'Sell';
                 const price = isQuote ? (item.price || product.price) : (item.price || product.price);
                 const qty = isQuote ? (item.qty) : (item.quantity || 1);
-                const rowTotal = isQuote ? (item.total_price || item.calculated_price) : (item.price * (item.quantity || 1));
+                const rowTotal = isQuote ? (item.totalPrice || item.calculatedPrice) : (item.price * (item.quantity || 1));
 
                 return (
                   <tr key={index} className="hover:bg-gray-50/50 transition-all">
                     <td className="p-3">
                       <div className="flex gap-3">
                          {/* Thumbnail sync with table */}
-                         {(product?.thumb_image || item.thumb_image || product?.product_main_image) && (
+                         {(product?.thumbImage || item.thumbImage || product?.productMainImage) && (
                            <div className="w-10 h-10 rounded border border-gray-100 overflow-hidden flex-shrink-0 no-print">
-                              <img src={product?.thumb_image || item.thumb_image || product?.product_main_image} alt="" className="w-full h-full object-cover" />
+                              <img src={product?.thumbImage || item.thumbImage || product?.productMainImage} alt="" className="w-full h-full object-cover" />
                            </div>
                          )}
                          <div>
                             <div className="font-bold text-[13px] text-gray-900">{name}</div>
                             <div className="text-[9px] font-bold text-gray-400  mt-0.5">SKU: {sku}</div>
-                            {isQuote && item.number_of_days && (
+                            {isQuote && item.numberOfDays && (
                               <div className="mt-1.5 inline-flex items-center gap-1.5 text-[9px] font-black text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">
-                                {item.number_of_days} {item.product_listing_type_name?.toLowerCase() === 'hourly' ? 'HOURS' : 'DAYS'} RENTAL
+                                {item.numberOfDays} {item.productListingTypeName?.toLowerCase() === 'hourly' ? 'HOURS' : 'DAYS'} RENTAL
                               </div>
                             )}
                          </div>
