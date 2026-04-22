@@ -228,7 +228,7 @@ const UserQuotesPage = () => {
                   {/* Order Header */}
                   <div className="px-5 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4 bg-gray-50">
                     <div>
-                      <p className="font-semibold text-gray-900">Quote ID: #{quote._id.slice(-6).toUpperCase()}</p>
+                      <p className="font-semibold text-gray-900">Quote ID: {quote._id.slice(-6).toUpperCase()}</p>
                       <p className="text-sm text-gray-500">
                         {new Date(quote.createdAt).toLocaleDateString('en-IN', {
                           day: 'numeric', month: 'short', year: 'numeric'

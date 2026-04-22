@@ -11,6 +11,10 @@ import { Copy } from 'lucide-react';
 import { Pagination } from '@/components/ui/Pagination';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useRouter } from 'next/navigation';
+import BillingInvoice from '@/components/features/BillingInvoice';
+import { FaFileInvoice } from 'react-icons/fa';
+import { Modal } from '@/components/ui/Modal';
+import { Loader } from '@/components/ui/Loader';
 
 interface OrderItem {
   product_id: string;
@@ -46,6 +50,35 @@ export default function OrdersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [verifying, setVerifying] = useState(false);
   const [activeTab, setActiveTab] = useState<'orders' | 'quotes'>('orders');
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<any>(null);
+  const [invoiceLoading, setInvoiceLoading] = useState(false);
+
+  const handleDownloadInvoice = async (order: any) => {
+    setShowInvoiceModal(true);
+    setInvoiceLoading(true);
+    try {
+      if (order.type === 'quote') {
+        const res = await api.get(`${endPointApi.quoteById}/${order._id}`);
+        if (res.data?.success) {
+          const fullQuote = res.data.data;
+          setSelectedOrderForInvoice({
+            ...order,
+            ...fullQuote,
+            type: 'quote',
+          });
+        } else {
+          setSelectedOrderForInvoice(order);
+        }
+      } else {
+        setSelectedOrderForInvoice(order);
+      }
+    } catch {
+      setSelectedOrderForInvoice(order);
+    } finally {
+      setInvoiceLoading(false);
+    }
+  };
 
   const fetchOrders = async () => {
     try {
@@ -90,6 +123,8 @@ export default function OrdersPage() {
             razorpay_payment_id: quote.razorpay_payment_id || '',
             type: 'quote',
             razorpay_payment_link: quote.razorpay_payment_link || '',
+            vendor_details: quote.vendor_details || [],
+            user_id: quote.user_id || null,
           }));
         combined = [...combined, ...mappedQuotes];
         maxPages = Math.max(maxPages, quotesRes.value.data.totalPages || 1);
@@ -310,6 +345,16 @@ export default function OrdersPage() {
                         Pay Now
                       </a>
                     )}
+                    {order.payment_status?.toLowerCase() === 'paid' && 
+                    ['completed', 'complete', 'delivered', 'successful', 'success'].includes(order.order_status?.toLowerCase()) && (
+                      <button
+                        onClick={() => handleDownloadInvoice(order)}
+                        className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg hover:bg-emerald-700 transition"
+                      >
+                        <FaFileInvoice size={14} />
+                        Invoice
+                      </button>
+                    )}
                   </div>
                 </div>
                   </motion.div>
@@ -325,6 +370,37 @@ export default function OrdersPage() {
           );
         })()}
       </div>
+
+      {showInvoiceModal && selectedOrderForInvoice && (
+        <Modal
+          isOpen={showInvoiceModal}
+          onClose={() => setShowInvoiceModal(false)}
+          hideHeader={true}
+          hideCloseButton={true}
+          noPadding={true}
+          className="max-w-6xl bg-transparent shadow-none"
+        >
+          <div className="relative flex justify-center">
+            {invoiceLoading ? (
+              <div className="bg-white p-20 rounded-xl flex flex-col items-center justify-center">
+                <Loader />
+                <p className="text-gray-600 mt-4">Preparing your invoice...</p>
+              </div>
+            ) : (
+              <BillingInvoice 
+                data={selectedOrderForInvoice} 
+                vendorProfile={selectedOrderForInvoice.vendor_details?.[0] || {}} 
+                type={selectedOrderForInvoice.type}
+                isCustomerView={true}
+                onDownloadPdf={() => {
+                  window.print();
+                }}
+                onClose={() => setShowInvoiceModal(false)}
+              />
+            )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
