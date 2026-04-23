@@ -3,14 +3,39 @@ import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { toast } from 'react-hot-toast';
 
+interface Rental {
+  _id: string;
+  product_id: {
+    _id: string;
+    product_name: string;
+    product_main_image: string;
+    price: string | number;
+    category_name?: string;
+    product_type_name?: string;
+  };
+  qty: number;
+  calculated_price: number;
+  status: string;
+  vendor_status?: string;
+  payment_status: string;
+  start_date: string;
+  end_date: string;
+  createdAt: string;
+  razorpay_payment_link?: string;
+}
+
 export interface DashboardData {
-  totalOrders?: number;
-  totalQuotes?: number;
-  pendingOrders?: number;
-  completedOrders?: number;
-  recentOrders?: any[];
-  recentQuotes?: any[];
-  [key: string]: any;
+  currentRentals: Rental[];
+  pastRentals: Rental[];
+  purchases: Rental[];
+  cancellations: Rental[];
+  counts?: {
+    currentRentals: number;
+    pastRentals: number;
+    purchases: number;
+    cancellations: number;
+  };
+  purchases_total_amount?: number;
 }
 
 export interface ProfileState {
