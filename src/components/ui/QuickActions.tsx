@@ -3,20 +3,21 @@ import React from 'react';
 import Link from 'next/link';
 import { Package, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useCart } from '@/context/CartContext';
+import { useCartRedux } from '@/redux/useCartRedux';
+import { useAppSelector } from '@/redux/hooks';
 
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 
 export const QuickActions: React.FC = () => {
-  const { cartCount } = useCart();
+  const { count: cartCount } = useCartRedux();
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const router = useRouter();
 
   const handleOrdersClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     
-    if (token) {
+    if (isAuthenticated) {
       router.push('/orders');
     } else {
       setTimeout(() => {

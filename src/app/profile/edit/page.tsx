@@ -7,9 +7,11 @@ import { NavigationButtons } from '@/components/features/NavigationButtons';
 import { Button } from '@/components/ui/Button';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
+import { useAppSelector } from '@/redux/hooks';
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -22,29 +24,27 @@ export default function EditProfilePage() {
     const loadUserData = async () => {
       setLoading(true);
       try {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-          const userData = JSON.parse(userStr);
-
-          let firstName = userData.first_name || '';
-          let lastName = userData.last_name || '';
-
-          if (!firstName && !lastName) {
-            const fullName = userData.full_name || userData.name || '';
-            const names = fullName.trim().split(' ');
-            firstName = names[0] || '';
-            lastName = names.slice(1).join(' ') || '';
-          }
-
-          setFormData({
-            firstName,
-            lastName,
-            phone: userData.phone || '',
-          });
-        } else {
+        if (!isAuthenticated || !user) {
           toast.error('Please login first');
           router.push('/auth/login');
+          return;
         }
+
+        let firstName = user.first_name || '';
+        let lastName = user.last_name || '';
+
+        if (!firstName && !lastName) {
+          const fullName = user.full_name || user.name || '';
+          const names = fullName.trim().split(' ');
+          firstName = names[0] || '';
+          lastName = names.slice(1).join(' ') || '';
+        }
+
+        setFormData({
+          firstName,
+          lastName,
+          phone: user.phone || '',
+        });
       } catch (e) {
         toast.error('Error loading profile');
       } finally {
@@ -53,7 +53,7 @@ export default function EditProfilePage() {
     };
 
     loadUserData();
-  }, [router]);
+  }, [router, isAuthenticated, user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

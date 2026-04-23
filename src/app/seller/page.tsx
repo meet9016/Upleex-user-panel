@@ -10,11 +10,13 @@ import { ProductCard } from '@/components/features/ProductCard';
 import { BackButton } from '@/components/ui/BackButton';
 import { Pagination } from '@/components/ui/Pagination';
 import { productService } from '@/services/productService';
+import { useAppSelector } from '@/redux/hooks';
 
 export default function SellerPage() {
   const searchParams = useSearchParams();
   const vendorId = searchParams?.get('vendor_id') ?? '';
   const vendorNameFromQuery = searchParams?.get('vendor_name') ?? null;
+  const { user } = useAppSelector((state) => state.auth);
 
   const [vendorName, setVendorName] = useState<string | null>(vendorNameFromQuery);
   const [products, setProducts] = useState<any[]>([]);
@@ -26,7 +28,6 @@ export default function SellerPage() {
   const [isTenureOpen, setIsTenureOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState({ label: 'All Types', value: '0' });
   const [selectedTenure, setSelectedTenure] = useState({ label: 'All Durations', value: '0' });
-  const [user, setUser] = useState<any>(null);
   const [referralLink, setReferralLink] = useState<string>('');
   const [isCopied, setIsCopied] = useState(false);
   const [isReferralCopied, setIsReferralCopied] = useState(false);
@@ -98,23 +99,15 @@ export default function SellerPage() {
   }, [vendorId, selectedSort, selectedTenure, currentPage]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-        
-        // Generate referral link if user is logged in
-        if (typeof window !== 'undefined' && vendorId) {
-          const baseUrl = window.location.origin + window.location.pathname;
-          const refLink = `${baseUrl}?vendor_id=${vendorId}&ref=${parsedUser._id || parsedUser.id}`;
-          setReferralLink(refLink);
-        }
-      } catch (e) {
-        console.error('Error parsing user data', e);
+    if (user) {
+      // Generate referral link if user is logged in
+      if (typeof window !== 'undefined' && vendorId) {
+        const baseUrl = window.location.origin + window.location.pathname;
+        const refLink = `${baseUrl}?vendor_id=${vendorId}&ref=${user._id || user.id}`;
+        setReferralLink(refLink);
       }
     }
-  }, [vendorId]);
+  }, [vendorId, user]);
 
   const handleCopyProfile = () => {
     if (typeof window !== 'undefined') {

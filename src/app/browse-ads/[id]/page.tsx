@@ -30,8 +30,9 @@ import { QuoteModal } from "@/components/features/QuoteModal";
 import { Modal } from "@/components/ui/Modal";
 import { RelatedProducts } from "@/components/features/RelatedProducts";
 import { ProductReviews } from "@/components/features/ProductReviews";
-import { useCart } from "@/context/CartContext";
-import { useWishlist } from "@/context/WishlistContext";
+import { useCartRedux } from '@/redux/useCartRedux';
+import { useWishlistRedux } from '@/redux/useWishlistRedux';
+import type { CartItem } from '@/services/cartService';
 import { toast } from "react-hot-toast";
 import { Heart } from "lucide-react";
 
@@ -60,8 +61,8 @@ export default function ProductDetailsPage() {
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { addToCart, cartItems } = useCart();
-  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart, items: cartItems } = useCartRedux();
+  const { toggleWishlist, isInWishlist } = useWishlistRedux();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const [localLiked, setLocalLiked] = useState<boolean | null>(null);
@@ -189,7 +190,7 @@ export default function ProductDetailsPage() {
     if (isSell && productDetails) {
       const availableStock = productDetails.available_quantity || 0;
       const isOutOfStock = productDetails.is_out_of_stock;
-      const existingCartItem = cartItems?.find((item) => item.id === id);
+      const existingCartItem = cartItems?.find((item: CartItem) => item.id === id);
       const existingQty = existingCartItem ? parseInt(existingCartItem.qty || '0', 10) : 0;
       const totalRequested = quantity + existingQty;
 

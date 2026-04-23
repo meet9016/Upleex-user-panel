@@ -6,6 +6,7 @@ import { reviewService } from "@/services/reviewService";
 import { toast } from "react-hot-toast";
 import clsx from "clsx";
 import { Button } from "@/components/ui/Button";
+import { useAppSelector } from '@/redux/hooks';
 
 interface Review {
   _id: string;
@@ -51,7 +52,8 @@ export function ProductReviews({ productId, onAuthRequired }: ProductReviewsProp
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
 
-  const isLoggedIn = () => !!localStorage.getItem("token");
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const isLoggedIn = () => isAuthenticated;
 
   const fetchReviews = async () => {
     try {

@@ -5,60 +5,42 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-hot-toast';
 import { NavigationButtons } from '@/components/features/NavigationButtons';
 import { UserDashboard } from '@/components/features/UserDashboard';
-import { api } from '@/utils/axiosInstance';
-import endPointApi from '@/utils/endPointApi';
 import Loader from '@/components/ui/Loader';
+import { useAppSelector } from '@/redux/hooks';
+import { useProfileRedux } from '@/redux/useProfileRedux';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState<any>(null);
-  const [ordersLoading, setOrdersLoading] = useState(true);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { dashboardData, loading, loadDashboard } = useProfileRedux();
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     const checkAuthAndFetch = async () => {
-      setLoading(true);
+      setInitialLoading(true);
       try {
-        const userStr = localStorage.getItem('user');
-        if (!userStr) {
+        if (!isAuthenticated) {
           toast.error('Please login first');
           router.push('/auth/login');
           return;
         }
         
-        // Fetch dashboard data
-        await fetchDashboardData();
+        loadDashboard();
       } catch (e) {
         console.error('Error in checkAuthAndFetch', e);
       } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchDashboardData = async () => {
-      try {
-        setOrdersLoading(true);
-        const response = await api.get(endPointApi.userDashboard);
-        if (response.data.success) {
-          setDashboardData(response.data.data);
-        }
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      } finally {
-        setOrdersLoading(false);
+        setInitialLoading(false);
       }
     };
 
     checkAuthAndFetch();
-  }, [router]);
+  }, [router, isAuthenticated]);
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">.
           <Loader/>
-          {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div> */}
-          {/* <p className="text-gray-600">Loading dashboard...</p> */}
         </div>
       </div>
     );
@@ -72,7 +54,7 @@ export default function ProfilePage() {
 
           <div className="mb-10">
             <h1 className="text-3xl font-black text-gray-900 mb-6">User Dashboard</h1>
-            <UserDashboard dashboardData={dashboardData} loading={ordersLoading} />
+            <UserDashboard dashboardData={dashboardData} loading={loading} />
           </div>
         </div>
       </div>

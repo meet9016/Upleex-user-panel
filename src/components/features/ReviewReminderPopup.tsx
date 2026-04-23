@@ -6,6 +6,7 @@ import { api } from "@/utils/axiosInstance";
 import { reviewService } from "@/services/reviewService";
 import { toast } from "react-hot-toast";
 import clsx from "clsx";
+import { useAppSelector } from '@/redux/hooks';
 
 interface PendingReviewProduct {
   productId: string;
@@ -14,6 +15,7 @@ interface PendingReviewProduct {
 }
 
 export function ReviewReminderPopup() {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [pendingProduct, setPendingProduct] = useState<PendingReviewProduct | null>(null);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
@@ -22,15 +24,16 @@ export function ReviewReminderPopup() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      checkPendingReviews();
+      if (isAuthenticated) {
+        checkPendingReviews();
+      }
     }, 2000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isAuthenticated]);
 
   const checkPendingReviews = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
+      if (!isAuthenticated) return;
 
       const response = await api.get("/quote/getall");
       if (!response.data.success) return;

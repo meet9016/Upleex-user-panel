@@ -1,14 +1,15 @@
 'use client';
 
 import React from 'react';
-import { useWishlist } from '../../context/WishlistContext';
+import { useWishlistRedux } from '@/redux/useWishlistRedux';
+import type { WishlistItem } from '@/redux/slices/wishlistSlice';
 import { Heart, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { ProductCard } from '../../components/features/ProductCard';
 import { BackButton } from '@/components/ui/BackButton';
 
 const WishlistPage = () => {
-  const { wishlistItems, loading, removeFromWishlist } = useWishlist();
+  const { items: wishlistItems, loading, removeFromWishlist } = useWishlistRedux();
 
   if (loading) {
     return (
@@ -52,7 +53,7 @@ const WishlistPage = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {wishlistItems.map((wishlistEntry, index) => {
+          {wishlistItems.map((wishlistEntry: WishlistItem, index: number) => {
             const productData = wishlistEntry.product_id;
             
             if (!productData) {

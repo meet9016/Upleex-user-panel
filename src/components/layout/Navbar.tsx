@@ -28,8 +28,9 @@ import { LocationModal } from '../features/LocationModal';
 import { Button } from '@/components/ui/Button';
 import { categoryService, Category } from '@/services/categoryService';
 import { serviceService, ServiceCategory } from '@/services/serviceService';
-import { useCart } from '@/context/CartContext';
-import { useWishlist } from '@/context/WishlistContext';
+import { useCartRedux } from '@/redux/useCartRedux';
+import { useWishlistRedux } from '@/redux/useWishlistRedux';
+import { useAuthRedux } from '@/redux/useAuthRedux';
 import { searchService } from '@/services/searchService';
 
 const placeholders = ["TV", "Medical", "Kurta", "Furniture", "Electronics"]
@@ -42,12 +43,12 @@ export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [user, setUser] = useState<any>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [serviceCategories, setServiceCategories] = useState<ServiceCategory[]>([]);
-  const { cartCount, refreshCart } = useCart();
-  const { wishlistCount } = useWishlist();
+  const { count: cartCount, refreshCart } = useCartRedux();
+  const { count: wishlistCount } = useWishlistRedux();
+  const { user, logout } = useAuthRedux();
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const cityDropdownRef = useRef<HTMLDivElement>(null);
   const searchWrapperRef = useRef<HTMLDivElement>(null);
@@ -104,8 +105,7 @@ export const Navbar: React.FC = () => {
 
   // Handle cart click - refresh cart data
   const handleCartClick = async () => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    if (user) {
       await refreshCart();
     }
   };
@@ -120,35 +120,14 @@ export const Navbar: React.FC = () => {
     return () => clearInterval(interval);
   }, [searchTerm]);
 
-  // Function to read and parse user data from localStorage
-  const readUserData = () => {
-    try {
-      const storedUser = localStorage.getItem('user');
-      const storedEmail = localStorage.getItem('email');
-
-      if (storedUser && storedUser !== 'undefined') {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } else {
-        setUser(null);
-      }
-
-      if (storedEmail && storedEmail !== 'undefined') {
-        try {
-          const parsedEmail = JSON.parse(storedEmail);
-          setEmail(parsedEmail);
-        } catch {
-          // If it's not JSON, use it as a plain string
-          setEmail(storedEmail);
-        }
-      } else {
-        setEmail(null);
-      }
-    } catch (error) {
-      setUser(null);
+  useEffect(() => {
+    // Email is now available from Redux user state
+    if (user?.email) {
+      setEmail(user.email);
+    } else {
       setEmail(null);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -165,9 +144,8 @@ export const Navbar: React.FC = () => {
   }, [selectedCityId, currentLocation]);
 
   useEffect(() => {
-    readUserData();
     const handleStorageChange = () => {
-      readUserData();
+      // Storage change handling - Redux will handle state updates
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -488,15 +466,11 @@ export const Navbar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('email');
-    setUser(null);
+    logout();
     setEmail(null);
     setIsProfileMenuOpen(false);
     setIsMenuOpen(false);
     router.push('/auth/login');
-    window.dispatchEvent(new Event('storage'));
   };
 
   // Hide Navbar on Partner Auth pages

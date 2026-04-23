@@ -3,83 +3,33 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { NavigationButtons } from '@/components/features/NavigationButtons';
-import { Calendar, Package, Clock, Eye, Tag, AlertCircle } from 'lucide-react';
+import { Package, Eye, AlertCircle } from 'lucide-react';
 import { api } from '@/utils/axiosInstance';
 import { toast } from 'react-hot-toast';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { SuccessModal } from '@/components/features/SuccessModal';
 import { Pagination } from '@/components/ui/Pagination';
-import endPointApi from '@/utils/endPointApi';
+import { useQuoteRedux } from '@/redux/useQuoteRedux';
 
-// Razorpay types
 declare global {
   interface Window {
     Razorpay: any;
   }
 }
 
-interface Quote {
-  _id: string;
-  product_id: {
-    _id: string;
-    product_name: string;
-    product_main_image: string;
-    category_name: string;
-    sub_category_name: string;
-    vendor_name: string;
-    price: string;
-    product_listing_type_name?: string;
-  };
-  delivery_date: string;
-  number_of_days: number;
-  months_id: string;
-  qty: number;
-  note: string;
-  status: string;
-  payment_status?: string;
-  razorpay_payment_link?: string;
-  createdAt: string;
-  calculated_price?: number;
-  month_name?: string;
-  start_date?: string;
-  end_date?: string;
-  start_time?: string;
-  end_time?: string;
-  isNew?: boolean;
-}
-
 const UserQuotesPage = () => {
   const router = useRouter();
-  const [quotes, setQuotes] = useState<Quote[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const { quotes, loading, currentPage, totalPages, processingQuoteId, loadQuotes, createOrder, setProcessing } = useQuoteRedux();
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [completedOrderDetails, setCompletedOrderDetails] = useState<{
     orderId: string;
     amount: number;
     items: any[];
   } | null>(null);
-  const [processingQuoteId, setProcessingQuoteId] = useState<string | null>(null);
-
-  const fetchQuotes = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get(`/quote/getall?view_type=quote&page=${page}&limit=10`);
-      if (response.data.success) {
-        setQuotes(response.data.data || []);
-        setTotalPages(response.data.totalPages || 1);
-      }
-    } catch (error) {
-      toast.error('Failed to fetch quotes');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchQuotes();
-  }, [page]);
+    loadQuotes(currentPage);
+  }, [currentPage]);
 
   // Load Razorpay script
   const loadRazorpayScript = () => {
@@ -93,40 +43,32 @@ const UserQuotesPage = () => {
   };
 
   // Handle quote payment
-  const handleQuotePayment = async (quoteId: string, quote: Quote) => {
+  const handleQuotePayment = async (quoteId: string, quote: any) => {
     try {
-      setProcessingQuoteId(quoteId);
+      setProcessing(quoteId);
 
-      // Load Razorpay script
       const scriptLoaded = await loadRazorpayScript();
       if (!scriptLoaded) {
         toast.error('Failed to load payment gateway. Please try again.');
         return;
       }
 
-      // Create order for quote payment
-      const orderResponse = await api.post(`${endPointApi.quoteCreateOrder}`, {
-        quote_id: quoteId,
-        amount: quote.calculated_price || quote.product_id?.price || 0,
-      });
-
-      const { data } = orderResponse.data;
+      const orderResponse = await createOrder(quoteId, quote.calculated_price || quote.product_id?.price || 0);
+      const { data } = orderResponse.payload;
 
       if (!data.razorpay_order_id) {
         throw new Error('Failed to create Razorpay order');
       }
 
-      // Razorpay options
       const options = {
         key: data.key,
-        amount: data.amount * 100, // Amount in paise
+        amount: data.amount * 100,
         currency: data.currency,
         name: 'Upleex',
         description: `Quote #${quote._id}`,
         order_id: data.razorpay_order_id,
         handler: async (response: any) => {
           try {
-            // Verify payment
             await api.post('/quote/verify-payment', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
@@ -136,7 +78,6 @@ const UserQuotesPage = () => {
 
             toast.success('Payment successful! Quote confirmed.');
             
-            // Set order details and show success modal
             setCompletedOrderDetails({
               orderId: quote._id,
               amount: quote.calculated_price || 0,
@@ -151,8 +92,7 @@ const UserQuotesPage = () => {
             });
             setIsSuccessModalOpen(true);
             
-            // Refresh quotes after successful payment
-            await fetchQuotes();
+            await loadQuotes(currentPage);
           } catch (error: any) {
             toast.error('Payment verification failed. Please contact support.');
           }
@@ -178,7 +118,7 @@ const UserQuotesPage = () => {
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to initiate payment';
       toast.error(errorMessage);
     } finally {
-      setProcessingQuoteId(null);
+      setProcessing(null);
     }
   };
 
@@ -366,9 +306,9 @@ const UserQuotesPage = () => {
           {/* Pagination */}
           <div className="mt-8">
             <Pagination
-              currentPage={page}
+              currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={setPage}
+              onPageChange={(page) => loadQuotes(page)}
             />
           </div>
         </>

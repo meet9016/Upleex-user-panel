@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { Heart } from 'lucide-react';
-import { useWishlist } from '../context/WishlistContext';
+import { useWishlistRedux } from '../redux/useWishlistRedux';
 
 interface WishlistButtonProps {
   productId: string;
@@ -14,7 +14,7 @@ const WishlistButton: React.FC<WishlistButtonProps> = ({
   className = '', 
   showText = false 
 }) => {
-  const { toggleWishlist, isInWishlist, loading } = useWishlist();
+  const { toggleWishlist, isInWishlist, loading } = useWishlistRedux();
   const inWishlist = isInWishlist(productId);
 
   const handleToggle = async (e: React.MouseEvent) => {
