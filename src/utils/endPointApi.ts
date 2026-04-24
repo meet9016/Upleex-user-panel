@@ -61,6 +61,9 @@ export interface EndPointApi {
     webRemoveWishlist: string;
     webToggleWishlist: string;
     webCheckWishlist: string;
+
+    //fcm
+    registerFcmToken?: string;
 }
 
 // Define and export the API endpoint object
@@ -126,6 +129,9 @@ const endPointApi: EndPointApi = {
     webRemoveWishlist: 'wishlist/web-remove-wishlist',
     webToggleWishlist: 'wishlist/web-toggle-wishlist',
     webCheckWishlist: 'wishlist/web-check-wishlist',
+
+    //fcm
+    registerFcmToken: 'auth/register-fcm',
 };
 
 
