@@ -2,20 +2,22 @@
 
 import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Package, FileText, LayoutDashboard } from 'lucide-react';
+import { User, Package, FileText, LayoutDashboard, Bell } from 'lucide-react';
+import { useNotifications } from '@/context/NotificationContext';
 
 export const NavigationButtons = () => {
   const router = useRouter();
-  const pathname = usePathname();   // ← This helps detect current page
+  const pathname = usePathname();
+  const { unreadCount } = useNotifications();
 
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-5 lg:grid-cols-5 gap-4 mb-8">
       {/* Dashboard */}
       <button
         onClick={() => router.push('/profile')}
-        className={`flex items-center cursor-pointer  gap-3 p-5 rounded-2xl border transition-all active:scale-[0.98] ${
+        className={`flex items-center cursor-pointer gap-3 p-5 rounded-2xl border transition-all active:scale-[0.98] ${
           isActive('/profile')
             ? 'border-blue-500 bg-blue-50 shadow-md'
             : 'bg-white border-gray-200 hover:border-blue-500 hover:shadow-lg'
@@ -97,6 +99,35 @@ export const NavigationButtons = () => {
             My Quotes
           </p>
           <p className="text-sm text-gray-500">View your quotes</p>
+        </div>
+      </button>
+
+      {/* Notifications */}
+      <button
+        onClick={() => router.push('/profile/notifications')}
+        className={`flex items-center gap-3 cursor-pointer p-5 rounded-2xl border transition-all active:scale-[0.98] ${
+          isActive('/profile/notifications')
+            ? 'border-red-500 bg-red-50 shadow-md'
+            : 'bg-white border-gray-200 hover:border-red-500 hover:shadow-lg'
+        }`}
+      >
+        <div className={`relative w-11 h-11 flex items-center justify-center rounded-xl transition-colors ${
+          isActive('/profile/notifications') ? 'bg-red-600' : 'bg-red-100'
+        }`}>
+          <Bell className={`w-6 h-6 ${isActive('/profile/notifications') ? 'text-white' : 'text-red-600'}`} />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}
+        </div>
+        <div className="text-left">
+          <p className={`font-semibold ${isActive('/profile/notifications') ? 'text-red-700' : 'text-gray-900'}`}>
+            Notifications
+          </p>
+          <p className="text-sm text-gray-500">
+            {unreadCount > 0 ? `${unreadCount} unread` : 'View updates'}
+          </p>
         </div>
       </button>
     </div>

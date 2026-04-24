@@ -11,7 +11,9 @@ import { Suspense } from 'react';
 import ProgressBar from '@/components/ui/ProgressBar';
 import { CartProvider } from '@/context/CartContext';
 import { WishlistProvider } from '@/context/WishlistContext';
+import { NotificationProvider } from '@/context/NotificationContext';
 import { ReviewReminderPopup } from '@/components/features/ReviewReminderPopup';
+import FCMHandler from '@/components/layout/FCMHandler';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -33,10 +35,12 @@ export default function RootLayout({
       <body className={inter.className} suppressHydrationWarning={true}>
         <CartProvider>
           <WishlistProvider>
+          <NotificationProvider>
           <div className="min-h-screen flex flex-col">
             <Suspense fallback={null}>
               <ProgressBar />
             </Suspense>
+            <FCMHandler />
             <Suspense fallback={<div className="h-20 bg-white border-b border-gray-100" />}>
               <Navbar />
             </Suspense>
@@ -48,6 +52,7 @@ export default function RootLayout({
             <Footer />
             <BottomNav />
           </div>
+          </NotificationProvider>
           </WishlistProvider>
         </CartProvider>
       </body>
