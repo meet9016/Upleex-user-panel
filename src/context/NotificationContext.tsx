@@ -88,14 +88,7 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
     };
     window.addEventListener('storage', handleStorage);
 
-    // Poll every 30 seconds
-    const pollInterval = setInterval(() => {
-      const t = localStorage.getItem('token');
-      if (t) fetchNotifications();
-    }, 30000);
-
     return () => {
-      clearInterval(pollInterval);
       window.removeEventListener('storage', handleStorage);
     };
   }, []); // empty dependency — sirf mount pe

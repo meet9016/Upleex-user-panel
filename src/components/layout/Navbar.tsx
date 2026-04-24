@@ -1043,7 +1043,7 @@ export const Navbar: React.FC = () => {
                       notifications.slice(0, 10).map((notif) => {
                         const isReject = notif.title?.toLowerCase().includes('reject');
                         const data = notif.data as any;
-                        const redirectPath = data?.orderId ? '/orders' : '/quotes';
+                        const redirectPath = notif.type === 'order_update' ? '/orders' : notif.type === 'quote_update' ? '/quotes' : (data?.orderId ? '/orders' : '/quotes');
                         const d = new Date(notif.createdAt);
                         const dateStr = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
                         const bodyPatterns = [/^(.*?for\s)(.+?)(\s+has\b.*)$/, /^(.*?product\s)(.+?)(\s+is\b.*)$/];
