@@ -30,7 +30,9 @@ export const requestNotificationPermission = async () => {
       });
       
       if (token) {
-        await axios.post(`endpointApi.registerFcmToken`, 
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3688/api/v1/';
+        const url = `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}auth/register-fcm`;
+        await axios.post(url,
           { token },
           { headers: { Authorization: `Bearer ${userToken}` } }
         );
@@ -48,5 +50,12 @@ export const onMessageListener = () =>
       resolve(payload);
     });
   });
+
+// Persistent listener — ek baar set karo, baar baar fire hoga
+export const setupForegroundListener = (callback: (payload: any) => void) => {
+  if (!messaging) return () => {};
+  const unsubscribe = onMessage(messaging, callback);
+  return unsubscribe; // cleanup function
+};
 
 export { messaging };

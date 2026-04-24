@@ -19,10 +19,18 @@ const formatDate = (dateStr: string) => {
 };
 
 const getRedirectPath = (notification: any): string => {
+  const type = notification.type;
   const data = notification.data as any;
+  // type field se redirect
+  if (type === 'order_update') return '/orders';
+  if (type === 'quote_update') return '/quotes';
+  // fallback: data.type check
+  if (data?.type === 'order_update') return '/orders';
+  if (data?.type === 'quote_update') return '/quotes';
+  // fallback: quoteId + complete = orders
+  if (data?.quoteId && data?.status === 'complete') return '/orders';
+  if (data?.quoteId) return '/quotes';
   if (data?.orderId) return '/orders';
-  if (data?.quoteId || data?.status === 'delivery' || data?.status === 'complete' ||
-      data?.status === 'approval' || data?.status === 'reject') return '/quotes';
   return '/quotes';
 };
 
