@@ -19,7 +19,8 @@ import {
   Settings,
   FileText,
   Briefcase,
-  LayoutGrid
+  LayoutGrid,
+  Bell
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -31,6 +32,7 @@ import { serviceService, ServiceCategory } from '@/services/serviceService';
 import { useCartRedux } from '@/redux/useCartRedux';
 import { useWishlistRedux } from '@/redux/useWishlistRedux';
 import { useAuthRedux } from '@/redux/useAuthRedux';
+import { useNotifications } from '@/context/NotificationContext';
 import { searchService } from '@/services/searchService';
 
 const placeholders = ["TV", "Medical", "Kurta", "Furniture", "Electronics"]
@@ -49,10 +51,12 @@ export const Navbar: React.FC = () => {
   const { count: cartCount, refreshCart } = useCartRedux();
   const { count: wishlistCount } = useWishlistRedux();
   const { user, logout } = useAuthRedux();
+  const { unreadCount, notifications, markAllAsRead, markAsRead, isOpen, setIsOpen } = useNotifications();
+  const notifRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const cityDropdownRef = useRef<HTMLDivElement>(null);
   const searchWrapperRef = useRef<HTMLDivElement>(null);
-  const suggestionRef = useRef<HTMLDivElement>(null); // New ref for suggestion dropdown
+  const suggestionRef = useRef<HTMLDivElement>(null);
   const [cities, setCities] = useState<any[]>([]);
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [isCityLoading, setIsCityLoading] = useState(false);
@@ -216,6 +220,9 @@ export const Navbar: React.FC = () => {
       if (cityDropdownRef.current && !cityDropdownRef.current.contains(event.target as Node)) {
         setIsCityDropdownOpen(false);
       }
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
       if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node) &&
         suggestionRef.current && !suggestionRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
@@ -226,6 +233,7 @@ export const Navbar: React.FC = () => {
       if (event.key === 'Escape') {
         setIsProfileMenuOpen(false);
         setIsCityDropdownOpen(false);
+        setIsOpen(false);
         setShowSuggestions(false);
       }
     };
@@ -945,6 +953,128 @@ export const Navbar: React.FC = () => {
                 Login / Sign Up
               </Button>
             )}
+
+            <div className="h-4 w-px bg-gray-300"></div>
+
+            {/* Notification Bell with Dropdown */}
+            <div className="relative" ref={notifRef}>
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="relative group cursor-pointer"
+              >
+                <Bell size={24} className="text-slate-700 group-hover:text-upleex-blue transition-colors" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.96 }}
+                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute right-0 top-full mt-3 w-96 bg-white rounded-2xl shadow-2xl border border-gray-200/60 overflow-hidden z-50"
+                >
+                  {/* Header */}
+                  <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                        <Bell className="w-4 h-4 text-red-600" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 text-sm">Notifications</p>
+                        {unreadCount > 0 && <p className="text-xs text-gray-500">{unreadCount} unread</p>}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={markAllAsRead}
+                          className="text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer"
+                        >
+                          Mark all read
+                        </button>
+                      )}
+                      <button onClick={() => setIsOpen(false)} className="p-1 text-gray-400 hover:text-gray-600 cursor-pointer">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Notification List */}
+                  <div className="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                    {notifications.length === 0 ? (
+                      <div className="py-12 text-center">
+                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Bell className="w-6 h-6 text-gray-400" />
+                        </div>
+                        <p className="text-sm font-medium text-gray-500">No notifications yet</p>
+                      </div>
+                    ) : (
+                      notifications.slice(0, 10).map((notif) => {
+                        const isReject = notif.title?.toLowerCase().includes('reject');
+                        const data = notif.data as any;
+                        const redirectPath = data?.orderId ? '/orders' : '/quotes';
+                        const d = new Date(notif.createdAt);
+                        const dateStr = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+                        const bodyPatterns = [/^(.*?for\s)(.+?)(\s+has\b.*)$/, /^(.*?product\s)(.+?)(\s+is\b.*)$/];
+                        let bodyEl: React.ReactNode = notif.body;
+                        for (const pat of bodyPatterns) {
+                          const m = notif.body.match(pat);
+                          if (m) { bodyEl = <span>{m[1]}<strong className={isReject ? 'text-red-700' : 'text-gray-900'}>{m[2]}</strong>{m[3]}</span>; break; }
+                        }
+                        const notifId = (notif as any)._id || (notif as any).id;
+                        return (
+                          <div
+                            key={notifId}
+                            onClick={() => { markAsRead(notifId); setIsOpen(false); router.push(redirectPath); }}
+                            className={`px-5 py-3.5 flex gap-3 hover:bg-gray-50 transition-colors cursor-pointer ${
+                              !notif.is_read ? 'bg-blue-50/40' : ''
+                            }`}
+                          >
+                            <div className={`w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mt-0.5 ${
+                              isReject ? 'bg-red-100 text-red-600' :
+                              notif.type === 'order_update' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'
+                            }`}>
+                              <Bell className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-semibold truncate ${
+                                isReject ? 'text-red-600' : !notif.is_read ? 'text-gray-900' : 'text-gray-700'
+                              }`}>
+                                {notif.title}
+                              </p>
+                              <p className={`text-xs mt-0.5 line-clamp-2 ${
+                                isReject ? 'text-red-500' : 'text-gray-500'
+                              }`}>{bodyEl}</p>
+                              <p className="text-[11px] text-gray-400 mt-1">{dateStr}</p>
+                            </div>
+                            {!notif.is_read && (
+                              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
+                            )}
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  {notifications.length > 0 && (
+                    <div className="px-5 py-3 border-t border-gray-100">
+                      <button
+                        onClick={() => { setIsOpen(false); router.push('/profile/notifications'); }}
+                        className="w-full text-center text-sm font-semibold text-upleex-blue hover:text-upleex-purple transition-colors cursor-pointer"
+                      >
+                        View all notifications
+                      </button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </div>
 
             <div className="h-4 w-px bg-gray-300"></div>
 

@@ -9,8 +9,10 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { Toaster } from 'react-hot-toast';
 import { Suspense } from 'react';
 import ProgressBar from '@/components/ui/ProgressBar';
-import { ReviewReminderPopup } from '@/components/features/ReviewReminderPopup';
 import { Providers } from '@/redux/Providers';
+import { NotificationProvider } from '@/context/NotificationContext';
+import { ReviewReminderPopup } from '@/components/features/ReviewReminderPopup';
+import FCMHandler from '@/components/layout/FCMHandler';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -31,10 +33,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
         <Providers>
+          <NotificationProvider>
           <div className="min-h-screen flex flex-col">
             <Suspense fallback={null}>
               <ProgressBar />
             </Suspense>
+            <FCMHandler />
             <Suspense fallback={<div className="h-20 bg-white border-b border-gray-100" />}>
               <Navbar />
             </Suspense>
@@ -46,6 +50,8 @@ export default function RootLayout({
             <Footer />
             <BottomNav />
           </div>
+          
+          </NotificationProvider>
         </Providers>
       </body>
     </html>
