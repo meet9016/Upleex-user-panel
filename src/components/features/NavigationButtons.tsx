@@ -1,14 +1,35 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { User, Package, FileText, LayoutDashboard, Bell } from 'lucide-react';
-import { useNotifications } from '@/context/NotificationContext';
+import { api } from '@/utils/axiosInstance';
 
 export const NavigationButtons = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { unreadCount } = useNotifications();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadCount = useCallback(async () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) return;
+    try {
+      const res = await api.get('notifications');
+      if (res.data.success) {
+        const count = (res.data.data as any[]).filter((n: any) => !n.is_read).length;
+        setUnreadCount(count);
+      }
+    } catch {
+      // silent
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUnreadCount();
+    const handleNewNotif = () => fetchUnreadCount();
+    window.addEventListener('new_notification', handleNewNotif);
+    return () => window.removeEventListener('new_notification', handleNewNotif);
+  }, [fetchUnreadCount]);
 
   const isActive = (path: string) => pathname === path;
 
@@ -32,7 +53,7 @@ export const NavigationButtons = () => {
           <p className={`font-semibold ${isActive('/profile') ? 'text-blue-700' : 'text-gray-900'}`}>
             Dashboard
           </p>
-          <p className="text-sm text-gray-500">View rentals & orders</p>
+          <p className="text-sm text-gray-500">View rentals &amp; orders</p>
         </div>
       </button>
 
@@ -54,7 +75,7 @@ export const NavigationButtons = () => {
           <p className={`font-semibold ${isActive('/profile/edit') ? 'text-orange-700' : 'text-gray-900'}`}>
             My Profile
           </p>
-          <p className="text-sm text-gray-500">View & edit profile</p>
+          <p className="text-sm text-gray-500">View &amp; edit profile</p>
         </div>
       </button>
 

@@ -1,12 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { NavigationButtons } from '@/components/features/NavigationButtons';
 import { Bell, CheckCircle, Clock } from 'lucide-react';
 import Loader from '@/components/ui/Loader';
 import { toast } from 'react-hot-toast';
-import { useNotifications } from '@/context/NotificationContext';
+import { api } from '@/utils/axiosInstance';
+
+interface UserNotification {
+  _id: string;
+  id?: string;
+  title: string;
+  body: string;
+  type: string;
+  is_read: boolean;
+  createdAt: string;
+  data?: any;
+}
 
 const formatDate = (dateStr: string) => {
   const d = new Date(dateStr);
@@ -18,7 +29,7 @@ const formatDate = (dateStr: string) => {
   return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
 };
 
-const getRedirectPath = (notification: any): string => {
+const getRedirectPath = (notification: UserNotification): string => {
   const type = notification.type;
   const data = notification.data as any;
   // type field se redirect
@@ -41,7 +52,7 @@ const renderBody = (body: string, isReject: boolean) => {
     /^(.*?product\s)([A-Za-z][^.!?]{2,50}?)(\s+is\b.*)$/,
   ];
   for (const pattern of patterns) {
-    const match = body.match(pattern);
+    const match = body?.match(pattern);
     if (match) {
       return (
         <span>
@@ -57,16 +68,42 @@ const renderBody = (body: string, isReject: boolean) => {
 
 export default function NotificationsPage() {
   const router = useRouter();
-  const { notifications, loading, markAllAsRead, markAsRead } = useNotifications();
+  const [notifications, setNotifications] = useState<UserNotification[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchNotifications = useCallback(async () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    if (!token) return;
+    setLoading(true);
+    try {
+      const res = await api.get('notifications');
+      if (res.data.success) setNotifications(res.data.data);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+    const handleNewNotif = () => fetchNotifications();
+    window.addEventListener('new_notification', handleNewNotif);
+    return () => window.removeEventListener('new_notification', handleNewNotif);
+  }, [fetchNotifications]);
 
   const handleMarkAllAsRead = async () => {
-    await markAllAsRead();
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+    await api.put('notifications/read-all').catch(() => {});
     toast.success('All notifications marked as read');
   };
 
-  const handleClick = async (notification: any) => {
-    const id = notification._id || notification.id;
-    await markAsRead(id);
+  const handleClick = async (notification: UserNotification) => {
+    const id = notification._id || notification.id!;
+    setNotifications(prev =>
+      prev.map(n => (n._id === id || n.id === id ? { ...n, is_read: true } : n))
+    );
+    await api.put(`notifications/${id}/read`).catch(() => {});
     router.push(getRedirectPath(notification));
   };
 
@@ -102,7 +139,7 @@ export default function NotificationsPage() {
                 <Loader />
               </div>
             ) : notifications.length > 0 ? (
-              notifications.map((notification) => {
+              notifications.map(notification => {
                 const isReject = notification.title?.toLowerCase().includes('reject');
                 return (
                   <div
@@ -150,7 +187,7 @@ export default function NotificationsPage() {
                   <Bell className="w-10 h-10 text-gray-400" />
                 </div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">No notifications yet</h3>
-                <p className="text-gray-500">We'll notify you when something important happens.</p>
+                <p className="text-gray-500">We&apos;ll notify you when something important happens.</p>
               </div>
             )}
           </div>
