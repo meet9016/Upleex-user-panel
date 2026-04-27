@@ -122,7 +122,9 @@ export default function PartnerSignupPage() {
 
         if (status === 200) {
           toast.success(message);
-          router.push("/partner");
+          // Redirect to vendor panel login page
+          const vendorPanelUrl = process.env.NEXT_PUBLIC_VENDOR_PANEL_URL || 'http://localhost:3003';
+          window.location.href = `${vendorPanelUrl}/signin`;
         } else {
           toast.error(message);
         }

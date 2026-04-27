@@ -24,6 +24,8 @@ import {
   Clock,
 } from "lucide-react";
 import { productService } from "@/services/productService";
+import { api } from "@/utils/axiosInstance";
+import endPointApi from "@/utils/endPointApi";
 import clsx from "clsx";
 import { AuthModal } from "@/components/features/AuthModal";
 import { QuoteModal } from "@/components/features/QuoteModal";
@@ -126,6 +128,14 @@ export default function ProductDetailsPage() {
         const listingType = data?.product_listing_type_name?.toLowerCase();
         if (listingType === "daily" || listingType === "hourly") setActiveTab("daily");
         else if (listingType === "monthly") setActiveTab("monthly");
+
+        // Fetch rent availability for rent products
+        if (data?.product_type_name?.toLowerCase() === 'rent') {
+          try {
+            const availRes = await api.get(`${endPointApi.rentAvailability}/${id}`);
+            if (availRes.data?.success) setRentAvailability(availRes.data.data);
+          } catch { }
+        }
       } catch (err) {
         console.error("Error fetching product details", err);
       }
@@ -308,6 +318,11 @@ export default function ProductDetailsPage() {
   };
 
   const [minDate, setMinDate] = useState("");
+  const [rentAvailability, setRentAvailability] = useState<{
+    latestReturnDate: string | null;
+    bookedRanges: { start: string; end: string; qty: number }[];
+    hasActiveRent: boolean;
+  } | null>(null);
 
   useEffect(() => {
     const today = new Date();
@@ -979,8 +994,8 @@ export default function ProductDetailsPage() {
                       )}
                     </div>
                     {productDetails && (productDetails.is_out_of_stock || productDetails.available_quantity <= 0) ? (
-                      <div className="font-bold text-red-500 text-sm">
-                        Out of stock
+                      <div className="flex flex-col items-end gap-0.5">
+                        <span className="text-sm font-bold text-red-500">Out of stock</span>
                       </div>
                     ) : (
                       <div className="flex items-center bg-gray-50 rounded-lg p-1">
@@ -1199,6 +1214,49 @@ export default function ProductDetailsPage() {
                     </>
                   )}
                 </div>
+
+                {/* Currently Rented Banner - only when stock is 0 AND active rent exists */}
+                {!isSell && (productDetails?.available_quantity <= 0 || productDetails?.is_out_of_stock) && rentAvailability?.hasActiveRent && rentAvailability.latestReturnDate && (
+                  <div className="mt-4 relative overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 p-4 shadow-sm">
+                    {/* Decorative background circle */}
+                    <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-orange-100/60 pointer-events-none" />
+                    <div className="absolute -left-4 -bottom-4 w-16 h-16 rounded-full bg-amber-100/50 pointer-events-none" />
+
+                    <div className="relative flex items-center gap-3">
+                      {/* Icon */}
+                      <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-orange-100 border border-orange-200 flex items-center justify-center">
+                        <Clock size={20} className="text-orange-600" />
+                      </div>
+
+                      {/* Text */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-extrabold text-orange-700">Currently Rented</span>
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-orange-200/70 text-orange-800 text-[10px] font-bold">Unavailable</span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-0.5">
+                          Available after{' '}
+                          <span className="font-bold text-gray-900">
+                            {new Date(rentAvailability.latestReturnDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}
+                          </span>
+                        </p>
+                      </div>
+
+                      {/* Date pill */}
+                      <div className="flex-shrink-0 text-right">
+                        <div className="bg-white border border-orange-200 rounded-xl px-3 py-2 shadow-sm">
+                          <div className="text-[9px] font-bold text-orange-500 uppercase tracking-wide">Returns</div>
+                          <div className="text-sm font-extrabold text-gray-900 leading-tight">
+                            {new Date(rentAvailability.latestReturnDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                          </div>
+                          <div className="text-[10px] text-gray-500 font-medium">
+                            {new Date(rentAvailability.latestReturnDate).getFullYear()}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* CTAs */}
                 <div
