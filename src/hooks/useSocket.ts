@@ -31,7 +31,7 @@ export const useSocket = (userId: string | undefined, type: 'user' | 'vendor' | 
 
     console.log(`[useSocket] Connecting for ${type} ${userId}`);
     const socket = io(SOCKET_URL, {
-       // path : '/api/socket.io',
+       path : '/api/socket.io',
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 10,
