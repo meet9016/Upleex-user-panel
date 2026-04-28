@@ -1,35 +1,22 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { User, ShoppingBag, MapPin, LogOut, LayoutDashboard } from 'lucide-react';
+import { useAppSelector } from '@/redux/hooks';
+import { useAuthRedux } from '@/redux/useAuthRedux';
 
 export const ProfileSidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const [userName, setUserName] = useState('User');
+  const { user } = useAppSelector((state) => state.auth);
+  const { logout } = useAuthRedux();
 
-  useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        if (userStr.startsWith('{') || userStr.startsWith('[')) {
-          const userData = JSON.parse(userStr);
-          setUserName(userData.full_name || userData.name || 'User');
-        } else {
-          setUserName(userStr);
-        }
-      } catch (e) {
-        setUserName('User');
-      }
-    }
-  }, []);
+  const userName = user?.full_name || user?.name || 'User';
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.dispatchEvent(new Event('storage'));
+    logout();
     router.push('/');
   };
 

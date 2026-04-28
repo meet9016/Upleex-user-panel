@@ -23,7 +23,8 @@ import {
 import { BackButton } from '@/components/ui/BackButton';
 import { SuccessModal } from '@/components/features/SuccessModal';
 import { motion, AnimatePresence, LayoutGroup, Variants } from 'framer-motion';
-import { useCart } from '@/context/CartContext';
+import { useCartRedux } from '@/redux/useCartRedux';
+import type { CartItem } from '@/services/cartService';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { api } from '@/utils/axiosInstance';
@@ -93,7 +94,7 @@ export default function CartPage() {
     items: any[];
   } | null>(null);
   const [paymentOption, setPaymentOption] = useState<'full' | '30_percent'>('full');
-  const { cartItems, loading, cartSummary, updateQuantity, removeFromCart, refreshCart, clearCart } = useCart();
+  const { items: cartItems, loading, summary: cartSummary, updateQuantity, removeFromCart, refreshCart, clearCart } = useCartRedux();
 
   const isEmpty = cartItems.length === 0;
 
@@ -120,26 +121,26 @@ export default function CartPage() {
       }
 
       // Check for out of stock items
-      const outOfStockItems = cartItems.filter(item => 
-        item.product_type_name === 'Sell' && 
+      const outOfStockItems = cartItems.filter((item: CartItem) =>
+        item.product_type_name === 'Sell' &&
         (item.is_out_of_stock || (item.available_quantity !== undefined && item.available_quantity <= 0))
       );
-      
+
       if (outOfStockItems.length > 0) {
-        const itemNames = outOfStockItems.map(item => item.name).join(', ');
+        const itemNames = outOfStockItems.map((item: CartItem) => item.name).join(', ');
         toast.error(`Please remove out of stock items from cart: ${itemNames}`);
         return;
       }
 
       // Check for insufficient stock
-      const insufficientStockItems = cartItems.filter(item => 
-        item.product_type_name === 'Sell' && 
-        item.available_quantity !== undefined && 
+      const insufficientStockItems = cartItems.filter((item: CartItem) =>
+        item.product_type_name === 'Sell' &&
+        item.available_quantity !== undefined &&
         parseInt(item.qty) > item.available_quantity
       );
-      
+
       if (insufficientStockItems.length > 0) {
-        const itemDetails = insufficientStockItems.map(item => 
+        const itemDetails = insufficientStockItems.map((item: CartItem) =>
           `${item.name} (Available: ${item.available_quantity}, In Cart: ${item.qty})`
         ).join(', ');
         toast.error(`Insufficient stock for: ${itemDetails}`);
@@ -184,10 +185,10 @@ export default function CartPage() {
             });
 
             toast.success('Payment successful! Your order has been confirmed.');
-            
+
             // Refresh cart state to update count globally (backend has already cleared it)
             await refreshCart();
-            
+
             // Set order details and show success modal
             setCompletedOrderDetails({
               orderId: data.order_id,
@@ -218,7 +219,7 @@ export default function CartPage() {
       razorpay.open();
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message || error?.message || 'Failed to initiate payment';
-      
+
       if (errorMessage.includes('Razorpay keys not configured')) {
         toast.error('Payment gateway not configured. Please contact support.');
       } else if (errorMessage.includes('Cart is empty')) {
@@ -300,7 +301,7 @@ export default function CartPage() {
   ];
 
   return (
-    <motion.div 
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={containerVariants}
@@ -361,7 +362,7 @@ export default function CartPage() {
 
         {isEmpty ? (
           <motion.div variants={itemVariants} className="text-center py-24 bg-white rounded-lg shadow-md">
-            <motion.div 
+            <motion.div
               initial={{ rotate: -10, scale: 0.9 }}
               animate={{ rotate: 0, scale: 1 }}
               transition={{ type: "spring", stiffness: 100 }}
@@ -373,7 +374,7 @@ export default function CartPage() {
               Looks like you haven’t added anything yet.
             </p>
             <Link href="/">
-              <Button 
+              <Button
                 className="mt-8 inline-flex items-center gap-2  px-8 py-3.5 rounded-xl font-medium blue transition-colors shadow-lg "
               >
                 Start Shopping <ArrowRight size={18} />
@@ -401,46 +402,46 @@ export default function CartPage() {
                       <Loader2 className="animate-spin text-blue-600" size={32} />
                     </div>
                   ) : (
-                  cartItems.map((item) => (
-                    <motion.div 
-                      key={item.cart_id} 
-                      layout
-                      className="flex flex-col sm:flex-row gap-6 group mb-8 last:mb-0"
-                    >
-                      {/* Image */}
-                      <motion.div 
-                        whileHover={{ scale: 1.02 }}
-                        className="w-full sm:w-44 h-44 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-4 overflow-hidden relative"
+                    cartItems.map((item: CartItem) => (
+                      <motion.div
+                        key={item.cart_id}
+                        layout
+                        className="flex flex-col sm:flex-row gap-6 group mb-8 last:mb-0"
                       >
-                        <motion.img
-                          src={item.image.trim().startsWith('http') ? item.image.trim() : `https://upleex.2min.cloud/${item.image.trim()}`}
-                          alt={item.name}
-                          width={200}
-                          height={200}
-                          className="w-full h-full object-contain"
-                        />
-                      </motion.div>
+                        {/* Image */}
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          className="w-full sm:w-44 h-44 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center p-4 overflow-hidden relative"
+                        >
+                          <motion.img
+                            src={item.image.trim().startsWith('http') ? item.image.trim() : `https://upleex.2min.cloud/${item.image.trim()}`}
+                            alt={item.name}
+                            width={200}
+                            height={200}
+                            className="w-full h-full object-contain"
+                          />
+                        </motion.div>
 
-                      {/* Details */}
-                      <div className="flex-1 flex flex-col">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                          <div>
-                            <h3 className="font-semibold text-lg text-slate-900 group-hover:text-blue-700 transition-colors cursor-pointer">
-                              {item.name}
-                            </h3>
-                            <div className="mt-1.5 flex items-center gap-2 text-sm text-slate-500">
-                              <ShieldCheck size={16} className="text-green-500" />
-                              Verified Product
+                        {/* Details */}
+                        <div className="flex-1 flex flex-col">
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
+                            <div>
+                              <h3 className="font-semibold text-lg text-slate-900 group-hover:text-blue-700 transition-colors cursor-pointer">
+                                {item.name}
+                              </h3>
+                              <div className="mt-1.5 flex items-center gap-2 text-sm text-slate-500">
+                                <ShieldCheck size={16} className="text-green-500" />
+                                Verified Product
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <div className="text-2xl font-bold text-blue-700">
+                                ₹{parseFloat(item.price).toLocaleString('en-IN')}
+                              </div>
+                              {/* <div className="text-sm text-slate-500">per unit</div> */}
                             </div>
                           </div>
-
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-blue-700">
-                              ₹{parseFloat(item.price).toLocaleString('en-IN')}
-                            </div>
-                            {/* <div className="text-sm text-slate-500">per unit</div> */}
-                          </div>
-                        </div>
 
                           {/* Quantity and Actions */}
                           <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
@@ -453,16 +454,15 @@ export default function CartPage() {
                                   </span>
                                 </div>
                               )}
-                              
-                             <div className={`flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200 ${
-                              item.product_type_name === 'Sell' && (item.is_out_of_stock || (item.available_quantity !== undefined && item.available_quantity <= 0)) 
-                                ? 'opacity-50' 
-                                : ''
-                            }`}>
+
+                              <div className={`flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200 ${item.product_type_name === 'Sell' && (item.is_out_of_stock || (item.available_quantity !== undefined && item.available_quantity <= 0))
+                                  ? 'opacity-50'
+                                  : ''
+                                }`}>
                                 <button
                                   onClick={() => {
-                                    const newQty = Math.max(0, parseInt(item.qty) - 1);
-                                    updateQuantity(item.id, newQty);
+                                    const newQty = Math.max(1, parseInt(item.qty) - 1);
+                                    updateQuantity(item.cart_id, newQty);
                                   }}
                                   className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-slate-600 disabled:opacity-50"
                                   disabled={parseInt(item.qty) <= 1 || (item.product_type_name === 'Sell' && (item.is_out_of_stock || (item.available_quantity !== undefined && item.available_quantity <= 0)))}
@@ -478,20 +478,20 @@ export default function CartPage() {
                                     const isSell = item.product_type_name === 'Sell';
                                     const availableStock = item.available_quantity || 0;
                                     const isOutOfStock = item.is_out_of_stock || availableStock <= 0;
-                                    
+
                                     // Check if out of stock
                                     if (isSell && isOutOfStock) {
                                       toast.error('This product is currently out of stock');
                                       return;
                                     }
-                                    
+
                                     // Check stock for sell products
                                     if (isSell && currentQty >= availableStock) {
                                       toast.error(`Only ${availableStock} units available in stock`);
                                       return;
                                     }
-                                    
-                                    updateQuantity(item.id, currentQty + 1);
+
+                                    updateQuantity(item.cart_id, currentQty + 1);
                                   }}
                                   className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white hover:shadow-sm transition-all text-slate-600 disabled:opacity-50"
                                   disabled={item.product_type_name === 'Sell' && (item.is_out_of_stock || (item.available_quantity !== undefined && (item.available_quantity <= 0 || parseInt(item.qty) >= item.available_quantity)))}
@@ -502,9 +502,8 @@ export default function CartPage() {
                               {/* Stock indicator for sell products */}
                               {item.product_type_name === 'Sell' && item.available_quantity !== undefined && !item.is_out_of_stock && item.available_quantity > 0 && (
                                 <div className="text-xs text-center">
-                                  <span className={`font-medium ${
-                                    item.available_quantity <= 5 ? 'text-red-600' : 'text-orange-600'
-                                  }`}>
+                                  <span className={`font-medium ${item.available_quantity <= 5 ? 'text-red-600' : 'text-orange-600'
+                                    }`}>
                                     {item.available_quantity} available
                                   </span>
                                 </div>
@@ -520,14 +519,14 @@ export default function CartPage() {
                             </div>
 
                             <div className="flex gap-3">
-                          {/* <motion.button 
+                              {/* <motion.button 
                             whileHover={{ scale: 1.05, color: '#2563eb' }}
                             whileTap={{ scale: 0.95 }}
                             className="flex items-center gap-1.5 text-sm text-slate-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-blue-50"
                           >
                             <Edit2 size={16} /> Edit
                           </motion.button> */}
-                              <motion.button 
+                              <motion.button
                                 whileHover={{ scale: 1.05, color: '#dc2626' }}
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => removeFromCart(item.cart_id)}
@@ -567,7 +566,7 @@ export default function CartPage() {
             <motion.div variants={itemVariants} className="lg:col-span-1">
               <div className="sticky top-8 space-y-6">
 
-                <motion.div 
+                <motion.div
                   className="bg-white rounded-2xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden"
                   whileHover={{ y: -5 }}
                   transition={{ type: "spring", stiffness: 300 }}
@@ -645,16 +644,15 @@ export default function CartPage() {
                       </div>
                     </div>
 
-                    <motion.button 
+                    <motion.button
                       onClick={() => handlePayment()}
                       disabled={isProcessingPayment}
                       whileHover={{ scale: isProcessingPayment ? 1 : 1.02, boxShadow: isProcessingPayment ? undefined : "0 20px 25px -5px rgb(59 130 246 / 0.4)" }}
                       whileTap={{ scale: isProcessingPayment ? 1 : 0.98 }}
-                      className={`mt-6 w-full font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg relative overflow-hidden group transition-all ${
-                        isProcessingPayment 
-                          ? 'bg-gray-400 cursor-not-allowed' 
+                      className={`mt-6 w-full font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg relative overflow-hidden group transition-all ${isProcessingPayment
+                          ? 'bg-gray-400 cursor-not-allowed'
                           : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/30 hover:shadow-blue-500/40'
-                      }`}
+                        }`}
                     >
                       {isProcessingPayment ? (
                         <>
@@ -679,7 +677,7 @@ export default function CartPage() {
                 </motion.div>
 
                 {/* Help card */}
-                <motion.div 
+                <motion.div
                   whileHover={{ scale: 1.02 }}
                   className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-100 flex items-center justify-between group cursor-pointer shadow-sm hover:shadow-md transition-all"
                 >
@@ -792,8 +790,8 @@ export default function CartPage() {
       </AnimatePresence> */}
 
       {/* Success Modal */}
-      <SuccessModal 
-        isOpen={isSuccessModalOpen} 
+      <SuccessModal
+        isOpen={isSuccessModalOpen}
         orderDetails={completedOrderDetails}
         onClose={() => {
           setIsSuccessModalOpen(false);

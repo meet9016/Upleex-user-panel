@@ -1,13 +1,11 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, CreditCard, Package, Truck, CheckCircle, Calendar, Star } from 'lucide-react';
+import { ShoppingBag, Package, Copy } from 'lucide-react';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { toast } from 'react-hot-toast';
-import { BackButton } from '@/components/ui/BackButton';
 import { NavigationButtons } from '@/components/features/NavigationButtons';
-import { Copy } from 'lucide-react';
 import { Pagination } from '@/components/ui/Pagination';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useRouter } from 'next/navigation';
@@ -41,14 +39,11 @@ interface Order {
   razorpay_payment_link?: string;
 }
 
+import { useOrderRedux } from '@/redux/useOrderRedux';
 
 export default function OrdersPage() {
   const router = useRouter();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [verifying, setVerifying] = useState(false);
+  const { orders, loading, currentPage, totalPages, loadOrders } = useOrderRedux();
   const [activeTab, setActiveTab] = useState<'orders' | 'quotes'>('orders');
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<any>(null);
@@ -80,72 +75,7 @@ export default function OrdersPage() {
     }
   };
 
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      const [ordersRes, quotesRes] = await Promise.allSettled([
-        api.get(`${endPointApi.userOrders}?page=${page}&limit=10`),
-        api.get(`${endPointApi.quoteList}?view_type=order&page=${page}&limit=10`)
-      ]);
-
-      let combined: Order[] = [];
-      let maxPages = 1;
-
-      if (ordersRes.status === 'fulfilled' && ordersRes.value.data.success) {
-        const fetchedOrders = (ordersRes.value.data.data.orders || []).map((o: any) => ({ 
-          ...o, 
-          type: 'order',
-          order_status: o.vendor_status || o.order_status 
-        }));
-        combined = [...combined, ...fetchedOrders];
-        maxPages = Math.max(maxPages, ordersRes.value.data.data.pagination?.pages || 1);
-      }
-
-      if (quotesRes.status === 'fulfilled' && quotesRes.value.data.success) {
-        const mappedQuotes = (quotesRes.value.data.data || [])
-          .map((quote: any) => ({
-            _id: quote._id,
-            order_id: `QUOTE-${quote._id.slice(-6).toUpperCase()}`,
-            items: [{
-              product_id: quote.product_id?._id || '',
-              product_name: quote.product_id?.product_name || 'Rent Product',
-              product_image: quote.product_id?.product_main_image || '',
-              price: (quote.calculated_price || 0) / (quote.qty || 1),
-              quantity: quote.qty || 1,
-              final_amount: quote.calculated_price || 0
-            }],
-            subtotal: quote.calculated_price || 0,
-            gst_amount: 0,
-            total_amount: quote.calculated_price || 0,
-            payment_status: quote.payment_status || 'pending',
-            order_status: quote.status || 'pending',
-            createdAt: quote.createdAt,
-            razorpay_payment_id: quote.razorpay_payment_id || '',
-            type: 'quote',
-            razorpay_payment_link: quote.razorpay_payment_link || '',
-            vendor_details: quote.vendor_details || [],
-            user_id: quote.user_id || null,
-          }));
-        combined = [...combined, ...mappedQuotes];
-        maxPages = Math.max(maxPages, quotesRes.value.data.totalPages || 1);
-      }
-
-      // Sort combined by date descending
-      combined.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-      setOrders(combined);
-      setTotalPages(maxPages);
-    } catch (error: any) {
-      if (error?.response?.status === 401 || error?.response?.status === 403) {
-        setOrders([]);
-        setTotalPages(1);
-      } else {
-        toast.error(error?.response?.data?.message || 'Failed to fetch orders');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [verifying, setVerifying] = useState(false);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -156,7 +86,6 @@ export default function OrdersPage() {
     const handleVerify = async () => {
       const searchParams = new URLSearchParams(window.location.search);
       const razorpay_payment_id = searchParams.get('razorpay_payment_id');
-      const razorpay_payment_link_id = searchParams.get('razorpay_payment_link_id');
       const razorpay_payment_link_status = searchParams.get('razorpay_payment_link_status');
 
       if (razorpay_payment_id || razorpay_payment_link_status) {
@@ -164,7 +93,7 @@ export default function OrdersPage() {
         try {
           const res = await api.post(endPointApi.quoteVerifyPayment, {
             razorpay_payment_id,
-            razorpay_payment_link_id,
+            razorpay_payment_link_id: searchParams.get('razorpay_payment_link_id'),
             razorpay_payment_link_reference_id: searchParams.get('razorpay_payment_link_reference_id'),
             razorpay_payment_link_status,
             razorpay_signature: searchParams.get('razorpay_signature'),
@@ -179,15 +108,15 @@ export default function OrdersPage() {
           window.history.replaceState({}, '', '/orders');
         } finally {
           setVerifying(false);
-          fetchOrders();
+          loadOrders(currentPage);
         }
       } else {
-        fetchOrders();
+        loadOrders(currentPage);
       }
     };
 
     handleVerify();
-  }, [page, activeTab]);
+  }, [currentPage, activeTab]);
 
   if (loading) {
     return (
@@ -212,13 +141,13 @@ export default function OrdersPage() {
         <div className="flex border-b border-gray-200 mb-6">
           <button
             className={`py-3 px-6 text-sm font-medium border-b-2 transition-colors ${activeTab === 'orders' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-            onClick={() => { setActiveTab('orders'); setPage(1); }}
+            onClick={() => { setActiveTab('orders'); loadOrders(1); }}
           >
             Purchased Products
           </button>
           <button
             className={`py-3 px-6 text-sm font-medium border-b-2 transition-colors ${activeTab === 'quotes' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-            onClick={() => { setActiveTab('quotes'); setPage(1); }}
+            onClick={() => { setActiveTab('quotes'); loadOrders(1); }}
           >
             Rent / Quotes
           </button>
@@ -362,9 +291,9 @@ export default function OrdersPage() {
               </div>
 
               <Pagination
-                currentPage={page}
+                currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={setPage}
+                onPageChange={(page) => loadOrders(page)}
               />
             </>
           );
