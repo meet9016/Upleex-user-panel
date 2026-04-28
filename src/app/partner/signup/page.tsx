@@ -1,24 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { 
   User, 
   Building2, 
   Mail, 
-  Smartphone, 
-  Phone, 
   MapPin, 
-  ArrowLeft, 
   Zap,
   Shield,
   TrendingUp,
-  Check
+  Loader2
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { motion } from "framer-motion";
 import { partnerService } from "@/services/partnerService";
+import { searchService } from "@/services/searchService";
 import toast from "react-hot-toast";
 import OtpInput from "react-otp-input";
 
@@ -37,6 +35,62 @@ export default function PartnerSignupPage() {
   const [timer, setTimer] = useState(0);
   const [errors, setErrors] = useState<{ fullName?: string; businessName?: string; email?: string; mobileNumber?: string; city?: string; otp?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [citySearchTerm, setCitySearchTerm] = useState('');
+  const [cityResults, setCityResults] = useState<any[]>([]);
+  const [showCityResults, setShowCityResults] = useState(false);
+  const [isSearchingCity, setIsSearchingCity] = useState(false);
+  const [cityDropdownPos, setCityDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+  const citySearchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const cityInputRef = useRef<HTMLInputElement>(null);
+
+  const fetchCities = async (query: string) => {
+    if (!query.trim() || query.trim().length < 3) {
+      setCityResults([]);
+      setShowCityResults(false);
+      return;
+    }
+
+    if (cityInputRef.current) {
+      const rect = cityInputRef.current.getBoundingClientRect();
+      setCityDropdownPos({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX,
+        width: rect.width
+      });
+    }
+
+    try {
+      setIsSearchingCity(true);
+      const res = await searchService.getCities(1, query);
+      setCityResults(res.items || []);
+      setShowCityResults(true);
+    } catch (error) {
+      setCityResults([]);
+    } finally {
+      setIsSearchingCity(false);
+    }
+  };
+
+  const handleCityInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData(prev => ({ ...prev, city: value }));
+    setCitySearchTerm(value);
+
+    if (citySearchTimeoutRef.current) {
+      clearTimeout(citySearchTimeoutRef.current);
+    }
+
+    citySearchTimeoutRef.current = setTimeout(() => {
+      fetchCities(value);
+    }, 300);
+  };
+
+  const handleCitySelect = (city: any) => {
+    setFormData(prev => ({ ...prev, city: city.city_name }));
+    setCitySearchTerm(city.city_name);
+    setShowCityResults(false);
+    setErrors(prev => ({ ...prev, city: '' }));
+  };
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -122,9 +176,17 @@ export default function PartnerSignupPage() {
 
         if (status === 200) {
           toast.success(message);
-          // Redirect to vendor panel login page
-          const vendorPanelUrl = process.env.NEXT_PUBLIC_VENDOR_PANEL_URL || 'http://localhost:3003';
-          window.location.href = `${vendorPanelUrl}/signin`;
+          
+          const token = res?.data?.token || res?.data?.auth_token;
+          const vendorInfo = res?.data?.vendor;
+          const vendorPanelUrl = process.env.NEXT_PUBLIC_VENDOR_PANEL_URL || 'http://localhost:3002' || 'https://vendor.upleex.com';
+          
+          if (token && vendorInfo) {
+            const userInfoStr = encodeURIComponent(JSON.stringify(vendorInfo));
+            window.location.href = `${vendorPanelUrl}/signin?token=${token}&user_info=${userInfoStr}`;
+          } else {
+            window.location.href = `${vendorPanelUrl}/signin`;
+          }
         } else {
           toast.error(message);
         }
@@ -310,24 +372,62 @@ export default function PartnerSignupPage() {
                </div>
 
                {/* City */}
-               <div>
+               <div className="relative">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">City / County <span className="text-red-500">*</span> </label>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input 
+                    <input
+                      ref={cityInputRef}
                       type="text"
                       name="city"
-                      value={formData.city}
-                      onChange={(e) => {
-                        handleChange(e);
-                        if (e.target.value.trim()) setErrors(prev => ({ ...prev, city: '' }));
-                      }}
+                      value={citySearchTerm}
+                      onChange={handleCityInputChange}
                       className={`w-full pl-10 pr-4 py-3 rounded-lg border outline-none transition-all ${errors.city ? 'border-red-500 focus:ring-red-500/20' : 'border-gray-200 focus:border-upleex-purple focus:ring-upleex-purple/20'}`}
                       placeholder="Ahmedabad, Gujarat"
                     />
                   </div>
                   {errors.city ? <p className="text-red-600 text-sm mt-1">{errors.city}</p> : null}
                </div>
+
+               {showCityResults && typeof window !== 'undefined' && createPortal(
+                 <div
+                   className="fixed z-[9999]"
+                   style={{
+                     top: cityDropdownPos.top,
+                     left: cityDropdownPos.left,
+                     width: cityDropdownPos.width
+                   }}
+                 >
+                   <div className="bg-white border border-gray-100 rounded-xl shadow-2xl max-h-52 overflow-y-auto">
+                     {isSearchingCity ? (
+                       <div className="p-4 flex justify-center">
+                         <Loader2 className="animate-spin text-blue-500" size={20} />
+                       </div>
+                     ) : cityResults.length > 0 ? (
+                       cityResults.map((city) => (
+                         <button
+                           key={city.id}
+                           type="button"
+                           onClick={() => handleCitySelect(city)}
+                           className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors flex items-center gap-2 border-b border-gray-50 last:border-0"
+                         >
+                           <MapPin size={16} className="text-gray-400" />
+                           <div>
+                             <div className="font-medium text-gray-800 text-sm">
+                               {city.city_name}
+                             </div>
+                           </div>
+                         </button>
+                       ))
+                     ) : (
+                       <div className="p-4 text-center text-gray-500 text-xs">
+                         No cities found for "{citySearchTerm}"
+                       </div>
+                     )}
+                   </div>
+                 </div>,
+                 document.body
+               )}
 
                {/* OTP Section */}
                <div className={`transition-all duration-300 overflow-hidden ${otpSent ? 'opacity-100 max-h-40' : 'opacity-50 max-h-0'}`}>
