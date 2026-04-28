@@ -40,6 +40,7 @@ export default function RootLayout({
               <ProgressBar />
             </Suspense>
             <FCMHandler />
+            <SocketHandler />
             <Suspense fallback={<div className="h-20 bg-white border-b border-gray-100" />}>
               <Navbar />
             </Suspense>
