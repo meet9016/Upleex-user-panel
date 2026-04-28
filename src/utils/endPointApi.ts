@@ -64,6 +64,9 @@ export interface EndPointApi {
 
     //fcm
     registerFcmToken?: string;
+
+    // Rent availability
+    rentAvailability: string;
 }
 
 // Define and export the API endpoint object
@@ -132,6 +135,9 @@ const endPointApi: EndPointApi = {
 
     //fcm
     registerFcmToken: 'auth/register-fcm',
+
+    // Rent availability
+    rentAvailability: 'products/rent-availability',
 };
 
 

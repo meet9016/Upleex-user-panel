@@ -3,11 +3,8 @@
 import { useEffect } from "react";
 import { requestNotificationPermission, setupForegroundListener } from "@/utils/firebase";
 import toast from "react-hot-toast";
-import { useNotifications } from "@/context/NotificationContext";
 
 export default function FCMHandler() {
-  const { fetchNotifications } = useNotifications();
-
   useEffect(() => {
     // Request permission on mount
     setTimeout(() => requestNotificationPermission(), 2000);
@@ -24,7 +21,8 @@ export default function FCMHandler() {
       if (payload?.notification) {
         const { title, body } = payload.notification;
         toast.success(`${title}: ${body}`, { duration: 5000, position: 'top-center' });
-        await fetchNotifications();
+        // Dispatch window event so NotificationDropdown can refresh
+        window.dispatchEvent(new CustomEvent('new_notification', { detail: payload.notification }));
       }
     });
 
@@ -32,7 +30,7 @@ export default function FCMHandler() {
       window.removeEventListener('storage', handleStorageChange);
       if (typeof unsubscribe === 'function') unsubscribe();
     };
-  }, [fetchNotifications]);
+  }, []);
 
   return null;
 }

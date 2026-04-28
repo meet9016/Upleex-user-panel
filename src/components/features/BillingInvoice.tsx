@@ -81,7 +81,7 @@ const BillingInvoice: React.FC<InvoiceProps> = ({ data: rawData, vendorProfile, 
   const adminPaymentAmount = data.vendorPaymentInfo?.vendorAmount || data.paymentStatusInfo?.vendorAmount || 0;
 
   // Use vendor logo if available, else fallback to default logo
-  const logoSrc = camelVendorProfile?.businessLogoImage || "/image/upleex-logo-light.webp";
+  const logoSrc = camelVendorProfile?.businessLogoImage || "/image/upleex-logo-dark.jpg";
 
   const handleDownload = async () => {
     try {
