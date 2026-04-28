@@ -32,7 +32,7 @@ import { serviceService, ServiceCategory } from '@/services/serviceService';
 import { useCartRedux } from '@/redux/useCartRedux';
 import { useWishlistRedux } from '@/redux/useWishlistRedux';
 import { useAuthRedux } from '@/redux/useAuthRedux';
-import { useNotifications } from '@/context/NotificationContext';
+// import { useNotifications } from '@/context/NotificationContext';
 import { searchService } from '@/services/searchService';
 import NotificationDropdown from '@/components/layout/NotificationDropdown';
 const placeholders = ["TV", "Medical", "Kurta", "Furniture", "Electronics"]
@@ -51,7 +51,7 @@ export const Navbar: React.FC = () => {
   const { count: cartCount, refreshCart } = useCartRedux();
   const { count: wishlistCount } = useWishlistRedux();
   const { user, logout } = useAuthRedux();
-  const { unreadCount, notifications, markAllAsRead, markAsRead, isOpen, setIsOpen } = useNotifications();
+  // const { unreadCount, notifications, markAllAsRead, markAsRead, isOpen, setIsOpen } = useNotifications();
   const notifRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const cityDropdownRef = useRef<HTMLDivElement>(null);
@@ -522,7 +522,10 @@ export const Navbar: React.FC = () => {
             <div className="hidden md:flex items-center gap-4">
               <Button
                 variant="ghost"
-                onClick={() => router.push('/partner/login')}
+                onClick={() => {
+                  const vendorPanelUrl = process.env.NEXT_PUBLIC_VENDOR_PANEL_URL || 'http://localhost:3002' || 'https://vendor.upleex.com';
+                  window.location.href = `${vendorPanelUrl}/signin`;
+                }}
                 className="px-6 border border-gray-300 text-slate-700 font-semibold hover:bg-transparent hover:border-blue-600 hover:text-blue-600 cursor-pointer focus:outline-none focus:ring-0 focus:ring-offset-0 active:outline-none"
               >
                 Login
@@ -555,13 +558,13 @@ export const Navbar: React.FC = () => {
               <Link href="#benefits" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Benefits</Link>
               <Link href="#categories" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Categories</Link>
               <div className="pt-4 flex flex-col gap-3">
-                <Link
-                  href="/partner/login"
+                <a
+                  href={`${process.env.NEXT_PUBLIC_VENDOR_PANEL_URL || 'http://localhost:3002'}/signin`}
                   className="block w-full text-center py-3 border border-gray-300 rounded-lg text-slate-700 font-semibold"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Login
-                </Link>
+                </a>
                 <Link
                   href="/partner/signup"
                   className="block w-full text-center py-3 bg-blue-600 text-white rounded-lg font-semibold"
@@ -1013,6 +1016,7 @@ export const Navbar: React.FC = () => {
                 {cartCount || 0}
               </span>
             </Link>
+            {user && <NotificationDropdown />}
             <button
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-1.5 rounded-md text-slate-700 hover:text-upleex-blue focus:outline-none cursor-pointer bg-gray-50 border border-gray-100"
