@@ -981,11 +981,11 @@ export const Navbar: React.FC = () => {
 
             <div className="h-4 w-px bg-gray-300"></div>
 
-            {/* Notification Bell with Dropdown - Self-contained */}
-            <NotificationDropdown />
+            {/* Notification Bell - only when logged in */}
+            {user && <NotificationDropdown />}
 
-            <div className="h-4 w-px bg-gray-300"></div>
-
+            {user && <div className="h-4 w-px bg-gray-300"></div>}
+              {user && 
             <Link
               href="/cart"
               className="relative group cursor-pointer"
@@ -996,7 +996,8 @@ export const Navbar: React.FC = () => {
                 {cartCount || 0}
               </span>
             </Link>
-
+              }
+                {user && 
             <Link href="/wishlist" className="relative group cursor-pointer">
               <Heart size={24} className="text-slate-700 group-hover:text-red-500 transition-colors" />
               {mounted && wishlistCount > 0 && (
@@ -1005,7 +1006,7 @@ export const Navbar: React.FC = () => {
                 </span>
               )}
             </Link>
-
+                }
           </div>
 
           {/* Mobile menu button */}
