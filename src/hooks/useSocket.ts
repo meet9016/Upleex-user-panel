@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3688';
+console.log('socket url',SOCKET_URL)
 
 export const useSocket = (userId: string | undefined, type: 'user' | 'vendor' | 'admin' = 'user') => {
   const socketRef = useRef<Socket | null>(null);
@@ -36,6 +37,7 @@ export const useSocket = (userId: string | undefined, type: 'user' | 'vendor' | 
       reconnectionDelay: 1000,
       withCredentials: true,
     });
+    console.log('[useSocket] Socket instance created:', socket);
 
     socketRef.current = socket;
 

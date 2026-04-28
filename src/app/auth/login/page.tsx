@@ -1,29 +1,31 @@
 'use client';
-import { setSecureToken } from '@/utils/cryptoUtils';
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight, Phone } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
-import { authService } from '@/services/authService';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { sendOtp, verifyOtp, setUserType, setStep, clearError } from '@/redux/slices/authSlice';
+import { fetchCart } from '@/redux/slices/cartSlice';
+import { fetchWishlist } from '@/redux/slices/wishlistSlice';
 
 const LoginPage = () => {
   const [number, setNumber] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
-  const [step, setStep] = useState<'number' | 'otp'>('number');
-  const [userType, setUserType] = useState<'existing' | 'new' | null>(null);
   const router = useRouter();
   const [form, setForm] = useState({
     name: '',
     email: ''
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ number?: string; otp?: string; name?: string; email?: string }>({});
   
   // References for OTP inputs
   const otpInputs = useRef<(HTMLInputElement | null)[]>([]);
+  
+  // Redux
+  const dispatch = useAppDispatch();
+  const { loading, userType, step } = useAppSelector((state) => state.auth);
 
   // Handle Enter key press for number step
   const handleNumberKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -39,17 +41,12 @@ const LoginPage = () => {
       setErrors(prev => ({ ...prev, number: 'Enter a valid 10-digit mobile number' }));
       return;
     }
-    setIsLoading(true);
-    try {
-      const result = await authService.sendOtp({
-        number: clean,
-        country_id: '91'
-      });
-
-      if (result?.status === 200 || result?.success === true) {
-        toast.success(result?.message || 'OTP sent successfully');
-        setUserType(result?.data?.user_type);
-        setStep('otp');
+    
+    dispatch(sendOtp({
+      number: clean,
+      country_id: '91'
+    }) as any).then((result: any) => {
+      if (result.meta.requestStatus === 'fulfilled') {
         setErrors(prev => ({ ...prev, number: '' }));
         // Reset OTP when moving to OTP step
         setOtp(['', '', '', '', '', '']);
@@ -57,14 +54,8 @@ const LoginPage = () => {
         setTimeout(() => {
           otpInputs.current[0]?.focus();
         }, 100);
-      } else {
-        toast.error(result?.message || 'Failed to send OTP');
       }
-    } catch (error) {
-      toast.error('Something went wrong');
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   const handleVerifyOtp = async () => {
@@ -84,48 +75,22 @@ const LoginPage = () => {
       setErrors(prev => ({ ...prev, ...newErrors }));
       return;
     }
-    setIsLoading(true);
-    try {
-      const result = await authService.verifyOtp({
-        number: number.replace(/\D/g, ''),
-        otp: otpString,
-        country_id: '91',
-        name: userType === 'new' ? form.name : undefined,
-        email: userType === 'new' ? form.email : undefined
-      });
-
-      if (result?.status === 200 || result?.success === true) {
-        setSecureToken(result.data.token);
-        
-        // Store complete user object with all fields
-        const userData = {
-          _id: result.data.user._id,
-          name: result.data.user.name,
-          email: result.data.user.email,
-          phone: result.data.user.phone,
-          mobile: result.data.user.mobile,
-          first_name: result.data.user.first_name,
-          last_name: result.data.user.last_name,
-          full_name: result.data.user.full_name,
-          gender: result.data.user.gender,
-          profile_photo: result.data.user.profile_photo,
-        };
-        
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('email', JSON.stringify(result.data.user.email));
-        localStorage.setItem('token', result.data.token);
-
-        toast.success(result.message || 'Login successful');
+    
+    dispatch(verifyOtp({
+      number: number.replace(/\D/g, ''),
+      otp: otpString,
+      country_id: '91',
+      name: userType === 'new' ? form.name : undefined,
+      email: userType === 'new' ? form.email : undefined
+    }) as any).then((result: any) => {
+      if (result.meta.requestStatus === 'fulfilled') {
         window.dispatchEvent(new Event('storage'));
+        // Fetch cart and wishlist after login
+        dispatch(fetchCart());
+        dispatch(fetchWishlist());
         router.push('/');
-      } else {
-        toast.error(result?.message || 'Login failed');
       }
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || 'Login failed');
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   // Handle OTP input change
@@ -300,8 +265,9 @@ const LoginPage = () => {
                   fullWidth
                   onClick={handleSendNumber}
                   className="cursor-pointer"
+                  disabled={loading}
                 >
-                  {isLoading ? 'Please wait...' : 'Send OTP'} <ArrowRight className="ml-2" size={18} />
+                  {loading ? 'Please wait...' : 'Send OTP'} <ArrowRight className="ml-2" size={18} />
                 </Button>
               </motion.div>
             ) : (
@@ -397,10 +363,10 @@ const LoginPage = () => {
                 <Button 
                   fullWidth 
                   onClick={handleVerifyOtp}
-                  disabled={otp.join('').length !== 6}
-                  className={`cursor-pointer ${otp.join('').length !== 6 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={otp.join('').length !== 6 || loading}
+                  className={`cursor-pointer ${(otp.join('').length !== 6 || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  {isLoading ? 'Please wait...' : 'Login'}
+                  {loading ? 'Please wait...' : 'Login'}
                 </Button>
                 
                 {/* Resend OTP button */}
@@ -409,7 +375,7 @@ const LoginPage = () => {
                     type="button"
                     onClick={handleSendNumber}
                     className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
-                    disabled={isLoading}
+                    disabled={loading}
                   >
                     Didn't receive OTP? Resend
                   </button>

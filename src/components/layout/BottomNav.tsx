@@ -4,13 +4,13 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Search, Heart, ShoppingCart, User } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import { useWishlist } from '@/context/WishlistContext';
+import { useCartRedux } from '@/redux/useCartRedux';
+import { useWishlistRedux } from '@/redux/useWishlistRedux';
 
 export const BottomNav: React.FC = () => {
   const pathname = usePathname();
-  const { cartCount } = useCart();
-  const { wishlistCount } = useWishlist();
+  const { count: cartCount } = useCartRedux();
+  const { count: wishlistCount } = useWishlistRedux();
 
   const navItems = [
     { icon: Home, label: 'Home', href: '/' },

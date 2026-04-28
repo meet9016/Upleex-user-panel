@@ -14,7 +14,7 @@ function cn(...inputs: ClassValue[]) {
 }
 import { Button } from '../ui/Button';
 import { useRouter } from 'next/navigation';
-import { useWishlist } from '../../context/WishlistContext';
+import { useWishlistRedux } from '@/redux/useWishlistRedux';
 
 interface ProductCardProps {
   product: Product | any;
@@ -24,7 +24,7 @@ interface ProductCardProps {
 export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) => {
   const router = useRouter();
   const productId = product.product_id || product.id || product._id;
-  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { toggleWishlist, isInWishlist } = useWishlistRedux();
   const [localLiked, setLocalLiked] = useState<boolean | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 

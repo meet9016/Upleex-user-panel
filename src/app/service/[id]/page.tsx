@@ -9,10 +9,12 @@ import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
 import clsx from 'clsx';
 import { AuthModal } from '@/components/features/AuthModal';
+import { useAppSelector } from '@/redux/hooks';
 
 export default function ServiceDetailPage() {
   const params = useParams();
   const id = params?.id as string;
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string>('');
@@ -22,8 +24,7 @@ export default function ServiceDetailPage() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const handleShowContactClick = () => {
-    const isLogged = typeof window !== 'undefined' && !!localStorage.getItem('user');
-    if (!isLogged) {
+    if (!isAuthenticated) {
       setIsAuthModalOpen(true);
     } else {
       setShowContact(true);
