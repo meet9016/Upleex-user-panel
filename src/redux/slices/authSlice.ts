@@ -119,6 +119,8 @@ const authSlice = createSlice({
         localStorage.removeItem('user');
         localStorage.removeItem('email');
         localStorage.removeItem('token');
+        // Instant socket disconnect — same tab
+        window.dispatchEvent(new Event('userLoggedOut'));
       }
     },
     clearError: (state) => {
@@ -175,6 +177,8 @@ const authSlice = createSlice({
         if (typeof window !== 'undefined') {
           localStorage.setItem('user', JSON.stringify(state.user));
           localStorage.setItem('email', JSON.stringify(user.email));
+          // Instant socket connect — same tab
+          window.dispatchEvent(new Event('userLoggedIn'));
         }
 
         toast.success(action.payload.message || 'Login successful');

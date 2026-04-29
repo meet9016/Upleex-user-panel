@@ -18,7 +18,6 @@ const SocketHandler = () => {
         const parsedUser = JSON.parse(userStr);
         if (typeof parsedUser === 'object' && parsedUser !== null) {
           const id = parsedUser._id || parsedUser.id;
-          console.log('[SocketHandler] userId loaded:', id);
           setUserId(id);
           return;
         }
@@ -31,9 +30,15 @@ const SocketHandler = () => {
 
   useEffect(() => {
     loadUserId();
-    // Re-load on login/logout
+    // Listen on both storage (cross-tab) and userLoggedIn (same-tab)
     window.addEventListener('storage', loadUserId);
-    return () => window.removeEventListener('storage', loadUserId);
+    window.addEventListener('userLoggedIn', loadUserId);
+    window.addEventListener('userLoggedOut', loadUserId);
+    return () => {
+      window.removeEventListener('storage', loadUserId);
+      window.removeEventListener('userLoggedIn', loadUserId);
+      window.removeEventListener('userLoggedOut', loadUserId);
+    };
   }, []);
 
   const { socket, isConnected } = useSocket(userId, 'user');
