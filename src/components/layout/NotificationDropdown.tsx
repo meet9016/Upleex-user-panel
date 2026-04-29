@@ -93,7 +93,12 @@ export default function NotificationDropdown() {
       fetchNotifications();
     };
     window.addEventListener('new_notification', handleNewNotif);
-    return () => window.removeEventListener('new_notification', handleNewNotif);
+    // On socket reconnect, fetch missed notifications from DB
+    window.addEventListener('socket_reconnected', fetchNotifications);
+    return () => {
+      window.removeEventListener('new_notification', handleNewNotif);
+      window.removeEventListener('socket_reconnected', fetchNotifications);
+    };
   }, [fetchNotifications]);
 
   // Refresh on open

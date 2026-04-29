@@ -523,8 +523,8 @@ export const Navbar: React.FC = () => {
               <Button
                 variant="ghost"
                 onClick={() => {
-                  const vendorPanelUrl = process.env.NEXT_PUBLIC_VENDOR_PANEL_URL || 'http://localhost:3002' || 'https://vendor.upleex.com';
-                  window.location.href = `${vendorPanelUrl}/signin`;
+                  const vendorPanelUrl = process.env.NEXT_PUBLIC_VENDOR_PANEL_URL;
+                  window.location.href = `${vendorPanelUrl}`;
                 }}
                 className="px-6 border border-gray-300 text-slate-700 font-semibold hover:bg-transparent hover:border-blue-600 hover:text-blue-600 cursor-pointer focus:outline-none focus:ring-0 focus:ring-offset-0 active:outline-none"
               >
@@ -559,7 +559,7 @@ export const Navbar: React.FC = () => {
               <Link href="#categories" className="block text-slate-600 font-medium py-2" onClick={() => setIsMenuOpen(false)}>Categories</Link>
               <div className="pt-4 flex flex-col gap-3">
                 <a
-                  href={`${process.env.NEXT_PUBLIC_VENDOR_PANEL_URL || 'http://localhost:3002'}/signin`}
+                  href={`${process.env.NEXT_PUBLIC_VENDOR_PANEL_URL}`}
                   className="block w-full text-center py-3 border border-gray-300 rounded-lg text-slate-700 font-semibold"
                   onClick={() => setIsMenuOpen(false)}
                 >

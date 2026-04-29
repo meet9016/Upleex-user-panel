@@ -179,13 +179,13 @@ export default function PartnerSignupPage() {
           
           const token = res?.data?.token || res?.data?.auth_token;
           const vendorInfo = res?.data?.vendor;
-          const vendorPanelUrl = process.env.NEXT_PUBLIC_VENDOR_PANEL_URL || 'http://localhost:3002' || 'https://vendor.upleex.com';
+          const vendorPanelUrl = process.env.NEXT_PUBLIC_VENDOR_PANEL_URL;
           
           if (token && vendorInfo) {
             const userInfoStr = encodeURIComponent(JSON.stringify(vendorInfo));
-            window.location.href = `${vendorPanelUrl}/signin?token=${token}&user_info=${userInfoStr}`;
+            window.location.href = `${vendorPanelUrl}?token=${token}&user_info=${userInfoStr}`;
           } else {
-            window.location.href = `${vendorPanelUrl}/signin`;
+            window.location.href = `${vendorPanelUrl}`;
           }
         } else {
           toast.error(message);

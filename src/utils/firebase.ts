@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import axios from "axios";
+import { getSecureToken } from "@/utils/cryptoUtils";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,8 +21,8 @@ export const requestNotificationPermission = async () => {
   if (!messaging) return;
   
   try {
-    const userToken = localStorage.getItem('token');
-    if (!userToken) return; // User logged in nahi hai toh skip karo
+    const userToken = getSecureToken(); // decoded JWT
+    if (!userToken) return;
 
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
@@ -38,7 +39,8 @@ export const requestNotificationPermission = async () => {
         );
       }
     }
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.response?.status === 401) return; // silently ignore — not logged in
     console.error("Error getting notification permission:", error);
   }
 };
@@ -51,7 +53,7 @@ export const onMessageListener = () =>
     });
   });
 
-// Persistent listener — ek baar set karo, baar baar fire hoga
+// Persistent listener —  set once, fire multiple times on incoming messages
 export const setupForegroundListener = (callback: (payload: any) => void) => {
   if (!messaging) return () => {};
   const unsubscribe = onMessage(messaging, callback);
