@@ -126,6 +126,29 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    // Set login data directly (used by AuthModal to avoid double API call)
+    setLoginData: (state, action: PayloadAction<{ token: string; user: any }>) => {
+      const { token, user } = action.payload;
+      state.token = token;
+      state.user = {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        mobile: user.mobile,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        full_name: user.full_name,
+        gender: user.gender,
+        profile_photo: user.profile_photo,
+      };
+      state.isAuthenticated = true;
+      setSecureToken(token);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(state.user));
+        localStorage.setItem('email', JSON.stringify(user.email));
+      }
+    },
   },
   extraReducers: (builder) => {
     // Send OTP
@@ -191,5 +214,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUserType, setStep, logout, clearError } = authSlice.actions;
+export const { setUserType, setStep, logout, clearError, setLoginData } = authSlice.actions;
 export default authSlice.reducer;

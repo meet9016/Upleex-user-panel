@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { setSecureToken } from '@/utils/cryptoUtils';
 import { Button } from '@/components/ui/Button';
 import { ArrowRight, Phone, Mail, Chrome, Eye, EyeOff, Check, ChevronDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Modal } from '@/components/ui/Modal';
 import clsx from 'clsx';
 import { authService } from '@/services/authService';
+import { useAppDispatch } from '@/redux/hooks';
+import { setLoginData } from '@/redux/slices/authSlice';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   onLoginSuccess,
 }) => {
+  const dispatch = useAppDispatch();
   const [number, setNumber] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [step, setStep] = useState<'number' | 'otp'>('number');
@@ -123,12 +125,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       });
 
       if (result?.status === 200 || result?.success === true) {
-        setSecureToken(result.data.token);
-        localStorage.setItem('user', JSON.stringify(result.data.user.name || result.data.user.full_name));
-        localStorage.setItem('email', JSON.stringify(result.data.user.email));
-
+        // Update Redux store without double API call
+        dispatch(setLoginData({ token: result.data.token, user: result.data.user }));
         toast.success(result.message || 'Login successful');
-        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new Event('userLoggedIn'));
         onLoginSuccess();
       } else {
         toast.error(result?.message || 'Login failed');

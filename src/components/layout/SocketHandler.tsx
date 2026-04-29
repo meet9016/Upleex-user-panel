@@ -57,6 +57,10 @@ const SocketHandler = () => {
     if (!socket || !isConnected || !userId) return;
     console.log('[SocketHandler] ✅ Attaching listener for user:', userId);
     socket.on('new_notification', handleNotification);
+
+    // On reconnect, fetch missed notifications from DB
+    window.dispatchEvent(new CustomEvent('socket_reconnected'));
+
     return () => { socket.off('new_notification', handleNotification); };
   }, [socket, isConnected, userId, handleNotification]);
 
