@@ -35,19 +35,18 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: [
-      'lucide-react', 
       'framer-motion', 
       'axios',
       '@radix-ui/react-slot',
       'clsx',
-      'tailwind-merge'
+      'tailwind-merge',
+      'react-icons'
     ],
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   // Turbopack optimizations
-  transpilePackages: ['lucide-react'],
 };
 
 export default nextConfig;
