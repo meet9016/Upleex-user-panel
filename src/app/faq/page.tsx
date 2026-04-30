@@ -208,7 +208,7 @@ export default function FAQPage() {
 
             {/* Call Us */}
             <a
-              href="tel:+910000000000"
+              href="tel:+91 73591 55961"
               className="group bg-slate-50 hover:bg-upleex-blue/5 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg border border-transparent hover:border-upleex-blue/20"
             >
               <div className="w-12 h-12 bg-upleex-blue/10 group-hover:bg-upleex-blue rounded-2xl flex items-center justify-center mb-4 transition-colors duration-300">
@@ -216,7 +216,7 @@ export default function FAQPage() {
               </div>
               <h3 className="text-lg font-semibold text-slate-900 mb-2">Call Us</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Mon-Fri from 9am to 6pm IST. +91 00000 00000
+                Mon-Fri from 9am to 6pm IST. +91 73591 55961
               </p>
             </a>
 
