@@ -229,7 +229,7 @@ export default function ContactUsPage() {
             <h3 className="text-lg font-bold text-slate-900 mb-2">Call us</h3>
             <p className="text-slate-500 mb-6 leading-relaxed text-sm md:text-base">Mon-Fri from 9am to 6pm IST.</p>
             <a href="tel:+910000000000" className="text-slate-900 font-semibold hover:text-upleex-purple transition-colors flex items-center gap-2 group-hover:gap-3 duration-300 text-sm md:text-base">
-              +91 7359595951 <ArrowRight className="w-4 h-4" />
+              +91 7359155961 <ArrowRight className="w-4 h-4" />
             </a>
           </div>
         </div>
