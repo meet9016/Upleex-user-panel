@@ -20,6 +20,7 @@ export default function SellerPage() {
 
   const [vendorName, setVendorName] = useState<string | null>(vendorNameFromQuery);
   const [products, setProducts] = useState<any[]>([]);
+  const [vendorVideos, setVendorVideos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [productCount, setProductCount] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,6 +58,8 @@ export default function SellerPage() {
           page: currentPage
         });
         const payload = res?.data;
+        const videos = res?.vendor_videos || [];
+        setVendorVideos(videos);
         let inferredVendorName: string | null = null;
 
         if (Array.isArray(payload)) {
@@ -142,57 +145,87 @@ export default function SellerPage() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 w-full">
         <BackButton />
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 px-6 sm:px-8 py-5 sm:py-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mt-4 w-full">
-          <div className="flex items-center gap-4 sm:gap-5 overflow-hidden">
-            <div className="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-blue-50 flex items-center justify-center">
-              <Store size={32} className="text-upleex-blue" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-xs font-semibold text-gray-500  tracking-[0.18em] mb-1">
-                Sold By
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 truncate">
-                {vendorName || 'Vendor'}
-              </h1>
-              {/* Add vendor address here */}
-              {products.length > 0 && products[0]?.vendor_address && (
-                <div className="mt-2">
-                  <div className="text-xs font-semibold text-gray-500  tracking-[0.18em] mb-1">
-                    Address
-                  </div>
-                  <p className="text-sm text-gray-600 line-clamp-2" title={products[0].vendor_address}>
-                    📍 {products[0].vendor_address}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100/80 px-5 sm:px-6 py-3 sm:py-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mt-4 w-full">
+  
+  {/* LEFT SIDE */}
+  <div className="flex items-center gap-3 sm:gap-4 overflow-hidden">
+    
+    <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-50 flex items-center justify-center">
+      <Store size={26} className="text-upleex-blue" />
+    </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={handleCopyProfile}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-100 rounded-full text-sm font-semibold text-slate-700 hover:border-upleex-blue hover:text-upleex-blue transition-all duration-300 shadow-sm hover:shadow-md"
-            >
-              {isCopied ? <Check size={18} /> : <Share2 size={18} />}
-              <span>{isCopied ? 'Copied' : 'Share Profile'}</span>
-            </button>
+    <div className="min-w-0">
+      <div className="text-[10px] font-semibold text-gray-500 tracking-[0.15em] mb-0.5">
+        Sold By
+      </div>
 
-            {user ? (
-              <div className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-upleex-blue to-upleex-purple rounded-full text-sm font-semibold text-white shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 cursor-pointer overflow-hidden relative group"
-                onClick={handleCopyReferral}
-              >
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                {isReferralCopied ? <Check size={18} /> : <Copy size={18} />}
-                <span>{isReferralCopied ? 'Link Copied' : 'Referral Link'}</span>
-              </div>
-            ) : (
-              <Link href="/auth/login" className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 rounded-full text-sm font-semibold text-white shadow-lg hover:bg-slate-800 transition-all duration-300 overflow-hidden">
-                <ExternalLink size={18} />
-                <span>Login for Referral</span>
-              </Link>
-            )}
-          </div>
+      <h1 className="text-xl sm:text-2xl font-bold text-slate-900 truncate leading-tight">
+        {vendorName || 'Vendor'}
+      </h1>
+    </div>
+  </div>
+
+  {/* RIGHT SIDE */}
+  <div className="flex flex-col items-start lg:items-end gap-2 w-full lg:w-auto">
+    
+    {/* ADDRESS ABOVE BUTTONS */}
+    {products.length > 0 && products[0]?.vendor_address && (
+      <p className="text-xs text-gray-600 leading-tight text-left lg:text-right max-w-xs truncate">
+        📍 {products[0].vendor_address}
+      </p>
+    )}
+
+    {/* BUTTONS */}
+    <div className="flex flex-wrap items-center gap-2">
+      <button
+        onClick={handleCopyProfile}
+        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-full text-xs font-semibold text-slate-700 hover:border-upleex-blue hover:text-upleex-blue transition"
+      >
+        {isCopied ? <Check size={16} /> : <Share2 size={16} />}
+        <span>{isCopied ? 'Copied' : 'Share'}</span>
+      </button>
+
+      {user ? (
+        <div
+          onClick={handleCopyReferral}
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-upleex-blue to-upleex-purple rounded-full text-xs font-semibold text-white cursor-pointer"
+        >
+          {isReferralCopied ? <Check size={16} /> : <Copy size={16} />}
+          <span>{isReferralCopied ? 'Copied' : 'Referral'}</span>
         </div>
+      ) : (
+        <Link
+          href="/auth/login"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-900 rounded-full text-xs font-semibold text-white"
+        >
+          <ExternalLink size={16} />
+          <span>Login</span>
+        </Link>
+      )}
+    </div>
+  </div>
+</div>
+      
+        {vendorVideos.length > 0 && (
+          <div className="mt-8 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <h2 className="text-lg font-bold text-slate-900 mb-4">
+              Promotional Videos
+            </h2>
+            <div className="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
+              {vendorVideos.map((video, idx) => (
+                <div key={idx} className="flex-none w-[85vw] sm:w-[400px] rounded-2xl overflow-hidden shadow-md border border-gray-100 bg-white snap-center relative group">
+                  <video 
+                    src={video} 
+                    controls 
+                    className="w-full aspect-video object-cover"
+                    preload="metadata"
+                  />
+                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-upleex-purple/20 rounded-2xl pointer-events-none transition-colors duration-300"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-8 w-full">
           <h2 className="text-lg font-bold text-slate-900 mb-4">
