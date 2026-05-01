@@ -31,7 +31,7 @@ export const requestNotificationPermission = async () => {
       });
       
       if (token) {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3688/api/v1/';
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '') || '';
         const url = `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}auth/register-fcm`;
         await axios.post(url,
           { token },
