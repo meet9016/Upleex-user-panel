@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
+const SOCKET_URL_PATH = process.env.SOCKET_PATH;
 console.log('socket url',SOCKET_URL)
 
 export const useSocket = (userId: string | undefined, type: 'user' | 'vendor' | 'admin' = 'user') => {
@@ -31,8 +32,8 @@ export const useSocket = (userId: string | undefined, type: 'user' | 'vendor' | 
 
     console.log(`[useSocket] Connecting for ${type} ${userId}`);
     const socket = io(SOCKET_URL, {
-       path : '/api/api/socket.io',
-      transports: ['polling'],
+      path : SOCKET_URL_PATH,
+      transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,

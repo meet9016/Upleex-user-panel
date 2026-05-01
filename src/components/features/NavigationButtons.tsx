@@ -27,8 +27,13 @@ export const NavigationButtons = () => {
   useEffect(() => {
     fetchUnreadCount();
     const handleNewNotif = () => fetchUnreadCount();
+    const handleAllRead = () => fetchUnreadCount();
     window.addEventListener('new_notification', handleNewNotif);
-    return () => window.removeEventListener('new_notification', handleNewNotif);
+    window.addEventListener('notifications_read_all', handleAllRead);
+    return () => {
+      window.removeEventListener('new_notification', handleNewNotif);
+      window.removeEventListener('notifications_read_all', handleAllRead);
+    };
   }, [fetchUnreadCount]);
 
   const isActive = (path: string) => pathname === path;

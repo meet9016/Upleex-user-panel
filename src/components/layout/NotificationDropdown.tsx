@@ -73,6 +73,7 @@ export default function NotificationDropdown() {
   const markAllAsRead = useCallback(async () => {
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     await api.put('notifications/read-all').catch(() => {});
+    window.dispatchEvent(new CustomEvent('notifications_read_all'));
   }, []);
 
   // Fetch on mount and listen for socket/FCM events
@@ -92,11 +93,14 @@ export default function NotificationDropdown() {
       }
       fetchNotifications();
     };
+    const handleAllRead = () => fetchNotifications();
     window.addEventListener('new_notification', handleNewNotif);
+    window.addEventListener('notifications_read_all', handleAllRead);
     // On socket reconnect, fetch missed notifications from DB
     window.addEventListener('socket_reconnected', fetchNotifications);
     return () => {
       window.removeEventListener('new_notification', handleNewNotif);
+      window.removeEventListener('notifications_read_all', handleAllRead);
       window.removeEventListener('socket_reconnected', fetchNotifications);
     };
   }, [fetchNotifications]);
