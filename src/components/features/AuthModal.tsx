@@ -451,9 +451,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </Button>
 
                 <div className="flex items-center justify-between text-sm font-medium pt-2">
-                  {/* <button 
+                  {/* <button
                     onClick={() => setStep('number')}
-                    className="text-gray-500 hover:text-gray-900 transition-colors"
+                    className="text-gray-500 hover:text-gray-900 transition-colors flex items-center gap-1"
                   >
                     ← Change Number
                   </button> */}

@@ -27,6 +27,12 @@ const LoginPage = () => {
   const dispatch = useAppDispatch();
   const { loading, userType, step } = useAppSelector((state) => state.auth);
 
+  // Reset state on mount
+  useEffect(() => {
+    dispatch(setStep('number'));
+    dispatch(setUserType(null));
+  }, [dispatch]);
+
   // Handle Enter key press for number step
   const handleNumberKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -370,7 +376,7 @@ const LoginPage = () => {
                 </Button>
                 
                 {/* Resend OTP button */}
-                <div className="text-center">
+                <div className="text-center flex flex-col gap-2">
                   <button
                     type="button"
                     onClick={handleSendNumber}
@@ -379,6 +385,14 @@ const LoginPage = () => {
                   >
                     Didn't receive OTP? Resend
                   </button>
+                  {/* <button
+                    type="button"
+                    onClick={() => dispatch(setStep('number'))}
+                    className="text-sm text-gray-500 hover:text-gray-700"
+                    disabled={loading}
+                  >
+                    Change Number
+                  </button> */}
                 </div>
               </motion.div>
             )}
