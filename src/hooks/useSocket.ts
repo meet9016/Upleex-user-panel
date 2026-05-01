@@ -32,7 +32,7 @@ export const useSocket = (userId: string | undefined, type: 'user' | 'vendor' | 
     console.log(`[useSocket] Connecting for ${type} ${userId}`);
     const socket = io(SOCKET_URL, {
        path : '/api/api/socket.io',
-      transports: ['websocket', 'polling'],
+      transports: ['polling'],
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 1000,
