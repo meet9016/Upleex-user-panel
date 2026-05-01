@@ -88,13 +88,19 @@ export default function NotificationsPage() {
   useEffect(() => {
     fetchNotifications();
     const handleNewNotif = () => fetchNotifications();
+    const handleAllRead = () => fetchNotifications();
     window.addEventListener('new_notification', handleNewNotif);
-    return () => window.removeEventListener('new_notification', handleNewNotif);
+    window.addEventListener('notifications_read_all', handleAllRead);
+    return () => {
+      window.removeEventListener('new_notification', handleNewNotif);
+      window.removeEventListener('notifications_read_all', handleAllRead);
+    };
   }, [fetchNotifications]);
 
   const handleMarkAllAsRead = async () => {
     setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     await api.put('notifications/read-all').catch(() => {});
+    window.dispatchEvent(new CustomEvent('notifications_read_all'));
     toast.success('All notifications marked as read');
   };
 
@@ -133,7 +139,7 @@ export default function NotificationsPage() {
             )}
           </div>
 
-          <div className="divide-y divide-gray-50">
+          <div className="h-[500px] overflow-y-auto divide-y divide-gray-50">
             {loading ? (
               <div className="py-20 flex justify-center">
                 <Loader />
