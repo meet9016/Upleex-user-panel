@@ -41,7 +41,7 @@ function RentCategoryContent() {
   
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isTenureOpen, setIsTenureOpen] = useState(false);
-  const [selectedSort, setSelectedSort] = useState({ label: 'Rent', value: '1' });
+  const [selectedSort, setSelectedSort] = useState({ label: 'All Types', value: '0' });
   const [selectedTenure, setSelectedTenure] = useState({ label: 'All Durations', value: '0' });
   const [sortOptions, setSortOptions] = useState([
     { label: 'All Types', value: '0' },
