@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MapPin, Heart } from 'lucide-react';
+import { GoVerified } from 'react-icons/go';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { Product } from '../../types';
@@ -200,21 +201,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     {/* CONTENT */}
     <div className="p-4 space-y-3">
       
-      {/* NEW Badge - Always reserve space */}
-      <div className="flex justify-start min-h-[28px]">
+      {/* NEW Badge */}
+      <div className="flex justify-start items-center gap-2 min-h-[28px]">
         {product.is_new ? (
           <span className="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded-md border border-green-200 whitespace-nowrap">
             NEW
           </span>
         ) : (
-          <div className="h-[28px]" /> 
+          <div className="h-[28px]" />
         )}
       </div>
 
-  {/* Product Name */}
-  <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition">
-    {productName}
-  </h3>
+  {/* Product Name + Verified */}
+  <div className="flex items-center gap-1.5">
+    <h3 className="font-semibold text-slate-800 line-clamp-1 hover:text-upleex-blue transition flex-1">
+      {productName}
+    </h3>
+    {product.pricing_type === 'paid' && (
+      <span className="relative group/verified flex-shrink-0 cursor-default">
+        <GoVerified size={20} className="text-blue-600 stroke-[1] " />
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-1 bg-gray-900 text-white text-[10px] rounded-md whitespace-nowrap opacity-0 group-hover/verified:opacity-100 transition-opacity pointer-events-none z-50">
+          Verified
+          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+        </span>
+      </span>
+    )}
+  </div>
   
   {/* Location and Cancel Price in same row */}
   <div className="flex items-center justify-between gap-2">
