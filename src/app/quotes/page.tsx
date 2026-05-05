@@ -25,6 +25,10 @@ const UserQuotesPage = () => {
     orderId: string;
     amount: number;
     items: any[];
+    vendor_name?: string;
+    vendor_address?: string;
+    vendor_city?: string;
+    vendor_mobile?: string;
   } | null>(null);
 
   useEffect(() => {
@@ -69,7 +73,7 @@ const UserQuotesPage = () => {
         order_id: data.razorpay_order_id,
         handler: async (response: any) => {
           try {
-            await api.post('/quote/verify-payment', {
+            const verifyRes = await api.post('/quote/verify-payment', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
@@ -78,6 +82,9 @@ const UserQuotesPage = () => {
 
             toast.success('Payment successful! Quote confirmed.');
             
+            const enrichedQuote = verifyRes.data?.data || {};
+            const vDetails = enrichedQuote.vendor_details || {};
+
             setCompletedOrderDetails({
               orderId: quote._id,
               amount: quote.calculated_price || 0,
@@ -89,6 +96,10 @@ const UserQuotesPage = () => {
                   image: quote.product_id?.product_main_image,
                 }
               ],
+              vendor_name: vDetails.vendor_name || quote.product_id?.vendor_name || '',
+              vendor_address: vDetails.vendor_address || '',
+              vendor_city: vDetails.vendor_city || '',
+              vendor_mobile: vDetails.vendor_mobile || '',
             });
             setIsSuccessModalOpen(true);
             

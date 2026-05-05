@@ -92,6 +92,10 @@ export default function CartPage() {
     orderId: string;
     amount: number;
     items: any[];
+    vendor_name?: string;
+    vendor_address?: string;
+    vendor_city?: string;
+    vendor_mobile?: string;
   } | null>(null);
   const [paymentOption, setPaymentOption] = useState<'full' | '30_percent'>('full');
   const { items: cartItems, loading, summary: cartSummary, updateQuantity, removeFromCart, refreshCart, clearCart } = useCartRedux();
@@ -177,7 +181,7 @@ export default function CartPage() {
         handler: async (response: any) => {
           try {
             // Verify payment
-            await api.post(endPointApi.verifyPayment, {
+            const verifyRes = await api.post(endPointApi.verifyPayment, {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
@@ -189,11 +193,17 @@ export default function CartPage() {
             // Refresh cart state to update count globally (backend has already cleared it)
             await refreshCart();
 
+            const orderDetailsFromApi = verifyRes.data?.data?.order_details;
+            const vendorItem = orderDetailsFromApi?.items?.[0] || {};
             // Set order details and show success modal
             setCompletedOrderDetails({
               orderId: data.order_id,
               amount: data.amount,
               items: cartItems,
+              vendor_name: vendorItem.vendor_name || '',
+              vendor_address: vendorItem.vendor_address || '',
+              vendor_city: vendorItem.vendor_city || '',
+              vendor_mobile: vendorItem.vendor_mobile || '',
             });
             setIsSuccessModalOpen(true);
           } catch (error: any) {

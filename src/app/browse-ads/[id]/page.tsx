@@ -1342,7 +1342,7 @@ export default function ProductDetailsPage() {
                         </div>
                         {/* Add vendor address here */}
                         {productDetails?.vendor_address && (
-                          <div className="text-xs text-gray-500 mt-1 truncate max-w-[200px]" title={productDetails.vendor_address}>
+                          <div className="text-xs text-gray-500 mt-1" title={productDetails.vendor_address}>
                             📍 {productDetails.vendor_address} , {productDetails.vendor_city_name}
                           </div>
                         )}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, Package } from 'lucide-react';
+import { Check, Package, Store, Phone, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
 interface SuccessModalProps {
@@ -9,6 +9,10 @@ interface SuccessModalProps {
     orderId: string;
     amount: number;
     items: any[];
+    vendor_name?: string;
+    vendor_address?: string;
+    vendor_city?: string;
+    vendor_mobile?: string;
   } | null;
   onClose?: () => void;
 }
@@ -67,6 +71,37 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, orderDetails
                   </div>
                 ))}
               </div>
+
+              {/* Vendor Details */}
+              {orderDetails.vendor_name && (
+                <div className="mt-4 pt-4 border-t border-slate-200">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
+                      <Store size={18} className="text-blue-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[10px] font-semibold text-gray-500 tracking-[0.15em] mb-0.5 uppercase">
+                        Sold By
+                      </div>
+                      <div className="text-sm font-bold text-slate-800 truncate">
+                        {orderDetails.vendor_name}
+                      </div>
+                      {orderDetails.vendor_mobile && (
+                        <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                          <Phone size={12} />
+                          {orderDetails.vendor_mobile}
+                        </div>
+                      )}
+                      {orderDetails.vendor_address && (
+                        <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                          <MapPin size={12} />
+                          {orderDetails.vendor_address}, {orderDetails.vendor_city}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           
