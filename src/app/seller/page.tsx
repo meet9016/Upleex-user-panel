@@ -14,8 +14,9 @@ import { useAppSelector } from '@/redux/hooks';
 
 export default function SellerPage() {
   const searchParams = useSearchParams();
+  console.log("searchParams",searchParams)
   const vendorId = searchParams?.get('vendor_id') ?? '';
-  const vendorNameFromQuery = searchParams?.get('vendor_name') ?? null;
+  const vendorNameFromQuery = searchParams?.get('business_name') ?? null;
   const { user } = useAppSelector((state) => state.auth);
 
   const [vendorName, setVendorName] = useState<string | null>(vendorNameFromQuery);
@@ -57,7 +58,9 @@ export default function SellerPage() {
           filter_tenure: selectedTenure.value,
           page: currentPage
         });
+        console.log("object",res);
         const payload = res?.data;
+        console.log("payload",payload);
         const videos = res?.vendor_videos || [];
         setVendorVideos(videos);
         let inferredVendorName: string | null = null;
@@ -66,7 +69,7 @@ export default function SellerPage() {
           setProducts(payload);
 
           if (payload.length > 0) {
-            inferredVendorName = payload[0].vendor_name || null;
+            inferredVendorName = payload[0].business_name || null;
           }
 
           const hasFullPage = payload.length >= ITEMS_PER_PAGE;
@@ -78,7 +81,7 @@ export default function SellerPage() {
           setProducts(productData);
 
           if (productData.length > 0) {
-            inferredVendorName = productData[0].vendor_name || null;
+            inferredVendorName = productData[0].business_name || null;
           }
 
           const hasFullPage = productData.length >= ITEMS_PER_PAGE;
@@ -86,7 +89,7 @@ export default function SellerPage() {
           setTotalPages(hasFullPage ? currentPage + 1 : currentPage);
         }
 
-        if (!vendorName && inferredVendorName) {
+        if (inferredVendorName) {
           setVendorName(inferredVendorName);
         }
       } catch (error) {
