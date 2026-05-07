@@ -978,10 +978,10 @@ export default function ProductDetailsPage() {
                           </div>
                         )}
                       </div>
-                      <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+                      {/* <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
                         <CheckCircle size={12} className="text-green-500" />
                         Inclusive of all taxes
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 )}
