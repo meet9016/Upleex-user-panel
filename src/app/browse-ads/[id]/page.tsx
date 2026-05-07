@@ -323,6 +323,8 @@ export default function ProductDetailsPage() {
     latestReturnDate: string | null;
     bookedRanges: { start: string; end: string; qty: number }[];
     hasActiveRent: boolean;
+    available_quantity?: number;
+    total_quantity?: number;
   } | null>(null);
 
   useEffect(() => {
@@ -345,6 +347,13 @@ export default function ProductDetailsPage() {
   const isSell = baseType === "sell";
   const isDaily = listingType === "daily";
   const isHourly = listingType === "hourly";
+  const currentAvailableQuantity = !isSell
+    ? (rentAvailability?.available_quantity ?? productDetails?.available_quantity ?? 0)
+    : (productDetails?.available_quantity ?? 0);
+  const totalSelectableQuantity = !isSell
+    ? (rentAvailability?.total_quantity ?? productDetails?.available_quantity ?? 9999)
+    : (productDetails?.available_quantity ?? 9999);
+  const shouldDisableBookedEndDates = !isSell && quantity > currentAvailableQuantity;
 
   // Auto-calculate end date based on product type (for daily and monthly only)
   useEffect(() => {
@@ -988,7 +997,7 @@ export default function ProductDetailsPage() {
                     <div className="flex flex-col">
                       <span className="font-bold text-gray-900">Quantity</span>
                       {isSell && <span className="text-[10px] text-gray-500">Select units</span>}
-                      {productDetails && (!productDetails.is_out_of_stock && productDetails.available_quantity > 0) && (
+                      {productDetails && (!productDetails.is_out_of_stock && currentAvailableQuantity > 0) && (
                         <span className="text-[9px] text-orange-600 font-medium">
                           {productDetails.available_quantity} available
                         </span>
@@ -1010,7 +1019,7 @@ export default function ProductDetailsPage() {
                         <input
                           type="number"
                           min={1}
-                          max={productDetails?.available_quantity || 9999}
+                          max={totalSelectableQuantity}
                           value={quantity}
                           onFocus={(e) => e.currentTarget.select()}
                           onChange={(e) => {
@@ -1031,8 +1040,8 @@ export default function ProductDetailsPage() {
                             let clamped = Math.max(1, parsed);
 
                             // Apply stock validation for both sell and non-sell products
-                            if (productDetails?.available_quantity) {
-                              clamped = Math.min(clamped, productDetails.available_quantity);
+                            if (totalSelectableQuantity) {
+                              clamped = Math.min(clamped, totalSelectableQuantity);
                             }
 
                             // Apply maximum limit of 9999
@@ -1045,9 +1054,9 @@ export default function ProductDetailsPage() {
                             const value = Number(e.target.value);
                             if (value < 1) {
                               setQuantity(1);
-                            } else if (productDetails?.available_quantity && value > productDetails.available_quantity) {
-                              setQuantity(productDetails.available_quantity);
-                              toast.error(`Maximum available quantity is ${productDetails.available_quantity}`);
+                            } else if (totalSelectableQuantity && value > totalSelectableQuantity) {
+                              setQuantity(totalSelectableQuantity);
+                              toast.error(`Maximum available quantity is ${totalSelectableQuantity}`);
                             } else if (value > 9999) {
                               setQuantity(9999);
                               toast.error("Maximum quantity limit is 9999");
@@ -1059,15 +1068,15 @@ export default function ProductDetailsPage() {
                           onClick={() => {
                             let newQuantity = quantity + 1;
                             newQuantity = Math.min(9999, newQuantity);
-                            if (productDetails?.available_quantity) {
-                              newQuantity = Math.min(newQuantity, productDetails.available_quantity);
+                            if (totalSelectableQuantity) {
+                              newQuantity = Math.min(newQuantity, totalSelectableQuantity);
                             }
                             setQuantity(newQuantity);
                           }}
                           className="rounded-md hover:shadow-sm transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                           disabled={
                             quantity >= 9999 ||
-                            (productDetails?.available_quantity ? quantity >= productDetails.available_quantity : false)
+                            (totalSelectableQuantity ? quantity >= totalSelectableQuantity : false)
                           }
                         >
                           <Plus size={16} className="text-gray-600" />
@@ -1099,6 +1108,8 @@ export default function ProductDetailsPage() {
                               min={minDate}
                               disabled={false}
                               textSize={"xs"}
+                              bookedRanges={rentAvailability?.bookedRanges}
+                              disableBookedEndDates={shouldDisableBookedEndDates}
                             />
                           </div>
                         </div>
@@ -1216,8 +1227,8 @@ export default function ProductDetailsPage() {
                   )}
                 </div>
 
-                {/* Currently Rented Banner - only when stock is 0 AND active rent exists */}
-                {!isSell && (productDetails?.available_quantity <= 0 || productDetails?.is_out_of_stock) && rentAvailability?.hasActiveRent && rentAvailability.latestReturnDate && (
+                {/* Currently Rented Banner - only when available_quantity is 0 */}
+                {!isSell && rentAvailability?.available_quantity === 0 && rentAvailability.latestReturnDate && (
                   <div className="mt-4 relative overflow-hidden rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 p-4 shadow-sm">
                     {/* Decorative background circle */}
                     <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-orange-100/60 pointer-events-none" />

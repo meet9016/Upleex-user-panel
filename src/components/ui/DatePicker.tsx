@@ -14,6 +14,8 @@ interface DatePickerProps {
   disabled?: boolean;
   align?: "left" | "right";
   textSize?: string;
+  bookedRanges?: { start: string; end: string }[];
+  disableBookedEndDates?: boolean;
 }
 
 export function DatePicker({
@@ -26,6 +28,8 @@ export function DatePicker({
   disabled = false,
   align = "left",
   textSize = "text-sm",
+  bookedRanges = [],
+  disableBookedEndDates = true,
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date()); // For navigation
@@ -104,6 +108,46 @@ export function DatePicker({
     setIsOpen(false);
   };
 
+  const isDateBookedEndDate = (day: number) => {
+    const dateToCheck = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
+    dateToCheck.setHours(0, 0, 0, 0);
+
+    for (const range of bookedRanges) {
+      const end = new Date(range.end);
+      end.setHours(0, 0, 0, 0);
+
+      if (dateToCheck.getTime() === end.getTime()) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const isDateInBookedRanges = (day: number) => {
+    const dateToCheck = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
+    dateToCheck.setHours(0, 0, 0, 0);
+
+    for (const range of bookedRanges) {
+      const start = new Date(range.start);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(range.end);
+      end.setHours(0, 0, 0, 0);
+
+      if (dateToCheck >= start && dateToCheck <= end) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   const isDateDisabled = (day: number) => {
     const dateToCheck = new Date(
       currentDate.getFullYear(),
@@ -125,6 +169,9 @@ export function DatePicker({
       maxDate.setHours(0, 0, 0, 0);
       if (dateToCheck.getTime() !== maxDate.getTime()) return true;
     }
+
+    // Check booked ranges - disable only end dates
+    if (disableBookedEndDates && isDateBookedEndDate(day)) return true;
 
     return false;
   };
@@ -155,6 +202,7 @@ export function DatePicker({
     for (let day = 1; day <= daysInMonth; day++) {
       const disabled = isDateDisabled(day);
       const selected = isDateSelected(day);
+      const isBookedEnd = disableBookedEndDates && isDateBookedEndDate(day);
 
       days.push(
         <button
@@ -165,12 +213,14 @@ export function DatePicker({
           }}
           disabled={disabled}
           className={clsx(
-            "h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium transition-all",
+            "h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium transition-all border-2",
             selected
-              ? "bg-blue-600 text-white shadow-md"
+              ? "bg-blue-600 text-white shadow-md border-blue-600"
+              : isBookedEnd
+              ? "text-red-400 cursor-not-allowed border-red-300 bg-red-50"
               : disabled
-              ? "text-gray-300 cursor-not-allowed"
-              : "text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              ? "text-gray-300 cursor-not-allowed border-transparent"
+              : "text-gray-700 hover:bg-blue-50 hover:text-blue-600 border-transparent"
           )}
         >
           {day}
