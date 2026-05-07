@@ -1338,7 +1338,7 @@ export default function ProductDetailsPage() {
                           Sold By
                         </div>
                         <div className="text-sm font-bold text-slate-900">
-                          {productDetails?.vendor_name || 'Vendor'}
+                          {productDetails?.business_name || '-'}
                         </div>
                         {/* Add vendor address here */}
                         {productDetails?.vendor_address && (

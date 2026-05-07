@@ -170,7 +170,7 @@ export default function SellerPage() {
     
     {/* ADDRESS ABOVE BUTTONS */}
     {products.length > 0 && products[0]?.vendor_address && (
-      <p className="text-xs text-gray-600 leading-tight text-left lg:text-right max-w-xs truncate">
+      <p className="text-xs text-gray-600  text-left lg:text-right max-w-xs ">
         📍 {products[0].vendor_address}
       </p>
     )}
