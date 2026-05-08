@@ -19,13 +19,14 @@ export const getSecureToken = (): string | null => {
     try {
       const encoded = localStorage.getItem('token');
       if (!encoded) return null;
-      return atob(encoded.split('').reverse().join(''));
+      const decoded = atob(encoded.split('').reverse().join(''));
+      if (!decoded || typeof decoded !== 'string') return null;
+      return decoded;
     } catch (e) {
       try {
-        return localStorage.getItem('token');
-      } catch (err) {
-        return null;
-      }
+        localStorage.removeItem('token');
+      } catch { /* ignore */ }
+      return null;
     }
   }
   return null;
