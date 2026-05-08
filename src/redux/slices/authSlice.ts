@@ -29,13 +29,13 @@ export interface AuthState {
 
 const loadUserFromStorage = (): UserData | null => {
   if (typeof window !== 'undefined') {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
         return JSON.parse(userStr);
-      } catch {
-        return null;
       }
+    } catch {
+      return null;
     }
   }
   return null;
@@ -43,12 +43,17 @@ const loadUserFromStorage = (): UserData | null => {
 
 const loadTokenFromStorage = (): string | null => {
   if (typeof window !== 'undefined') {
-    const encoded = localStorage.getItem('token');
-    if (!encoded) return null;
     try {
+      const encoded = localStorage.getItem('token');
+      if (!encoded) return null;
       return atob(encoded.split('').reverse().join(''));
     } catch {
-      return encoded;
+      // Fallback in case it was stored raw or if localStorage threw an error
+      try {
+        return localStorage.getItem('token');
+      } catch {
+        return null;
+      }
     }
   }
   return null;
