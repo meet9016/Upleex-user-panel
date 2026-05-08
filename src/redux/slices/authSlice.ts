@@ -46,16 +46,14 @@ const loadTokenFromStorage = (): string | null => {
     try {
       const encoded = localStorage.getItem('token');
       if (!encoded) return null;
-      const decoded = atob(encoded.split('').reverse().join(''));
-      // Validate decoded token is a non-empty string
-      if (!decoded || typeof decoded !== 'string') return null;
-      return decoded;
+      return atob(encoded.split('').reverse().join(''));
     } catch {
+      // Fallback in case it was stored raw or if localStorage threw an error
       try {
-        // If atob fails, remove corrupted token and return null
-        localStorage.removeItem('token');
-      } catch { /* ignore */ }
-      return null;
+        return localStorage.getItem('token');
+      } catch {
+        return null;
+      }
     }
   }
   return null;
