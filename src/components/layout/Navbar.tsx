@@ -167,7 +167,7 @@ export const Navbar: React.FC = () => {
 
       try {
         // Use ip-api.com for more city-level accuracy
-        const response = await fetch('http://ip-api.com/json/');
+        const response = await fetch('https://ip-api.com/json/');
         const data = await response.json();
 
         // Use the city name from ip-api.com

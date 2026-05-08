@@ -6,9 +6,6 @@ import toast from "react-hot-toast";
 
 export default function FCMHandler() {
   useEffect(() => {
-    // iOS Safari doesn't support Notifications/Service Workers - skip
-    if (typeof window === 'undefined' || !('Notification' in window)) return;
-
     // Request permission on mount
     setTimeout(() => requestNotificationPermission(), 2000);
 
