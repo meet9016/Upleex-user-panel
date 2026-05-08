@@ -141,7 +141,8 @@ export function DatePicker({
       const end = new Date(range.end);
       end.setHours(0, 0, 0, 0);
 
-      if (dateToCheck >= start && dateToCheck <= end) {
+      // Disable dates from start to end-1 (end date is return date, so it becomes available)
+      if (dateToCheck >= start && dateToCheck < end) {
         return true;
       }
     }
@@ -170,7 +171,10 @@ export function DatePicker({
       if (dateToCheck.getTime() !== maxDate.getTime()) return true;
     }
 
-    // Check booked ranges - disable only end dates
+    // Disable dates within booked ranges (start to end-1)
+    if (isDateInBookedRanges(day)) return true;
+
+    // Disable end dates (return dates) — shown with red border but not selectable
     if (disableBookedEndDates && isDateBookedEndDate(day)) return true;
 
     return false;
@@ -203,6 +207,7 @@ export function DatePicker({
       const disabled = isDateDisabled(day);
       const selected = isDateSelected(day);
       const isBookedEnd = disableBookedEndDates && isDateBookedEndDate(day);
+      const isInRange = isDateInBookedRanges(day);
 
       days.push(
         <button
@@ -218,6 +223,8 @@ export function DatePicker({
               ? "bg-blue-600 text-white shadow-md border-blue-600"
               : isBookedEnd
               ? "text-red-400 cursor-not-allowed border-red-300 bg-red-50"
+              : isInRange
+              ? "text-gray-300 cursor-not-allowed border-transparent line-through"
               : disabled
               ? "text-gray-300 cursor-not-allowed border-transparent"
               : "text-gray-700 hover:bg-blue-50 hover:text-blue-600 border-transparent"
