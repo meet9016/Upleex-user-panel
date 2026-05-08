@@ -32,6 +32,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            var s = document.createElement('script');
+            s.src = '//cdn.jsdelivr.net/npm/eruda';
+            document.head.appendChild(s);
+            s.onload = function() { eruda.init(); };
+          })();
+        `}} />
         <Providers>
           {/* <NotificationProvider> */}
           <div className="min-h-screen flex flex-col">
