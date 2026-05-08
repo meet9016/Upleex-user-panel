@@ -5,19 +5,27 @@ export const setSecureToken = (token: string) => {
       const encoded = btoa(token).split('').reverse().join('');
       localStorage.setItem('token', encoded);
     } catch (e) {
-      localStorage.setItem('token', token);
+      try {
+        localStorage.setItem('token', token);
+      } catch (err) {
+        // Ignore error if localStorage is completely blocked
+      }
     }
   }
 };
 
 export const getSecureToken = (): string | null => {
   if (typeof window !== 'undefined') {
-    const encoded = localStorage.getItem('token');
-    if (!encoded) return null;
     try {
+      const encoded = localStorage.getItem('token');
+      if (!encoded) return null;
       return atob(encoded.split('').reverse().join(''));
     } catch (e) {
-      return encoded; // fallback in case it was stored raw
+      try {
+        return localStorage.getItem('token');
+      } catch (err) {
+        return null;
+      }
     }
   }
   return null;
@@ -25,6 +33,10 @@ export const getSecureToken = (): string | null => {
 
 export const removeSecureToken = () => {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('token');
+    try {
+      localStorage.removeItem('token');
+    } catch (e) {
+      // Ignore error if localStorage is completely blocked
+    }
   }
 };

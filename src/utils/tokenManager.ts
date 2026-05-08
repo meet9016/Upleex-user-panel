@@ -1,7 +1,11 @@
 // Save token to BOTH localStorage AND cookies
 export const saveToken = (token: string) => {
-  // Save to localStorage (for client-side access)
-  localStorage.setItem('auth_token', token);
+  try {
+    // Save to localStorage (for client-side access)
+    localStorage.setItem('auth_token', token);
+  } catch (e) {
+    // Ignore error if localStorage is blocked
+  }
 
   // Save to cookies (for middleware/server-side access)
   // Set expiry: 7 days for app (mobile), 24 hours (1 day) for web (desktop)
@@ -17,14 +21,21 @@ export const saveToken = (token: string) => {
 
 // Get token from localStorage
 export const getToken = (): string | null => {
-  const encrypted = localStorage.getItem('auth_token');
-  return encrypted;
+  try {
+    return localStorage.getItem('auth_token');
+  } catch (e) {
+    return null;
+  }
 };
 
 // Clear token from BOTH localStorage AND cookies
 export const clearToken = () => {
-  // Remove from localStorage
-  localStorage.removeItem('auth_token');
+  try {
+    // Remove from localStorage
+    localStorage.removeItem('auth_token');
+  } catch (e) {
+    // Ignore error if localStorage is blocked
+  }
 
   // Remove from cookies
   document.cookie = 'auth_token=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;';
