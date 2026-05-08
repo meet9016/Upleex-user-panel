@@ -19,9 +19,6 @@ const messaging = typeof window !== "undefined" ? getMessaging(app) : null;
 
 export const requestNotificationPermission = async () => {
   if (!messaging) return;
-   {/* ihpone err occure when link open  from bio of instagram app because of server side rendering so we need to check window object  */}
-  if (typeof window === 'undefined') return;
-  if (!('Notification' in window)) return;
   
   try {
     const userToken = getSecureToken(); // decoded JWT
