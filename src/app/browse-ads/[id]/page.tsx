@@ -1110,6 +1110,9 @@ export default function ProductDetailsPage() {
                               textSize={"xs"}
                               bookedRanges={rentAvailability?.bookedRanges}
                               disableBookedEndDates={shouldDisableBookedEndDates}
+                              totalQuantity={rentAvailability?.total_quantity ?? productDetails?.available_quantity}
+                              selectedQuantity={quantity}
+                              currentAvailableQuantity={currentAvailableQuantity}
                             />
                           </div>
                         </div>
