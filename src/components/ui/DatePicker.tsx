@@ -14,8 +14,11 @@ interface DatePickerProps {
   disabled?: boolean;
   align?: "left" | "right";
   textSize?: string;
-  bookedRanges?: { start: string; end: string }[];
+  bookedRanges?: { start: string; end: string; qty?: number }[];
   disableBookedEndDates?: boolean;
+  totalQuantity?: number;
+  selectedQuantity?: number;
+  currentAvailableQuantity?: number;
 }
 
 export function DatePicker({
@@ -30,6 +33,9 @@ export function DatePicker({
   textSize = "text-sm",
   bookedRanges = [],
   disableBookedEndDates = true,
+  totalQuantity,
+  selectedQuantity,
+  currentAvailableQuantity,
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date()); // For navigation
@@ -127,6 +133,49 @@ export function DatePicker({
     return false;
   };
 
+  const getBookedQtyForDate = (day: number) => {
+    const dateToCheck = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      day
+    );
+    dateToCheck.setHours(0, 0, 0, 0);
+
+    let totalBooked = 0;
+    for (const range of bookedRanges) {
+      const start = new Date(range.start);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(range.end);
+      end.setHours(0, 0, 0, 0);
+
+      // Product is consumed from start up to (and including) the end date because it's in transit
+      if (dateToCheck >= start && dateToCheck <= end) {
+        totalBooked += (range.qty || 1);
+      }
+    }
+    return totalBooked;
+  };
+
+  const isDateDisabledByStock = (day: number) => {
+    const bookedQty = getBookedQtyForDate(day);
+    if (bookedQty > 0) {
+      if (totalQuantity !== undefined && selectedQuantity !== undefined) {
+        if ((totalQuantity - bookedQty) < selectedQuantity) {
+          return true;
+        }
+        // If they want more than what's currently available, disable the booked dates
+        // because those items are needed to fulfill the total quantity
+        if (currentAvailableQuantity !== undefined && selectedQuantity > currentAvailableQuantity) {
+          return true;
+        }
+        return false;
+      }
+      // Fallback: If no stock logic is provided, behave like before
+      return true;
+    }
+    return false;
+  };
+
   const isDateInBookedRanges = (day: number) => {
     const dateToCheck = new Date(
       currentDate.getFullYear(),
@@ -141,8 +190,7 @@ export function DatePicker({
       const end = new Date(range.end);
       end.setHours(0, 0, 0, 0);
 
-      // Disable dates from start to end-1 (end date is return date, so it becomes available)
-      if (dateToCheck >= start && dateToCheck < end) {
+      if (dateToCheck >= start && dateToCheck <= end) {
         return true;
       }
     }
@@ -171,10 +219,10 @@ export function DatePicker({
       if (dateToCheck.getTime() !== maxDate.getTime()) return true;
     }
 
-    // Disable dates within booked ranges (start to end-1)
-    if (isDateInBookedRanges(day)) return true;
+    // Check stock availability
+    if (isDateDisabledByStock(day)) return true;
 
-    // Disable end dates (return dates) — shown with red border but not selectable
+    // Optional override to force end dates to be completely disabled
     if (disableBookedEndDates && isDateBookedEndDate(day)) return true;
 
     return false;
@@ -206,7 +254,7 @@ export function DatePicker({
     for (let day = 1; day <= daysInMonth; day++) {
       const disabled = isDateDisabled(day);
       const selected = isDateSelected(day);
-      const isBookedEnd = disableBookedEndDates && isDateBookedEndDate(day);
+      const isBookedEnd = isDateBookedEndDate(day);
       const isInRange = isDateInBookedRanges(day);
 
       days.push(
@@ -221,10 +269,10 @@ export function DatePicker({
             "h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium transition-all border-2",
             selected
               ? "bg-blue-600 text-white shadow-md border-blue-600"
-              : isBookedEnd
+              : disabled && isBookedEnd
               ? "text-red-400 cursor-not-allowed border-red-300 bg-red-50"
-              : isInRange
-              ? "text-gray-300 cursor-not-allowed border-transparent line-through"
+              : disabled && isInRange
+              ? "text-gray-300 cursor-not-allowed border-transparent line-through bg-gray-50/50"
               : disabled
               ? "text-gray-300 cursor-not-allowed border-transparent"
               : "text-gray-700 hover:bg-blue-50 hover:text-blue-600 border-transparent"
