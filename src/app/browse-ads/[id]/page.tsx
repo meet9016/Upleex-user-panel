@@ -1354,6 +1354,12 @@ export default function ProductDetailsPage() {
                         <div className="text-sm font-bold text-slate-900">
                           {productDetails?.business_name || '-'}
                         </div>
+                        {/* Add vendor mobile here if available */}
+                        {productDetails?.vendor_mobile && (
+                          <div className="text-xs text-blue-600 mt-1">
+                            📞 {productDetails.vendor_mobile}
+                          </div>
+                        )}
                         {/* Add vendor address here */}
                         {productDetails?.vendor_address && (
                           <div className="text-xs text-gray-500 mt-1" title={productDetails.vendor_address}>

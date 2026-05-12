@@ -165,6 +165,12 @@ export default function SellerPage() {
       <h1 className="text-xl sm:text-2xl font-bold text-slate-900 truncate leading-tight">
         {vendorName || 'Vendor'}
       </h1>
+      {/* Show vendor mobile if available */}
+      {products.length > 0 && products[0]?.vendor_mobile && (
+        <div className="text-xs text-blue-600 mt-1">
+          📞 {products[0].vendor_mobile}
+        </div>
+      )}
     </div>
   </div>
 
