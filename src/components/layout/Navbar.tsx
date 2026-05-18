@@ -582,16 +582,17 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-white border-b border-gray-100 shadow-sm">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 gap-8">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-20 gap-2 lg:gap-8">
 
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 flex items-center gap-2">
             <Image
               src="/image/upleex-logo-dark.jpg"
               alt="Upleex Logo"
-              width={150}
-              height={40}
+              width={120}
+              height={32}
+              className="lg:w-[150px] lg:h-[40px]"
               priority
             />
           </Link>
@@ -989,16 +990,17 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center gap-3">
+          <div className="lg:hidden flex items-center gap-2">
+            {/* City Selector */}
             <button
               onClick={() => setIsCityDropdownOpen(!isCityDropdownOpen)}
-              className="flex items-center gap-1 text-slate-700 hover:text-upleex-blue transition-colors px-2 py-1 rounded-md bg-gray-50 border border-gray-100 max-w-[100px]"
+              className="flex items-center gap-1 text-slate-700 hover:text-upleex-blue transition-colors px-2 py-1 rounded-md bg-gray-50 border border-gray-100 max-w-[90px]"
             >
-              <MapPin size={16} className="text-upleex-purple shrink-0" />
+              <MapPin size={14} className="text-upleex-purple shrink-0" />
               <span className="text-xs truncate font-medium">{currentLocation}</span>
             </button>
 
-            <Link href="/wishlist" className="relative cursor-pointer p-1">
+            {/* <Link href="/wishlist" className="relative cursor-pointer p-1">
               <Heart size={22} className="text-slate-700" />
               {wishlistCount > 0 && (
                 <span className="absolute top-0 right-0 bg-red-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
@@ -1015,13 +1017,15 @@ export const Navbar: React.FC = () => {
               <span className="absolute top-0 right-0 bg-upleex-blue text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                 {cartCount || 0}
               </span>
-            </Link>
+            </Link> */}
             {user && <NotificationDropdown />}
+
+            {/* Hamburger Menu */}
             <button
               onClick={toggleMenu}
               className="inline-flex items-center justify-center p-1.5 rounded-md text-slate-700 hover:text-upleex-blue focus:outline-none cursor-pointer bg-gray-50 border border-gray-100"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
