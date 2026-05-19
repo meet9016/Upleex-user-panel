@@ -353,7 +353,17 @@ const [tenureOptions, setTenureOptions] = useState([
         {/* Controls Bar (Sort/Tenure) */}
         <div className="relative z-[48] flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-1">
           
-          {/* Custom Sort Dropdown */}
+          {/* Product Count Display */}
+          <div className="text-slate-600 font-bold text-base sm:text-lg w-full sm:w-auto text-left">
+            {productCount !== null ? (
+              <span>Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, productCount)}-{Math.min(currentPage * ITEMS_PER_PAGE, productCount)} of {productCount} products</span>
+            ) : (
+              <span>{filteredProducts.length} products found</span>
+            )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto justify-end">
+               {/* Custom Sort Dropdown */}
           <div className="relative z-30 w-full sm:w-auto" ref={sortDropdownRef}>
             <button 
               onClick={() => { setIsSortOpen(!isSortOpen); setIsTenureOpen(false); }}
@@ -439,6 +449,7 @@ const [tenureOptions, setTenureOptions] = useState([
                     {selectedTenure.value === option.value && <Check size={16} className="text-upleex-purple" />}
                   </button>
                 ))}
+                </div>
               </div>
             </div>
           </div>

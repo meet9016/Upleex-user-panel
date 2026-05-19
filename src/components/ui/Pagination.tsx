@@ -23,41 +23,49 @@ export const Pagination: React.FC<PaginationProps> = ({
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
 
-    const maxButtons = 5; // max numbered buttons to show (excluding Prev/Next)
-
     // For small page counts, show all pages directly
-    if (totalPages <= maxButtons) {
+    if (totalPages <= 6) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
       return pages;
     }
 
-    const showLeftEllipsis = currentPage > 3;
-    const showRightEllipsis = currentPage < totalPages - 2;
+    const firstThree = [1, 2, 3];
+    const lastThree = [totalPages - 2, totalPages - 1, totalPages];
 
-    pages.push(1);
+    const isNearStart = currentPage <= 3;
+    const isNearEnd = currentPage >= totalPages - 2;
 
-    let startPage = Math.max(2, currentPage - 1);
-    let endPage = Math.min(totalPages - 1, currentPage + 1);
-
-    if (!showLeftEllipsis) {
-      startPage = 2;
-      endPage = 4;
-    } else if (!showRightEllipsis) {
-      startPage = totalPages - 3;
-      endPage = totalPages - 1;
+    if (isNearStart) {
+      pages.push(...firstThree);
+      pages.push(4);
+      pages.push('...');
+      pages.push(...lastThree);
+    } else if (isNearEnd) {
+      pages.push(...firstThree);
+      pages.push('...');
+      pages.push(totalPages - 3);
+      pages.push(...lastThree);
+    } else {
+      pages.push(...firstThree);
+      
+      if (currentPage - 1 > 4) {
+        pages.push('...');
+      } else if (currentPage - 1 === 4) {
+        pages.push(4);
+      }
+      
+      pages.push(currentPage);
+      
+      if (currentPage + 1 < totalPages - 3) {
+        pages.push('...');
+      } else if (currentPage + 1 === totalPages - 3) {
+        pages.push(totalPages - 3);
+      }
+      
+      pages.push(...lastThree);
     }
 
-    if (startPage > 2) pages.push('...');
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-
-    if (endPage < totalPages - 1) pages.push('...');
-
-    pages.push(totalPages);
-
-    return pages;
+    return Array.from(new Set(pages));
   };
 
   const pageNumbers = getPageNumbers();
@@ -73,7 +81,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   disabled={currentPage === 1}
   className="min-w-[2.5rem] border-0"
 >
-<ChevronFirst />
+<ChevronLeft />
 </Button>
 
       {/* Page Numbers */}
@@ -112,7 +120,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   disabled={currentPage === totalPages}
   className="min-w-[2.5rem] border-0"
 >
-<ChevronLast />
+<ChevronRight />
 </Button>
 
     </div>
