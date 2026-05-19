@@ -590,9 +590,8 @@ export const Navbar: React.FC = () => {
             <Image
               src="/image/upleex-logo-dark.jpg"
               alt="Upleex Logo"
-              width={120}
-              height={32}
-              className="lg:w-[150px] lg:h-[40px]"
+              width={150}
+              height={40}
               priority
             />
           </Link>
