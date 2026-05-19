@@ -56,7 +56,8 @@ export default function SellerPage() {
           vendor_id: vendorId,
           filter_rent_sell: selectedSort.value,
           filter_tenure: selectedTenure.value,
-          page: currentPage
+          page: currentPage,
+          limit: ITEMS_PER_PAGE
         });
         console.log("object",res);
         const payload = res?.data;
