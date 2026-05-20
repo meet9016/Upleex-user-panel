@@ -1352,18 +1352,18 @@ export default function ProductDetailsPage() {
                           Sold By
                         </div>
                         <div className="text-sm font-bold text-slate-900">
-                          {productDetails?.business_name || '-'}
+                          {productDetails?.vendor?.business_name || productDetails?.business_name || '-'}
                         </div>
                         {/* Add vendor mobile here if available */}
-                        {productDetails?.vendor_mobile && (
+                        {productDetails?.vendor?.vendor_mobile && (
                           <div className="text-xs text-blue-600 mt-1">
-                            📞 {productDetails.vendor_mobile}
+                            📞 {productDetails.vendor.vendor_mobile}
                           </div>
                         )}
                         {/* Add vendor address here */}
-                        {productDetails?.vendor_address && (
-                          <div className="text-xs text-gray-500 mt-1" title={productDetails.vendor_address}>
-                            📍 {productDetails.vendor_address} , {productDetails.vendor_city_name}
+                        {productDetails?.vendor?.vendor_address && (
+                          <div className="text-xs text-gray-500 mt-1" title={productDetails.vendor.vendor_address}>
+                            📍 {productDetails.vendor.vendor_address} , {productDetails.vendor.vendor_city_name}
                           </div>
                         )}
                       </div>
@@ -1372,12 +1372,14 @@ export default function ProductDetailsPage() {
                       variant="outline"
                       className="h-9 px-4 rounded-full border-upleex-purple text-upleex-purple text-xs font-semibold whitespace-nowrap"
                       onClick={() => {
-                        if (!productDetails?.vendor_id) return;
+                        const vendorId = productDetails?.vendor?.vendor_id || productDetails?.vendor_id;
+                        if (!vendorId) return;
+                        const vendorName = productDetails?.vendor?.vendor_name || productDetails?.vendor_name || '';
                         router.push(
                           `/seller?vendor_id=${encodeURIComponent(
-                            productDetails.vendor_id
+                            vendorId
                           )}&vendor_name=${encodeURIComponent(
-                            productDetails.vendor_name || ''
+                            vendorName
                           )}`
                         );
                       }}
@@ -1538,7 +1540,7 @@ export default function ProductDetailsPage() {
         <RelatedProducts
           categoryId={productDetails?.category_id}
           subCategoryId={productDetails?.sub_category_id}
-          vendorId={productDetails?.vendor_id || productDetails?.vendor_india_id}
+          vendorId={productDetails?.vendor?.vendor_id || productDetails?.vendor_id || productDetails?.vendor_india_id}
           currentProductId={productDetails?.id || id}
         />
       </div>

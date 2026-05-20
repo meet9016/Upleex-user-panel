@@ -20,6 +20,7 @@ export default function SellerPage() {
   const { user } = useAppSelector((state) => state.auth);
 
   const [vendorName, setVendorName] = useState<string | null>(vendorNameFromQuery);
+  const [vendor, setVendor] = useState<any>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [vendorVideos, setVendorVideos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -62,16 +63,15 @@ export default function SellerPage() {
         console.log("object",res);
         const payload = res?.data;
         console.log("payload",payload);
-        const videos = res?.vendor_videos || [];
+        const vendorData = res?.vendor;
+        setVendor(vendorData);
+        const videos = vendorData?.vendor_videos || [];
         setVendorVideos(videos);
         let inferredVendorName: string | null = null;
 
         if (Array.isArray(payload)) {
           setProducts(payload);
-
-          if (payload.length > 0) {
-            inferredVendorName = payload[0].business_name || null;
-          }
+          inferredVendorName = vendorData?.business_name || null;
 
           const hasFullPage = payload.length >= ITEMS_PER_PAGE;
           setProductCount(payload.length || null);
@@ -80,10 +80,7 @@ export default function SellerPage() {
           const data = payload || {};
           const productData = Array.isArray(data.product_data) ? data.product_data : [];
           setProducts(productData);
-
-          if (productData.length > 0) {
-            inferredVendorName = productData[0].business_name || null;
-          }
+          inferredVendorName = vendorData?.business_name || null;
 
           const hasFullPage = productData.length >= ITEMS_PER_PAGE;
           setProductCount(productData.length || null);
@@ -167,9 +164,9 @@ export default function SellerPage() {
         {vendorName || 'Vendor'}
       </h1>
       {/* Show vendor mobile if available */}
-      {products.length > 0 && products[0]?.vendor_mobile && (
+      {vendor?.vendor_mobile && (
         <div className="text-xs text-blue-600 mt-1">
-          📞 {products[0].vendor_mobile}
+          📞 {vendor.vendor_mobile}
         </div>
       )}
     </div>
@@ -179,9 +176,9 @@ export default function SellerPage() {
   <div className="flex flex-col items-start lg:items-end gap-2 w-full lg:w-auto">
     
     {/* ADDRESS ABOVE BUTTONS */}
-    {products.length > 0 && products[0]?.vendor_address && (
+    {vendor?.vendor_address && (
       <p className="text-xs text-gray-600  text-left lg:text-right max-w-xs ">
-        📍 {products[0].vendor_address}
+        📍 {vendor.vendor_address}
       </p>
     )}
 
