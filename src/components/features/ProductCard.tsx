@@ -52,7 +52,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     cancelPrice = Number(firstMonth.cancel_price);
   }
   const productCategory = product.sub_category_name || product.category;
-  const productLocation = product.vendor_city_name || 'Surat';
+  const productLocation = product.vendor?.vendor_city_name || 'Surat';
 
   const sanitizeUrl = (url: string) => {
     if (!url) return '';
