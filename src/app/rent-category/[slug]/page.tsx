@@ -13,7 +13,7 @@ import { productService } from '@/services/productService';
 import { motion } from 'framer-motion';
 
 import { CategorySEOContent } from '@/components/features/CategorySEOContent';
-import Loader from '@/components/ui/Loader';
+import { ProductCardSkeleton } from '@/components/ui/Skeleton';
 
 export default function RentCategoryPage() {
   return (
@@ -456,8 +456,10 @@ const [tenureOptions, setTenureOptions] = useState([
         </div>
 
         {loading && filteredProducts.length === 0 && (
-          <div className="flex justify-center items-center py-20">
-            <Loader />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <ProductCardSkeleton key={index} />
+            ))}
           </div>
         )}
 
@@ -492,7 +494,10 @@ const [tenureOptions, setTenureOptions] = useState([
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={setCurrentPage}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
             />
           </>
         )}

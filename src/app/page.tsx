@@ -20,7 +20,7 @@ import { blogService, Blog } from '@/services/blogService';
 import { faqService, FAQ } from '@/services/faqService';
 import { useRouter } from 'next/navigation';
 import { useCity } from '@/hooks/useCity';
-import { Loader } from '@/components/ui/Loader';
+import { Skeleton, CategoryCardSkeleton, ProductCardSkeleton, BlogCardSkeleton, HeroCarouselSkeleton } from '@/components/ui/Skeleton';
 
 interface Banner {
   id: string | number;
@@ -134,17 +134,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-gray-50 to-white overflow-hidden" ref={containerRef} suppressHydrationWarning={true}>
-      <AnimatePresence>
-        {isLoading && <Loader key="loader" />}
-      </AnimatePresence>
       <FloatingParticles />
 
       <main className="flex-grow" suppressHydrationWarning={true}>
         
 
+       
 
        
-        <HeroCarousel banners={banners} />
+        {isLoading ? <HeroCarouselSkeleton /> : <HeroCarousel banners={banners} />}
 
         {/* Enhanced Categories Section */}
         <section className="py-8 sm:py-12 md:py-14 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
@@ -155,24 +153,39 @@ export default function Home() {
               viewport={{ once: true }}
               className="text-center mb-10 sm:mb-16 md:mb-20"
             >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-4 sm:mb-6 px-4 tracking-tight">
-                Explore <span className="text-gradient-primary">Premium</span> Categories
-              </h2>
-              <p className="text-slate-500 max-w-2xl mx-auto text-base sm:text-lg md:text-xl px-4 leading-relaxed">
-                Pick from top categories available in your city.
-              </p>
+              {isLoading ? (
+                <div className="space-y-4">
+                  <Skeleton variant="text" height={48} width="60%" className="mx-auto" />
+                  <Skeleton variant="text" height={20} width="50%" className="mx-auto" />
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-4 sm:mb-6 px-4 tracking-tight">
+                    Explore <span className="text-gradient-primary">Premium</span> Categories
+                  </h2>
+                  <p className="text-slate-500 max-w-2xl mx-auto text-base sm:text-lg md:text-xl px-4 leading-relaxed">
+                    Pick from top categories available in your city.
+                  </p>
+                </>
+              )}
             </motion.div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
-              {categoryList?.all_categories?.slice(0, 12).map((category, index) => (
-                <CategoryCard
-                  key={category.categories_id}
-                  categories_id={category.categories_id}
-                  categories_name={category.categories_name}
-                  image={category.image}
-                  product_count={Number(category.product_count)}
-                />
-              ))}
+              {isLoading ? (
+                Array.from({ length: 12 }).map((_, index) => (
+                  <CategoryCardSkeleton key={index} />
+                ))
+              ) : (
+                categoryList?.all_categories?.slice(0, 12).map((category, index) => (
+                  <CategoryCard
+                    key={category.categories_id}
+                    categories_id={category.categories_id}
+                    categories_name={category.categories_name}
+                    image={category.image}
+                    product_count={Number(category.product_count)}
+                  />
+                ))
+              )}
             </div>
 
             <motion.div

@@ -11,6 +11,7 @@ import { BackButton } from '@/components/ui/BackButton';
 import { Pagination } from '@/components/ui/Pagination';
 import { productService } from '@/services/productService';
 import { useAppSelector } from '@/redux/hooks';
+import { ProductCardSkeleton } from '@/components/ui/Skeleton';
 
 export default function SellerPage() {
   const searchParams = useSearchParams();
@@ -365,8 +366,10 @@ export default function SellerPage() {
             </div>
             
             {loading ? (
-              <div className="py-10 text-center text-sm text-gray-500 w-full">
-                Loading products...
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <ProductCardSkeleton key={index} />
+                ))}
               </div>
             ) : products.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 px-4 w-full">
@@ -420,7 +423,10 @@ export default function SellerPage() {
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    onPageChange={setCurrentPage}
+                    onPageChange={(page) => {
+                      setCurrentPage(page);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                     showWhenSingle
                   />
                 )}
