@@ -9,6 +9,7 @@ import { PackageOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { searchService } from '@/services/searchService';
 import { useCity } from '@/hooks/useCity';
+import { ProductCardSkeleton } from '@/components/ui/Skeleton';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -82,8 +83,10 @@ export default function SearchPage() {
 
         <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100/80 p-4 sm:p-6 lg:p-8">
           {loading ? (
-            <div className="flex justify-center py-16">
-              <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <ProductCardSkeleton key={index} />
+              ))}
             </div>
           ) : products.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center px-4">
@@ -113,7 +116,10 @@ export default function SearchPage() {
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={setCurrentPage}
+                onPageChange={(page) => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
                 showWhenSingle
               />
             </>
