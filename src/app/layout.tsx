@@ -13,6 +13,7 @@ import { Providers } from '@/redux/Providers';
 import { ReviewReminderPopup } from '@/components/features/ReviewReminderPopup';
 import FCMHandler from '@/components/layout/FCMHandler';
 import SocketHandler from '@/components/layout/SocketHandler';
+import ErrorBoundary from '@/components/ui/ErrorBoundary';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -42,28 +43,30 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} suppressHydrationWarning={true}>
-        <Providers>
-          {/* <NotificationProvider> */}
-          <div className="min-h-screen flex flex-col">
-            <Suspense fallback={null}>
-              <ProgressBar />
-            </Suspense>
-            <FCMHandler />
-             <SocketHandler />
-            <Suspense fallback={<div className="h-20 bg-white border-b border-gray-100" />}>
-              <Navbar />
-            </Suspense>
-            <ScrollToTop />
-            <QuickActions />
-            <main className="flex-1 pb-20 lg:pb-0">{children}</main>
-            <Toaster position="bottom-right" />
-            <ReviewReminderPopup />
-            <Footer />
-            <BottomNav />
-          </div>
-          
-          {/* </NotificationProvider> */}
-        </Providers>
+        <ErrorBoundary>
+          <Providers>
+            {/* <NotificationProvider> */}
+            <div className="min-h-screen flex flex-col">
+              <Suspense fallback={null}>
+                <ProgressBar />
+              </Suspense>
+              <FCMHandler />
+               <SocketHandler />
+              <Suspense fallback={<div className="h-20 bg-white border-b border-gray-100" />}>
+                <Navbar />
+              </Suspense>
+              <ScrollToTop />
+              <QuickActions />
+              <main className="flex-1 pb-20 lg:pb-0">{children}</main>
+              <Toaster position="bottom-right" />
+              <ReviewReminderPopup />
+              <Footer />
+              <BottomNav />
+            </div>
+            
+            {/* </NotificationProvider> */}
+          </Providers>
+        </ErrorBoundary>
       </body>
     </html>
   );
