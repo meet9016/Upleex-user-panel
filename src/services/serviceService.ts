@@ -27,6 +27,13 @@ export interface Service {
     createdAt: string;
 }
 
+export interface PaginationMeta {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
 class ServiceService {
     private serviceCategoryPromises = new Map<string, Promise<ServiceCategory[]>>();
 
@@ -54,12 +61,43 @@ class ServiceService {
         return fetchPromise;
     }
 
-    async getServices(params?: { category_id?: string; vendor_id?: string; city?: string | null; search?: string; sortBy?: string; order?: 'asc' | 'desc' }): Promise<Service[]> {
+    async getServices(params?: { 
+        category_id?: string; 
+        vendor_id?: string; 
+        city?: string | null; 
+        search?: string; 
+        sortBy?: string; 
+        order?: 'asc' | 'desc'; 
+        limit?: number; 
+        page?: number 
+    }): Promise<{ data: Service[]; pagination: PaginationMeta }> {
         try {
             const res = await api.get(endPointApi.serviceList, { params });
-            return res.data?.data || [];
+            const data = res.data?.data || [];
+            const total = res.data?.total || data.length;
+            const page = params?.page || 1;
+            const limit = params?.limit || 12;
+            const totalPages = Math.ceil(total / limit);
+            
+            return {
+                data,
+                pagination: {
+                    total,
+                    page,
+                    limit,
+                    totalPages
+                }
+            };
         } catch (error) {
-            return [];
+            return {
+                data: [],
+                pagination: {
+                    total: 0,
+                    page: 1,
+                    limit: params?.limit || 12,
+                    totalPages: 1
+                }
+            };
         }
     }
 

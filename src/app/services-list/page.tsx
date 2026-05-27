@@ -1,15 +1,18 @@
+
 'use client';
 
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ServiceRoundCard } from '@/components/features/ServiceRoundCard';
 import { ServiceCard } from '@/components/features/ServiceCard';
-import { serviceService, Service, ServiceCategory } from '@/services/serviceService';
-import { Search, ArrowUpDown, ChevronDown, Check, PackageOpen, LayoutGrid, List, ArrowLeft } from 'lucide-react';
+import { serviceService, Service, ServiceCategory, PaginationMeta } from '@/services/serviceService';
+import { Search, ArrowUpDown, ChevronDown, Check, PackageOpen, ChevronLeft, ChevronRight as ChevronRightIcon, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
 import { useCity } from '@/hooks/useCity';
+
+const LIMIT = 12;
 
 export default function ServicesListPage() {
   return (
@@ -30,6 +33,8 @@ function ServicesListContent() {
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [services, setServices] = useState<Service[]>([]);
+  const [pagination, setPagination] = useState<PaginationMeta>({ total: 0, page: 1, limit: LIMIT, totalPages: 1 });
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -43,16 +48,22 @@ function ServicesListContent() {
     setActiveCategory(selectedCatId || 'all');
     setSearchQuery(initialSearch || '');
     setDebouncedSearch(initialSearch || '');
+    setCurrentPage(1); // reset page on category change from URL
   }, [selectedCatId, initialSearch]);
 
   // Debounce search query
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchQuery);
-    }, 500); // 500ms pause
-
+      setCurrentPage(1); // reset page on new search
+    }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  // Reset page when sort changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedSort]);
 
   const sortOptions = [
     { label: 'Newest First', value: 'newest' },
@@ -91,23 +102,27 @@ function ServicesListContent() {
           sortParams.order = 'desc';
         }
 
-        const data = await serviceService.getServices({
+        const result = await serviceService.getServices({
           category_id: activeCategory === 'all' ? undefined : activeCategory,
           city: selectedCity,
           search: debouncedSearch.trim() || undefined,
-          ...sortParams
+          page: currentPage,
+          limit: LIMIT,
+          ...sortParams,
         });
 
-        setServices(data);
+        setServices(result.data);
+        setPagination(result.pagination);
       } catch (error) {
         setServices([]);
+        setPagination({ total: 0, page: 1, limit: LIMIT, totalPages: 1 });
       } finally {
         setLoading(false);
       }
     };
 
     fetchServices();
-  }, [activeCategory, debouncedSearch, selectedSort, selectedCity]);
+  }, [activeCategory, debouncedSearch, selectedSort, selectedCity, currentPage]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -121,6 +136,7 @@ function ServicesListContent() {
 
   const handleCategoryClick = (id: string) => {
     setActiveCategory(id);
+    setCurrentPage(1);
     const params = new URLSearchParams(searchParams?.toString() || "");
     if (id === 'all') {
       params.delete('category');
@@ -130,7 +146,27 @@ function ServicesListContent() {
     router.push(`/services-list?${params.toString()}`, { scroll: false });
   };
 
+  const handlePageChange = (page: number) => {
+    if (page < 1 || page > pagination.totalPages) return;
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const currentCategoryName = categories.find(c => c.categories_id === activeCategory)?.categories_name;
+
+  // Build page number array with ellipsis logic
+  const buildPageNumbers = (current: number, total: number): (number | '...')[] => {
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const pages: (number | '...')[] = [];
+    if (current <= 4) {
+      pages.push(1, 2, 3, 4, 5, '...', total);
+    } else if (current >= total - 3) {
+      pages.push(1, '...', total - 4, total - 3, total - 2, total - 1, total);
+    } else {
+      pages.push(1, '...', current - 1, current, current + 1, '...', total);
+    }
+    return pages;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50/50">
@@ -251,8 +287,16 @@ function ServicesListContent() {
               <div className="w-full">
                 <div className="mb-6 flex items-center justify-between">
                   <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    Available Services <span className="text-sm font-medium text-gray-400">({services.length})</span>
+                    Available Services{' '}
+                    <span className="text-sm font-medium text-gray-400">
+                      ({pagination.total} total)
+                    </span>
                   </h2>
+                  {pagination.totalPages > 1 && (
+                    <p className="text-sm text-slate-500 font-medium">
+                      Page {pagination.page} of {pagination.totalPages}
+                    </p>
+                  )}
                 </div>
                 <motion.div
                   layout
@@ -265,13 +309,57 @@ function ServicesListContent() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        transition={{ delay: index * 0.05 }}
+                        transition={{ delay: index * 0.04 }}
                       >
                         <ServiceCard service={service} />
                       </motion.div>
                     ))}
                   </AnimatePresence>
                 </motion.div>
+
+                {/* Pagination Bar */}
+                {pagination.totalPages > 1 && (
+                  <div className="mt-10 flex items-center justify-center gap-2">
+                    {/* Prev */}
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-slate-600 hover:border-upleex-purple hover:text-upleex-purple disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      <ChevronLeft size={16} /> Prev
+                    </button>
+
+                    {/* Page Numbers */}
+                    <div className="flex items-center gap-1.5">
+                      {buildPageNumbers(currentPage, pagination.totalPages).map((p, i) =>
+                        p === '...' ? (
+                          <span key={`ellipsis-${i}`} className="px-2 text-gray-400 select-none">…</span>
+                        ) : (
+                          <button
+                            key={p}
+                            onClick={() => handlePageChange(p as number)}
+                            className={`w-10 h-10 rounded-xl text-sm font-bold transition-all duration-200 ${
+                              currentPage === p
+                                ? 'bg-upleex-purple text-white shadow-md shadow-purple-200'
+                                : 'border border-gray-200 text-slate-600 hover:border-upleex-purple hover:text-upleex-purple'
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        )
+                      )}
+                    </div>
+
+                    {/* Next */}
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === pagination.totalPages}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-slate-600 hover:border-upleex-purple hover:text-upleex-purple disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      Next <ChevronRightIcon size={16} />
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100">

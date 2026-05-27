@@ -1104,7 +1104,7 @@ export const Navbar: React.FC = () => {
         {/* Categories Bar - Secondary Navigation with Dropdowns */}
         <div className="hidden lg:flex items-center justify-between gap-1 py-1 text-sm font-medium text-slate-600 border-t border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-1">
-            {pathname?.startsWith('/services-list') || pathname?.includes('/service/') ? (
+              {pathname?.startsWith('/services-list') || pathname?.includes('/service/') || (pathname === '/categories' && searchParams?.get('type') === 'service') ? (
               // Service Categories
               <>
                 {(() => {
@@ -1208,7 +1208,13 @@ export const Navbar: React.FC = () => {
                 rounded-full px-5 py-2 group h-auto text-xs font-semibold transition-all duration-200
                 border-upleex-purple focus:outline-none focus:ring-0 cursor-pointer
               `}
-              onClick={() => router.push('/categories')}
+              onClick={() =>
+                router.push(
+                  pathname?.startsWith('/services-list') || pathname?.includes('/service/') || (pathname === '/categories' && searchParams?.get('type') === 'service')
+                    ? '/categories?type=service'
+                    : '/categories'
+                )
+              }
             >
               <span className="flex items-center gap-2">
                 View All Categories

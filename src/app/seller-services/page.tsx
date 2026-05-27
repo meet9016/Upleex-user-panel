@@ -37,7 +37,7 @@ function SellerServicesContent() {
           vendor_id: vendorId,
           city: selectedCity
         });
-        setServices(data);
+       setServices(data.data);
       } catch (error) {
         setServices([]);
       } finally {
