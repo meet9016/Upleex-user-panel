@@ -181,7 +181,7 @@ export default function ServicePage() {
         serviceService.getServices({ city: selectedCity })
       ]);
       setCategories(cats);
-      setServices(servs);
+      setServices(servs.data);
     }
     fetchData();
   }, [selectedCity]);
