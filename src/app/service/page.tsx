@@ -44,28 +44,28 @@ import { ServiceCard } from '@/components/features/ServiceCard';
 const HOW_IT_WORKS_STEPS = [
   {
     step: 1,
-    title: 'Choose a Plan',
-    description: 'Select a plan that suits your service needs.'
+    title: 'Create Account',
+    description: 'Sign up and complete your partner profile with the details you need to start. Vendor registration and KYC approval are part of the platform flow.'
   },
   {
     step: 2,
-    title: 'List Your Services',
-    description: 'Fill in details about your skills and expertise.'
+    title: 'List Products',
+    description: 'Add the products you want to rent from your partner panel and choose the right plan for your business.'
   },
   {
     step: 3,
-    title: 'Go Live',
-    description: 'Your service is verified and listed on the platform.'
+    title: 'Get Orders',
+    description: 'Start receiving booking requests from local customers who want your products.'
   },
   {
     step: 4,
-    title: 'Get Bookings',
-    description: 'Customers view and book your services instantly.'
+    title: 'Manage Orders',
+    description: 'Accept, track, and update your orders from one dashboard. The system supports clear order handling and partner management'
   },
   {
     step: 5,
-    title: 'Start Earning',
-    description: 'Complete the job and receive payments securely.'
+    title: 'Receive Payments',
+    description: 'Get your payments directly in your bank account with a simple flow.'
   }
 ];
 
