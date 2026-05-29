@@ -61,9 +61,10 @@ FAQItem.displayName = 'FAQItem';
 interface FAQSectionProps {
   data?: FAQ[];
   title?: string;
+  description?: string;
 }
 
-export const FAQSection = ({ data, title }: FAQSectionProps) => {
+export const FAQSection = ({ data, title, description }: FAQSectionProps) => {
   const [openId, setOpenId] = useState<string | null>(null);
 
   const handleToggle = useCallback((id: string) => {
@@ -75,7 +76,10 @@ export const FAQSection = ({ data, title }: FAQSectionProps) => {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl md:text-5xl font-bold text-center text-slate-900 mb-12">
           {title ? (
-            <span className="text-gradient-primary">{title}</span>
+            <>
+              <span className="text-gradient-primary">{title}</span>
+              <p className="text-slate-500 text-sm mt-6">{description}</p>
+            </>
           ) : (
             <>
               <span className="text-gradient-primary"> Have Questions? We Can Help!</span>{' '}

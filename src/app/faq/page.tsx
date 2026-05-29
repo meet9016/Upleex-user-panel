@@ -94,7 +94,7 @@ export default function FAQPage() {
             Frequently Asked Questions
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Find answers to common questions about our rental marketplace and services.
+            Find clear answers about renting, listing, booking, and support on Upleex.
           </p>
         </div>
 
@@ -187,7 +187,7 @@ export default function FAQPage() {
               Still have questions?
             </h2>
             <p className="text-slate-600 text-lg leading-relaxed">
-              Can't find the answer you're looking for? Our support team is here to help.
+             Could you not find the answer you need? Our team is ready to help.
             </p>
           </div>
 
@@ -202,7 +202,7 @@ export default function FAQPage() {
               </div>
               <h3 className="text-lg font-semibold text-slate-900 mb-2">Contact Us</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Send us a message and we'll respond within 24 hours.
+               Send us a message and we will reply soon.
               </p>
             </Link>
 

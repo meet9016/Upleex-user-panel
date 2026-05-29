@@ -22,6 +22,8 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { FAQSection } from '@/components/features/FAQSection';
+import { faqService, type FAQ } from '@/services/faqService';
 
 // Types
 type BillingCycle = 'monthly' | 'yearly';
@@ -83,51 +85,12 @@ const PROCESS_STEPS = [
   }
 ];
 
-const FAQS = [
-  {
-    question: 'What is Upleex?',
-    answer: 'Upleex is an online platform that lets you rent out your unused products to others, helping you earn extra income effortlessly. Whether it\'s furniture, electronics, vehicles, or event supplies, you can list your items and start making money.'
-  },
-  {
-    question: 'How do I list my products for rent?',
-    answer: 'Listing your products is simple: Sign up on the Upleex website or mobile app. Click on "List Your Product". Fill in the product details, upload clear images, and set your rental price. Submit for approval, and your product will go live!'
-  },
-  {
-    question: 'What types of products can I rent out?',
-    answer: 'You can rent out a variety of products, such as: Furniture (sofas, tables, beds), Electronics (TVs, gaming consoles, laptops), Vehicles (bikes, cars, cycles), Event supplies (decor, audio-visual equipment), Home appliances (refrigerators, washing machines, air purifiers), And much more!'
-  },
-  {
-    question: 'How do I decide the rental price?',
-    answer: 'You can set the rental price based on factors like: The product\'s market value. Its condition (new or used). The demand for similar items in your area. Our team can also guide you in setting a competitive price to attract renters.'
-  },
-  {
-    question: 'If I list my product for rent to another individual (C2C), does Upleex guarantee the transaction?',
-    answer: 'For C2C listings, Upleex acts only as a listing platform to connect individuals. We do not manage, monitor, or guarantee the transaction, product quality, payment, or delivery.'
-  },
-  {
-    question: 'Will Upleex be responsible if there is a payment or product dispute in a C2C transaction?',
-    answer: 'No. In C2C rentals, all terms, conditions, and responsibilities lie between the two parties involved. Upleex is not liable for disputes, losses, or damages arising from such transactions.'
-  },
-  {
-    question: 'How can I make my C2C transaction safe?',
-    answer: 'We strongly encourage users to: Verify identity of the other party (ask for a valid government ID). Take a security deposit before handing over the item. Sign a simple rental agreement stating terms and conditions.'
-  },
-  {
-    question: 'Does Upleex provide any tools for C2C security?',
-    answer: 'Currently, we do not intervene in C2C transactions. However, we may introduce optional security features in the future for added safety.'
-  },
-  {
-    question: 'Will Upleex manage the rental of my product for me?',
-    answer: 'Currently, Upleex operates as a listing platform for C2C rentals. You manage your own listings and handovers, giving you full control over your products and earnings.'
-  }
-];
-
-import { FAQSection } from "@/components/features/FAQSection";
-
 const MembershipPage = () => {
   const router = useRouter();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
   const [priorityPlans, setPriorityPlans] = useState<any[]>([]);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -138,6 +101,10 @@ const MembershipPage = () => {
         setPriorityPlans([]);
       }
     })();
+  }, []);
+
+  useEffect(() => {
+    faqService.getFAQList().then(setFaqs);
   }, []);
   const derivedPlans = (() => {
     if (priorityPlans.length === 0) {
@@ -398,7 +365,7 @@ const MembershipPage = () => {
       </section>
 
       {/* FAQ Section */}
-      <FAQSection data={FAQS} title="Frequently Asked Questions" />
+      <FAQSection data={faqs} title="Frequently Asked Questions" description="Find clear answers about renting, listing, booking, and support on Upleex." />
     </main>
   );
 };

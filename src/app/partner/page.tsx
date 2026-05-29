@@ -23,12 +23,12 @@ const PartnerPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="z-10">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-5">
-                More Orders.<br />
-                Less Effort.<br />
-                <span className="text-gradient-primary">Real Growth.</span>
+                More Bookings,<br />
+                Less Work,<br />
+                <span className="text-gradient-primary">Better Growth.</span>
               </h1>
               <p className="text-lg text-slate-600 mb-5 max-w-lg">
-                Become an Upleex partner and grow your rental business across India.
+               Become an Upleex partner and grow your rental business across India with direct local demand and simple tools.
               </p>
               <Link 
                 href="/partner/signup" 
@@ -66,10 +66,10 @@ const PartnerPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { number: '2,000+', label: 'Active Partners' },
-              { number: '5,000+', label: 'Products Listed' },
-              { number: '10,000+', label: 'Orders Completed' },
-              { number: '100+', label: 'Cities Covered' },
+              { number: '2,500+', label: 'Active Partners' },
+              { number: '6,500+', label: 'Listings Live' },
+              { number: '12,000+', label: 'Orders Completed' },
+              { number: '120+', label: 'Cities Covered' },
             ].map((stat, index) => (
               <div key={index} className="p-4">
                 <div className="text-3xl md:text-4xl font-bold text-gradient-primary mb-2">{stat.number}</div>
@@ -84,9 +84,9 @@ const PartnerPage = () => {
       <section id="benefits" className="py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary mb-4 py-1 pr-1">Why Partners Love Upleex</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-gradient-primary mb-4 py-1 pr-1">Why Partners Choose Upleex</h2>
             <p className="text-slate-600 max-w-2xl mx-auto">
-              All the benefits designed to help you rent more and grow your business.
+              Built to help you earn more, manage less, and grow with confidence.
             </p>
           </div>
 
@@ -98,7 +98,7 @@ const PartnerPage = () => {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Competitive Pricing</h3>
               <p className="text-slate-500 leading-relaxed">
-                Set your own rental prices and maximize your revenue.
+                Set your own rental price and earn better on every booking.
               </p>
             </div>
 
@@ -109,7 +109,7 @@ const PartnerPage = () => {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Secure Transactions</h3>
               <p className="text-slate-500 leading-relaxed">
-                All transactions are secure and protected. Get paid on time.
+                Track every order clearly and get paid with confidence.
               </p>
             </div>
 
@@ -120,7 +120,7 @@ const PartnerPage = () => {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Growth for Every Partner</h3>
               <p className="text-slate-500 leading-relaxed">
-                From small to large businesses, Upleex fuels growth for all partners.
+                Reach more local customers who need products in your city.
               </p>
             </div>
 
@@ -130,7 +130,8 @@ const PartnerPage = () => {
                 <Gauge size={32} />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Ease of Doing Business</h3>
-              <ul className="space-y-3 mt-4">
+              <p className="text-slate-500 leading-relaxed">List items, manage orders, and handle payouts in one simple flow. The partner process also supports vendor KYC, product approval, and direct booking management.</p>
+              {/* <ul className="space-y-3 mt-4">
                 {[
                   'Easy Product Listing',
                   'Real-time Order Management',
@@ -141,7 +142,7 @@ const PartnerPage = () => {
                     <span className="text-sm">{item}</span>
                   </li>
                 ))}
-              </ul>
+              </ul> */}
             </div>
           </div>
         </div>
@@ -154,7 +155,7 @@ const PartnerPage = () => {
     {/* Heading */}
     <div className="text-center mb-12 sm:mb-14 lg:mb-16">
       <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gradient-primary mb-4 leading-tight">
-        Experiences Partners Love to Talk About
+      Experiences Partners Love to Talk About
       </h2>
     </div>
 
@@ -165,17 +166,17 @@ const PartnerPage = () => {
         {
           name: 'Rajesh Kumar',
           role: 'Furniture Rental, Mumbai',
-          text: 'Our business has grown beyond our imagination, getting up to multiple orders consistently during peak seasons. We are now constantly bringing new products thanks to Upleex\'s insights.'
+          text: 'Upleex helped us get more local orders without extra selling effort. It made our rental business feel simple and active.'
         },
         {
           name: 'Priya Sharma',
           role: 'Electronics Rental, Delhi',
-          text: 'I started renting on Upleex with 2-3 orders on the very first day. In no time I was getting over multiple orders a day, like a dream come true.'
+          text: 'We started getting steady bookings soon after listing. The process is easy, and the platform brings real customers.'
         },
         {
           name: 'Amit Patel',
           role: 'Event Equipment, Bangalore',
-          text: 'Upleex made it extremely simple to transition to online business. Suddenly we were all over India to our surprise, seeing up to 5X growth on peak days.'
+          text: 'We manage orders faster now and spend less time on follow-up. Upleex gave our business a better local reach.'
         }
       ].map((testimonial, index) => (
         
@@ -301,8 +302,8 @@ const PartnerPage = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {[
-              'Furniture', 'Electronics', 'Home Appliances', 'Event Equipment', 'Medical Equipment',
-              'Automobile', 'Musical Instruments', 'Tools & Machinery', 'Generator', 'And More'
+              'Furniture', 'Electronics & Gadgets', 'Home Appliances', 'Property', 'Fashion',
+              'Services', 'Education & Classes', 'Kids & Baby Products', 'Sports & Fitness', 'Vehicles'
             ].map((cat, index) => (
               <div key={index} className="bg-white border border-gray-200 rounded-lg py-4 px-2 text-center hover:border-transparent hover:text-white hover:bg-gradient-to-r hover:from-[#6366f1] hover:to-[#0ea5e9] transition-all cursor-pointer font-medium text-slate-700 text-sm md:text-base hover:shadow-lg hover:shadow-blue-500/20">
                 {cat}
@@ -315,9 +316,9 @@ const PartnerPage = () => {
       {/* Support Section */}
       <section className="py-20 bg-gray-50 text-center">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Upleex Partner Support Available 24/7</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Upleex Partner Support Is Always Ready</h2>
           <p className="text-slate-600 mb-8">
-            Upleex partner support is available to solve all your doubts and issues before and after you start your rental business.
+           Need help with listing, pricing, KYC, or order flow? Our support team is here to guide you before and after you go live. The platform also includes vendor support, plan guidance, and policy help for smooth operation.
           </p>
           <a href="mailto:partnerships@upleex.com" className="inline-flex items-center gap-2 text-gradient-primary hover:opacity-80 font-bold text-xl transition-opacity">
             <Mail size={24} className="text-blue-600" />
