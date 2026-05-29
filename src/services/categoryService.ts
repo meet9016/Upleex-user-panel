@@ -19,7 +19,20 @@ export interface CategorySeoSection {
     bullets: CategorySeoBullet[];
 }
 
+export interface CategorySeoFaq {
+    question: string;
+    answer: string;
+}
+
 export interface CategorySeoContent {
+    meta_title?: string;
+    meta_description?: string;
+    core_keyword?: string;
+    secondary_keywords?: string;
+    image_alt?: string;
+    image_title?: string;
+    anchor_tags?: string[];
+    faqs?: CategorySeoFaq[];
     hero_title: string;
     hero_text: string;
     intro_heading: string;
