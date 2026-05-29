@@ -161,10 +161,10 @@ export default function Home() {
               ) : (
                 <>
                   <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-4 sm:mb-6 px-4 tracking-tight">
-                    Explore <span className="text-gradient-primary">Premium</span> Categories
+                    Explore your <span className="text-gradient-primary">Popular</span> Categories
                   </h2>
                   <p className="text-slate-500 max-w-2xl mx-auto text-base sm:text-lg md:text-xl px-4 leading-relaxed">
-                    Pick from top categories available in your city.
+                  Pick from top categories available in your city.
                   </p>
                 </>
               )}
@@ -330,7 +330,7 @@ export default function Home() {
                   transition={{ delay: 0.3 }}
                   className="text-slate-500 leading-relaxed"
                 >
-                  We review listings to keep the platform safe and trusted.
+                We review listings to keep the platform safe and trusted.
                 </motion.p>
               </motion.div>
 

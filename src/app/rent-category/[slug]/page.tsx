@@ -12,8 +12,10 @@ import { useCity } from '@/hooks/useCity';
 import { productService } from '@/services/productService';
 import { motion } from 'framer-motion';
 
-import { CategorySEOContent } from '@/components/features/CategorySEOContent';
+import { CategorySEOContent, type CategorySeoContentData } from '@/components/features/CategorySEOContent';
 import { ProductCardSkeleton } from '@/components/ui/Skeleton';
+import { api } from '@/utils/axiosInstance';
+import endPointApi from '@/utils/endPointApi';
 
 export default function RentCategoryPage() {
   return (
@@ -64,6 +66,7 @@ const [tenureOptions, setTenureOptions] = useState([
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [rotationSeed, setRotationSeed] = useState(() => Math.floor(Date.now() / (2 * 60 * 1000)));
+  const [categorySeoContent, setCategorySeoContent] = useState<CategorySeoContentData | null>(null);
   const ITEMS_PER_PAGE = 12;
   const selectedCity = useCity();
 
@@ -89,6 +92,37 @@ const [tenureOptions, setTenureOptions] = useState([
       image: cat.image
     })) || [])
   ];
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const fetchCategorySeo = async () => {
+      try {
+        const res = await api.get(endPointApi.home, {
+          params: { page: 1, limit: 100 },
+        });
+        if (isCancelled) return;
+
+        const categories = Array.isArray(res?.data?.data) ? res.data.data : [];
+        const currentCategory = categories.find(
+          (category: { categories_id?: string }) => String(category.categories_id) === String(slug)
+        );
+        setCategorySeoContent(currentCategory?.seo_content || null);
+      } catch {
+        if (!isCancelled) {
+          setCategorySeoContent(null);
+        }
+      }
+    };
+
+    if (slug) {
+      fetchCategorySeo();
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [slug, selectedCity]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -503,7 +537,7 @@ const [tenureOptions, setTenureOptions] = useState([
         )}
 
         {/* SEO Content Section */}
-        <CategorySEOContent />
+        <CategorySEOContent content={categorySeoContent} />
       </div>
     </div>
   );

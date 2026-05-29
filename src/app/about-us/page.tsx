@@ -10,18 +10,17 @@ export default function AboutUsPage() {
           </div>
           <div className="space-y-3 text-sm md:text-base leading-relaxed text-slate-700">
             <p>
-              Upleex is a modern rental marketplace that helps individuals and businesses access products on
-              flexible terms. From home essentials to lifestyle and event needs, our goal is to make renting
-              simple, affordable, and reliable.
+             Upleex is a local rental marketplace built for India. It helps people find and list products in their
+              own city without brokers. You can rent homes, rooms, office spaces, and daily-use items in a
+              simple and trusted way.
             </p>
             <p>
-              With a curated network of vendors and a customer-first experience, Upleex connects you to quality
-              products without the burden of ownership. Whether you are setting up a new home, planning an
-              event, or scaling your workspace, Upleex makes it easier to get what you need, when you need it.
+              We connect owners and renters directly, so both sides save time and money. Whether you need
+a product for a few days or a longer stay, Upleex makes the process fast, clear, and easy.
             </p>
             <p>
-              We focus on transparent pricing, doorstep delivery, and responsive support so that you can enjoy
-              a seamless rental journey from start to finish.
+             We also focus on verified listings, local support, and flexible rental plans. That helps users enjoy
+a smooth experience from search to booking.
             </p>
           </div>
         </section>
@@ -32,37 +31,34 @@ export default function AboutUsPage() {
           </div>
           <div className="space-y-4 text-sm md:text-base text-slate-700 leading-relaxed">
             <p>
-              At Upleex, we aim to build a hassle-free renting experience for both renters and partners. The
-              platform focuses on:
+             At Upleex, we help users rent smarter and list faster. The platform is built for easy discovery,
+direct communication, and trusted local deals.
             </p>
             <ul className="list-disc list-inside space-y-2">
               <li>
-                <span className="font-semibold text-upleex-purple">Wide Product Variety:</span> Choose from a range
-                of lifestyle, home, and event products tailored to your needs.
+                <span className="font-semibold text-upleex-purple">Wide Product Choice:</span> Find home appliances, electronics, furniture, vehicles, property,
+fashion, services, education, kids products, and sports items.
               </li>
               <li>
-                <span className="font-semibold text-upleex-purple">Verified Vendors Only:</span> Work with trusted
-                partners who follow our quality and service standards.
+                <span className="font-semibold text-upleex-purple">Verified Listings:</span>Vendors complete KYC before listing, which helps keep the platform
+safe and reliable.
               </li>
               <li>
-                <span className="font-semibold text-upleex-purple">Doorstep Delivery & Pickup:</span> Get products
-                delivered and picked up at your convenience.
+                <span className="font-semibold text-upleex-purple">Direct Local Access:</span> Connect with owners and renters in your area without middlemen.
               </li>
               <li>
-                <span className="font-semibold text-upleex-purple">Flexible Rental Plans:</span> Short-term or
-                long-term rentals with options that suit your budget.
+                <span className="font-semibold text-upleex-purple">Flexible Rental Plans:</span>Choose the plan that fits your use, from short-term to long-term
+needs.
               </li>
               <li>
-                <span className="font-semibold text-upleex-purple">Customer Support:</span> Friendly assistance
-                before and after booking to ensure a smooth experience.
+                <span className="font-semibold text-upleex-purple">Easy Support:</span>Get help before and after booking for a smoother rental journey.
               </li>
               <li>
-                <span className="font-semibold text-upleex-purple">Transparent Pricing:</span> Clear costs with no
-                hidden surprises.
+                <span className="font-semibold text-upleex-purple">Clear Pricing:</span> See simple plan details and avoid hidden surprises.
               </li>
             </ul>
             <p className="font-semibold text-sm md:text-base text-upleex-purple mt-4">
-              Join Upleex and experience a smarter way to rent.
+              Join Upleex and enjoy a smarter way to rent, list, and grow.
             </p>
           </div>
         </section>
@@ -81,12 +77,12 @@ export default function AboutUsPage() {
               <div className="space-y-2">
                 <div>
                   <h3 className="text-lg md:text-xl font-bold text-slate-900">Upleex</h3>
-                  <p className="text-sm text-slate-600">Co-Founder at Upleex</p>
+                  <p className="text-sm text-slate-600">Marketplace Lead at Upleex</p>
                 </div>
                 <ul className="list-disc list-inside text-sm md:text-base text-slate-700 space-y-1">
-                  <li>Brings strong product and technology experience to the rental ecosystem.</li>
-                  <li>Passionate about building customer-centric, scalable platforms.</li>
-                  <li>Focuses on innovation and long-term value for customers and partners.</li>
+                  <li>Build a rental experience that feels simple and local.</li>
+                  <li>Focuses on trust, speed, and ease for every user.</li>
+                  <li>Helps owners and renters connect in a better way.</li>
                 </ul>
               </div>
             </div>

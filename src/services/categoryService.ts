@@ -7,12 +7,35 @@ export interface SubCategory {
     image: string;
 }
 
+export interface CategorySeoBullet {
+    label: string;
+    text: string;
+    plain?: boolean;
+}
+
+export interface CategorySeoSection {
+    heading: string;
+    heading_level: 'h2' | 'h3';
+    bullets: CategorySeoBullet[];
+}
+
+export interface CategorySeoContent {
+    hero_title: string;
+    hero_text: string;
+    intro_heading: string;
+    intro_paragraphs: string[];
+    sections: CategorySeoSection[];
+    main_text: string;
+    sub_text: string;
+}
+
 export interface Category {
     categories_id: string;
     categories_name: string;
     image: string;
     product_count: string;
     subcategories: SubCategory[];
+    seo_content?: CategorySeoContent;
 }
 
 export interface HomeResponse {
@@ -78,6 +101,7 @@ class CategoryService {
                             image: buildImageUrl(sub.image),
                         }))
                         : [],
+                    seo_content: cat.seo_content || undefined,
                 };
             });
 
