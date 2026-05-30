@@ -67,6 +67,7 @@ const [tenureOptions, setTenureOptions] = useState([
   const [totalPages, setTotalPages] = useState(1);
   const [rotationSeed, setRotationSeed] = useState(() => Math.floor(Date.now() / (2 * 60 * 1000)));
   const [categorySeoContent, setCategorySeoContent] = useState<CategorySeoContentData | null>(null);
+  const [categoryImage, setCategoryImage] = useState('');
   const ITEMS_PER_PAGE = 12;
   const selectedCity = useCity();
 
@@ -105,8 +106,10 @@ const [tenureOptions, setTenureOptions] = useState([
 
         const categories = Array.isArray(res?.data?.data) ? res.data.data : [];
         const currentCategory = categories.find(
-          (category: { categories_id?: string }) => String(category.categories_id) === String(slug)
+          (category: { categories_id?: string; _id?: string }) =>
+            String(category.categories_id || category._id) === String(slug)
         );
+        setCategoryImage(currentCategory?.image || '');
         setCategorySeoContent(currentCategory?.seo_content || null);
       } catch {
         if (!isCancelled) {
@@ -325,7 +328,7 @@ const [tenureOptions, setTenureOptions] = useState([
   };
 
   const currentCategoryName = filterCategories.find(c => c.slug === activeFilter)?.name || 'Products';
-  
+
   // Backend already returns products in correct tier order (priority → paid → free)
   // with time-based shuffle applied via rotation_seed — use productList directly
   const filteredProducts = productList;
@@ -537,7 +540,7 @@ const [tenureOptions, setTenureOptions] = useState([
         )}
 
         {/* SEO Content Section */}
-        <CategorySEOContent content={categorySeoContent} />
+        <CategorySEOContent content={categorySeoContent} categoryImage={categoryImage} />
       </div>
     </div>
   );
