@@ -36,7 +36,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
 
 export const ProductCardSkeleton = () => (
   <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-    <Skeleton className="w-full aspect-square" />
+    <Skeleton className="w-80 h-80 aspect-square" />
     <div className="p-4 space-y-3">
       <Skeleton variant="text" height={16} width="80%" />
       <Skeleton variant="text" height={14} width="60%" />

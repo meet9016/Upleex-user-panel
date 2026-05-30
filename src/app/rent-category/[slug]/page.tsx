@@ -540,7 +540,7 @@ const [tenureOptions, setTenureOptions] = useState([
         )}
 
         {/* SEO Content Section */}
-        <CategorySEOContent content={categorySeoContent} categoryImage={categoryImage} />
+        <CategorySEOContent content={categorySeoContent} />
       </div>
     </div>
   );

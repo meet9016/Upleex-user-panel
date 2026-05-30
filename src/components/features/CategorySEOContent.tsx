@@ -39,7 +39,6 @@ export interface CategorySeoContentData {
 
 interface CategorySEOContentProps {
   content?: CategorySeoContentData | null;
-  categoryImage?: string;
 }
 
 function getIntroParagraphs(content: CategorySeoContentData): string[] {
@@ -90,14 +89,14 @@ function BulletList({ bullets }: { bullets: CategorySeoBullet[] }) {
           <span className="w-1.5 h-1.5 rounded-full bg-slate-400 mt-2.5 shrink-0" />
           <span>
             {bullet.plain || !bullet.label?.trim() ? (
-              bullet.text?.trim()
+              <span dangerouslySetInnerHTML={{ __html: bullet.text?.trim() || '' }} />
             ) : (
               <>
-                <strong className="text-slate-900 font-semibold">
+                <strong className="text-slate-900 font-bold">
                   {bullet.label.trim()}
                   {bullet.text?.trim() ? ': ' : ''}
                 </strong>
-                {bullet.text?.trim()}
+                <span dangerouslySetInnerHTML={{ __html: bullet.text?.trim() || '' }} />
               </>
             )}
           </span>
@@ -124,13 +123,19 @@ function KeywordTags({ tags }: { tags: string[] }) {
   );
 }
 
-export const CategorySEOContent = ({ content, categoryImage }: CategorySEOContentProps) => {
+export const CategorySEOContent = ({ content }: CategorySEOContentProps) => {
   if (!content) return null;
 
   const introParagraphs = getIntroParagraphs(content);
   const sections = normalizeSections(content);
   const faqs = (content.faqs || []).filter((f) => f.question?.trim());
-  const keywordTags = content.keyword_tags || [];
+  let keywordTags = content.keyword_tags || [];
+  if (keywordTags.length === 0 && content.secondary_keywords?.trim()) {
+    keywordTags = content.secondary_keywords
+      .split('\n')
+      .map((k) => k.trim())
+      .filter(Boolean);
+  }
   const anchorTags = content.anchor_tags || [];
   const allTags = [...new Set([...keywordTags, ...anchorTags])].slice(0, 15);
 
@@ -145,7 +150,7 @@ export const CategorySEOContent = ({ content, categoryImage }: CategorySEOConten
   const imageAlt = content.image_alt?.trim() || content.hero_title?.trim() || 'Category rental';
   const imageTitle = content.image_title?.trim() || content.core_keyword?.trim() || '';
 
-  if (!hasHero && sections.length === 0 && !hasFooter && !faqs.length && !categoryImage) {
+  if (!hasHero && sections.length === 0 && !hasFooter && !faqs.length) {
     return null;
   }
 
@@ -159,22 +164,6 @@ export const CategorySEOContent = ({ content, categoryImage }: CategorySEOConten
       )}
 
       <div className="w-full space-y-8">
-        {categoryImage && (
-          <figure className="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
-            <img
-              src={categoryImage}
-              alt={imageAlt}
-              title={imageTitle}
-              className="w-full max-h-72 object-cover"
-              loading="lazy"
-            />
-            {imageTitle && (
-              <figcaption className="px-4 py-2 text-xs text-slate-500 bg-slate-50">
-                {imageTitle}
-              </figcaption>
-            )}
-          </figure>
-        )}
 
         {hasHero && (
           <section className="space-y-4">
@@ -189,7 +178,7 @@ export const CategorySEOContent = ({ content, categoryImage }: CategorySEOConten
               </h1>
             )}
             {content.hero_text?.trim() && (
-              <p className="text-slate-600 leading-relaxed">{content.hero_text}</p>
+              <p className="text-slate-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: content.hero_text }} />
             )}
             <KeywordTags tags={allTags} />
             {content.intro_heading?.trim() && (
@@ -198,9 +187,7 @@ export const CategorySEOContent = ({ content, categoryImage }: CategorySEOConten
               </h2>
             )}
             {introParagraphs.map((paragraph, index) => (
-              <p key={index} className="text-slate-600 leading-relaxed">
-                {paragraph}
-              </p>
+              <p key={index} className="text-slate-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: paragraph }} />
             ))}
           </section>
         )}
@@ -266,7 +253,7 @@ export const CategorySEOContent = ({ content, categoryImage }: CategorySEOConten
               </h3>
             )}
             {content.sub_text?.trim() && (
-              <p className="text-slate-600 leading-relaxed">{content.sub_text}</p>
+              <p className="text-slate-600 leading-relaxed" dangerouslySetInnerHTML={{ __html: content.sub_text }} />
             )}
           </section>
         )}
