@@ -633,7 +633,7 @@ export default function ProductDetailsPage() {
 
                 <div className="mb-4 flex items-start justify-between gap-4">
                   <h1
-                    className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight truncate leading-tight flex-1"
+                    className="text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight leading-tight flex-1 break-words whitespace-normal"
                     title={productDetails?.product_name}
                   >
                     {productDetails?.product_name || "Loading product..."}
