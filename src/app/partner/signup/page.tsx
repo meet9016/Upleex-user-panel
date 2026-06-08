@@ -456,12 +456,12 @@ export default function PartnerSignupPage() {
                       }}
                       numInputs={6}
                       shouldAutoFocus={otpSent}
-                      renderSeparator={<span className="mx-2 text-gray-300">•</span>}
+                      renderSeparator={<span className="lg:mx-2 sm:mx-1 text-gray-300">•</span>}
                       renderInput={(props) => (
                         <input
                           {...props}
                           disabled={!otpSent}
-                          className={`h-11 !w-11 rounded-lg border ${errors.otp ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-300 focus:border-upleex-purple focus:ring-upleex-purple/20'} ${!otpSent ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-50'} text-center text-base font-medium text-gray-900 outline-none transition-all`}
+                          className={`h-10 lg:h-11 !w-10 lg:!w-11 rounded-lg border ${errors.otp ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-gray-300 focus:border-upleex-purple focus:ring-upleex-purple/20'} ${!otpSent ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-50'} text-center text-base font-medium text-gray-900 outline-none transition-all`}
                         />
                       )}
                     />

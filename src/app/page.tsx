@@ -176,7 +176,10 @@ export default function Home() {
                   <CategoryCardSkeleton key={index} />
                 ))
               ) : (
-                categoryList?.all_categories?.slice(0, 12).map((category, index) => (
+                [...(categoryList?.all_categories || [])]
+                  .sort((a, b) => Number(b.product_count || 0) - Number(a.product_count || 0))
+                  .slice(0, 12)
+                  .map((category, index) => (
                   <CategoryCard
                     key={category.categories_id}
                     categories_id={category.categories_id}

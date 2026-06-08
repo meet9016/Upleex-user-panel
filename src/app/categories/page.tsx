@@ -49,10 +49,11 @@ function CategoriesPageContent() {
           }
         } else {
           const data = await categoryService.getCategories(selectedCity);
-          setCategories(data);
+          const sortedData = [...data].sort((a, b) => Number(b.product_count || 0) - Number(a.product_count || 0));
+          setCategories(sortedData);
           // Select the first category by default if none selected
-          if (data.length > 0 && selectedCategoryIds.length === 0) {
-            setSelectedCategoryIds([data[0].categories_id]);
+          if (sortedData.length > 0 && selectedCategoryIds.length === 0) {
+            setSelectedCategoryIds([sortedData[0].categories_id]);
           }
         }
       } catch (error) {
