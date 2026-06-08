@@ -97,8 +97,19 @@ const [tenureOptions, setTenureOptions] = useState([
   useEffect(() => {
     let isCancelled = false;
 
-    const fetchCategorySeo = async () => {
+    const updateSeoContent = async () => {
       try {
+        // If a subcategory is selected, use its SEO content
+        if (activeFilter !== 'all' && categoryList.length > 0) {
+          const activeSub = categoryList.find(sub => String(sub.subcategory_id || sub.id || sub._id) === String(activeFilter));
+          if (activeSub?.seo_content) {
+            if (!isCancelled) {
+              setCategorySeoContent(activeSub.seo_content);
+            }
+            return;
+          }
+        }
+
         const res = await api.get(endPointApi.home, {
           params: { page: 1, limit: 100 },
         });
@@ -119,13 +130,13 @@ const [tenureOptions, setTenureOptions] = useState([
     };
 
     if (slug) {
-      fetchCategorySeo();
+      updateSeoContent();
     }
 
     return () => {
       isCancelled = true;
     };
-  }, [slug, selectedCity]);
+  }, [slug, selectedCity, activeFilter, categoryList]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -343,10 +354,10 @@ const [tenureOptions, setTenureOptions] = useState([
   }, [loading, filteredProducts.length]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50" style={{ overflow: 'visible' }}>
+    <div className="w-full min-h-screen flex flex-col bg-gray-50" style={{ overflowX: 'clip' }}>
       {/* Header Section */}
       {/* <div className="bg-white border-b border-gray-100 pt-4 pb-6">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             <BackButton className="mb-2 hover:bg-transparent text-slate-500" />
           <div className="text-sm text-slate-500 flex gap-2 mb-2">
             <span className="hover:text-upleex-purple cursor-pointer">Home</span> / <span>Rent</span> / <span className="text-upleex-purple font-medium">{currentCategoryName}</span>
@@ -356,9 +367,9 @@ const [tenureOptions, setTenureOptions] = useState([
       </div> */}
 
       {/* Top Filter Bar - Sticky Icon Header */}
-      <div className="bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-[49] shadow-md backdrop-blur-none transition-all" style={{ position: 'sticky' }}>
+      <div className="w-full bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-[49] shadow-md backdrop-blur-none transition-all" style={{ position: 'sticky' }}>
        
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 ">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4">
             {filterCategories.map((cat) => {
               const matchedCat = categories.find(c => c.slug === cat.slug);
@@ -382,13 +393,13 @@ const [tenureOptions, setTenureOptions] = useState([
         </div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-2">
             
             <BackButton/>
         </div>
         {/* Controls Bar (Sort/Tenure) */}
-        <div className="relative z-[48] flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 px-1">
+        <div className="relative z-[48] flex flex-col sm:flex-row justify-between items-center w-full mb-8 gap-4 px-1">
           
           {/* Product Count Display */}
           <div className="text-slate-600 font-bold text-base sm:text-lg w-full sm:w-auto text-left">
@@ -522,6 +533,7 @@ const [tenureOptions, setTenureOptions] = useState([
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
+                  className="w-full"
                 >
                   <ProductCard product={product} />
                 </motion.div>
