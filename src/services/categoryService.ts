@@ -4,6 +4,7 @@ import endPointApi from '../utils/endPointApi';
 export interface SubCategory {
     subcategory_id: string;
     subcategory_name: string;
+    slug?: string;
     image: string;
 }
 
@@ -45,6 +46,7 @@ export interface CategorySeoContent {
 export interface Category {
     categories_id: string;
     categories_name: string;
+    slug?: string;
     image: string;
     product_count: string;
     subcategories: SubCategory[];
@@ -105,12 +107,14 @@ class CategoryService {
                 return {
                     categories_id: cat.categories_id || cat.id || cat._id || '',
                     categories_name: cat.categories_name || cat.name || '',
+                    slug: cat.slug || '',
                     image: buildImageUrl(cat.image),
                     product_count: cat.product_count ? String(cat.product_count) : '0',
                     subcategories: Array.isArray(cat.subcategories) 
                         ? cat.subcategories.map((sub: any) => ({
                             subcategory_id: sub.subcategory_id || sub.id || sub._id || '',
                             subcategory_name: sub.subcategory_name || sub.name || '',
+                            slug: sub.slug || '',
                             image: buildImageUrl(sub.image),
                         }))
                         : [],

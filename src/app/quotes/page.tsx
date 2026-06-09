@@ -10,6 +10,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { SuccessModal } from '@/components/features/SuccessModal';
 import { Pagination } from '@/components/ui/Pagination';
 import { useQuoteRedux } from '@/redux/useQuoteRedux';
+import { createSlug } from '@/utils/helper';
 
 declare global {
   interface Window {
@@ -290,7 +291,13 @@ const UserQuotesPage = () => {
                     </div>
                     <div className="flex items-center gap-4">
                       <button
-                        onClick={() => router.push(`/browse-ads/${quote.product_id._id}`)}
+                        onClick={() => {
+                          const p = product as any;
+                          const productSlug = p.slug || p._id;
+                          const catSlug = p.category_slug || createSlug(p.category_name || 'category');
+                          const subCatSlug = p.sub_category_slug || createSlug(p.sub_category_name || 'subcategory');
+                          router.push(`/${catSlug}/${subCatSlug}/${productSlug}`);
+                        }}
                         className="text-xs font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
                       >
                         View Product <Eye className="h-3.5 w-3.5" />

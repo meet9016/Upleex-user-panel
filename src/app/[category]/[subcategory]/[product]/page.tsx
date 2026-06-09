@@ -37,11 +37,12 @@ import { useWishlistRedux } from '@/redux/useWishlistRedux';
 import type { CartItem } from '@/services/cartService';
 import { toast } from "react-hot-toast";
 import { Heart } from "lucide-react";
+import { extractIdFromSlug } from "@/utils/helper";
 
 export default function ProductDetailsPage() {
   const params = useParams();
   const router = useRouter();
-  const id = params?.id as string;
+  const id = extractIdFromSlug(params?.product as string); // Extract ID from SEO slug
 
   const [activeTab, setActiveTab] = useState<"monthly" | "daily">("monthly");
   const [activeDetailTab, setActiveDetailTab] = useState<

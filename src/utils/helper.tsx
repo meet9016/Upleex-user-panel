@@ -22,4 +22,24 @@ export const getAvailableMonths = (
   );
 };
 
+/**
+ * Create SEO-friendly URL slug from name
+ * Example: "Canon Camera" => "canon-camera"
+ */
+export const createSlug = (name: string, id?: string): string => {
+  if (!name) return id || '';
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
+/**
+ * Extract ID from SEO-friendly URL slug
+ * Since we now use slugs directly, this function just returns the slug.
+ */
+export const extractIdFromSlug = (slug: string): string => {
+  if (!slug) return '';
+  return slug;
+};
 

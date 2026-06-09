@@ -1,10 +1,12 @@
 import React from "react";
 import Link from "next/link";
+import { createSlug } from "@/utils/helper";
 
 interface CategoryCardProps {
   categories_name: string;
   image: string;
   categories_id: string;
+  slug?: string;
   product_count?: string | number;
   className?: string;
 }
@@ -13,12 +15,14 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   categories_name,
   image,
   categories_id,
+  slug,
   product_count,
   className = "",
 }) => {
+  const urlSlug = slug || createSlug(categories_name);
   return (
     <Link
-      href={`/rent-category/${categories_id}`}
+      href={`/${urlSlug}`}
       className="group block h-full"
     >
       <div
