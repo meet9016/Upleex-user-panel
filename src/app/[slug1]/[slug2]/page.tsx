@@ -37,12 +37,21 @@ import { useWishlistRedux } from '@/redux/useWishlistRedux';
 import type { CartItem } from '@/services/cartService';
 import { toast } from "react-hot-toast";
 import { Heart } from "lucide-react";
-import { extractIdFromSlug } from "@/utils/helper";
+import { extractIdFromSlug, createSlug } from "@/utils/helper";
+import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { categoryService, Category } from "@/services/categoryService";
+import { useCity } from "@/hooks/useCity";
 
 export default function ProductDetailsPage() {
   const params = useParams();
   const router = useRouter();
-  const id = extractIdFromSlug(params?.product as string); // Extract ID from SEO slug
+  const id = extractIdFromSlug(params?.slug2 as string); // Extract ID from SEO slug
+  const subcategorySlugParam = params?.slug1 as string;
+  const subcategorySlug = extractIdFromSlug(subcategorySlugParam);
+  const selectedCity = useCity();
+
+  const [parentCategory, setParentCategory] = useState<Category | null>(null);
+  const [currentSubcategory, setCurrentSubcategory] = useState<any>(null);
 
   const [activeTab, setActiveTab] = useState<"monthly" | "daily">("monthly");
   const [activeDetailTab, setActiveDetailTab] = useState<
@@ -145,6 +154,29 @@ export default function ProductDetailsPage() {
 
     if (id) fetchProductDetails();
   }, [id]);
+
+  useEffect(() => {
+    let isCancelled = false;
+    const identifySubcategory = async () => {
+      try {
+        const allCategories = await categoryService.getCategories(selectedCity);
+        if (isCancelled) return;
+
+        for (const cat of allCategories) {
+          const subMatch = cat.subcategories?.find((s: any) => s.slug === subcategorySlug || extractIdFromSlug(s.slug || '') === subcategorySlug || s.subcategory_id === subcategorySlug);
+          if (subMatch) {
+            setParentCategory(cat);
+            setCurrentSubcategory(subMatch);
+            break;
+          }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    if (subcategorySlug) identifySubcategory();
+    return () => { isCancelled = true; };
+  }, [subcategorySlug, selectedCity]);
 
   // Handle mouse move for magnifier
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -475,6 +507,21 @@ export default function ProductDetailsPage() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
         <div className="mb-4">
           <BackButton />
+        </div>
+        <div className="mb-6">
+          <Breadcrumb items={[
+            ...(parentCategory ? [{ 
+              label: parentCategory.categories_name, 
+              href: `/rent/${selectedCity}/${parentCategory.slug || createSlug(parentCategory.categories_name)}` 
+            }] : []),
+            ...(currentSubcategory ? [{
+              label: currentSubcategory.subcategory_name,
+              href: `/rent/${selectedCity}/${currentSubcategory.slug || createSlug(currentSubcategory.subcategory_name)}`
+            }] : []),
+            ...(productDetails ? [{
+              label: productDetails.product_name
+            }] : [])
+          ]} />
         </div>
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100/80 overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-0">

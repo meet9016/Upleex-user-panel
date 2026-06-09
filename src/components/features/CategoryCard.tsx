@@ -7,6 +7,7 @@ interface CategoryCardProps {
   image: string;
   categories_id: string;
   slug?: string;
+  citySlug?: string;
   product_count?: string | number;
   className?: string;
 }
@@ -17,12 +18,13 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   categories_id,
   slug,
   product_count,
+  citySlug = "surat",
   className = "",
 }) => {
   const urlSlug = slug || createSlug(categories_name);
   return (
     <Link
-      href={`/${urlSlug}`}
+      href={`/rent/${citySlug}/${urlSlug}`}
       className="group block h-full"
     >
       <div

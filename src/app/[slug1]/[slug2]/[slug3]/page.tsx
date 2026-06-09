@@ -3,13 +3,15 @@
 import { useState, useEffect, Suspense, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/features/ProductCard';
-import { categories } from '@/data/mockData';
+import { categories as mockCategories } from '@/data/mockData';
 import { ArrowRight, ChevronDown, ArrowUpDown, Calendar, Check, PackageOpen } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
 import { Pagination } from '@/components/ui/Pagination';
+import { Breadcrumb } from '@/components/ui/Breadcrumb';
 import { useCity } from '@/hooks/useCity';
 import { productService } from '@/services/productService';
+import { categoryService, Category } from '@/services/categoryService';
 import { motion } from 'framer-motion';
 
 import { CategorySEOContent, type CategorySeoContentData } from '@/components/features/CategorySEOContent';
@@ -28,21 +30,18 @@ export default function RentCategoryPage() {
 
 function RentCategoryContent() {
   const params = useParams();
-  const searchParams = useSearchParams();
-  const subId = searchParams?.get('sub');
   
-  const slugParam = params?.category as string;
+  const typeParam = params?.slug1 as string;
+  const cityParam = params?.slug2 as string;
+  const slugParam = params?.slug3 as string;
   const slug = extractIdFromSlug(slugParam); // Extract ID from SEO slug
-  const [activeFilter, setActiveFilter] = useState(subId || 'all');
 
-  useEffect(() => {
-    if (subId) {
-      setActiveFilter(subId);
-    } else {
-      setActiveFilter('all');
-    }
-  }, [subId]);
-  
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [isCategory, setIsCategory] = useState(false);
+  const [isSubcategory, setIsSubcategory] = useState(false);
+  const [parentCategory, setParentCategory] = useState<Category | null>(null);
+  const [currentCatOrSub, setCurrentCatOrSub] = useState<any>(null);
+
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isTenureOpen, setIsTenureOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState({ label: 'All Types', value: '0' });
@@ -53,14 +52,14 @@ function RentCategoryContent() {
     { label: 'Sell', value: '2' },
   ]);
 
-const [tenureOptions, setTenureOptions] = useState([
-  { label: 'All Durations', value: '0' }, // Special case for "all"
-  { label: 'Daily', value: '1' },    // Assuming '1' is Daily in your DB
-  { label: 'Monthly', value: '2' },  // Assuming '2' is Monthly in your DB
-  { label: 'Hourly', value: '3' },   // Assuming '3' is Hourly in your DB
-]);
+  const [tenureOptions, setTenureOptions] = useState([
+    { label: 'All Durations', value: '0' },
+    { label: 'Daily', value: '1' },
+    { label: 'Monthly', value: '2' },
+    { label: 'Hourly', value: '3' },
+  ]);
 
-  const [categoryList, setCategoryList] = useState<any[]>([]);
+  const [categoryList, setCategoryList] = useState<any[]>([]); // For the filter bar
   const [productList, setProductList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showEmpty, setShowEmpty] = useState(false);
@@ -71,7 +70,8 @@ const [tenureOptions, setTenureOptions] = useState([
   const [categorySeoContent, setCategorySeoContent] = useState<CategorySeoContentData | null>(null);
   const [categoryImage, setCategoryImage] = useState('');
   const ITEMS_PER_PAGE = 12;
-  const selectedCity = useCity();
+  const defaultCity = useCity();
+  const selectedCity = cityParam || defaultCity;
 
   const sortDropdownRef = useRef<HTMLDivElement | null>(null);
   const tenureDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -86,6 +86,64 @@ const [tenureOptions, setTenureOptions] = useState([
 
   const currentTenureOptions = selectedSort.value === '2' ? sellSortOptions : tenureOptions;
 
+  useEffect(() => {
+    let isCancelled = false;
+    const identifySlug = async () => {
+      try {
+        const allCategories = await categoryService.getCategories(selectedCity);
+        if (isCancelled) return;
+
+        let foundIsCat = false;
+        let foundIsSub = false;
+        let foundParent: Category | null = null;
+        let foundCurrent = null;
+
+        const catMatch = allCategories.find(c => c.slug === slug || extractIdFromSlug(c.slug || '') === slug || c.categories_id === slug);
+        if (catMatch) {
+            foundIsCat = true;
+            foundCurrent = catMatch;
+            setActiveFilter('all');
+            setCategoryList(catMatch.subcategories || []);
+        } else {
+            for (const cat of allCategories) {
+                const subMatch = cat.subcategories?.find(s => s.slug === slug || extractIdFromSlug(s.slug || '') === slug || s.subcategory_id === slug);
+                if (subMatch) {
+                    foundIsSub = true;
+                    foundParent = cat;
+                    foundCurrent = subMatch;
+                    setActiveFilter(subMatch.slug || subMatch.subcategory_id);
+                    setCategoryList(cat.subcategories || []);
+                    break;
+                }
+            }
+        }
+
+        setIsCategory(foundIsCat);
+        setIsSubcategory(foundIsSub);
+        setParentCategory(foundParent);
+        setCurrentCatOrSub(foundCurrent);
+
+        if (foundCurrent) {
+            setCategoryImage(foundCurrent.image || '');
+            if ('seo_content' in foundCurrent && (foundCurrent as any).seo_content) {
+                setCategorySeoContent((foundCurrent as any).seo_content);
+            } else if (foundIsCat && (foundCurrent as Category).seo_content) {
+                setCategorySeoContent((foundCurrent as Category).seo_content || null);
+            } else {
+                setCategorySeoContent(null);
+            }
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    if (slug) {
+        identifySlug();
+    }
+    return () => { isCancelled = true; };
+  }, [slug, selectedCity]);
+
   // Dynamic filter categories: "All" + API data
   const filterCategories = [
     { name: 'All', slug: 'all' },
@@ -99,125 +157,42 @@ const [tenureOptions, setTenureOptions] = useState([
   useEffect(() => {
     let isCancelled = false;
 
-    const updateSeoContent = async () => {
-      try {
-        // If a subcategory is selected, use its SEO content
-        if (activeFilter !== 'all' && categoryList.length > 0) {
-          const activeSub = categoryList.find(sub => 
-            String(sub.subcategory_id || sub.id || sub._id) === String(activeFilter) ||
-            (sub.slug || createSlug(sub.subcategory_name || sub.name)) === String(activeFilter)
-          );
-          if (activeSub?.seo_content) {
-            if (!isCancelled) {
-              setCategorySeoContent(activeSub.seo_content);
-            }
-            return;
-          }
-        }
-
-        const res = await api.get(endPointApi.home, {
-          params: { page: 1, limit: 100 },
-        });
-        if (isCancelled) return;
-
-        const categories = Array.isArray(res?.data?.data) ? res.data.data : [];
-        const currentCategory = categories.find(
-          (category: { categories_id?: string; _id?: string }) =>
-            String(category.categories_id || category._id) === String(slug)
-        );
-        setCategoryImage(currentCategory?.image || '');
-        setCategorySeoContent(currentCategory?.seo_content || null);
-      } catch {
-        if (!isCancelled) {
-          setCategorySeoContent(null);
-        }
-      }
-    };
-
-    if (slug) {
-      updateSeoContent();
-    }
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [slug, selectedCity, activeFilter, categoryList]);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    const fetchCategories = async () => {
-      try {
-        const res = await productService.getSubCategories(slug, selectedCity);
-        if (isCancelled) return;
-
-        setCategoryList(res.data || res.data?.data || res || []);
-        
-        // Update options if available in API
-        const root = res.data || res;
-        if (root.sort_options && Array.isArray(root.sort_options)) {
-          setSortOptions([{ label: 'All Types', value: '0' }, ...root.sort_options]);
-        }
-        if (root.tenure_options && Array.isArray(root.tenure_options)) {
-          setTenureOptions([{ label: 'All Durations', value: '0' }, ...root.tenure_options]);
-        }
-      } catch (err) {
-        if (isCancelled) return;
-        setCategoryList([]);
-      }
-    };
-
-    if (slug) {
-      fetchCategories();
-    }
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [slug, selectedCity]);
-
-  useEffect(() => {
-    let isCancelled = false;
-
     const fetchProducts = async () => {
+      if (!currentCatOrSub && !parentCategory) return;
       setLoading(true);
       try {
-        const res = await productService.getCategoryProducts({
-          category_id: slug,
-          sub_category_id: activeFilter,
+        const payloadParams: any = {
           city: selectedCity,
           filter_rent_sell: selectedSort.value,
           filter_tenure: selectedTenure.value,
           page: currentPage,
           rotation_seed: rotationSeed,
-        });
+        };
+
+        if (isCategory && currentCatOrSub) {
+            payloadParams.category_id = currentCatOrSub.categories_id;
+            payloadParams.sub_category_id = 'all';
+        } else if (isSubcategory && parentCategory && currentCatOrSub) {
+            payloadParams.category_id = parentCategory.categories_id;
+            payloadParams.sub_category_id = currentCatOrSub.subcategory_id;
+        } else {
+            payloadParams.category_id = slug;
+        }
+
+        const res = await productService.getCategoryProducts(payloadParams);
 
         if (isCancelled) return;
 
         const payload = res?.data;
         const root = res || {};
 
-        // Case 1: data itself is array of products, meta on root
         if (Array.isArray(payload)) {
           setProductList(payload);
-
-          const totalFromRoot =
-            root.product_count ??
-            root.total_items ??
-            root.total_count ??
-            root.total ??
-            null;
-
-          const lastPageFromRoot =
-            root.last_page ??
-            root.total_pages ??
-            root.pages ??
-            null;
-
+          const totalFromRoot = root.product_count ?? root.total_items ?? root.total_count ?? root.total ?? null;
+          const lastPageFromRoot = root.last_page ?? root.total_pages ?? root.pages ?? null;
           if (totalFromRoot !== null && totalFromRoot !== undefined) {
             const totalNumber = Number(totalFromRoot);
             setProductCount(totalNumber);
-
             const perPageRaw = root.per_page ?? ITEMS_PER_PAGE;
             const perPage = Number(perPageRaw) || ITEMS_PER_PAGE;
             const pages = Math.max(1, Math.ceil(totalNumber / perPage));
@@ -227,36 +202,20 @@ const [tenureOptions, setTenureOptions] = useState([
             setProductCount(null);
             setTotalPages(pages);
           } else {
-            // Fallback: assume more pages while we keep receiving full pages
             const hasFullPage = payload.length >= ITEMS_PER_PAGE;
             setProductCount(null);
             setTotalPages(hasFullPage ? currentPage + 1 : currentPage);
           }
         } else {
-          // Case 2: data is object with product_data and pagination/meta
           const products = Array.isArray(payload?.product_data) ? payload.product_data : [];
           setProductList(products);
-
           const pagination = payload?.pagination || payload?.pager || null;
-
-          const countRaw =
-            payload?.product_count ??
-            pagination?.total ??
-            pagination?.total_items ??
-            pagination?.total_count ??
-            null;
-
-          const lastPageRaw =
-            payload?.total_pages ??
-            payload?.last_page ??
-            pagination?.total_pages ??
-            pagination?.last_page ??
-            null;
+          const countRaw = payload?.product_count ?? pagination?.total ?? pagination?.total_items ?? pagination?.total_count ?? null;
+          const lastPageRaw = payload?.total_pages ?? payload?.last_page ?? pagination?.total_pages ?? pagination?.last_page ?? null;
 
           if (countRaw !== null && countRaw !== undefined) {
             const countNumber = Number(countRaw);
             setProductCount(countNumber);
-
             if (lastPageRaw !== null && lastPageRaw !== undefined) {
               setTotalPages(Math.max(1, Number(lastPageRaw)));
             } else {
@@ -285,17 +244,15 @@ const [tenureOptions, setTenureOptions] = useState([
       }
     };
 
-    if (slug) {
+    if (slug && (isCategory || isSubcategory)) {
       fetchProducts();
     }
 
     return () => {
       isCancelled = true;
     };
-  }, [slug, activeFilter, selectedSort, selectedTenure, currentPage, selectedCity, rotationSeed]);
+  }, [slug, isCategory, isSubcategory, currentCatOrSub, parentCategory, activeFilter, selectedSort, selectedTenure, currentPage, selectedCity, rotationSeed]);
 
-  // Update rotationSeed every 2 minutes to trigger a re-fetch with a new seed
-  // Backend will re-shuffle each tier using the new seed — no frontend shuffle needed
   useEffect(() => {
     const interval = setInterval(() => {
       setRotationSeed(Math.floor(Date.now() / (2 * 60 * 1000)));
@@ -324,7 +281,6 @@ const [tenureOptions, setTenureOptions] = useState([
     };
   }, []);
 
-  // Reset tenure when sort changes
   useEffect(() => {
     if (selectedSort.value === '2') {
       setSelectedTenure({ label: 'All Products', value: '0' });
@@ -337,47 +293,47 @@ const [tenureOptions, setTenureOptions] = useState([
 
   const handleFilterClick = (filterSlug: string) => {
     if (filterSlug === 'all') {
-      router.push(`/${slugParam}`);
+      if (isSubcategory && parentCategory) {
+          router.push(`/${typeParam}/${cityParam}/${parentCategory.slug || createSlug(parentCategory.categories_name)}`);
+      } else {
+          router.push(`/${typeParam}/${cityParam}/${slugParam}`);
+      }
     } else {
-      router.push(`/${slugParam}?sub=${filterSlug}`);
+      router.push(`/${typeParam}/${cityParam}/${filterSlug}`);
     }
   };
 
   const currentCategoryName = filterCategories.find(c => c.slug === activeFilter)?.name || 'Products';
-
-  // Backend already returns products in correct tier order (priority → paid → free)
-  // with time-based shuffle applied via rotation_seed — use productList directly
   const filteredProducts = productList;
 
   useEffect(() => {
     if (!loading && filteredProducts.length === 0) {
-      const timer = setTimeout(() => setShowEmpty(true), 400); // 400ms debounce for empty state flash
+      const timer = setTimeout(() => setShowEmpty(true), 400); 
       return () => clearTimeout(timer);
     } else {
       setShowEmpty(false);
     }
   }, [loading, filteredProducts.length]);
 
+  const breadcrumbItems = [];
+  if (isCategory && currentCatOrSub) {
+      breadcrumbItems.push({ label: currentCatOrSub.categories_name });
+  } else if (isSubcategory && parentCategory && currentCatOrSub) {
+      breadcrumbItems.push({ 
+          label: parentCategory.categories_name, 
+          href: `/${typeParam}/${cityParam}/${parentCategory.slug || createSlug(parentCategory.categories_name)}` 
+      });
+      breadcrumbItems.push({ label: currentCatOrSub.subcategory_name });
+  }
+
   return (
     <div className="w-full min-h-screen flex flex-col bg-gray-50" style={{ overflowX: 'clip' }}>
-      {/* Header Section */}
-      {/* <div className="bg-white border-b border-gray-100 pt-4 pb-6">
-        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            <BackButton className="mb-2 hover:bg-transparent text-slate-500" />
-          <div className="text-sm text-slate-500 flex gap-2 mb-2">
-            <span className="hover:text-upleex-purple cursor-pointer">Home</span> / <span>Rent</span> / <span className="text-upleex-purple font-medium">{currentCategoryName}</span>
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900">{currentCategoryName}</h1>
-        </div>
-      </div> */}
-
-      {/* Top Filter Bar - Sticky Icon Header */}
+      
       <div className="w-full bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-[49] shadow-md backdrop-blur-none transition-all" style={{ position: 'sticky' }}>
-       
         <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4">
             {filterCategories.map((cat) => {
-              const matchedCat = categories.find(c => c.slug === cat.slug);
+              const matchedCat = mockCategories.find(c => c.slug === cat.slug);
               const Icon = matchedCat ? matchedCat.icon : null;
 
               return (
@@ -400,13 +356,13 @@ const [tenureOptions, setTenureOptions] = useState([
 
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-2">
-            
             <BackButton/>
         </div>
-        {/* Controls Bar (Sort/Tenure) */}
+        <div className="mb-6">
+            <Breadcrumb items={breadcrumbItems} />
+        </div>
+        
         <div className="relative z-[48] flex flex-col sm:flex-row justify-between items-center w-full mb-8 gap-4 px-1">
-          
-          {/* Product Count Display */}
           <div className="text-slate-600 font-bold text-base sm:text-lg w-full sm:w-auto text-left">
             {productCount !== null ? (
               <span>Showing {Math.min((currentPage - 1) * ITEMS_PER_PAGE + 1, productCount)}-{Math.min(currentPage * ITEMS_PER_PAGE, productCount)} of {productCount} products</span>
@@ -416,7 +372,6 @@ const [tenureOptions, setTenureOptions] = useState([
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto justify-end">
-               {/* Custom Sort Dropdown */}
           <div className="relative z-30 w-full sm:w-auto" ref={sortDropdownRef}>
             <button 
               onClick={() => { setIsSortOpen(!isSortOpen); setIsTenureOpen(false); }}
@@ -435,7 +390,6 @@ const [tenureOptions, setTenureOptions] = useState([
               <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${isSortOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
             </button>
 
-            {/* Dropdown Menu */}
             <div className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden transition-all duration-300 origin-top ${
               isSortOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'
             }`}>
@@ -461,7 +415,6 @@ const [tenureOptions, setTenureOptions] = useState([
             </div>
           </div>
 
-          {/* Custom Tenure Dropdown */}
           <div className="relative z-20 w-full sm:w-auto" ref={tenureDropdownRef}>
             <button 
               onClick={() => { setIsTenureOpen(!isTenureOpen); setIsSortOpen(false); }}
@@ -480,7 +433,6 @@ const [tenureOptions, setTenureOptions] = useState([
               <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${isTenureOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
             </button>
 
-            {/* Dropdown Menu */}
             <div className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden transition-all duration-300 origin-top ${
               isTenureOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none '
             }`}>
@@ -556,7 +508,6 @@ const [tenureOptions, setTenureOptions] = useState([
           </>
         )}
 
-        {/* SEO Content Section */}
         <CategorySEOContent content={categorySeoContent} />
       </div>
     </div>

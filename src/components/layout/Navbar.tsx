@@ -1161,7 +1161,7 @@ export const Navbar: React.FC = () => {
                 return (
                   <div key={key} className={`relative group ${displayClass}`}>
                     <Link
-                      href={`/${catSlug}`}
+                      href={`/rent/${createSlug(currentLocation === 'Select City' ? 'surat' : currentLocation)}/${catSlug}`}
                       className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer
                       bg-gray-100
                       ${isActive
@@ -1183,7 +1183,7 @@ export const Navbar: React.FC = () => {
                           {item.subcategories.map((sub, subIndex) => (
                             <Link
                               key={sub.subcategory_id || `sub-${subIndex}`}
-                              href={`/${catSlug}?sub=${sub.slug || createSlug(sub.subcategory_name || 'subcategory')}`}
+                              href={`/rent/${createSlug(currentLocation === 'Select City' ? 'surat' : currentLocation)}/${catSlug}?sub=${sub.slug || createSlug(sub.subcategory_name || 'subcategory')}`}
                               className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0 cursor-pointer"
                             >
                               {sub.subcategory_name}
@@ -1305,7 +1305,7 @@ export const Navbar: React.FC = () => {
                   {categories.slice(0, 8).map((cat) => (
                     <Link
                       key={cat.categories_id}
-                      href={`/${cat.slug || createSlug(cat.categories_name || 'category')}`}
+                      href={`/rent/${createSlug(currentLocation === 'Select City' ? 'surat' : currentLocation)}/${cat.slug || createSlug(cat.categories_name || 'category')}`}
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between p-3.5 hover:bg-gray-50 rounded-xl group transition-colors"
                     >

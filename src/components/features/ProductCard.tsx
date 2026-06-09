@@ -69,9 +69,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     }
     if (productId) {
       const urlSlug = product.slug || createSlug(productName);
-      const catSlug = product.category_slug || createSlug(product.category_name || product.category || 'category');
       const subCatSlug = product.sub_category_slug || createSlug(product.sub_category_name || 'subcategory');
-      router.push(`/${catSlug}/${subCatSlug}/${urlSlug}`);
+      router.push(`/${subCatSlug}/${urlSlug}`);
     }
   };
 
@@ -260,9 +259,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
       e.stopPropagation();
       if (!(isOutOfStock && product.product_type_name === 'Sell') && productId) {
         const urlSlug = product.slug || createSlug(productName);
-        const catSlug = product.category_slug || createSlug(product.category_name || product.category || 'category');
         const subCatSlug = product.sub_category_slug || createSlug(product.sub_category_name || 'subcategory');
-        router.push(`/${catSlug}/${subCatSlug}/${urlSlug}`);
+        router.push(`/${subCatSlug}/${urlSlug}`);
       }
     }}
   >
