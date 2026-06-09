@@ -100,7 +100,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     <>
       <motion.div
         onClick={handleCardClick}
-        className={`group relative bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ${productId ? 'cursor-pointer' : 'cursor-default'} ${className}`}
+        className={`group relative w-full h-full bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 ${productId ? 'cursor-pointer' : 'cursor-default'} ${className}`}
         whileHover={{ boxShadow: '0 20px 35px -10px rgba(0,0,0,0.15)' }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       >
