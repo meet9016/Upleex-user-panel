@@ -35,6 +35,7 @@ import { useAuthRedux } from '@/redux/useAuthRedux';
 // import { useNotifications } from '@/context/NotificationContext';
 import { searchService } from '@/services/searchService';
 import NotificationDropdown from '@/components/layout/NotificationDropdown';
+import { createSlug } from '@/utils/helper';
 const placeholders = ["TV", "Medical", "Kurta", "Furniture", "Electronics"]
 
 export const Navbar: React.FC = () => {
@@ -1152,14 +1153,15 @@ export const Navbar: React.FC = () => {
             ) : (
               // Product Categories
               categories.slice(0, 6).map((item, index) => {
-                const isActive = pathname === `/rent-category/${item.categories_id}`;
+                const catSlug = item.slug || createSlug(item.categories_name || 'category');
+                const isActive = pathname === `/${catSlug}`;
                 const key = item.categories_id || `cat-${index}`;
                 const displayClass = index > 3 ? "hidden xl:block" : "block";
 
                 return (
                   <div key={key} className={`relative group ${displayClass}`}>
                     <Link
-                      href={`/rent-category/${item.categories_id}`}
+                      href={`/${catSlug}`}
                       className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer
                       bg-gray-100
                       ${isActive
@@ -1181,7 +1183,7 @@ export const Navbar: React.FC = () => {
                           {item.subcategories.map((sub, subIndex) => (
                             <Link
                               key={sub.subcategory_id || `sub-${subIndex}`}
-                              href={`/rent-category/${item.categories_id}?sub=${sub.subcategory_id}`}
+                              href={`/${catSlug}?sub=${sub.slug || createSlug(sub.subcategory_name || 'subcategory')}`}
                               className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0 cursor-pointer"
                             >
                               {sub.subcategory_name}
@@ -1303,7 +1305,7 @@ export const Navbar: React.FC = () => {
                   {categories.slice(0, 8).map((cat) => (
                     <Link
                       key={cat.categories_id}
-                      href={`/rent-category/${cat.categories_id}`}
+                      href={`/${cat.slug || createSlug(cat.categories_name || 'category')}`}
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between p-3.5 hover:bg-gray-50 rounded-xl group transition-colors"
                     >

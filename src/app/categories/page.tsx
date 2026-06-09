@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronRight } from 'lucide-react';
 import { useCity } from '@/hooks/useCity';
 import { useSearchParams } from 'next/navigation';
+import { createSlug } from '@/utils/helper';
 
 function CategoriesPageContent() {
   const searchParams = useSearchParams();
@@ -261,7 +262,7 @@ function CategoriesPageContent() {
                         </div>
 
                         <Link
-                          href={isService ? `/services-list?category=${cat.categories_id}` : `/rent-category/${cat.categories_id}`}
+                          href={isService ? `/services-list?category=${cat.categories_id}` : `/${cat.slug || createSlug(cat.categories_name || 'category')}`}
                           className="text-upleex-purple text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all"
                         >
                           View All <ChevronRight className="w-4 h-4" />
@@ -283,7 +284,7 @@ function CategoriesPageContent() {
                           {getSubcategories(cat).map((sub) => (
                             <Link
                               key={sub.subcategory_id}
-                              href={isService ? `/service/${sub.subcategory_id}` : `/rent-category/${cat.categories_id}?sub=${sub.subcategory_id}`}
+                              href={isService ? `/service/${sub.subcategory_id}` : `/${cat.slug || createSlug(cat.categories_name || 'category')}?sub=${sub.slug || createSlug(sub.subcategory_name || 'subcategory')}`}
                               className="group"
                             >
                               <div className="relative h-40 w-full rounded-2xl mb-3 overflow-hidden bg-gray-100">

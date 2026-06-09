@@ -184,6 +184,7 @@ export default function Home() {
                     key={category.categories_id}
                     categories_id={category.categories_id}
                     categories_name={category.categories_name}
+                    slug={category.slug}
                     image={category.image}
                     product_count={Number(category.product_count)}
                   />

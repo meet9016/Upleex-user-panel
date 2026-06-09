@@ -16,6 +16,7 @@ import { CategorySEOContent, type CategorySeoContentData } from '@/components/fe
 import { ProductCardSkeleton } from '@/components/ui/Skeleton';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
+import { createSlug, extractIdFromSlug } from '@/utils/helper';
 
 export default function RentCategoryPage() {
   return (
@@ -30,7 +31,8 @@ function RentCategoryContent() {
   const searchParams = useSearchParams();
   const subId = searchParams?.get('sub');
   
-  const slug = params?.slug as string;
+  const slugParam = params?.category as string;
+  const slug = extractIdFromSlug(slugParam); // Extract ID from SEO slug
   const [activeFilter, setActiveFilter] = useState(subId || 'all');
 
   useEffect(() => {
@@ -89,7 +91,7 @@ const [tenureOptions, setTenureOptions] = useState([
     { name: 'All', slug: 'all' },
     ...(categoryList?.map((cat: any) => ({
       name: cat.subcategory_name || cat.name,
-      slug: String(cat.subcategory_id || cat.id),
+      slug: cat.slug || createSlug(cat.subcategory_name || cat.name),
       image: cat.image
     })) || [])
   ];
@@ -101,7 +103,10 @@ const [tenureOptions, setTenureOptions] = useState([
       try {
         // If a subcategory is selected, use its SEO content
         if (activeFilter !== 'all' && categoryList.length > 0) {
-          const activeSub = categoryList.find(sub => String(sub.subcategory_id || sub.id || sub._id) === String(activeFilter));
+          const activeSub = categoryList.find(sub => 
+            String(sub.subcategory_id || sub.id || sub._id) === String(activeFilter) ||
+            (sub.slug || createSlug(sub.subcategory_name || sub.name)) === String(activeFilter)
+          );
           if (activeSub?.seo_content) {
             if (!isCancelled) {
               setCategorySeoContent(activeSub.seo_content);
@@ -332,9 +337,9 @@ const [tenureOptions, setTenureOptions] = useState([
 
   const handleFilterClick = (filterSlug: string) => {
     if (filterSlug === 'all') {
-      router.push(`/rent-category/${slug}`);
+      router.push(`/${slugParam}`);
     } else {
-      router.push(`/rent-category/${slug}?sub=${filterSlug}`);
+      router.push(`/${slugParam}?sub=${filterSlug}`);
     }
   };
 

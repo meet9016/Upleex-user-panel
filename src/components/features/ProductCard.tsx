@@ -9,6 +9,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { Product } from '../../types';
 import { AuthModal } from './AuthModal';
+import { createSlug } from '@/utils/helper';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -67,7 +68,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
       return;
     }
     if (productId) {
-      router.push(`/browse-ads/${productId}`);
+      const urlSlug = product.slug || createSlug(productName);
+      const catSlug = product.category_slug || createSlug(product.category_name || product.category || 'category');
+      const subCatSlug = product.sub_category_slug || createSlug(product.sub_category_name || 'subcategory');
+      router.push(`/${catSlug}/${subCatSlug}/${urlSlug}`);
     }
   };
 
@@ -255,7 +259,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
     onClick={(e) => {
       e.stopPropagation();
       if (!(isOutOfStock && product.product_type_name === 'Sell') && productId) {
-        router.push(`/browse-ads/${productId}`);
+        const urlSlug = product.slug || createSlug(productName);
+        const catSlug = product.category_slug || createSlug(product.category_name || product.category || 'category');
+        const subCatSlug = product.sub_category_slug || createSlug(product.sub_category_name || 'subcategory');
+        router.push(`/${catSlug}/${subCatSlug}/${urlSlug}`);
       }
     }}
   >
