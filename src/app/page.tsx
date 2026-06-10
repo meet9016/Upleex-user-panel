@@ -21,6 +21,7 @@ import { faqService, FAQ } from '@/services/faqService';
 import { useRouter } from 'next/navigation';
 import { useCity } from '@/hooks/useCity';
 import { Skeleton, CategoryCardSkeleton, ProductCardSkeleton, BlogCardSkeleton, HeroCarouselSkeleton } from '@/components/ui/Skeleton';
+import { createSlug } from '@/utils/helper';
 
 interface Banner {
   id: string | number;
@@ -83,6 +84,14 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const isInitialDataLoaded = useRef(false);
   const selectedCity = useCity();
+  const [citySlug, setCitySlug] = useState('surat');
+
+  useEffect(() => {
+    const loc = sessionStorage.getItem('currentLocation');
+    if (loc && loc !== 'Select City') {
+      setCitySlug(createSlug(loc));
+    }
+  }, [selectedCity]);
 
   const [isHovered, setIsHovered] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
@@ -185,6 +194,7 @@ export default function Home() {
                     categories_id={category.categories_id}
                     categories_name={category.categories_name}
                     slug={category.slug}
+                    citySlug={citySlug}
                     image={category.image}
                     product_count={Number(category.product_count)}
                   />

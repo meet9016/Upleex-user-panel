@@ -67,6 +67,9 @@ export interface EndPointApi {
 
     // Rent availability
     rentAvailability: string;
+
+    // Dynamic Pages
+    getDynamicPageBySlug: string;
 }
 
 // Define and export the API endpoint object
@@ -138,6 +141,9 @@ const endPointApi: EndPointApi = {
 
     // Rent availability
     rentAvailability: 'products/rent-availability',
+
+    // Dynamic Pages
+    getDynamicPageBySlug: 'dynamic-pages/:slug',
 };
 
 
