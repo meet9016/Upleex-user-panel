@@ -8,12 +8,14 @@ interface LocationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectCity: (city: any) => void;
+  isCompulsory?: boolean;
 }
 
 export const LocationModal: React.FC<LocationModalProps> = ({
   isOpen,
   onClose,
   onSelectCity,
+  isCompulsory = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [cities, setCities] = useState<any[]>([]);
@@ -64,8 +66,9 @@ export const LocationModal: React.FC<LocationModalProps> = ({
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={isCompulsory ? () => {} : onClose}
       hideHeader
+      hideCloseButton={isCompulsory}
       className="max-w-md overflow-visible rounded-2xl"
       noPadding
     >

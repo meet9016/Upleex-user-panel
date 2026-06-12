@@ -31,6 +31,11 @@ class AuthService {
         const res = await api.post(`auth/${endPointApi.webLoginRegister}`, { ...params, platform: 'web' });
         return res.data;
     }
+
+    async updateProfile(data: any): Promise<any> {
+        const res = await api.put(`auth/update-profile`, data);
+        return res.data;
+    }
 }
 
 export const authService = new AuthService();
