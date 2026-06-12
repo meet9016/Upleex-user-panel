@@ -11,6 +11,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
 import { useCity } from '@/hooks/useCity';
+import { api } from '@/utils/axiosInstance';
+import endPointApi from '@/utils/endPointApi';
+import { CategorySEOContent } from '@/components/features/CategorySEOContent';
 
 const LIMIT = 12;
 
@@ -40,6 +43,7 @@ function ServicesListContent() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [selectedSort, setSelectedSort] = useState({ label: 'Newest First', value: 'newest' });
+  const [seoContent, setSeoContent] = useState<any>(null);
 
   const selectedCity = useCity();
 
@@ -123,6 +127,24 @@ function ServicesListContent() {
 
     fetchServices();
   }, [activeCategory, debouncedSearch, selectedSort, selectedCity, currentPage]);
+
+  useEffect(() => {
+    const fetchSeoContent = async () => {
+      try {
+        const res = await api.get(endPointApi.getDynamicPageBySlug.replace(':slug', 'services-list'));
+        if (res.data?.data?.content) {
+          try {
+            setSeoContent(JSON.parse(res.data.data.content));
+          } catch(e) {
+            console.error("Failed to parse SEO JSON", e);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load SEO content', error);
+      }
+    };
+    fetchSeoContent();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -382,6 +404,13 @@ function ServicesListContent() {
           </div>
         </div>
       </div>
+      
+      {/* Dynamic SEO Content Section */}
+      {seoContent && (
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+          <CategorySEOContent content={seoContent} />
+        </div>
+      )}
     </div>
   );
 }

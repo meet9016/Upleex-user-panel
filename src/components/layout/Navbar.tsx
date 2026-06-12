@@ -34,6 +34,7 @@ import { useWishlistRedux } from '@/redux/useWishlistRedux';
 import { useAuthRedux } from '@/redux/useAuthRedux';
 // import { useNotifications } from '@/context/NotificationContext';
 import { searchService } from '@/services/searchService';
+import { authService } from '@/services/authService';
 import NotificationDropdown from '@/components/layout/NotificationDropdown';
 import { createSlug } from '@/utils/helper';
 const placeholders = ["TV", "Medical", "Kurta", "Furniture", "Electronics"]
@@ -68,24 +69,50 @@ export const Navbar: React.FC = () => {
   // useEffect(() => { setMounted(true); }, []);
 
 
-  // Sync city with sessionStorage on mount
+  const prevUserRef = useRef(user);
+
+  // Sync city with localStorage on mount and user change
   useEffect(() => {
-    const sessionCityId = sessionStorage.getItem('selectedCityId');
-    const sessionCityName = sessionStorage.getItem('currentLocation');
-    if (sessionCityId && sessionCityName) {
-      setSelectedCityId(sessionCityId);
-      setCurrentLocation(sessionCityName);
+    const isLoginEvent = !prevUserRef.current && user;
+    prevUserRef.current = user;
+
+    const userId = user?.id || user?._id || user?.email || 'guest';
+    const cityIdKey = `selectedCityId_${userId}`;
+    const cityNameKey = `currentLocation_${userId}`;
+
+    // If user just logged in and does not have a city from backend, 
+    // force popup immediately and ignore any global cached city
+    if (isLoginEvent && user && !user.city_id) {
+      localStorage.removeItem(cityIdKey);
+      localStorage.removeItem(cityNameKey);
+      localStorage.removeItem('selectedCityId');
+      localStorage.removeItem('currentLocation');
+      setSelectedCityId(null);
+      setCurrentLocation('Select City');
+      setIsLocationModalOpen(true);
+      return;
+    }
+
+    let savedCityId = localStorage.getItem(cityIdKey) || localStorage.getItem('selectedCityId');
+    let savedCityName = localStorage.getItem(cityNameKey) || localStorage.getItem('currentLocation');
+
+    if (savedCityId && savedCityName) {
+      setSelectedCityId(savedCityId);
+      setCurrentLocation(savedCityName);
       setIsLocationModalOpen(false);
+      // Ensure user-specific key is populated
+      localStorage.setItem(cityIdKey, savedCityId);
+      localStorage.setItem(cityNameKey, savedCityName);
     } else {
-      // If no city stored in session, wait for auto-detection or show modal
+      // If no city stored, wait for auto-detection or show modal
       const timer = setTimeout(() => {
-        if (!sessionStorage.getItem('selectedCityId')) {
+        if (!localStorage.getItem(cityIdKey)) {
           setIsLocationModalOpen(true);
         }
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [user]);
 
   // Update suggestions when city changes if searchTerm exists
   useEffect(() => {
@@ -163,8 +190,8 @@ export const Navbar: React.FC = () => {
 
     // Auto-detect user's city
     const detectUserCity = async () => {
-      // If we already have a city stored in session, don't auto-detect
-      if (sessionStorage.getItem('selectedCityId')) return;
+      // If we already have a city stored globally, don't auto-detect
+      if (localStorage.getItem('selectedCityId')) return;
 
       try {
         // Use ip-api.com for more city-level accuracy
@@ -188,8 +215,8 @@ export const Navbar: React.FC = () => {
 
             setCurrentLocation(city.city_name);
             setSelectedCityId(String(city.id));
-            sessionStorage.setItem('selectedCityId', String(city.id));
-            sessionStorage.setItem('currentLocation', city.city_name);
+            localStorage.setItem('selectedCityId', String(city.id));
+            localStorage.setItem('currentLocation', city.city_name);
             setIsLocationModalOpen(false); // Close the modal if auto-detected
             window.dispatchEvent(new Event('storage'));
             window.dispatchEvent(new Event('cityChange'));
@@ -287,16 +314,31 @@ export const Navbar: React.FC = () => {
     }
   };
 
-  const handleCitySelect = (city: any) => {
+  const handleCitySelect = async (city: any) => {
     const cityId = String(city.id);
+    const userId = user?.id || user?._id || user?.email || 'guest';
+    const cityIdKey = `selectedCityId_${userId}`;
+    const cityNameKey = `currentLocation_${userId}`;
+
     setSelectedCityId(cityId);
     setCurrentLocation(city.city_name);
-    sessionStorage.setItem('selectedCityId', cityId);
-    sessionStorage.setItem('currentLocation', city.city_name);
+    localStorage.setItem(cityIdKey, cityId);
+    localStorage.setItem(cityNameKey, city.city_name);
+    localStorage.setItem('selectedCityId', cityId);
+    localStorage.setItem('currentLocation', city.city_name);
     window.dispatchEvent(new Event('storage'));
     window.dispatchEvent(new Event('cityChange'));
     setIsCityDropdownOpen(false);
     setIsLocationModalOpen(false); // Close modal when a city is selected manually
+
+    // Sync with backend if user is logged in
+    if (user && (user._id || user.id)) {
+      try {
+        await authService.updateProfile({ city_id: cityId, city_name: city.city_name });
+      } catch (err) {
+        console.error('Failed to sync city to profile:', err);
+      }
+    }
 
     // If we are on search page, update the city param
     if (pathname === '/search') {
@@ -307,10 +349,16 @@ export const Navbar: React.FC = () => {
   };
 
   const handleClearCity = () => {
+    const userId = user?.id || user?._id || user?.email || 'guest';
+    const cityIdKey = `selectedCityId_${userId}`;
+    const cityNameKey = `currentLocation_${userId}`;
+
     setSelectedCityId(null);
     setCurrentLocation('Select City');
-    sessionStorage.removeItem('selectedCityId');
-    sessionStorage.removeItem('currentLocation');
+    localStorage.removeItem(cityIdKey);
+    localStorage.removeItem(cityNameKey);
+    localStorage.removeItem('selectedCityId');
+    localStorage.removeItem('currentLocation');
     window.dispatchEvent(new Event('storage'));
     window.dispatchEvent(new Event('cityChange'));
     setCitySearchTerm('');
@@ -1153,8 +1201,8 @@ export const Navbar: React.FC = () => {
             ) : (
               // Product Categories
               categories.slice(0, 6).map((item, index) => {
-                const catSlug = item.slug || createSlug(item.categories_name || 'category');
-                const isActive = pathname === `/${catSlug}`;
+                const catSlug = createSlug(item.slug || item.categories_name || 'category');
+                const isActive = pathname?.includes(catSlug);
                 const key = item.categories_id || `cat-${index}`;
                 const displayClass = index > 3 ? "hidden xl:block" : "block";
 
@@ -1183,7 +1231,7 @@ export const Navbar: React.FC = () => {
                           {item.subcategories.map((sub, subIndex) => (
                             <Link
                               key={sub.subcategory_id || `sub-${subIndex}`}
-                              href={`/rent/${createSlug(currentLocation === 'Select City' ? 'surat' : currentLocation)}/${catSlug}?sub=${sub.slug || createSlug(sub.subcategory_name || 'subcategory')}`}
+                              href={`/rent/${createSlug(currentLocation === 'Select City' ? 'surat' : currentLocation)}/${catSlug}?sub=${createSlug(sub.slug || sub.subcategory_name || 'subcategory')}`}
                               className="block px-4 py-2.5 text-sm text-slate-600 hover:bg-purple-50 hover:text-upleex-purple transition-colors border-b border-gray-50 last:border-0 cursor-pointer"
                             >
                               {sub.subcategory_name}
@@ -1305,7 +1353,7 @@ export const Navbar: React.FC = () => {
                   {categories.slice(0, 8).map((cat) => (
                     <Link
                       key={cat.categories_id}
-                      href={`/rent/${createSlug(currentLocation === 'Select City' ? 'surat' : currentLocation)}/${cat.slug || createSlug(cat.categories_name || 'category')}`}
+                      href={`/rent/${createSlug(currentLocation === 'Select City' ? 'surat' : currentLocation)}/${createSlug(cat.slug || cat.categories_name || 'category')}`}
                       onClick={() => setIsMenuOpen(false)}
                       className="flex items-center justify-between p-3.5 hover:bg-gray-50 rounded-xl group transition-colors"
                     >
@@ -1364,6 +1412,7 @@ export const Navbar: React.FC = () => {
         isOpen={isLocationModalOpen}
         onClose={() => setIsLocationModalOpen(false)}
         onSelectCity={handleCitySelect}
+        isCompulsory={!selectedCityId}
       />
     </nav>
   );

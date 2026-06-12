@@ -262,7 +262,7 @@ function CategoriesPageContent() {
                         </div>
 
                         <Link
-                          href={isService ? `/services-list?category=${cat.categories_id}` : `/${cat.slug || createSlug(cat.categories_name || 'category')}`}
+                          href={isService ? `/services-list?category=${cat.categories_id}` : `/rent/${createSlug(!selectedCity || selectedCity === 'Select City' ? 'surat' : selectedCity.includes('-') ? (selectedCity.split('-').pop() || 'surat') : selectedCity)}/${createSlug(cat.slug || cat.categories_name || 'category')}`}
                           className="text-upleex-purple text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all"
                         >
                           View All <ChevronRight className="w-4 h-4" />
@@ -284,7 +284,7 @@ function CategoriesPageContent() {
                           {getSubcategories(cat).map((sub) => (
                             <Link
                               key={sub.subcategory_id}
-                              href={isService ? `/service/${sub.subcategory_id}` : `/${cat.slug || createSlug(cat.categories_name || 'category')}?sub=${sub.slug || createSlug(sub.subcategory_name || 'subcategory')}`}
+                              href={isService ? `/service/${sub.subcategory_id}` : `/rent/${createSlug(!selectedCity || selectedCity === 'Select City' ? 'surat' : selectedCity.includes('-') ? (selectedCity.split('-').pop() || 'surat') : selectedCity)}/${createSlug(cat.slug || cat.categories_name || 'category')}?sub=${createSlug(sub.slug || sub.subcategory_name || 'subcategory')}`}
                               className="group"
                             >
                               <div className="relative h-40 w-full rounded-2xl mb-3 overflow-hidden bg-gray-100">

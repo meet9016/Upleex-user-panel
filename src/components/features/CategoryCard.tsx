@@ -21,7 +21,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   citySlug = "surat",
   className = "",
 }) => {
-  const urlSlug = slug || createSlug(categories_name);
+  const urlSlug = createSlug(slug || categories_name);
   return (
     <Link
       href={`/rent/${citySlug}/${urlSlug}`}

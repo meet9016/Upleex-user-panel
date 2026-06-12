@@ -14,6 +14,8 @@ export interface UserData {
   full_name: string;
   gender: string;
   profile_photo: string;
+  city_id?: string;
+  city_name?: string;
   [key: string]: any;
 }
 
@@ -146,12 +148,25 @@ const authSlice = createSlice({
         full_name: user.full_name,
         gender: user.gender,
         profile_photo: user.profile_photo,
+        city_id: user.city_id,
+        city_name: user.city_name,
       };
       state.isAuthenticated = true;
       setSecureToken(token);
       if (typeof window !== 'undefined') {
         localStorage.setItem('user', JSON.stringify(state.user));
         localStorage.setItem('email', JSON.stringify(user.email));
+
+        // Sync city logic from API response
+        if (user.city_id && user.city_name) {
+          const userId = user._id || user.email;
+          localStorage.setItem(`selectedCityId_${userId}`, user.city_id);
+          localStorage.setItem(`currentLocation_${userId}`, user.city_name);
+          localStorage.setItem('selectedCityId', user.city_id);
+          localStorage.setItem('currentLocation', user.city_name);
+          window.dispatchEvent(new Event('storage'));
+          window.dispatchEvent(new Event('cityChange'));
+        }
       }
     },
   },
@@ -196,6 +211,8 @@ const authSlice = createSlice({
           full_name: user.full_name,
           gender: user.gender,
           profile_photo: user.profile_photo,
+          city_id: user.city_id,
+          city_name: user.city_name,
         };
         state.isAuthenticated = true;
         state.step = 'number';
@@ -207,6 +224,17 @@ const authSlice = createSlice({
           localStorage.setItem('email', JSON.stringify(user.email));
           // Instant socket connect — same tab
           window.dispatchEvent(new Event('userLoggedIn'));
+
+          // Sync city logic from API response
+          if (user.city_id && user.city_name) {
+            const userId = user._id || user.email;
+            localStorage.setItem(`selectedCityId_${userId}`, user.city_id);
+            localStorage.setItem(`currentLocation_${userId}`, user.city_name);
+            localStorage.setItem('selectedCityId', user.city_id);
+            localStorage.setItem('currentLocation', user.city_name);
+            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('cityChange'));
+          }
         }
 
         toast.success(action.payload.message || 'Login successful');
