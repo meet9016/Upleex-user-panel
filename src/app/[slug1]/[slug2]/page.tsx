@@ -512,11 +512,11 @@ export default function ProductDetailsPage() {
           <Breadcrumb items={[
             ...(parentCategory ? [{ 
               label: parentCategory.categories_name, 
-              href: `/rent/${selectedCity}/${parentCategory.slug || createSlug(parentCategory.categories_name)}` 
+              href: `/${isSell ? 'sell' : 'rent'}/${selectedCity || 'surat'}/${parentCategory.slug || createSlug(parentCategory.categories_name)}` 
             }] : []),
             ...(currentSubcategory ? [{
               label: currentSubcategory.subcategory_name,
-              href: `/rent/${selectedCity}/${currentSubcategory.slug || createSlug(currentSubcategory.subcategory_name)}`
+              href: `/${isSell ? 'sell' : 'rent'}/${selectedCity || 'surat'}/${currentSubcategory.slug || createSlug(currentSubcategory.subcategory_name)}`
             }] : []),
             ...(productDetails ? [{
               label: productDetails.product_name

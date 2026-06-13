@@ -69,7 +69,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
       onClose={isCompulsory ? () => {} : onClose}
       hideHeader
       hideCloseButton={isCompulsory}
-      className="max-w-md overflow-visible rounded-2xl"
+      className="max-w-md overflow-visible rounded-2xl scrollbar-hide"
       noPadding
     >
       <div className="p-6 relative">
@@ -85,7 +85,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
 
         {/* Search */}
         <div className="relative mb-6">
-          <div className="flex items-center border border-gray-200 rounded-xl p-1 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10 bg-white">
+          <div className="flex items-center border border-gray-200 rounded-xl p-1 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 bg-white shadow-sm transition-all">
             <input
               type="text"
               placeholder="Enter city"
@@ -94,10 +94,10 @@ export const LocationModal: React.FC<LocationModalProps> = ({
               onChange={handleInputChange}
             />
             <button
-              className="bg-blue-400 hover:bg-blue-500 text-white p-2 rounded-lg active:scale-95 flex items-center justify-center"
+              className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-[10px] active:scale-95 flex items-center justify-center transition-colors shadow-sm"
               onClick={() => cities.length > 0 && handleCitySelect(cities[0])}
             >
-              <ArrowRight size={18} strokeWidth={3} />
+              <ArrowRight size={18} strokeWidth={2.5} />
             </button>
           </div>
 
@@ -108,7 +108,7 @@ export const LocationModal: React.FC<LocationModalProps> = ({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}
-                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 max-h-52 overflow-y-auto"
+                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-100 rounded-xl shadow-xl z-50 max-h-52 overflow-y-auto scrollbar-hide"
               >
                 {isLoading ? (
                   <div className="p-4 flex justify-center">
