@@ -65,7 +65,8 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         ref={modalRef}
         className={clsx(
-          "rounded-2xl w-full relative animate-in zoom-in-95 duration-200 overflow-y-auto max-h-[90vh]",
+          "rounded-2xl w-full relative animate-in zoom-in-95 duration-200",
+          !className?.includes('overflow-visible') && "overflow-y-auto max-h-[90vh]",
           !className?.includes('bg-') && "bg-white",
           !className?.includes('shadow-') && "shadow-xl",
           !className?.includes('max-w-') && "max-w-lg",
