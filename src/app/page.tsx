@@ -87,7 +87,7 @@ export default function Home() {
   const [citySlug, setCitySlug] = useState('surat');
 
   useEffect(() => {
-    const loc = sessionStorage.getItem('currentLocation');
+    const loc = localStorage.getItem('currentLocation');
     if (loc && loc !== 'Select City') {
       setCitySlug(createSlug(loc));
     }
