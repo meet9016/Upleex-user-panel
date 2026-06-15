@@ -35,6 +35,8 @@ function RentCategoryContent() {
   const cityParam = params?.slug2 as string;
   const slugParam = params?.slug3 as string;
   const slug = extractIdFromSlug(slugParam); // Extract ID from SEO slug
+  const searchParams = useSearchParams();
+  const subParam = searchParams?.get('sub');
 
   const [activeFilter, setActiveFilter] = useState('all');
   const [isCategory, setIsCategory] = useState(false);
@@ -108,9 +110,27 @@ function RentCategoryContent() {
           normalize(c.categories_name || '') === normalize(slug || '')
         );
         if (catMatch) {
-            foundIsCat = true;
-            foundCurrent = catMatch;
-            setActiveFilter('all');
+            let targetedSub = null;
+            if (subParam) {
+                targetedSub = catMatch.subcategories?.find((s: any) => 
+                  s.slug === subParam || 
+                  extractIdFromSlug(s.slug || '') === subParam || 
+                  s.subcategory_id === subParam ||
+                  normalize(s.slug || '') === normalize(subParam) ||
+                  normalize(s.subcategory_name || '') === normalize(subParam)
+                );
+            }
+
+            if (targetedSub) {
+                foundIsSub = true;
+                foundParent = catMatch;
+                foundCurrent = targetedSub;
+                setActiveFilter(targetedSub.slug || targetedSub.subcategory_id);
+            } else {
+                foundIsCat = true;
+                foundCurrent = catMatch;
+                setActiveFilter('all');
+            }
             setCategoryList(catMatch.subcategories || []);
         } else {
             for (const cat of allCategories) {
@@ -156,7 +176,7 @@ function RentCategoryContent() {
         identifySlug();
     }
     return () => { isCancelled = true; };
-  }, [slug, selectedCity]);
+  }, [slug, selectedCity, subParam]);
 
   // Dynamic filter categories: "All" + API data
   const filterCategories = [
