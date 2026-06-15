@@ -186,7 +186,6 @@ export default function Home() {
                 ))
               ) : (
                 [...(categoryList?.all_categories || [])]
-                  .sort((a, b) => Number(b.product_count || 0) - Number(a.product_count || 0))
                   .slice(0, 12)
                   .map((category, index) => (
                   <CategoryCard
