@@ -98,7 +98,15 @@ function RentCategoryContent() {
         let foundParent: Category | null = null;
         let foundCurrent = null;
 
-        const catMatch = allCategories.find(c => c.slug === slug || extractIdFromSlug(c.slug || '') === slug || c.categories_id === slug);
+        const normalize = (s: string) => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+
+        const catMatch = allCategories.find(c => 
+          c.slug === slug || 
+          extractIdFromSlug(c.slug || '') === slug || 
+          c.categories_id === slug ||
+          normalize(c.slug || '') === normalize(slug || '') ||
+          normalize(c.categories_name || '') === normalize(slug || '')
+        );
         if (catMatch) {
             foundIsCat = true;
             foundCurrent = catMatch;
@@ -106,7 +114,13 @@ function RentCategoryContent() {
             setCategoryList(catMatch.subcategories || []);
         } else {
             for (const cat of allCategories) {
-                const subMatch = cat.subcategories?.find(s => s.slug === slug || extractIdFromSlug(s.slug || '') === slug || s.subcategory_id === slug);
+                const subMatch = cat.subcategories?.find(s => 
+                  s.slug === slug || 
+                  extractIdFromSlug(s.slug || '') === slug || 
+                  s.subcategory_id === slug ||
+                  normalize(s.slug || '') === normalize(slug || '') ||
+                  normalize(s.subcategory_name || '') === normalize(slug || '')
+                );
                 if (subMatch) {
                     foundIsSub = true;
                     foundParent = cat;
