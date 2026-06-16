@@ -964,28 +964,28 @@ export const Navbar: React.FC = () => {
             {user && <NotificationDropdown />}
 
             {user && <div className="h-4 w-px bg-gray-300"></div>}
-              {user && 
-            <Link
-              href="/cart"
-              className="relative group cursor-pointer"
-              onClick={handleCartClick}
-            >
-              <ShoppingCart size={24} className="text-slate-700 group-hover:text-upleex-blue transition-colors" />
-              <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                {cartCount || 0}
-              </span>
-            </Link>
-              }
-                {user && 
-            <Link href="/wishlist" className="relative group cursor-pointer">
-              <Heart size={24} className="text-slate-700 group-hover:text-red-500 transition-colors" />
-              {wishlistCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
-                  {wishlistCount}
+            {user &&
+              <Link
+                href="/cart"
+                className="relative group cursor-pointer"
+                onClick={handleCartClick}
+              >
+                <ShoppingCart size={24} className="text-slate-700 group-hover:text-upleex-blue transition-colors" />
+                <span className="absolute -top-2 -right-2 bg-upleex-blue text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                  {cartCount || 0}
                 </span>
-              )}
-            </Link>
-                }
+              </Link>
+            }
+            {user &&
+              <Link href="/wishlist" className="relative group cursor-pointer">
+                <Heart size={24} className="text-slate-700 group-hover:text-red-500 transition-colors" />
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+            }
           </div>
 
           {/* Mobile menu button */}

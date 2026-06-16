@@ -176,7 +176,7 @@ function ServicesListContent() {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               {activeCategory !== 'all' ? (
-                <button 
+                <button
                   onClick={() => handleCategoryClick('all')}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors text-upleex-purple"
                 >
@@ -190,65 +190,65 @@ function ServicesListContent() {
                   {activeCategory === 'all' ? 'Explore Service Categories' : currentCategoryName}
                 </h1>
                 <p className="text-sm text-slate-500 font-medium">
-                  {activeCategory === 'all' 
-                    ? 'Select a category to find premium services' 
+                  {activeCategory === 'all'
+                    ? 'Select a category to find premium services'
                     : `Showing all premium services in ${currentCategoryName}`}
                 </p>
               </div>
             </div>
- {activeCategory !== 'all' && (
-            <div className="flex items-center gap-3">
-              <div className="relative group flex-1 min-w-[300px]">
-                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-upleex-purple transition-colors" />
-                <input
-                  type="text"
-                  placeholder="Search services..."
-                  className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:bg-white focus:border-upleex-purple focus:ring-4 focus:ring-purple-500/5 transition-all outline-none"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+            {activeCategory !== 'all' && (
+              <div className="flex items-center gap-3">
+                <div className="relative group flex-1 min-w-[300px]">
+                  <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-upleex-purple transition-colors" />
+                  <input
+                    type="text"
+                    placeholder="Search services..."
+                    className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm focus:bg-white focus:border-upleex-purple focus:ring-4 focus:ring-purple-500/5 transition-all outline-none"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
 
-              {/* Custom Sort */}
-              <div className="relative" ref={sortDropdownRef}>
-                <button
-                  onClick={() => setIsSortOpen(!isSortOpen)}
-                  className={`flex items-center gap-3 px-5 py-2.5 bg-white border-2 rounded-2xl text-sm font-bold transition-all duration-300 ${isSortOpen ? 'border-upleex-purple shadow-lg ring-4 ring-purple-500/5' : 'border-gray-100 text-slate-700 hover:border-upleex-purple/50'}`}
-                >
-                  <ArrowUpDown size={16} className="text-upleex-purple" />
-                  <span className="hidden sm:inline">{selectedSort.label}</span>
-                  <ChevronDown size={14} className={`transition-transform duration-300 ${isSortOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
-                </button>
+                {/* Custom Sort */}
+                <div className="relative" ref={sortDropdownRef}>
+                  <button
+                    onClick={() => setIsSortOpen(!isSortOpen)}
+                    className={`flex items-center gap-3 px-5 py-2.5 bg-white border-2 rounded-2xl text-sm font-bold transition-all duration-300 ${isSortOpen ? 'border-upleex-purple shadow-lg ring-4 ring-purple-500/5' : 'border-gray-100 text-slate-700 hover:border-upleex-purple/50'}`}
+                  >
+                    <ArrowUpDown size={16} className="text-upleex-purple" />
+                    <span className="hidden sm:inline">{selectedSort.label}</span>
+                    <ChevronDown size={14} className={`transition-transform duration-300 ${isSortOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
+                  </button>
 
-                <AnimatePresence>
-                  {isSortOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute right-0 mt-2 w-56 bg-white rounded-2xl border border-gray-100 shadow-2xl z-50 overflow-hidden"
-                    >
-                      <div className="p-1.5">
-                        {sortOptions.map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              setSelectedSort(option);
-                              setIsSortOpen(false);
-                            }}
-                            className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${selectedSort.value === option.value ? 'bg-purple-50 text-upleex-purple' : 'text-slate-600 hover:bg-gray-50'}`}
-                          >
-                            {option.label}
-                            {selectedSort.value === option.value && <Check size={16} />}
-                          </button>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                  <AnimatePresence>
+                    {isSortOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 mt-2 w-56 bg-white rounded-2xl border border-gray-100 shadow-2xl z-50 overflow-hidden"
+                      >
+                        <div className="p-1.5">
+                          {sortOptions.map((option) => (
+                            <button
+                              key={option.value}
+                              onClick={() => {
+                                setSelectedSort(option);
+                                setIsSortOpen(false);
+                              }}
+                              className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${selectedSort.value === option.value ? 'bg-purple-50 text-upleex-purple' : 'text-slate-600 hover:bg-gray-50'}`}
+                            >
+                              {option.label}
+                              {selectedSort.value === option.value && <Check size={16} />}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-            </div>
-             )}
+            )}
           </div>
         </div>
       </div>

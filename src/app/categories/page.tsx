@@ -117,9 +117,9 @@ function CategoriesPageContent() {
   }, [selectedCategoryIds, isService, selectedCity, servicesMap, servicesLoadingMap]);
 
   const toggleCategory = (id: string) => {
-    setSelectedCategoryIds(prev => 
-      prev.includes(id) 
-        ? prev.filter(item => item !== id) 
+    setSelectedCategoryIds(prev =>
+      prev.includes(id)
+        ? prev.filter(item => item !== id)
         : [...prev, id]
     );
   };
@@ -131,13 +131,17 @@ function CategoriesPageContent() {
     return cat.subcategories;
   };
 
-  const filteredCategories = categories.filter(cat => {
-    const subcats = getSubcategories(cat);
-    return (
-      cat.categories_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      subcats.some(sub => sub.subcategory_name.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  });
+  // const filteredCategories = categories.filter(cat => {
+  //   const subcats = getSubcategories(cat);
+  //   return (
+  //     cat.categories_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     subcats.some(sub => sub.subcategory_name.toLowerCase().includes(searchQuery.toLowerCase()))
+  //   );
+  // });
+  const filteredCategories = categories.filter(cat =>
+    cat.categories_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    cat.subcategories.some(sub => sub.subcategory_name.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
   const selectedCategories = categories.filter(cat => selectedCategoryIds.includes(cat.categories_id));
 
@@ -181,19 +185,17 @@ function CategoriesPageContent() {
                   {filteredCategories.map((cat) => (
                     <label
                       key={cat.categories_id}
-                      className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${
-                        selectedCategoryIds.includes(cat.categories_id)
+                      className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${selectedCategoryIds.includes(cat.categories_id)
                           ? 'bg-purple-50 text-upleex-purple'
                           : 'hover:bg-gray-50 text-slate-600'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
-                          className={`w-2 h-2 rounded-full ${
-                            selectedCategoryIds.includes(cat.categories_id)
+                          className={`w-2 h-2 rounded-full ${selectedCategoryIds.includes(cat.categories_id)
                               ? 'bg-upleex-purple'
                               : 'bg-transparent'
-                          }`}
+                            }`}
                         />
                         <span className="font-medium text-sm">
                           {cat.categories_name}
@@ -213,7 +215,7 @@ function CategoriesPageContent() {
           </div>
 
           {/* Main Area */}
-          <div className="lg:w-3/4">
+            <div className="lg:w-3/4">
             <div className="space-y-4">
               <AnimatePresence mode="popLayout">
                 {selectedCategories.length > 0 ? (
@@ -226,10 +228,11 @@ function CategoriesPageContent() {
                       transition={{ duration: 0.3 }}
                       className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100"
                     >
-                      
                       {/* Header */}
                       <div
-                        className={`flex items-center justify-between pb-2 mb-4 border-b border-gray-100`}
+                        className={`flex items-center justify-between ${
+                          Number(cat.product_count) > 0 ? "pb-2 mb-4 border-b border-gray-100" : "pb-0 mb-0"
+                        }`}
                       >
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center">
@@ -250,11 +253,7 @@ function CategoriesPageContent() {
                               {cat.categories_name}
                             </h2>
                             <p className="text-sm text-slate-500">
-                              {isService ? (
-                                `${servicesMap[cat.categories_id]?.length || 0} Services`
-                              ) : (
-                                `${cat.subcategories.length} Subcategories`
-                              )}
+                              {cat.subcategories.length} Subcategories
                             </p>
                           </div>
                         </div>
@@ -295,18 +294,13 @@ function CategoriesPageContent() {
                                   />
                                 )}
                               </div>
-
                               <h3 className="text-sm font-bold text-slate-800 text-center group-hover:text-upleex-purple transition-colors">
                                 {sub.subcategory_name}
                               </h3>
                             </Link>
                           ))}
                         </div>
-                      ) : (
-                        <div className="text-center py-8 text-slate-500 text-sm">
-                          No {isService ? 'services' : 'subcategories'} found.
-                        </div>
-                      )}
+                      ) : null}
                     </motion.div>
                   ))
                 ) : (
