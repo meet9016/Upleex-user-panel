@@ -23,7 +23,7 @@ function SellerServicesContent() {
   const searchParams = useSearchParams();
   const vendorId = searchParams?.get('vendor_id') ?? '';
   const vendorNameFromQuery = searchParams?.get('vendor_name') ?? '';
-  
+
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const selectedCity = useCity();
@@ -76,11 +76,11 @@ function SellerServicesContent() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
-               <div className="px-4 py-2 bg-purple-50 rounded-xl border border-purple-100">
-                  <span className="text-sm font-bold text-upleex-purple">{services.length} Premium Services</span>
-               </div>
+              <div className="px-4 py-2 bg-purple-50 rounded-xl border border-purple-100">
+                <span className="text-sm font-bold text-upleex-purple">{services.length} Premium Services</span>
+              </div>
             </div>
           </div>
         </div>

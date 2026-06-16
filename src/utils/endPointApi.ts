@@ -70,6 +70,15 @@ export interface EndPointApi {
 
     // Dynamic Pages
     getDynamicPageBySlug: string;
+    // Addresses
+    addAddress: string;
+    listAddresses: string;
+    updateAddress: string;
+    deleteAddress: string;
+    setDefaultAddress: string;
+    
+    // Shipping
+    calculateShipping: string;
 }
 
 // Define and export the API endpoint object
@@ -144,6 +153,15 @@ const endPointApi: EndPointApi = {
 
     // Dynamic Pages
     getDynamicPageBySlug: 'dynamic-pages/:slug',
+    // Addresses
+    addAddress: 'addresses/web-add-address',
+    listAddresses: 'addresses/web-list-addresses',
+    updateAddress: 'addresses/web-update-address',
+    deleteAddress: 'addresses/web-delete-address',
+    setDefaultAddress: 'addresses/web-set-default-address',
+    
+    // Shipping
+    calculateShipping: 'shipping/calculate',
 };
 
 
