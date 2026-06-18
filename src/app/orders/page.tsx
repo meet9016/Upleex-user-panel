@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Package, Copy } from 'lucide-react';
+import { ShoppingBag, Package, Copy, Truck } from 'lucide-react';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { toast } from 'react-hot-toast';
@@ -10,6 +10,7 @@ import { Pagination } from '@/components/ui/Pagination';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useRouter } from 'next/navigation';
 import BillingInvoice from '@/components/features/BillingInvoice';
+import OrderTracking from '@/components/features/OrderTracking';
 import { FaFileInvoice } from 'react-icons/fa';
 import { Modal } from '@/components/ui/Modal';
 import { Loader } from '@/components/ui/Loader';
@@ -48,6 +49,8 @@ export default function OrdersPage() {
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [selectedOrderForInvoice, setSelectedOrderForInvoice] = useState<any>(null);
   const [invoiceLoading, setInvoiceLoading] = useState(false);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
+  const [selectedOrderForTracking, setSelectedOrderForTracking] = useState<any>(null);
 
   const handleDownloadInvoice = async (order: any) => {
     setShowInvoiceModal(true);
@@ -261,6 +264,18 @@ export default function OrdersPage() {
                         </button>
                       </div>
                     )}
+                    {order.type === 'order' && (
+                      <button
+                        onClick={() => {
+                          setSelectedOrderForTracking(order);
+                          setShowTrackingModal(true);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition"
+                      >
+                        <Truck size={14} />
+                        View Tracking
+                      </button>
+                    )}
                     {order.type === 'quote' && 
                     order.payment_status?.toLowerCase() !== 'paid' && 
                     ['approved', 'approval'].includes(order.order_status?.toLowerCase()) && 
@@ -328,6 +343,28 @@ export default function OrdersPage() {
               />
             )}
           </div>
+        </Modal>
+      )}
+
+      {/* Tracking Modal */}
+      {showTrackingModal && selectedOrderForTracking && (
+        <Modal
+          isOpen={showTrackingModal}
+          onClose={() => setShowTrackingModal(false)}
+          hideHeader={true}
+          hideCloseButton={true}
+          noPadding={true}
+          className="max-w-3xl"
+        >
+          <OrderTracking
+            orderId={selectedOrderForTracking.order_id}
+            status={selectedOrderForTracking.vendor_status || selectedOrderForTracking.order_status || 'pending'}
+            deliveryStatus={selectedOrderForTracking.delivery_tracking?.status}
+            trackingNumber={selectedOrderForTracking.delivery_tracking?.tracking_number}
+            courierPartner={selectedOrderForTracking.delivery_tracking?.courier_partner}
+            deliveryUpdates={selectedOrderForTracking.delivery_tracking?.delivery_updates}
+            onClose={() => setShowTrackingModal(false)}
+          />
         </Modal>
       )}
     </div>
