@@ -13,6 +13,7 @@ interface SuccessModalProps {
     vendor_address?: string;
     vendor_city?: string;
     vendor_mobile?: string;
+    shiprocket_shipment_id?: string;
   } | null;
   onClose?: () => void;
 }
@@ -49,6 +50,13 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, orderDetails
                   <p className="font-bold text-blue-600">₹{orderDetails.amount?.toLocaleString('en-IN')}</p>
                 </div>
               </div>
+
+              {orderDetails.shiprocket_shipment_id && (
+                <div className="mb-3 text-[11px] bg-blue-50 text-blue-800 p-2.5 rounded-xl border border-blue-100 flex justify-between items-center">
+                  <span className="font-semibold">Shipment ID (Shiprocket):</span>
+                  <span className="font-mono font-bold select-all bg-white px-2 py-0.5 rounded border border-blue-200">{orderDetails.shiprocket_shipment_id}</span>
+                </div>
+              )}
               
               <div className="space-y-3 mt-4 max-h-[160px] overflow-y-auto pr-2">
                 {orderDetails.items?.map((item, index) => (
