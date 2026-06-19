@@ -9,10 +9,12 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { sendOtp, verifyOtp, setUserType, setStep, clearError } from '@/redux/slices/authSlice';
 import { fetchCart } from '@/redux/slices/cartSlice';
 import { fetchWishlist } from '@/redux/slices/wishlistSlice';
+import { saveToken } from '@/utils/tokenManager';
 
 const LoginPage = () => {
   const [number, setNumber] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
   const [form, setForm] = useState({
     name: '',
@@ -87,7 +89,8 @@ const LoginPage = () => {
       otp: otpString,
       country_id: '91',
       name: userType === 'new' ? form.name : undefined,
-      email: userType === 'new' ? form.email : undefined
+      email: userType === 'new' ? form.email : undefined,
+      rememberMe: rememberMe
     }) as any).then((result: any) => {
       if (result.meta.requestStatus === 'fulfilled') {
         window.dispatchEvent(new Event('storage'));
@@ -365,6 +368,20 @@ const LoginPage = () => {
                     ) : null}
                   </div>
                 )}
+
+                {/* Remember Me Checkbox */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500 border-gray-300"
+                  />
+                  <label htmlFor="rememberMe" className="text-sm text-gray-700">
+                    Remember me
+                  </label>
+                </div>
 
                 <Button 
                   fullWidth 

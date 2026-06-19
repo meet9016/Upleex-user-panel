@@ -712,13 +712,14 @@ export default function CartPage() {
                           {/* Price Details */}
                           <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                             {[
+                              { label: `GST (${item.gst_per || 0}%)`, value: `₹${parseFloat(item.gst_amount || '0').toLocaleString('en-IN')}` },
                               { label: 'Final Amount', value: `₹${parseFloat(item.final_amount).toLocaleString('en-IN')}` },
                             ].map((d) => (
                               <div
                                 key={d.label}
                                 className="bg-slate-50/50 rounded-lg px-3 py-2 border border-slate-100"
                               >
-                                <div className="text-[10px] text-slate-500 font-bold">
+                                <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
                                   {d.label}
                                 </div>
                                 <div className="font-bold text-slate-900 mt-0.5">{d.value}</div>
@@ -759,7 +760,7 @@ export default function CartPage() {
                     </div>
 
                     <div className="flex justify-between text-slate-700">
-                      <span>GST (18%)</span>
+                      <span>GST</span>
                       <span className="font-semibold flex items-center">
                         <AnimatedPrice value={summary?.tax || 0} />
                       </span>
@@ -1362,7 +1363,7 @@ export default function CartPage() {
                         <span className="font-semibold text-slate-700">₹{(summary?.rentAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       </div>
                       <div className="flex justify-between items-center text-[11px] text-slate-500">
-                        <span>GST (18%):</span>
+                        <span>GST:</span>
                         <span className="font-semibold text-slate-700">₹{(summary?.tax || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       </div>
                       {deliveryType === 'shipping' && shippingCharge !== null && (

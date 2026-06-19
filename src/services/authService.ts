@@ -19,6 +19,7 @@ export interface VerifyOtpParams {
     country_id: string;
     name?: string;
     email?: string;
+  rememberMe?: boolean;
 }
 
 class AuthService {

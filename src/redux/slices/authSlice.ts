@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { authService, SendOtpParams, VerifyOtpParams } from '@/services/authService';
 import { setSecureToken, removeSecureToken } from '@/utils/cryptoUtils';
+import { saveToken, clearToken as clearTokenManager } from '@/utils/tokenManager';
 import { toast } from 'react-hot-toast';
 
 export interface UserData {
@@ -121,11 +122,8 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.userType = null;
       state.step = 'number';
-      removeSecureToken();
+      clearTokenManager();
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('user');
-        localStorage.removeItem('email');
-        localStorage.removeItem('token');
         // Instant socket disconnect — same tab
         window.dispatchEvent(new Event('userLoggedOut'));
       }
@@ -134,8 +132,8 @@ const authSlice = createSlice({
       state.error = null;
     },
     // Set login data directly (used by AuthModal to avoid double API call)
-    setLoginData: (state, action: PayloadAction<{ token: string; user: any }>) => {
-      const { token, user } = action.payload;
+    setLoginData: (state, action: PayloadAction<{ token: string; user: any; rememberMe?: boolean }>) => {
+      const { token, user, rememberMe = false } = action.payload;
       state.token = token;
       state.user = {
         _id: user._id,
@@ -153,6 +151,7 @@ const authSlice = createSlice({
       };
       state.isAuthenticated = true;
       setSecureToken(token);
+      saveToken(token, rememberMe);
       if (typeof window !== 'undefined') {
         localStorage.setItem('user', JSON.stringify(state.user));
         localStorage.setItem('email', JSON.stringify(user.email));
@@ -198,6 +197,8 @@ const authSlice = createSlice({
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.loading = false;
         const { token, user } = action.payload.data;
+        // Get rememberMe from the meta or action payload (we'll pass it from the component)
+        const rememberMe = action.meta.arg.rememberMe || false;
         
         state.token = token;
         state.user = {
@@ -219,6 +220,7 @@ const authSlice = createSlice({
 
         // Store in localStorage
         setSecureToken(token);
+        saveToken(token, rememberMe);
         if (typeof window !== 'undefined') {
           localStorage.setItem('user', JSON.stringify(state.user));
           localStorage.setItem('email', JSON.stringify(user.email));
