@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { getSecureToken, removeSecureToken } from './cryptoUtils'
+import { getSecureToken } from './cryptoUtils'
+import { clearToken } from './tokenManager'
 
 const apiAdminInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_APP_URL,
@@ -31,11 +32,8 @@ apiAdminInstance.interceptors.response.use(
     const { response } = error;
 
     if (response?.status === 401) {
-      removeSecureToken();
       if (typeof window !== 'undefined' && window.location.pathname !== '/auth/login') {
-        localStorage.removeItem('user');
-        localStorage.removeItem('email');
-        localStorage.removeItem('token');
+        clearToken();
         window.dispatchEvent(new Event('storage'));
         window.location.href = '/auth/login';
       }
