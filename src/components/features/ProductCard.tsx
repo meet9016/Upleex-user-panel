@@ -3,13 +3,14 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { MapPin, Heart } from 'lucide-react';
+import { MapPin, Heart, Share2 } from 'lucide-react';
 import { GoVerified } from 'react-icons/go';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { Product } from '../../types';
 import { AuthModal } from './AuthModal';
 import { createSlug } from '@/utils/helper';
+import { toast } from 'react-toastify';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -93,6 +94,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
       }
     }
   };
+
+  const handleShareClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (productId) {
+      const urlSlug = product.slug || createSlug(productName);
+      const subCatSlug = product.sub_category_slug || createSlug(product.sub_category_name || 'subcategory');
+      const shareUrl = `${window.location.origin}/${subCatSlug}/${urlSlug}`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: productName,
+            text: `Check out ${productName} on Upleex!`,
+            url: shareUrl,
+          });
+        } catch (error) {
+          console.error('Error sharing:', error);
+        }
+      } else {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          toast.success("Link copied to clipboard!");
+        } catch (err) {
+          toast.error("Failed to copy link");
+        }
+      }
+    }
+  };
+
    const getListingTypeLabel = () => {
     const type = product?.product_listing_type_name || product?.product_type_name;
     if (!type) return '';
@@ -181,6 +213,22 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, className }) 
               />
             </motion.button>
           )}
+
+          {/* Share Button */}
+          <motion.button
+            onClick={handleShareClick}
+            whileTap={{ scale: 0.85 }}
+            transition={{
+              duration: 0.35,
+              ease: 'easeOut',
+            }}
+            className="absolute top-3 right-[3.25rem] z-20 bg-white/90 p-2 rounded-full shadow hover:shadow-md group/share"
+          >
+            <Share2
+              size={18}
+              className="text-slate-500 transition-colors group-hover/share:text-upleex-blue"
+            />
+          </motion.button>
 
           {/* Category */}
           {productCategory && (

@@ -11,6 +11,7 @@ export interface Product {
     rating?: number;
     specifications?: { label: string; value: string }[];
     is_wishlist?: boolean;
+    url?: string;
 }
 
 export interface Category {
