@@ -60,7 +60,7 @@ export const Footer: React.FC = () => {
               <a href="https://www.instagram.com/upleex_official/" className="text-white  transition-colors"><FaInstagram size={20} /></a>
               <a href="https://x.com/" className="text-white  transition-colors"><FaTwitter size={20} /></a>
               <a href="https://www.linkedin.com/" className="text-white transition-colors"><FaLinkedinIn size={20} /></a>
-              <a href="https://www.youtube.com/" className="text-white  transition-colors"><TfiYoutube  size={20} /></a>
+              <a href="https://www.youtube.com/channel/UCNG-0nu0GXXdSKI7YUlmZEQ" target="_blank" rel="noopener noreferrer" className="text-white  transition-colors"><TfiYoutube  size={20} /></a>
             </div>
             <p className="text-gray-500 text-xs">
               Subscribe to our newsletter for latest updates and offers.
