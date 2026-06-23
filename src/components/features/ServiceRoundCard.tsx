@@ -60,7 +60,9 @@ export const ServiceRoundCard: React.FC<ServiceRoundCardProps> = ({ category, cl
                 width={112}
                 height={112}
                 className="w-full h-full object-cover"
-                loading="lazy"
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
               />
             </div>
           </div>
