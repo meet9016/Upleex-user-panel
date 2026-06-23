@@ -56,7 +56,7 @@ export const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">Stay Connected</h3>
             <div className="flex space-x-4 mb-6">
               
-              <a href="https://www.facebook.com/" className="text-white  transition-colors"><FaFacebookF size={20} /></a>
+              <a href="https://www.facebook.com/share/1LdMJB88Rf/?mibextid=wwXIfr" className="text-white  transition-colors"><FaFacebookF size={20} /></a>
               <a href="https://www.instagram.com/upleex_official/" className="text-white  transition-colors"><FaInstagram size={20} /></a>
               <a href="https://x.com/" className="text-white  transition-colors"><FaTwitter size={20} /></a>
               <a href="https://www.linkedin.com/" className="text-white transition-colors"><FaLinkedinIn size={20} /></a>
