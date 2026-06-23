@@ -19,6 +19,7 @@ import { ProductCardSkeleton } from '@/components/ui/Skeleton';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { createSlug, extractIdFromSlug } from '@/utils/helper';
+import { notFound } from 'next/navigation';
 
 export default function RentCategoryPage() {
   return (
@@ -30,7 +31,7 @@ export default function RentCategoryPage() {
 
 function RentCategoryContent() {
   const params = useParams();
-  
+
   const typeParam = params?.slug1 as string;
   const cityParam = params?.slug2 as string;
   const slugParam = params?.slug3 as string;
@@ -78,6 +79,9 @@ function RentCategoryContent() {
   const sortDropdownRef = useRef<HTMLDivElement | null>(null);
   const tenureDropdownRef = useRef<HTMLDivElement | null>(null);
 
+  const [categoryNotFound, setCategoryNotFound] = useState(false);
+  const [identifyDone, setIdentifyDone] = useState(false);
+
   const sellSortOptions = [
     { label: 'All Products', value: '0' },
     { label: 'Price: Low to High', value: 'Price: Low to High' },
@@ -91,6 +95,11 @@ function RentCategoryContent() {
   useEffect(() => {
     let isCancelled = false;
     const identifySlug = async () => {
+      if (!cityParam || cityParam === 'null') {
+        setCategoryNotFound(true);
+        setIdentifyDone(true);
+        return;
+      }
       try {
         const allCategories = await categoryService.getCategories(selectedCity);
         if (isCancelled) return;
@@ -102,78 +111,82 @@ function RentCategoryContent() {
 
         const normalize = (s: string) => (s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
 
-        const catMatch = allCategories.find(c => 
-          c.slug === slug || 
-          extractIdFromSlug(c.slug || '') === slug || 
+        const catMatch = allCategories.find(c =>
+          c.slug === slug ||
+          extractIdFromSlug(c.slug || '') === slug ||
           c.categories_id === slug ||
           normalize(c.slug || '') === normalize(slug || '') ||
           normalize(c.categories_name || '') === normalize(slug || '')
         );
         if (catMatch) {
-            let targetedSub = null;
-            if (subParam) {
-                targetedSub = catMatch.subcategories?.find((s: any) => 
-                  s.slug === subParam || 
-                  extractIdFromSlug(s.slug || '') === subParam || 
-                  s.subcategory_id === subParam ||
-                  normalize(s.slug || '') === normalize(subParam) ||
-                  normalize(s.subcategory_name || '') === normalize(subParam)
-                );
-            }
+          let targetedSub = null;
+          if (subParam) {
+            targetedSub = catMatch.subcategories?.find((s: any) =>
+              s.slug === subParam ||
+              extractIdFromSlug(s.slug || '') === subParam ||
+              s.subcategory_id === subParam ||
+              normalize(s.slug || '') === normalize(subParam) ||
+              normalize(s.subcategory_name || '') === normalize(subParam)
+            );
+          }
 
-            if (targetedSub) {
-                foundIsSub = true;
-                foundParent = catMatch;
-                foundCurrent = targetedSub;
-                setActiveFilter(targetedSub.slug || targetedSub.subcategory_id);
-            } else {
-                foundIsCat = true;
-                foundCurrent = catMatch;
-                setActiveFilter('all');
-            }
-            setCategoryList(catMatch.subcategories || []);
+          if (targetedSub) {
+            foundIsSub = true;
+            foundParent = catMatch;
+            foundCurrent = targetedSub;
+            setActiveFilter(targetedSub.slug || targetedSub.subcategory_id);
+          } else {
+            foundIsCat = true;
+            foundCurrent = catMatch;
+            setActiveFilter('all');
+          }
+          setCategoryList(catMatch.subcategories || []);
         } else {
-            for (const cat of allCategories) {
-                const subMatch = cat.subcategories?.find(s => 
-                  s.slug === slug || 
-                  extractIdFromSlug(s.slug || '') === slug || 
-                  s.subcategory_id === slug ||
-                  normalize(s.slug || '') === normalize(slug || '') ||
-                  normalize(s.subcategory_name || '') === normalize(slug || '')
-                );
-                if (subMatch) {
-                    foundIsSub = true;
-                    foundParent = cat;
-                    foundCurrent = subMatch;
-                    setActiveFilter(subMatch.slug || subMatch.subcategory_id);
-                    setCategoryList(cat.subcategories || []);
-                    break;
-                }
+          for (const cat of allCategories) {
+            const subMatch = cat.subcategories?.find(s =>
+              s.slug === slug ||
+              extractIdFromSlug(s.slug || '') === slug ||
+              s.subcategory_id === slug ||
+              normalize(s.slug || '') === normalize(slug || '') ||
+              normalize(s.subcategory_name || '') === normalize(slug || '')
+            );
+            if (subMatch) {
+              foundIsSub = true;
+              foundParent = cat;
+              foundCurrent = subMatch;
+              setActiveFilter(subMatch.slug || subMatch.subcategory_id);
+              setCategoryList(cat.subcategories || []);
+              break;
             }
+          }
         }
 
         setIsCategory(foundIsCat);
         setIsSubcategory(foundIsSub);
         setParentCategory(foundParent);
         setCurrentCatOrSub(foundCurrent);
-
+        // Neither category nor subcategory matched -> invalid slug
+        if (!foundIsCat && !foundIsSub) {
+          setCategoryNotFound(true);
+        }
         if (foundCurrent) {
-            setCategoryImage(foundCurrent.image || '');
-            if ('seo_content' in foundCurrent && (foundCurrent as any).seo_content) {
-                setCategorySeoContent((foundCurrent as any).seo_content);
-            } else if (foundIsCat && (foundCurrent as Category).seo_content) {
-                setCategorySeoContent((foundCurrent as Category).seo_content || null);
-            } else {
-                setCategorySeoContent(null);
-            }
+          setCategoryImage(foundCurrent.image || '');
+          if ('seo_content' in foundCurrent && (foundCurrent as any).seo_content) {
+            setCategorySeoContent((foundCurrent as any).seo_content);
+          } else if (foundIsCat && (foundCurrent as Category).seo_content) {
+            setCategorySeoContent((foundCurrent as Category).seo_content || null);
+          } else {
+            setCategorySeoContent(null);
+          }
         }
       } catch (err) {
         console.error(err);
+      } finally {
+        setIdentifyDone(true);
       }
     };
-
     if (slug) {
-        identifySlug();
+      identifySlug();
     }
     return () => { isCancelled = true; };
   }, [slug, selectedCity, subParam]);
@@ -204,13 +217,13 @@ function RentCategoryContent() {
         };
 
         if (isCategory && currentCatOrSub) {
-            payloadParams.category_id = currentCatOrSub.categories_id;
-            payloadParams.sub_category_id = 'all';
+          payloadParams.category_id = currentCatOrSub.categories_id;
+          payloadParams.sub_category_id = 'all';
         } else if (isSubcategory && parentCategory && currentCatOrSub) {
-            payloadParams.category_id = parentCategory.categories_id;
-            payloadParams.sub_category_id = currentCatOrSub.subcategory_id;
+          payloadParams.category_id = parentCategory.categories_id;
+          payloadParams.sub_category_id = currentCatOrSub.subcategory_id;
         } else {
-            payloadParams.category_id = slug;
+          payloadParams.category_id = slug;
         }
 
         const res = await productService.getCategoryProducts(payloadParams);
@@ -328,9 +341,9 @@ function RentCategoryContent() {
   const handleFilterClick = (filterSlug: string) => {
     if (filterSlug === 'all') {
       if (isSubcategory && parentCategory) {
-          router.push(`/${typeParam}/${cityParam}/${parentCategory.slug || createSlug(parentCategory.categories_name)}`);
+        router.push(`/${typeParam}/${cityParam}/${parentCategory.slug || createSlug(parentCategory.categories_name)}`);
       } else {
-          router.push(`/${typeParam}/${cityParam}/${slugParam}`);
+        router.push(`/${typeParam}/${cityParam}/${slugParam}`);
       }
     } else {
       router.push(`/${typeParam}/${cityParam}/${filterSlug}`);
@@ -342,7 +355,7 @@ function RentCategoryContent() {
 
   useEffect(() => {
     if (!loading && filteredProducts.length === 0) {
-      const timer = setTimeout(() => setShowEmpty(true), 400); 
+      const timer = setTimeout(() => setShowEmpty(true), 400);
       return () => clearTimeout(timer);
     } else {
       setShowEmpty(false);
@@ -351,18 +364,22 @@ function RentCategoryContent() {
 
   const breadcrumbItems = [];
   if (isCategory && currentCatOrSub) {
-      breadcrumbItems.push({ label: currentCatOrSub.categories_name });
+    breadcrumbItems.push({ label: currentCatOrSub.categories_name });
   } else if (isSubcategory && parentCategory && currentCatOrSub) {
-      breadcrumbItems.push({ 
-          label: parentCategory.categories_name, 
-          href: `/${typeParam}/${cityParam}/${parentCategory.slug || createSlug(parentCategory.categories_name)}` 
-      });
-      breadcrumbItems.push({ label: currentCatOrSub.subcategory_name });
+    breadcrumbItems.push({
+      label: parentCategory.categories_name,
+      href: `/${typeParam}/${cityParam}/${parentCategory.slug || createSlug(parentCategory.categories_name)}`
+    });
+    breadcrumbItems.push({ label: currentCatOrSub.subcategory_name });
   }
 
+
+ if (identifyDone && categoryNotFound) {
+  notFound();
+}
   return (
     <div className="w-full min-h-screen flex flex-col bg-gray-50" style={{ overflowX: 'clip' }}>
-      
+
       <div className="w-full bg-white border-b-2 border-purple-50 sticky top-[140px] lg:top-[128px] z-[49] shadow-md backdrop-blur-none transition-all" style={{ position: 'sticky' }}>
         <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 ">
           <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-4">
@@ -390,9 +407,9 @@ function RentCategoryContent() {
 
       <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
-            <Breadcrumb items={breadcrumbItems} />
+          <Breadcrumb items={breadcrumbItems} />
         </div>
-        
+
         <div className="relative z-[48] flex flex-col sm:flex-row justify-between items-center w-full mb-8 gap-4 px-1">
           <div className="text-slate-600 font-bold text-base sm:text-lg w-full sm:w-auto text-left">
             {productCount !== null ? (
@@ -403,88 +420,82 @@ function RentCategoryContent() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto justify-end">
-          <div className="relative z-30 w-full sm:w-auto" ref={sortDropdownRef}>
-            <button 
-              onClick={() => { setIsSortOpen(!isSortOpen); setIsTenureOpen(false); }}
-              className={`w-full sm:w-64 flex items-center justify-between pl-4 pr-4 py-3 bg-white border-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                isSortOpen 
-                  ? 'border-upleex-purple shadow-lg shadow-purple-500/10 ring-4 ring-purple-500/5' 
+            <div className="relative z-30 w-full sm:w-auto" ref={sortDropdownRef}>
+              <button
+                onClick={() => { setIsSortOpen(!isSortOpen); setIsTenureOpen(false); }}
+                className={`w-full sm:w-64 flex items-center justify-between pl-4 pr-4 py-3 bg-white border-2 rounded-full text-sm font-semibold transition-all duration-300 ${isSortOpen
+                  ? 'border-upleex-purple shadow-lg shadow-purple-500/10 ring-4 ring-purple-500/5'
                   : 'border-gray-100 text-slate-700 hover:border-upleex-purple/50 hover:shadow-md'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className={`text-upleex-purple ${isSortOpen ? 'scale-110' : ''} transition-transform duration-300`}>
-                  <ArrowUpDown size={18} />
-                </span>
-                <span className="truncate">{selectedSort.label}</span>
-              </div>
-              <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${isSortOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
-            </button>
+                  }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`text-upleex-purple ${isSortOpen ? 'scale-110' : ''} transition-transform duration-300`}>
+                    <ArrowUpDown size={18} />
+                  </span>
+                  <span className="truncate">{selectedSort.label}</span>
+                </div>
+                <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${isSortOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
+              </button>
 
-            <div className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden transition-all duration-300 origin-top ${
-              isSortOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'
-            }`}>
-              <div className="p-1.5">
-                {sortOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => {
-                      setSelectedSort(option);
-                      setIsSortOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                      selectedSort.value === option.value
+              <div className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden transition-all duration-300 origin-top ${isSortOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none'
+                }`}>
+                <div className="p-1.5">
+                  {sortOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => {
+                        setSelectedSort(option);
+                        setIsSortOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${selectedSort.value === option.value
                         ? 'bg-purple-50 text-upleex-purple'
                         : 'text-slate-600 hover:bg-gray-50 hover:text-slate-900'
-                    }`}
-                  >
-                    {option.label}
-                    {selectedSort.value === option.value && <Check size={16} className="text-upleex-purple" />}
-                  </button>
-                ))}
+                        }`}
+                    >
+                      {option.label}
+                      {selectedSort.value === option.value && <Check size={16} className="text-upleex-purple" />}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="relative z-20 w-full sm:w-auto" ref={tenureDropdownRef}>
-            <button 
-              onClick={() => { setIsTenureOpen(!isTenureOpen); setIsSortOpen(false); }}
-              className={`w-full sm:w-64 flex items-center justify-between pl-4 pr-4 py-3 bg-white border-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                isTenureOpen 
-                  ? 'border-upleex-purple shadow-lg shadow-purple-500/10 ring-4 ring-purple-500/5' 
+            <div className="relative z-20 w-full sm:w-auto" ref={tenureDropdownRef}>
+              <button
+                onClick={() => { setIsTenureOpen(!isTenureOpen); setIsSortOpen(false); }}
+                className={`w-full sm:w-64 flex items-center justify-between pl-4 pr-4 py-3 bg-white border-2 rounded-full text-sm font-semibold transition-all duration-300 ${isTenureOpen
+                  ? 'border-upleex-purple shadow-lg shadow-purple-500/10 ring-4 ring-purple-500/5'
                   : 'border-gray-100 text-slate-700 hover:border-upleex-purple/50 hover:shadow-md'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className={`text-upleex-purple ${isTenureOpen ? 'scale-110' : ''} transition-transform duration-300`}>
-                  {selectedSort.value === '2' ? <ArrowUpDown size={18} /> : <Calendar size={18} />}
-                </span>
-                <span className="truncate">{selectedTenure.label}</span>
-              </div>
-              <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${isTenureOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
-            </button>
+                  }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span className={`text-upleex-purple ${isTenureOpen ? 'scale-110' : ''} transition-transform duration-300`}>
+                    {selectedSort.value === '2' ? <ArrowUpDown size={18} /> : <Calendar size={18} />}
+                  </span>
+                  <span className="truncate">{selectedTenure.label}</span>
+                </div>
+                <ChevronDown size={16} className={`text-gray-400 transition-transform duration-300 ${isTenureOpen ? 'rotate-180 text-upleex-purple' : ''}`} />
+              </button>
 
-            <div className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden transition-all duration-300 origin-top ${
-              isTenureOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none '
-            }`}>
-              <div className="p-1.5">
-                {currentTenureOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => {
-                      setSelectedTenure(option);
-                      setIsTenureOpen(false);
-                    }}
-                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                      selectedTenure.value === option.value
+              <div className={`absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border border-gray-100 shadow-xl shadow-gray-200/50 overflow-hidden transition-all duration-300 origin-top ${isTenureOpen ? 'opacity-100 scale-100 translate-y-0 visible' : 'opacity-0 scale-95 -translate-y-2 invisible pointer-events-none '
+                }`}>
+                <div className="p-1.5">
+                  {currentTenureOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => {
+                        setSelectedTenure(option);
+                        setIsTenureOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${selectedTenure.value === option.value
                         ? 'bg-purple-50 text-upleex-purple'
                         : 'text-slate-600 hover:bg-gray-50 hover:text-slate-900'
-                    }`}
-                  >
-                    {option.label}
-                    {selectedTenure.value === option.value && <Check size={16} className="text-upleex-purple" />}
-                  </button>
-                ))}
+                        }`}
+                    >
+                      {option.label}
+                      {selectedTenure.value === option.value && <Check size={16} className="text-upleex-purple" />}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>

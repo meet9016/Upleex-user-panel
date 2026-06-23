@@ -46,7 +46,7 @@ function CategoriesPageContent() {
           }));
           setCategories(mapped);
           if (mapped.length > 0 && selectedCategoryIds.length === 0) {
-            setSelectedCategoryIds([mapped[0].categories_id]);
+            setSelectedCategoryIds(mapped.slice(0, 5).map((c) => c.categories_id));
           }
         } else {
           const data = await categoryService.getCategories(selectedCity);
@@ -54,7 +54,7 @@ function CategoriesPageContent() {
           setCategories(sortedData);
           // Select the first category by default if none selected
           if (sortedData.length > 0 && selectedCategoryIds.length === 0) {
-            setSelectedCategoryIds([sortedData[0].categories_id]);
+            setSelectedCategoryIds(sortedData.slice(0, 5).map((c) => c.categories_id));
           }
         }
       } catch (error) {
@@ -126,6 +126,10 @@ function CategoriesPageContent() {
     );
   };
 
+  const selectAllCategories = () => {
+    setSelectedCategoryIds(categories.map((cat) => cat.categories_id));
+  };
+
   const getSubcategories = (cat: Category) => {
     if (isService) {
       return servicesMap[cat.categories_id] || [];
@@ -169,17 +173,26 @@ function CategoriesPageContent() {
           <div className="lg:w-1/4">
             <div className="sticky top-32">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                
+
                 {/* Search */}
-                <div className="relative mb-6">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder={isService ? "Search services..." : "Search categories..."}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-upleex-purple/20 focus:border-upleex-purple transition-all text-sm"
-                  />
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder={isService ? "Search services..." : "Search categories..."}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-upleex-purple/20 focus:border-upleex-purple transition-all text-sm"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={selectAllCategories}
+                    className="px-3 py-2 rounded-xl bg-upleex-purple text-white text-sm font-medium hover:bg-upleex-purple/90 transition-all whitespace-nowrap"
+                  >
+                    Add All
+                  </button>
                 </div>
 
                 {/* Categories */}
@@ -188,15 +201,15 @@ function CategoriesPageContent() {
                     <label
                       key={cat.categories_id}
                       className={`flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all ${selectedCategoryIds.includes(cat.categories_id)
-                          ? 'bg-purple-50 text-upleex-purple'
-                          : 'hover:bg-gray-50 text-slate-600'
+                        ? 'bg-purple-50 text-upleex-purple'
+                        : 'hover:bg-gray-50 text-slate-600'
                         }`}
                     >
                       <div className="flex items-center gap-3">
                         <div
                           className={`w-2 h-2 rounded-full ${selectedCategoryIds.includes(cat.categories_id)
-                              ? 'bg-upleex-purple'
-                              : 'bg-transparent'
+                            ? 'bg-upleex-purple'
+                            : 'bg-transparent'
                             }`}
                         />
                         <span className="font-medium text-sm">
@@ -217,7 +230,7 @@ function CategoriesPageContent() {
           </div>
 
           {/* Main Area */}
-            <div className="lg:w-3/4">
+          <div className="lg:w-3/4">
             <div className="space-y-4">
               <AnimatePresence mode="popLayout">
                 {selectedCategories.length > 0 ? (
@@ -232,9 +245,8 @@ function CategoriesPageContent() {
                     >
                       {/* Header */}
                       <div
-                        className={`flex items-center justify-between ${
-                          Number(cat.product_count) > 0 ? "pb-2 mb-4 border-b border-gray-100" : "pb-0 mb-0"
-                        }`}
+                        className={`flex items-center justify-between ${Number(cat.product_count) > 0 ? "pb-2 mb-4 border-b border-gray-100" : "pb-0 mb-0"
+                          }`}
                       >
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center">
