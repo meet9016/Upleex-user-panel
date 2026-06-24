@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, notFound } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { BackButton } from "@/components/ui/BackButton";
 import { DatePicker } from "@/components/ui/DatePicker";
@@ -78,6 +78,8 @@ export default function ProductDetailsPage() {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isWishlistLoading, setIsWishlistLoading] = useState(false);
   const [localLiked, setLocalLiked] = useState<boolean | null>(null);
+  const [productNotFound, setProductNotFound] = useState(false);
+  const [subcategoryNotFound, setSubcategoryNotFound] = useState(false);
 
   // State for magnifier
   const [isHovering, setIsHovering] = useState(false);
@@ -131,6 +133,12 @@ export default function ProductDetailsPage() {
       try {
         const res = await productService.getSingleProduct(id);
         const data = res?.data || res?.product || res;
+
+        if (!data || !data.product_name) {
+          setProductNotFound(true);
+          return;
+        }
+
         setProductDetails(data);
 
         if (data?.product_main_image) {
@@ -149,10 +157,15 @@ export default function ProductDetailsPage() {
         }
       } catch (err) {
         console.error("Error fetching product details", err);
+        setProductNotFound(true);
       }
     };
 
-    if (id) fetchProductDetails();
+    if (id && id !== 'null' && id !== 'undefined') {
+      fetchProductDetails();
+    } else {
+      setProductNotFound(true);
+    }
   }, [id]);
 
   useEffect(() => {
@@ -162,19 +175,29 @@ export default function ProductDetailsPage() {
         const allCategories = await categoryService.getCategories(selectedCity);
         if (isCancelled) return;
 
+        let found = false;
         for (const cat of allCategories) {
           const subMatch = cat.subcategories?.find((s: any) => s.slug === subcategorySlug || extractIdFromSlug(s.slug || '') === subcategorySlug || s.subcategory_id === subcategorySlug);
           if (subMatch) {
             setParentCategory(cat);
             setCurrentSubcategory(subMatch);
+            found = true;
             break;
           }
         }
+        if (!found) {
+          setSubcategoryNotFound(true);
+        }
       } catch (err) {
         console.error(err);
+        setSubcategoryNotFound(true);
       }
     };
-    if (subcategorySlug) identifySubcategory();
+    if (subcategorySlug && subcategorySlug !== 'null' && subcategorySlug !== 'undefined') {
+      identifySubcategory();
+    } else {
+      setSubcategoryNotFound(true);
+    }
     return () => { isCancelled = true; };
   }, [subcategorySlug, selectedCity]);
 
@@ -324,7 +347,7 @@ export default function ProductDetailsPage() {
 
   const handleWishlistToggle = async () => {
     if (!id) return;
-    
+
     const token = localStorage.getItem("token");
     if (!token) {
       setIsAuthModalOpen(true);
@@ -502,6 +525,10 @@ export default function ProductDetailsPage() {
     }
     return true;
   };
+  if (productNotFound || subcategoryNotFound) {
+    notFound();
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-12">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 lg:pt-10">
@@ -510,9 +537,9 @@ export default function ProductDetailsPage() {
         </div>
         <div className="mb-6">
           <Breadcrumb items={[
-            ...(parentCategory ? [{ 
-              label: parentCategory.categories_name, 
-              href: `/${isSell ? 'sell' : 'rent'}/${selectedCity || 'surat'}/${parentCategory.slug || createSlug(parentCategory.categories_name)}` 
+            ...(parentCategory ? [{
+              label: parentCategory.categories_name,
+              href: `/${isSell ? 'sell' : 'rent'}/${selectedCity || 'surat'}/${parentCategory.slug || createSlug(parentCategory.categories_name)}`
             }] : []),
             ...(currentSubcategory ? [{
               label: currentSubcategory.subcategory_name,
@@ -686,7 +713,7 @@ export default function ProductDetailsPage() {
                   >
                     {productDetails?.product_name || "Loading product..."}
                   </h1>
-                  
+
                   {/* Wishlist Heart Button */}
                   <button
                     onClick={handleWishlistToggle}

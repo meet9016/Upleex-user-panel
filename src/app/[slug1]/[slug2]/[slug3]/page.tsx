@@ -95,7 +95,17 @@ function RentCategoryContent() {
   useEffect(() => {
     let isCancelled = false;
     const identifySlug = async () => {
+      if (typeParam !== 'rent' && typeParam !== 'sell') {
+        setCategoryNotFound(true);
+        setIdentifyDone(true);
+        return;
+      }
       if (!cityParam || cityParam === 'null') {
+        setCategoryNotFound(true);
+        setIdentifyDone(true);
+        return;
+      }
+      if (!slugParam || slugParam === 'null') {
         setCategoryNotFound(true);
         setIdentifyDone(true);
         return;
