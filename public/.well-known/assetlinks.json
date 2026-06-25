@@ -4,8 +4,10 @@
     "target": {
       "namespace": "android_app",
       "package_name": "com.shopno.upleex",
-      "sha256_cert_fingerprints":
-        ["C0:F1:7E:04:4B:B4:BA:D6:73:BC:15:41:89:ED:CD:D5:1A:AE:DF:E1:55:ED:0D:3F:A0:12:DB:C4:4C:E6:B0:7B"]
+      "sha256_cert_fingerprints": [
+        "BC:DA:8A:BE:8D:DA:67:8D:CB:D9:3D:14:27:C2:70:23:3D:2E:CD:AD:49:7F:6E:D8:A5:D8:BA:ED:8E:C6:7A:11",
+        "59:47:32:1D:C9:64:17:53:07:3F:83:51:01:E1:9A:C0:0B:4B:86:70:E4:7A:A9:A5:95:AA:93:77:6B:C5:65:74"
+      ]
     }
   }
 ]
