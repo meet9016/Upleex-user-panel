@@ -1381,7 +1381,7 @@ export default function CartPage() {
                     {/* Choose Payment Plan Option */}
                     <div className="space-y-2 pt-1">
                       <span className="font-bold text-slate-700">Choose Payment Option:</span>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 gap-3">
                         <button
                           onClick={() => setPaymentOption('full')}
                           className={`p-3.5 rounded-xl border-2 text-left transition-all duration-200 relative ${
@@ -1394,7 +1394,7 @@ export default function CartPage() {
                           <div className="text-[13px] font-extrabold text-blue-600 mt-1">₹{(summary?.dueToday || 0).toLocaleString('en-IN')}</div>
                         </button>
 
-                        <button
+                        {/* <button
                           onClick={() => setPaymentOption('30_percent')}
                           className={`p-3.5 rounded-xl border-2 text-left transition-all duration-200 relative ${
                             paymentOption === '30_percent'
@@ -1406,7 +1406,7 @@ export default function CartPage() {
                           <div className="text-[13px] font-extrabold text-blue-600 mt-1">
                             ₹{Math.round((summary?.dueToday || 0) * 0.3).toLocaleString('en-IN')}
                           </div>
-                        </button>
+                        </button> */}
                       </div>
                     </div>
                   </div>
