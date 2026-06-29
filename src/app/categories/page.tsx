@@ -295,7 +295,7 @@ function CategoriesPageContent() {
                           {getSubcategories(cat).map((sub) => (
                             <Link
                               key={sub.subcategory_id}
-                              href={isService ? `/service/${sub.subcategory_id}` : `/rent/${createSlug(!selectedCity || selectedCity === 'Select City' ? 'surat' : selectedCity.includes('-') ? (selectedCity.split('-').pop() || 'surat') : selectedCity)}/${createSlug(cat.slug || cat.categories_name || 'category')}?sub=${createSlug(sub.slug || sub.subcategory_name || 'subcategory')}`}
+                              href={isService ? `/services-list?category=${cat.categories_id}` : `/rent/${createSlug(!selectedCity || selectedCity === 'Select City' ? 'surat' : selectedCity.includes('-') ? (selectedCity.split('-').pop() || 'surat') : selectedCity)}/${createSlug(cat.slug || cat.categories_name || 'category')}?sub=${createSlug(sub.slug || sub.subcategory_name || 'subcategory')}`}
                               className="group"
                             >
                               <div className="relative h-40 w-full rounded-2xl mb-3 overflow-hidden bg-gray-100">
