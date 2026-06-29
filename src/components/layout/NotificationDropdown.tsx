@@ -172,12 +172,12 @@ export default function NotificationDropdown() {
           style={{ right: 0 }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-[#6366f1] to-[#0ea5e9]">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-white text-sm">Notifications</span>
+              <span className="font-semibold text-slate-800 text-sm">Notifications</span>
               {unreadCount > 0 && (
-                <span className="px-2 py-0.5 text-xs font-bold text-[#6366f1] bg-white rounded-full">
-                  {unreadCount}
+                <span className="px-2 py-0.5 text-[11px] font-bold text-blue-600 bg-blue-50 rounded-full">
+                  {unreadCount} new
                 </span>
               )}
             </div>
@@ -185,12 +185,12 @@ export default function NotificationDropdown() {
               {notificationPermission !== 'granted' && (
                 <button
                   onClick={requestNotificationPermission}
-                  className="text-xs font-medium text-[#6366f1] hover:text-[#4f46e5] cursor-pointer bg-white px-2 py-1 rounded shadow-sm transition-colors"
+                  className="text-[11px] font-medium text-blue-600 hover:text-blue-700 cursor-pointer bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-md transition-colors"
                 >
-                  {notificationPermission === 'denied' ? 'Enable Notifications' : 'Allow Notifications'}
+                  {notificationPermission === 'denied' ? 'Enable' : 'Allow'}
                 </button>
               )}
-              <button onClick={() => setIsOpen(false)} className="text-white/70 hover:text-white transition-colors">
+              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors ml-1">
                 <X size={16} />
               </button>
             </div>
@@ -261,17 +261,20 @@ export default function NotificationDropdown() {
 
           {/* Footer */}
           <div className="flex flex-col border-t border-gray-100 bg-gray-50">
-            {unreadCount > 0 && (
-              <button
-                onClick={markAllAsRead}
-                className="w-full px-4 py-3 text-sm bg-gradient-to-r from-[#6366f1] to-[#0ea5e9] text-white font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-              >
-                Mark all as read ({unreadCount})
-              </button>
-            )}
+            <button
+              onClick={markAllAsRead}
+              disabled={unreadCount === 0}
+              className={`w-full px-4 py-3.5 text-sm font-medium transition-colors flex items-center justify-center gap-2 border-b border-gray-100 ${
+                unreadCount > 0 
+                  ? 'text-blue-600 hover:text-blue-700 hover:bg-blue-50/50' 
+                  : 'text-gray-400 cursor-not-allowed bg-gray-50'
+              }`}
+            >
+              Mark all as read
+            </button>
             <button
               onClick={() => { setIsOpen(false); router.push('/profile/notifications'); }}
-              className="w-full text-center text-xs font-medium text-gray-600 hover:text-gray-900 transition-colors cursor-pointer py-2 hover:bg-gray-100"
+              className="w-full text-center text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors cursor-pointer py-3 hover:bg-gray-100/50"
             >
               View all notifications
             </button>
