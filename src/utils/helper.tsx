@@ -30,7 +30,8 @@ export const createSlug = (name: string, id?: string): string => {
   if (!name) return id || '';
   return name
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '');
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 };
 
 /**
