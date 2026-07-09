@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Store, PackageOpen, ArrowUpDown, Calendar, ChevronDown, Check, Share2, Copy, ExternalLink } from 'lucide-react';
+import { Store, PackageOpen, ArrowUpDown, Calendar, ChevronDown, Check, Share2, Copy, ExternalLink, Expand, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { ProductCard } from '@/components/features/ProductCard';
@@ -35,6 +35,8 @@ export default function SellerPage() {
   const [referralLink, setReferralLink] = useState<string>('');
   const [isCopied, setIsCopied] = useState(false);
   const [isReferralCopied, setIsReferralCopied] = useState(false);
+  const [fullscreenVideo, setFullscreenVideo] = useState<string | null>(null);
+  const [videoRatios, setVideoRatios] = useState<Record<string, number>>({});
   const [sortOptions] = useState([
     { label: 'All Types', value: '0' },
     { label: 'Rent', value: '1' },
@@ -134,6 +136,62 @@ export default function SellerPage() {
     }
   };
 
+  const detectVideoRatio = (videoUrl: string) => {
+    const video = document.createElement('video');
+    video.src = videoUrl;
+    video.preload = 'metadata';
+    video.onloadedmetadata = () => {
+      const ratio = video.videoWidth / video.videoHeight;
+      setVideoRatios(prev => ({ ...prev, [videoUrl]: ratio }));
+    };
+  };
+
+  useEffect(() => {
+    vendorVideos.forEach(video => {
+      if (!videoRatios[video]) {
+        detectVideoRatio(video);
+      }
+    });
+  }, [vendorVideos]);
+
+  const getAspectRatioClass = (ratio: number | undefined): string => {
+    if (!ratio) return 'aspect-video';
+    // Common aspect ratios
+    if (ratio >= 0.95 && ratio <= 1.05) return 'aspect-square'; // 1:1
+    if (ratio >= 1.9 && ratio <= 2.1) return 'aspect-[2/1]'; // 2:1
+    if (ratio >= 0.65 && ratio <= 0.7) return 'aspect-[2/3]'; // 2:3
+    if (ratio >= 0.48 && ratio <= 0.52) return 'aspect-[2/4]'; // 2:4
+    if (ratio >= 1.45 && ratio <= 1.55) return 'aspect-[3/2]'; // 3:2
+    if (ratio >= 1.3 && ratio <= 1.4) return 'aspect-[4/3]'; // 4:3
+    if (ratio >= 0.75 && ratio <= 0.85) return 'aspect-[3/4]'; // 3:4
+    if (ratio >= 0.78 && ratio <= 0.82) return 'aspect-[4/5]'; // 4:5
+    if (ratio >= 1.22 && ratio <= 1.28) return 'aspect-[5/4]'; // 5:4
+    if (ratio >= 1.38 && ratio <= 1.44) return 'aspect-[5/7]'; // 5:7
+    if (ratio >= 0.68 && ratio <= 0.74) return 'aspect-[7/5]'; // 7:5
+    if (ratio >= 0.55 && ratio <= 0.58) return 'aspect-[9/16]'; // 9:16
+    if (ratio >= 1.75 && ratio <= 1.8) return 'aspect-video'; // 16:9
+    if (ratio >= 1.58 && ratio <= 1.62) return 'aspect-[16/10]'; // 16:10
+    if (ratio >= 1.95 && ratio <= 2.05) return 'aspect-[2/1]'; // 18:9 approx
+    if (ratio >= 2.1 && ratio <= 2.2) return 'aspect-[19.5/9]'; // 19.5:9
+    if (ratio >= 2.2 && ratio <= 2.3) return 'aspect-[20/9]'; // 20:9
+    if (ratio >= 2.3 && ratio <= 2.4) return 'aspect-[21/9]'; // 21:9
+    if (ratio >= 3.5 && ratio <= 3.6) return 'aspect-[32/9]'; // 32:9
+    return 'aspect-video';
+  };
+
+  const getContainerStyle = (ratio: number | undefined): React.CSSProperties => {
+    if (!ratio) return {};
+    const maxHeight = typeof window !== 'undefined' ? window.innerHeight * 0.85 : 600;
+    const maxWidth = typeof window !== 'undefined' ? window.innerWidth * 0.9 : 800;
+    let width = maxWidth;
+    let height = width / ratio;
+    if (height > maxHeight) {
+      height = maxHeight;
+      width = height * ratio;
+    }
+    return { width: `${width}px`, height: `${height}px` };
+  };
+
   useEffect(() => {
     if (isFirstFilterLoadRef.current) {
       isFirstFilterLoadRef.current = false;
@@ -221,16 +279,54 @@ export default function SellerPage() {
             </h2>
             <div className="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
               {vendorVideos.map((video, idx) => (
-                <div key={idx} className="flex-none w-[85vw] sm:w-[400px] rounded-2xl overflow-hidden shadow-md border border-gray-100 bg-white snap-center relative group">
-                  <video 
-                    src={video} 
-                    controls 
-                    className="w-full aspect-video object-cover"
-                    preload="metadata"
-                  />
-                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-upleex-purple/20 rounded-2xl pointer-events-none transition-colors duration-300"></div>
+                <div key={idx} className="flex-none w-[280px] sm:w-[320px] rounded-2xl overflow-hidden shadow-md border border-gray-100 bg-white snap-center relative group">
+                  <div className="relative aspect-video">
+                    <video 
+                      src={video} 
+                      className="w-full h-full object-cover"
+                      preload="metadata"
+                      muted
+                      playsInline
+                    />
+                    <button 
+                      onClick={() => setFullscreenVideo(video)}
+                      className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                        <Expand size={24} className="text-upleex-purple" />
+                      </div>
+                    </button>
+                  </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Fullscreen Video Modal */}
+        {fullscreenVideo && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+            onClick={() => setFullscreenVideo(null)}
+          >
+            <button 
+              onClick={() => setFullscreenVideo(null)}
+              className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            >
+              <X size={24} className="text-white" />
+            </button>
+            <div 
+              className="relative bg-black rounded-lg overflow-hidden"
+              style={getContainerStyle(videoRatios[fullscreenVideo])}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <video 
+                src={fullscreenVideo} 
+                controls
+                autoPlay
+                className="w-full h-full"
+                style={{ aspectRatio: videoRatios[fullscreenVideo] || '16/9' }}
+              />
             </div>
           </div>
         )}
