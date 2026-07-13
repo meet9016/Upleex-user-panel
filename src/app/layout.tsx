@@ -14,12 +14,16 @@ import { ReviewReminderPopup } from '@/components/features/ReviewReminderPopup';
 import FCMHandler from '@/components/layout/FCMHandler';
 import SocketHandler from '@/components/layout/SocketHandler';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
+import Head from 'next/head';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Upleex - Rental Marketplace',
   description: 'Rent premium lifestyle products with ease.',
+  verification: {
+    google: "b80QDl5CccDS9J4wmRxVrd3_GDByJS5VazkH4QXiVbA",
+  },
   icons: {
     icon: '/favicon.png',
   },
@@ -42,6 +46,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <Head>
+        <meta
+          name="google-site-verification"
+          content="b80QDl5CccDS9J4wmRxVrd3_GDByJS5VazkH4QXiVbA"
+        />
+      </Head>
+
       <body className={inter.className} suppressHydrationWarning={true}>
         <ErrorBoundary>
           <Providers>
