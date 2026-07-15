@@ -15,6 +15,7 @@ import FCMHandler from '@/components/layout/FCMHandler';
 import SocketHandler from '@/components/layout/SocketHandler';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import Head from 'next/head';
+import Script from 'next/script';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -54,6 +55,19 @@ export default function RootLayout({
       </Head>
 
       <body className={inter.className} suppressHydrationWarning={true}>
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-94NZ91DJ18"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-94NZ91DJ18');
+          `}
+        </Script>
         <ErrorBoundary>
           <Providers>
             {/* <NotificationProvider> */}
