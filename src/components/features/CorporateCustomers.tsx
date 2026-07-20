@@ -14,14 +14,16 @@ const LogoItem = memo(({ src, name }: LogoItemProps) => {
   const [imgSrc, setImgSrc] = useState(src);
   
   return (
-    <div className="flex items-center justify-center min-w-[140px] sm:min-w-[180px] h-20 sm:h-24 px-4 sm:px-6 mx-2 sm:mx-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 group/item hover:-translate-y-1">
-      <div className="relative w-full h-12">
+    <div className="flex items-center justify-center min-w-[160px] sm:min-w-[200px] h-24 sm:h-28 px-4 sm:px-6 mx-2 sm:mx-4 bg-white border border-gray-100 hover:border-blue-200 rounded-xl shadow-sm hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 group/item hover:-translate-y-2 relative overflow-hidden">
+      {/* Shine effect */}
+      <div className="absolute inset-0 -translate-x-[150%] group-hover/item:translate-x-[150%] transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/60 to-transparent z-10 pointer-events-none skew-x-12" />
+      <div className="relative w-full h-16 sm:h-20 z-0">
         <Image
           src={imgSrc}
           alt={name || "Corporate Customer Logo"}
           fill
-          sizes="180px"
-          className="object-contain opacity-60 grayscale group-hover/item:grayscale-0 group-hover/item:opacity-100 transition-all duration-500"
+          sizes="200px"
+          className="object-contain transition-all duration-500 ease-out group-hover/item:scale-[1.15] group-hover/item:drop-shadow-md"
           priority={false}
           onError={() => setImgSrc('/placeholder-logo.png')} // Fallback if image fails to load
         />
