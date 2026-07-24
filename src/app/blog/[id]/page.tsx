@@ -12,21 +12,22 @@ import { TfiYoutube } from 'react-icons/tfi';
 
 export default function BlogDetailPage() {
   const params = useParams();
-  const id = params?.id as string;
+  const slugOrId = params?.id as string;
   const [blogData, setBlogData] = useState<SingleBlogData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBlogDetail = async () => {
-      if (id) {
+      if (slugOrId) {
         setLoading(true);
-        const data = await blogService.getSingleBlog(id);
+        // API accepts ID, so we pass slugOrId directly (backend should handle both)
+        const data = await blogService.getSingleBlog(slugOrId);
         setBlogData(data);
         setLoading(false);
       }
     };
     fetchBlogDetail();
-  }, [id]);
+  }, [slugOrId]);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -180,7 +181,7 @@ export default function BlogDetailPage() {
                     <h3 className="text-xl font-bold text-gray-900 mb-8 border-b border-gray-50 pb-4">Recent Posts</h3>
                     <div className="space-y-6">
                         {recentBlogs.map((post) => (
-                            <Link key={post.id} href={`/blog/${post.id}`} className="group flex gap-4 items-center">
+                            <Link key={post.id} href={`/blog/${post.slug || post.id}`} className="group flex gap-4 items-center">
                                 <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
                                     <img 
                                         src={post.image} 

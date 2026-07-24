@@ -31,13 +31,26 @@ export default function RentCategoryPage() {
 
 function RentCategoryContent() {
   const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const typeParam = params?.slug1 as string;
   const cityParam = params?.slug2 as string;
   const slugParam = params?.slug3 as string;
   const slug = extractIdFromSlug(slugParam); // Extract ID from SEO slug
-  const searchParams = useSearchParams();
   const subParam = searchParams?.get('sub');
+
+  // Redirect old ?sub= URLs to clean URLs
+  useEffect(() => {
+    if (subParam && typeParam && cityParam && slugParam) {
+      router.replace(`/${typeParam}/${cityParam}/${subParam}`);
+    }
+  }, [subParam, typeParam, cityParam, slugParam, router]);
+
+  // Show nothing while redirecting
+  if (subParam) {
+    return <div className="min-h-screen flex items-center justify-center">Redirecting...</div>;
+  }
 
   const [activeFilter, setActiveFilter] = useState('all');
   const [isCategory, setIsCategory] = useState(false);
@@ -346,7 +359,6 @@ function RentCategoryContent() {
     }
   }, [selectedSort.value]);
 
-  const router = useRouter();
 
   const handleFilterClick = (filterSlug: string) => {
     if (filterSlug === 'all') {

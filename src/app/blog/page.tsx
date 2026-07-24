@@ -61,7 +61,7 @@ export default function BlogListPage() {
           {blogs.map((blog) => (
             <Link
               key={blog.id}
-              href={`/blog/${blog.id}`}
+              href={`/blog/${blog.slug || blog.id}`}
               className="group block cursor-pointer"
             >
               <article className="h-full rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 bg-white border border-gray-100">

@@ -3,6 +3,7 @@ import endPointApi from '../utils/endPointApi';
 
 export interface Blog {
     id: string;
+    slug: string;
     title: string;
     image: string;
     description: string;
@@ -65,8 +66,14 @@ class BlogService {
             const payload = res.data;
             const rawList = Array.isArray(payload?.data) ? payload.data : [];
 
+            const createBlogSlug = (title: string): string => {
+                if (!title) return '';
+                return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            };
+
             const mapped: Blog[] = rawList.map((item: any) => ({
                 id: item.id,
+                slug: item.slug || createBlogSlug(item.title),
                 title: item.title,
                 description: item.description,
                 blog_date: item.blog_date,
@@ -98,8 +105,14 @@ class BlogService {
                 ? payload.related_blogs
                 : [];
 
+            const createBlogSlug = (title: string): string => {
+                if (!title) return '';
+                return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            };
+
             const mappedBlog: Blog & { long_description: string } = {
                 id: blogData.id,
+                slug: blogData.slug || createBlogSlug(blogData.title),
                 title: blogData.title,
                 description: blogData.description,
                 blog_date: blogData.blog_date,
@@ -109,6 +122,7 @@ class BlogService {
 
             const mappedRelated: Blog[] = related.map((item: any) => ({
                 id: item.id,
+                slug: item.slug || createBlogSlug(item.title),
                 title: item.title,
                 description: item.description,
                 blog_date: item.blog_date,
