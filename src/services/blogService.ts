@@ -68,7 +68,7 @@ class BlogService {
 
             const createBlogSlug = (title: string): string => {
                 if (!title) return '';
-                return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                return title.toLowerCase().replace(/[^a-z0-9]+/g, '');
             };
 
             const mapped: Blog[] = rawList.map((item: any) => ({
@@ -93,7 +93,14 @@ class BlogService {
 
     async getSingleBlog(id: string): Promise<SingleBlogData | null> {
         try {
-            const res = await api.get(`${endPointApi.singleBlog}/${id}`);
+            // Check if we can find the blog in the list by slug or ID
+            const allBlogs = await this.getBlogList();
+            const matchedBlog = allBlogs.find(b => b.slug === id || b.id === id);
+            
+            // If found by slug, use the actual ID for the API call
+            const fetchId = matchedBlog ? matchedBlog.id : id;
+
+            const res = await api.get(`${endPointApi.singleBlog}/${fetchId}`);
             const payload = res.data;
 
             if (!payload || !payload.blog_data) {
@@ -107,7 +114,7 @@ class BlogService {
 
             const createBlogSlug = (title: string): string => {
                 if (!title) return '';
-                return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                return title.toLowerCase().replace(/[^a-z0-9]+/g, '');
             };
 
             const mappedBlog: Blog & { long_description: string } = {

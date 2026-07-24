@@ -12,7 +12,7 @@ import { TfiYoutube } from 'react-icons/tfi';
 
 export default function BlogDetailPage() {
   const params = useParams();
-  const slugOrId = params?.id as string;
+  const slugOrId = params?.slug as string || params?.id as string;
   const [blogData, setBlogData] = useState<SingleBlogData | null>(null);
   const [loading, setLoading] = useState(true);
 

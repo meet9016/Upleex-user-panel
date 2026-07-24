@@ -52,7 +52,7 @@ interface BlogCardProps {
 const BlogCard = memo(({ blog }: BlogCardProps) => {
   return (
     <Link
-      href={`/blog/${blog.id}`}
+      href={`/blog/${blog.slug || blog.id}`}
       className="group block cursor-pointer"
       aria-label={`Read blog: ${blog.title}`}
     >
