@@ -8,6 +8,7 @@ import { ServiceCard } from '@/components/features/ServiceCard';
 import { serviceService, Service } from '@/services/serviceService';
 import { BackButton } from '@/components/ui/BackButton';
 import { useCity } from '@/hooks/useCity';
+import { Pagination } from '@/components/ui/Pagination';
 
 export default function SellerServicesPage() {
   return (
@@ -26,27 +27,43 @@ function SellerServicesContent() {
 
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalServices, setTotalServices] = useState(0);
   const selectedCity = useCity();
+  const ITEMS_PER_PAGE = 12;
 
   useEffect(() => {
     const fetchVendorServices = async () => {
       if (!vendorId) return;
       setLoading(true);
       try {
-        const data = await serviceService.getServices({
+        const result = await serviceService.getServices({
           vendor_id: vendorId,
-          city: selectedCity
+          city: selectedCity,
+          page: currentPage,
+          limit: ITEMS_PER_PAGE
         });
-       setServices(data.data);
+        setServices(result.data || []);
+        if (result.pagination) {
+          setTotalPages(result.pagination.totalPages || 1);
+          setTotalServices(result.pagination.total || result.data?.length || 0);
+        } else {
+          const hasFullPage = (result.data?.length || 0) >= ITEMS_PER_PAGE;
+          setTotalPages(hasFullPage ? currentPage + 1 : currentPage);
+          setTotalServices(result.data?.length || 0);
+        }
       } catch (error) {
         setServices([]);
+        setTotalPages(1);
+        setTotalServices(0);
       } finally {
         setLoading(false);
       }
     };
 
     fetchVendorServices();
-  }, [vendorId, selectedCity]);
+  }, [vendorId, selectedCity, currentPage]);
 
   // Derived vendor info from the first service if available
   const vendorAddress = services.length > 0 ? services[0].vendor_address : null;
@@ -79,7 +96,7 @@ function SellerServicesContent() {
 
             <div className="flex items-center gap-3">
               <div className="px-4 py-2 bg-purple-50 rounded-xl border border-purple-100">
-                <span className="text-sm font-bold text-upleex-purple">{services.length} Premium Services</span>
+                <span className="text-sm font-bold text-upleex-purple">{totalServices} Premium Services</span>
               </div>
             </div>
           </div>
@@ -89,7 +106,7 @@ function SellerServicesContent() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-            Portfolio <span className="text-slate-400 font-medium">({services.length})</span>
+            Portfolio <span className="text-slate-400 font-medium">({totalServices})</span>
           </h2>
         </div>
 
@@ -100,23 +117,37 @@ function SellerServicesContent() {
             ))}
           </div>
         ) : services.length > 0 ? (
-          <motion.div
-            layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-          >
-            <AnimatePresence>
-              {services.map((service, index) => (
-                <motion.div
-                  key={service.id || index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
-                  <ServiceCard service={service} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+          <>
+            <motion.div
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+            >
+              <AnimatePresence>
+                {services.map((service, index) => (
+                  <motion.div
+                    key={service.id || index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <ServiceCard service={service} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => {
+                  setCurrentPage(page);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                showWhenSingle
+              />
+            )}
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center py-24 bg-white rounded-3xl border border-gray-100">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
