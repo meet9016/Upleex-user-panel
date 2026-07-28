@@ -33,45 +33,45 @@ interface OrderTrackingProps {
 }
 
 const shiprocketToUserStatus: Record<string, string> = {
-  'New': 'confirmed',
-  'Ready to Ship': 'processing',
-  'Label Generated': 'processing',
-  'AWB Assigned': 'confirmed',
-  'Pickup Generated': 'processing',
-  'Pickup Scheduled': 'processing',
-  'Pickup Queued': 'processing',
-  'Manifest Generated': 'processing',
-  'Shipped': 'shipped',
-  'In Transit': 'shipped',
-  'Picked Up': 'shipped',
+  'New': 'ready_to_ship',
+  'Ready to Ship': 'ready_to_ship',
+  'Label Generated': 'ready_to_ship',
+  'AWB Assigned': 'ready_to_ship',
+  'Pickup Generated': 'pickup_scheduled',
+  'Pickup Scheduled': 'pickup_scheduled',
+  'Pickup Queued': 'pickup_scheduled',
+  'Manifest Generated': 'pickup_scheduled',
+  'Shipped': 'picked_up',
+  'In Transit': 'picked_up',
+  'Picked Up': 'picked_up',
   'Out For Delivery': 'out_for_delivery',
   'Delivered': 'delivered',
-  'Failed Delivery': 'failed_delivery',
-  'NDR': 'failed_delivery',
-  'RTO Initiated': 'return_in_progress',
-  'RTO In Transit': 'return_in_progress',
-  'RTO Delivered': 'returned',
+  'Failed Delivery': 'undelivered',
+  'NDR': 'undelivered',
+  'RTO Initiated': 'rto_initiated',
+  'RTO In Transit': 'rto_initiated',
+  'RTO Delivered': 'rto_delivered',
   'Cancelled': 'cancelled',
   'Canceled': 'cancelled',
 };
 
 // User-friendly label for each effectiveStatus
 const userStatusLabel: Record<string, string> = {
-  pending: 'Order Placed',
-  confirmed: 'Order Confirmed',
-  processing: 'Processing',
-  shipped: 'Shipped',
+  pending: 'Pending',
+  ready_to_ship: 'Ready to Ship',
+  pickup_scheduled: 'Pickup Scheduled',
+  picked_up: 'Picked Up',
   out_for_delivery: 'Out for Delivery',
   delivered: 'Delivered',
-  failed_delivery: 'Delivery Attempt Failed',
-  return_in_progress: 'Return in Progress',
-  returned: 'Returned',
+  undelivered: 'Undelivered',
+  rto_initiated: 'RTO Initiated',
+  rto_delivered: 'RTO Delivered',
   cancelled: 'Cancelled',
 };
 
-const STATUS_ORDER = ['pending', 'confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'];
+const STATUS_ORDER = ['pending', 'ready_to_ship', 'pickup_scheduled', 'picked_up', 'out_for_delivery', 'delivered'];
 
-const TERMINAL_STATUSES = ['cancelled', 'returned', 'return_in_progress', 'failed_delivery'];
+const TERMINAL_STATUSES = ['cancelled', 'rto_delivered', 'rto_initiated', 'undelivered'];
 
 const OrderTracking: React.FC<OrderTrackingProps> = ({
   orderId,
@@ -86,15 +86,15 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({
 
   const vendorToUserStatus: Record<string, string> = {
     pending: 'pending',
-    accepted: 'confirmed',
-    preparing: 'processing',
-    ready_for_pickup: 'processing',
-    picked_up: 'shipped',
+    accepted: 'ready_to_ship',
+    preparing: 'ready_to_ship',
+    ready_for_pickup: 'pickup_scheduled',
+    picked_up: 'picked_up',
     out_for_delivery: 'out_for_delivery',
     delivered: 'delivered',
     completed: 'delivered',
     cancelled: 'cancelled',
-    returned: 'returned',
+    returned: 'rto_delivered',
   };
 
   const resolvedVendor = vendorToUserStatus[status] ?? status;
@@ -128,58 +128,130 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({
     return STATUS_ORDER.indexOf(effectiveStatus) > STATUS_ORDER.indexOf(milestone);
   };
 
-  const getTrackingSteps = (): TrackingStep[] => [
-    {
-      id: 'pending',
-      label: 'Order Placed',
-      description: 'Your order has been placed successfully',
-      completed: true,
-      current: effectiveStatus === 'pending'
-    },
-    {
-      id: 'confirmed',
-      label: 'Order Confirmed',
-      description: 'Order confirmed & AWB assigned to courier',
-      completed: effectiveStatus === 'confirmed' || isAfter('confirmed'),
-      current: effectiveStatus === 'confirmed'
-    },
-    {
-      id: 'processing',
-      label: 'Processing',
-      description: 'Shipment packed & pickup scheduled with courier',
-      completed: effectiveStatus === 'processing' || isAfter('processing'),
-      current: effectiveStatus === 'processing'
-    },
-    {
-      id: 'shipped',
-      label: 'Shipped',
-      description: 'Courier picked up your order, in transit',
-      completed: effectiveStatus === 'shipped' || isAfter('shipped'),
-      current: effectiveStatus === 'shipped'
-    },
-    {
-      id: 'out_for_delivery',
-      label: 'Out for Delivery',
-      description: 'Your order is out for delivery',
-      completed: effectiveStatus === 'out_for_delivery' || isAfter('out_for_delivery'),
-      current: effectiveStatus === 'out_for_delivery'
-    },
-    {
-      id: 'delivered',
-      label: 'Delivered',
-      description: 'Your order has been delivered successfully',
-      completed: effectiveStatus === 'delivered',
-      current: effectiveStatus === 'delivered'
+  const getTrackingSteps = (): TrackingStep[] => {
+    const isRtoFlow = ['undelivered', 'rto_initiated', 'rto_delivered'].includes(effectiveStatus);
+    const isCancelledFlow = effectiveStatus === 'cancelled';
+
+    if (isCancelledFlow) {
+      return [
+        {
+          id: 'pending',
+          label: 'Pending',
+          description: 'Your order was placed',
+          completed: true,
+          current: false
+        },
+        {
+          id: 'cancelled',
+          label: 'Cancelled',
+          description: 'Your order has been cancelled',
+          completed: true,
+          current: true
+        }
+      ];
     }
-  ];
+
+    if (isRtoFlow) {
+      return [
+        {
+          id: 'pending',
+          label: 'Pending',
+          description: 'Order was placed successfully',
+          completed: true,
+          current: false
+        },
+        {
+          id: 'picked_up',
+          label: 'Picked Up',
+          description: 'Courier picked up your order',
+          completed: true,
+          current: false
+        },
+        {
+          id: 'out_for_delivery',
+          label: 'Out for Delivery',
+          description: 'Delivery attempt',
+          completed: true,
+          current: false
+        },
+        {
+          id: 'undelivered',
+          label: 'Undelivered',
+          description: 'Delivery attempt failed',
+          completed: true,
+          current: effectiveStatus === 'undelivered'
+        },
+        {
+          id: 'rto_initiated',
+          label: 'RTO Initiated',
+          description: 'Return to origin initiated',
+          completed: effectiveStatus === 'rto_delivered' || effectiveStatus === 'rto_initiated',
+          current: effectiveStatus === 'rto_initiated'
+        },
+        {
+          id: 'rto_delivered',
+          label: 'RTO Delivered',
+          description: 'Order returned to sender',
+          completed: effectiveStatus === 'rto_delivered',
+          current: effectiveStatus === 'rto_delivered'
+        }
+      ];
+    }
+
+    // Default Forward Journey Flow
+    return [
+      {
+        id: 'pending',
+        label: 'Pending',
+        description: 'Your order has been placed successfully',
+        completed: true,
+        current: effectiveStatus === 'pending'
+      },
+      {
+        id: 'ready_to_ship',
+        label: 'Ready to Ship',
+        description: 'Order confirmed & getting ready',
+        completed: effectiveStatus === 'ready_to_ship' || isAfter('ready_to_ship'),
+        current: effectiveStatus === 'ready_to_ship'
+      },
+      {
+        id: 'pickup_scheduled',
+        label: 'Pickup Scheduled',
+        description: 'Pickup scheduled with courier',
+        completed: effectiveStatus === 'pickup_scheduled' || isAfter('pickup_scheduled'),
+        current: effectiveStatus === 'pickup_scheduled'
+      },
+      {
+        id: 'picked_up',
+        label: 'Picked Up',
+        description: 'Courier picked up your order, in transit',
+        completed: effectiveStatus === 'picked_up' || isAfter('picked_up'),
+        current: effectiveStatus === 'picked_up'
+      },
+      {
+        id: 'out_for_delivery',
+        label: 'Out for Delivery',
+        description: 'Your order is out for delivery',
+        completed: effectiveStatus === 'out_for_delivery' || isAfter('out_for_delivery'),
+        current: effectiveStatus === 'out_for_delivery'
+      },
+      {
+        id: 'delivered',
+        label: 'Delivered',
+        description: 'Your order has been delivered successfully',
+        completed: effectiveStatus === 'delivered',
+        current: effectiveStatus === 'delivered'
+      }
+    ];
+  };
 
   const steps = getTrackingSteps();
 
   const getProgressPercentage = () => {
     if (isTerminal) return 100;
     const map: Record<string, number> = {
-      pending: 10, confirmed: 25, processing: 45,
-      shipped: 65, out_for_delivery: 85, delivered: 100
+      pending: 10, ready_to_ship: 25, pickup_scheduled: 45,
+      picked_up: 65, out_for_delivery: 85, delivered: 100
     };
     return map[effectiveStatus] || 10;
   };
@@ -190,11 +262,15 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({
     }`;
     switch (stepId) {
       case 'pending': return <ShoppingCart className={cls} />;
-      case 'confirmed': return <CheckCircle2 className={cls} />;
-      case 'processing': return <PackageCheck className={cls} />;
-      case 'shipped': return <Package className={cls} />;
+      case 'ready_to_ship': return <PackageCheck className={cls} />;
+      case 'pickup_scheduled': return <Clock className={cls} />;
+      case 'picked_up': return <Package className={cls} />;
       case 'out_for_delivery': return <Truck className={cls} />;
       case 'delivered': return <MapPin className={cls} />;
+      case 'undelivered': return <AlertCircle className={cls} />;
+      case 'rto_initiated': return <RotateCcw className={cls} />;
+      case 'rto_delivered': return <CheckCircle2 className={cls} />;
+      case 'cancelled': return <X className={cls} />;
       default: return <Clock className={cls} />;
     }
   };
@@ -203,13 +279,13 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({
     switch (effectiveStatus) {
       case 'delivered': return <CheckCircle2 className="w-7 h-7 text-emerald-600" />;
       case 'out_for_delivery': return <Truck className="w-7 h-7 text-indigo-600" />;
-      case 'shipped': return <Package className="w-7 h-7 text-indigo-500" />;
-      case 'processing': return <PackageCheck className="w-7 h-7 text-amber-600" />;
-      case 'confirmed': return <CheckCircle2 className="w-7 h-7 text-amber-600" />;
+      case 'picked_up': return <Package className="w-7 h-7 text-indigo-500" />;
+      case 'pickup_scheduled': return <Clock className="w-7 h-7 text-amber-600" />;
+      case 'ready_to_ship': return <PackageCheck className="w-7 h-7 text-amber-600" />;
       case 'cancelled': return <AlertCircle className="w-7 h-7 text-rose-600" />;
-      case 'failed_delivery': return <AlertCircle className="w-7 h-7 text-red-500" />;
-      case 'return_in_progress':
-      case 'returned': return <RotateCcw className="w-7 h-7 text-orange-500" />;
+      case 'undelivered': return <AlertCircle className="w-7 h-7 text-red-500" />;
+      case 'rto_initiated':
+      case 'rto_delivered': return <RotateCcw className="w-7 h-7 text-orange-500" />;
       default: return <Clock className="w-7 h-7 text-slate-500" />;
     }
   };
@@ -218,13 +294,13 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({
     switch (effectiveStatus) {
       case 'delivered': return 'text-emerald-700 bg-emerald-50 border-emerald-100';
       case 'out_for_delivery':
-      case 'shipped': return 'text-indigo-700 bg-indigo-50 border-indigo-100';
-      case 'processing':
-      case 'confirmed': return 'text-amber-700 bg-amber-50 border-amber-100';
+      case 'picked_up': return 'text-indigo-700 bg-indigo-50 border-indigo-100';
+      case 'pickup_scheduled':
+      case 'ready_to_ship': return 'text-amber-700 bg-amber-50 border-amber-100';
       case 'cancelled': return 'text-rose-700 bg-rose-50 border-rose-100';
-      case 'failed_delivery':
-      case 'return_in_progress':
-      case 'returned': return 'text-orange-700 bg-orange-50 border-orange-100';
+      case 'undelivered':
+      case 'rto_initiated':
+      case 'rto_delivered': return 'text-orange-700 bg-orange-50 border-orange-100';
       default: return 'text-slate-700 bg-slate-50 border-slate-200';
     }
   };
@@ -233,11 +309,11 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({
     switch (effectiveStatus) {
       case 'delivered': return 'bg-emerald-50';
       case 'out_for_delivery':
-      case 'shipped': return 'bg-indigo-50';
+      case 'picked_up': return 'bg-indigo-50';
       case 'cancelled':
-      case 'failed_delivery': return 'bg-rose-50';
-      case 'return_in_progress':
-      case 'returned': return 'bg-orange-50';
+      case 'undelivered': return 'bg-rose-50';
+      case 'rto_initiated':
+      case 'rto_delivered': return 'bg-orange-50';
       default: return 'bg-amber-50';
     }
   };
