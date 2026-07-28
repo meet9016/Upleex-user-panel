@@ -15,22 +15,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/blog`, priority: 0.5 },
   ];
 
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3688/api/v1/';
-    const res = await fetch(`${apiUrl}sitemap/dynamic-urls`, { next: { revalidate: 3600 } });
-    const json = await res.json();
-    
-    if (json.success && json.data) {
-      const dynamicUrls = json.data.map((item: any) => ({
-        url: item.url.replace(/^http:\/\/localhost:\d+/, baseUrl),
-        lastModified: item.lastModified,
-        priority: item.priority
-      }));
-      return [...staticUrls, ...dynamicUrls];
-    }
-  } catch (e) {
-    console.error("Failed to fetch dynamic sitemap", e);
-  }
-
   return staticUrls;
 }

@@ -38,6 +38,9 @@ import {
 import { Button } from '@/components/ui/Button';
 import { CenterModeCarousel } from '@/components/features/CenterModeCarousel';
 import { ServiceCard } from '@/components/features/ServiceCard';
+import { serviceService, ServiceCategory, Service } from '@/services/serviceService';
+import { useCity } from '@/hooks/useCity';
+import { createSlug } from '@/utils/helper';
 
 // --- Data Constants ---
 
@@ -69,40 +72,6 @@ const HOW_IT_WORKS_STEPS = [
   }
 ];
 
-const TRENDING_SERVICES = [
-  {
-    id: 1,
-    title: 'Male Spa Therapist',
-    category: 'Wellness',
-    price: '1500 / Day',
-    image: '/images/services/spa.jpg', // Placeholder path
-    rating: 4.8
-  },
-  {
-    id: 2,
-    title: 'Economics Online Tutor',
-    category: 'Education',
-    price: '1500 / Month',
-    image: '/images/services/tutor.jpg',
-    rating: 4.9
-  },
-  {
-    id: 3,
-    title: 'Psychologist Counselor',
-    category: 'Health',
-    price: '1000 / Day',
-    image: '/images/services/psychologist.jpg',
-    rating: 5.0
-  },
-  {
-    id: 4,
-    title: 'Photography & Cinema',
-    category: 'Media',
-    price: '3000 / Day',
-    image: '/images/services/camera.jpg',
-    rating: 4.7
-  }
-];
 const ShirtIcon = ({ size, className }: { size?: number, className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -119,27 +88,6 @@ const ShirtIcon = ({ size, className }: { size?: number, className?: string }) =
     <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z" />
   </svg>
 );
-
-const SERVICE_CATEGORIES = [
-  { name: 'Education Field', icon: <GraduationCap size={32} /> },
-  { name: 'Consultants', icon: <Briefcase size={32} /> },
-  { name: 'Pandits & Priests', icon: <Star size={32} /> },
-  { name: 'Automotive Professionals', icon: <Hammer size={32} /> },
-  { name: 'Civil & Construction', icon: <Truck size={32} /> },
-  { name: 'Engineering Industries', icon: <Wifi size={32} /> },
-  { name: 'Farming & Agriculture', icon: <Users size={32} /> },
-  { name: 'Food & Hospitality', icon: <ChefHat size={32} /> },
-  { name: 'Handicrafts & Artisans', icon: <Handshake size={32} /> },
-  { name: 'IT & ITES Services', icon: <Touchpad size={32} /> },
-  { name: 'Media & Events', icon: <Video size={32} /> },
-  { name: 'Medical & Health', icon: <Stethoscope size={32} /> },
-  { name: 'Office Professionals', icon: <Briefcase size={32} /> },
-  { name: 'Home & Wellness', icon: <Music size={32} /> },
-  { name: 'Security & Bouncers', icon: <ShieldCheck size={32} /> },
-  { name: 'Sports & Fitness', icon: <CalendarCheck size={32} /> },
-  { name: 'Textile & Clothing', icon: <ShirtIcon size={32} /> },
-  { name: 'Other Freelance', icon: <Search size={32} /> },
-];
 
 const FAQS = [
   {
@@ -163,10 +111,6 @@ const FAQS = [
     answer: 'Explore similar services listed on Upleex. Observe the pricing of comparable offerings in your category to establish a competitive baseline. You have full control to set your own rates.'
   }
 ];
-
-import { serviceService, ServiceCategory, Service } from '@/services/serviceService';
-import { useEffect } from 'react';
-import { useCity } from '@/hooks/useCity';
 
 export default function ServicePage() {
   const router = useRouter();
@@ -345,7 +289,7 @@ export default function ServicePage() {
               <div
                 key={index}
                 className="flex flex-col items-center text-center group cursor-pointer"
-                onClick={() => router.push(`/services-list?category=${cat.categories_id}`)}
+                onClick={() => router.push(`/services-list?category=${createSlug(cat.slug || cat.categories_name || 'category')}`)}
               >
                 <div className="w-24 h-24 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-center mb-3 group-hover:border-blue-400 group-hover:shadow-md transition-all duration-300 overflow-hidden p-2">
                   <img

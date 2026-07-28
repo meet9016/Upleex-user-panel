@@ -1,6 +1,7 @@
 import React from 'react';
 import { MapPin } from 'lucide-react';
 import Link from 'next/link';
+import { createSlug } from '@/utils/helper';
 
 interface ServiceRoundCardProps {
   category: any;
@@ -20,9 +21,11 @@ export const ServiceRoundCard: React.FC<ServiceRoundCardProps> = ({ category, cl
     return `${baseUrl}${imagePath}`;
   };
 
+  const categorySlug = createSlug((category as any).slug || categoryName || 'category');
+
   return (
     <Link
-      href={`/services-list?category=${categoryId}`}
+      href={`/services-list?category=${categorySlug}`}
       className="group block h-full"
     >
       <div

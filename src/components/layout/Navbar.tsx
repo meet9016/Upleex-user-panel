@@ -1178,13 +1178,13 @@ export const Navbar: React.FC = () => {
                 })()}
                 {serviceCategories.slice(0, 5).map((item, index) => {
                   const activeCatId = searchParams?.get('category');
-                  const isActive = activeCatId === item.categories_id;
+                  const isActive = activeCatId === createSlug((item as any).slug || item.categories_name || 'category');
                   const displayClass = index > 2 ? "hidden xl:block" : "block";
 
                   return (
                     <div key={item.categories_id || index} className={`relative group ${displayClass}`}>
                       <Link
-                        href={`/services-list?category=${item.categories_id}`}
+                        href={`/services-list?category=${createSlug((item as any).slug || item.categories_name || 'category')}`}
                         className={`flex items-center px-4 py-2.5 rounded-md transition-all duration-200 whitespace-nowrap cursor-pointer
                       bg-gray-100
                       ${isActive

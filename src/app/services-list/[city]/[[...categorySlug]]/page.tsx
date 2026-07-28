@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, Suspense, useRef } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { ServiceRoundCard } from '@/components/features/ServiceRoundCard';
 import { ServiceCard } from '@/components/features/ServiceCard';
 import { serviceService, Service, ServiceCategory, PaginationMeta } from '@/services/serviceService';
@@ -14,6 +14,7 @@ import { useCity } from '@/hooks/useCity';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { CategorySEOContent } from '@/components/features/CategorySEOContent';
+import { createSlug } from '@/utils/helper';
 
 const LIMIT = 12;
 
@@ -30,7 +31,10 @@ export default function ServicesListPage() {
 function ServicesListContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedCatId = searchParams?.get('category');
+  const params = useParams();
+  
+  const categorySlugArray = params?.categorySlug as string[];
+  const selectedCatId = categorySlugArray?.[0] || searchParams?.get('category') || 'all'; 
   const initialSearch = searchParams?.get('search') || '';
 
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
@@ -49,11 +53,26 @@ function ServicesListContent() {
 
   // Sync state with URL params
   useEffect(() => {
-    setActiveCategory(selectedCatId || 'all');
+    if (categories.length === 0) return;
+    
+    if (!selectedCatId || selectedCatId === 'all') {
+      setActiveCategory('all');
+    } else {
+      const cat = categories.find(c => createSlug((c as any).slug || c.categories_name || 'category') === selectedCatId);
+      if (cat) {
+        setActiveCategory(cat.categories_id);
+      } else {
+        // If not found by slug, it might be an old ID or invalid
+        setActiveCategory(selectedCatId);
+      }
+    }
+    setCurrentPage(1); // reset page on category change from URL
+  }, [selectedCatId, categories]);
+
+  useEffect(() => {
     setSearchQuery(initialSearch || '');
     setDebouncedSearch(initialSearch || '');
-    setCurrentPage(1); // reset page on category change from URL
-  }, [selectedCatId, initialSearch]);
+  }, [initialSearch]);
 
   // Debounce search query
   useEffect(() => {
@@ -159,13 +178,16 @@ function ServicesListContent() {
   const handleCategoryClick = (id: string) => {
     setActiveCategory(id);
     setCurrentPage(1);
-    const params = new URLSearchParams(searchParams?.toString() || "");
+    const searchParamsObj = new URLSearchParams(searchParams?.toString() || "");
+    searchParamsObj.delete('category');
+    
     if (id === 'all') {
-      params.delete('category');
+      router.push(`/services-list?${searchParamsObj.toString()}`, { scroll: false });
     } else {
-      params.set('category', id);
+      const cat = categories.find(c => c.categories_id === id);
+      const slug = cat ? createSlug((cat as any).slug || cat.categories_name || 'category') : id;
+      router.push(`/services-list/${slug}?${searchParamsObj.toString()}`, { scroll: false });
     }
-    router.push(`/services-list?${params.toString()}`, { scroll: false });
   };
 
   const handlePageChange = (page: number) => {
