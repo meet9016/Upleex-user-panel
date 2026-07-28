@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FAQSection } from '@/components/features/FAQSection';
@@ -289,7 +289,7 @@ export default function ServicePage() {
               <div
                 key={index}
                 className="flex flex-col items-center text-center group cursor-pointer"
-                onClick={() => router.push(`/services-list/${createSlug(!selectedCity || selectedCity === 'Select City' ? 'surat' : selectedCity.includes('-') ? (selectedCity.split('-').pop() || 'surat') : selectedCity)}/${createSlug(cat.slug || cat.categories_name || 'category')}`)}
+                onClick={() => router.push(`/services-list/${createSlug(!selectedCity || selectedCity === 'Select City' ? 'surat' : selectedCity.includes('-') ? (selectedCity.split('-').pop() || 'surat') : selectedCity)}/${createSlug((cat as any).slug || cat.categories_name || 'category')}`)}
               >
                 <div className="w-24 h-24 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-center mb-3 group-hover:border-blue-400 group-hover:shadow-md transition-all duration-300 overflow-hidden p-2">
                   <img
