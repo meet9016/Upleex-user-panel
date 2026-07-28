@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Star, Clock, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/Button';
+import { createSlug } from '@/utils/helper';
 
 interface ServiceCardProps {
   service: any;
@@ -30,9 +31,11 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, className }) 
 
   const billingLabel = billingLabels[billingType] || 'Per Day';
 
+  const serviceSlugOrId = service.slug || serviceId;
+  
   const handleCardClick = () => {
-    if (serviceId) {
-      router.push(`/service/${serviceId}`);
+    if (serviceSlugOrId) {
+      router.push(`/service/${createSlug(serviceLocation)}/${serviceSlugOrId}`);
     }
   };
 
@@ -91,7 +94,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ service, className }) 
         <button
           onClick={(e) => {
             e.stopPropagation();
-            if (serviceId) router.push(`/service/${serviceId}`);
+            if (serviceSlugOrId) router.push(`/service/${createSlug(serviceLocation)}/${serviceSlugOrId}`);
           }}
           className="mt-4 w-full cursor-pointer bg-upleex-purple hover:bg-upleex-purple/90 text-white font-semibold py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg"
         >

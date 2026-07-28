@@ -12,14 +12,24 @@ export async function GET(request: Request, { params }: { params: Promise<{ city
     const catJson = await catRes.json();
     const categories = catJson?.data || [];
 
-    // Fetch all products to filter by this city
     const prodRes = await fetch(`${API_BASE}products/getall?limit=10000`, { next: { revalidate: 3600 } });
     const prodJson = await prodRes.json();
     const allProducts = prodJson?.data || [];
 
+    // Fetch all services to filter by this city
+    const serviceRes = await fetch(`${API_BASE}services/getall?limit=10000`, { next: { revalidate: 3600 } });
+    const serviceJson = await serviceRes.json();
+    const allServices = serviceJson?.data || [];
+
     // Filter products for this city
     const cityProducts = allProducts.filter((p: any) => {
       const cityName = p.vendor?.vendor_city_name || p.vendor_city_name;
+      return cityName && createSlug(cityName) === city;
+    });
+
+    // Filter services for this city
+    const cityServices = allServices.filter((s: any) => {
+      const cityName = s.vendor?.vendor_city_name || s.vendor_city_name;
       return cityName && createSlug(cityName) === city;
     });
 
@@ -32,6 +42,16 @@ export async function GET(request: Request, { params }: { params: Promise<{ city
        const subCatSlug = p.sub_category_slug || createSlug(p.sub_category_name || 'subcategory');
        activeCategories.add(catSlug);
        activeSubcategories.add(`${catSlug}/${subCatSlug}`);
+    });
+
+    // Find which service categories actually have services in this city
+    const activeServiceCategories = new Set<string>();
+    
+    cityServices.forEach((s: any) => {
+       const catSlug = createSlug(s.category_name || 'category');
+       if (catSlug) {
+         activeServiceCategories.add(catSlug);
+       }
     });
 
     let urls: string[] = [];
@@ -78,6 +98,38 @@ export async function GET(request: Request, { params }: { params: Promise<{ city
   <url>
     <loc>${baseUrl}/${subCatSlug}/${productSlug}</loc>
     <lastmod>${new Date(product.updatedAt || new Date()).toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>`);
+    });
+
+    // 3. Add Service Category URLs for this city
+    activeServiceCategories.forEach((catSlug: string) => {
+      urls.push(`
+  <url>
+    <loc>${baseUrl}/services-list/${city}/${catSlug}</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`);
+      
+      urls.push(`
+  <url>
+    <loc>${baseUrl}/${catSlug}</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>`);
+    });
+
+    // 4. Add Service URLs for this city
+    cityServices.forEach((service: any) => {
+      const serviceSlug = service.slug || createSlug(service.service_name || 'service');
+      
+      urls.push(`
+  <url>
+    <loc>${baseUrl}/service/${city}/${serviceSlug}</loc>
+    <lastmod>${new Date(service.updatedAt || new Date()).toISOString()}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>`);

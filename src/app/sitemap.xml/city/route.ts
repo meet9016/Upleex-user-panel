@@ -21,6 +21,19 @@ export async function GET() {
       });
     }
 
+    // Fetch services to include their cities too
+    const serviceRes = await fetch(`${API_BASE}services/getall?limit=10000`, { next: { revalidate: 3600 } });
+    const serviceJson = await serviceRes.json();
+
+    if (serviceJson?.data && Array.isArray(serviceJson.data)) {
+      serviceJson.data.forEach((service: any) => {
+        const cityName = service.vendor?.vendor_city_name || service.vendor_city_name;
+        if (cityName) {
+          activeCities.add(createSlug(cityName));
+        }
+      });
+    }
+
     const cities = Array.from(activeCities);
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>

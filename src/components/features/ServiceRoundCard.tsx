@@ -25,7 +25,7 @@ export const ServiceRoundCard: React.FC<ServiceRoundCardProps> = ({ category, cl
 
   return (
     <Link
-      href={`/services-list?category=${categorySlug}`}
+      href={`/services-list/surat/${categorySlug}`}
       className="group block h-full"
     >
       <div
