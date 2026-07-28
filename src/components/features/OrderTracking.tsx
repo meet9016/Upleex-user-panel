@@ -34,6 +34,8 @@ interface OrderTrackingProps {
 
 const shiprocketToUserStatus: Record<string, string> = {
   'New': 'confirmed',
+  'Ready to Ship': 'processing',
+  'Label Generated': 'processing',
   'AWB Assigned': 'confirmed',
   'Pickup Generated': 'processing',
   'Pickup Scheduled': 'processing',
@@ -96,7 +98,12 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({
   };
 
   const resolvedVendor = vendorToUserStatus[status] ?? status;
-  const resolvedShiprocket = deliveryStatus ? (shiprocketToUserStatus[deliveryStatus] ?? null) : null;
+  
+  const normalize = (str: string | null | undefined) => String(str || '').toLowerCase().trim().replace(/_/g, ' ');
+  const normalizedShiprocket = deliveryStatus ? normalize(deliveryStatus) : null;
+  const resolvedShiprocket = normalizedShiprocket 
+    ? (Object.entries(shiprocketToUserStatus).find(([k]) => normalize(k) === normalizedShiprocket)?.[1] ?? null) 
+    : null;
 
   // Shiprocket terminal status always wins over non-terminal vendor status
   // Vendor terminal status always wins over non-terminal Shiprocket status
@@ -235,7 +242,8 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({
     }
   };
 
-  const label = userStatusLabel[effectiveStatus] || effectiveStatus.replace(/_/g, ' ');
+  const displayStatus = deliveryStatus ? (Object.keys(shiprocketToUserStatus).find(k => normalize(k) === normalizedShiprocket) || deliveryStatus) : null;
+  const label = displayStatus || userStatusLabel[effectiveStatus] || effectiveStatus.replace(/_/g, ' ');
 
   return (
     <div className="w-full text-slate-800">

@@ -359,7 +359,7 @@ export default function OrdersPage() {
           <OrderTracking
             orderId={selectedOrderForTracking.order_id}
             status={selectedOrderForTracking.vendor_status || selectedOrderForTracking.order_status || 'pending'}
-            deliveryStatus={selectedOrderForTracking.delivery_tracking?.status}
+            deliveryStatus={selectedOrderForTracking.shiprocket_response?.data?.status || selectedOrderForTracking.shiprocket_status || selectedOrderForTracking.delivery_tracking?.status}
             trackingNumber={selectedOrderForTracking.delivery_tracking?.tracking_number}
             courierPartner={selectedOrderForTracking.delivery_tracking?.courier_partner}
             deliveryUpdates={selectedOrderForTracking.delivery_tracking?.delivery_updates}
