@@ -302,7 +302,7 @@ export default function ProductDetailsPage() {
       }
 
       const res = await productService.getQuote({
-        product_id: String(id),
+        product_id: productDetails?._id || productDetails?.id || String(id),
         number_of_days: days,
         months_id: monthsId,
         qty: quantity,
