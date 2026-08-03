@@ -17,7 +17,7 @@ export const ProfileSidebar = () => {
 
   const handleLogout = () => {
     logout();
-    router.push('/');
+    window.location.replace('/');
   };
 
   const menuItems = [

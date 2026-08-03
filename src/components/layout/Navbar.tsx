@@ -529,7 +529,7 @@ export const Navbar: React.FC = () => {
     setEmail(null);
     setIsProfileMenuOpen(false);
     setIsMenuOpen(false);
-    router.push('/auth/login');
+    window.location.replace('/auth/login');
   };
 
   // Hide Navbar on Partner Auth pages
