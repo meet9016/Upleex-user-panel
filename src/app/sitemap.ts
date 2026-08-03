@@ -15,5 +15,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/blog`, priority: 0.5 },
   ];
 
-  return staticUrls;
+  let dynamicUrls: MetadataRoute.Sitemap = [];
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3689/api/v1';
+    const response = await fetch(`${apiUrl}/vendor-india-city-list`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ page: 1, limit: 10000 })
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      const cities = result?.data?.data || [];
+      if (Array.isArray(cities)) {
+        dynamicUrls = cities.map((city: any) => {
+          const slug = (city.city_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+          return {
+            url: `${baseUrl}/sitemap/${slug}`,
+            priority: 0.6,
+          };
+        }).filter((item) => item.url !== `${baseUrl}/sitemap/`); 
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching cities for sitemap:", error);
+  }
+
+  const allUrls = [...staticUrls, ...dynamicUrls];
+  const uniqueUrls = allUrls.filter((v, i, a) => a.findIndex(t => (t.url === v.url)) === i);
+
+  return uniqueUrls;
 }
