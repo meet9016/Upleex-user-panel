@@ -17,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let dynamicUrls: MetadataRoute.Sitemap = [];
   try {
-    const apiUrl = 'http://localhost:3689/api/v1'; // process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3689/api/v1';
+    const apiUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3689/api/v1';
     const response = await fetch(`${apiUrl}/vendor-india-city-list`, {
       method: 'POST',
       headers: {
