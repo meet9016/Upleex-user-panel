@@ -34,11 +34,29 @@ export async function GET() {
       });
     }
 
+    // Fetch all cities to include them regardless of active products
+    const cityRes = await fetch(`${API_BASE}vendor-india-city-list`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ page: 1, limit: 10000 })
+    });
+    
+    const cityJson = await cityRes.json();
+    const citiesData = cityJson?.data?.data || [];
+    
+    citiesData.forEach((c: any) => {
+      if (c.city_name) {
+        activeCities.add(createSlug(c.city_name));
+      }
+    });
+
     const cities = Array.from(activeCities);
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${cities.map(city => `
+  ${cities.map((city: string) => `
   <sitemap>
     <loc>${baseUrl}/sitemap.xml/${city}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
