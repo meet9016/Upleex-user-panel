@@ -34,7 +34,6 @@ export async function GET() {
       });
     }
 
-    // Fetch all cities to include them regardless of active products
     const cityRes = await fetch(`${API_BASE}vendor-india-city-list`, {
       method: 'POST',
       headers: {
