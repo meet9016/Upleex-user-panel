@@ -33,10 +33,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         dynamicUrls = cities.map((city: any) => {
           const slug = (city.city_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
           return {
-            url: `${baseUrl}/sitemap/${slug}`,
+            url: `${baseUrl}/sitemap.xml/${slug}`,
             priority: 0.6,
           };
-        }).filter((item) => item.url !== `${baseUrl}/sitemap/`); 
+        }).filter((item) => item.url !== `${baseUrl}/sitemap.xml/`); 
       }
     }
   } catch (error) {

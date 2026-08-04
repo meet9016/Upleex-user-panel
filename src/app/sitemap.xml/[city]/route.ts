@@ -56,40 +56,32 @@ export async function GET(request: Request, { params }: { params: Promise<{ city
 
     let urls: string[] = [];
 
-    // 1. Add Category and Subcategory URLs for this city ONLY if they have products
     categories.forEach((cat: any) => {
       const categorySlug = createSlug(cat.slug || cat.categories_name || 'category');
       
-      // /rent/city/category
-      if (activeCategories.has(categorySlug)) {
-        urls.push(`
+      urls.push(`
   <url>
     <loc>${baseUrl}/rent/${city}/${categorySlug}</loc>
     <lastmod>${new Date(cat.updated_at || new Date()).toISOString()}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>`);
-      }
 
-      // /rent/city/category/subcategory
       if (cat.subcategories && Array.isArray(cat.subcategories)) {
         cat.subcategories.forEach((sub: any) => {
           const subSlug = createSlug(sub.slug || sub.subcategory_name || 'subcategory');
           
-          if (activeSubcategories.has(`${categorySlug}/${subSlug}`)) {
-            urls.push(`
+          urls.push(`
   <url>
     <loc>${baseUrl}/rent/${city}/${categorySlug}/${subSlug}</loc>
     <lastmod>${new Date(sub.updated_at || cat.updated_at || new Date()).toISOString()}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>`);
-          }
         });
       }
     });
 
-    // 2. Add Product URLs for this city
     cityProducts.forEach((product: any) => {
       const productSlug = product.slug || createSlug(product.product_name || 'product');
       const subCatSlug = product.sub_category_slug || createSlug(product.sub_category_name || 'subcategory');
@@ -103,7 +95,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ city
   </url>`);
     });
 
-    // 3. Add Service Category URLs for this city
     activeServiceCategories.forEach((catSlug: string) => {
       urls.push(`
   <url>
@@ -122,7 +113,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ city
   </url>`);
     });
 
-    // 4. Add Service URLs for this city
     cityServices.forEach((service: any) => {
       const serviceSlug = service.slug || createSlug(service.service_name || 'service');
       
