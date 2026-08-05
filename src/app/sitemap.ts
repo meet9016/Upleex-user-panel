@@ -39,6 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }).filter((item) => item.url !== `${baseUrl}/sitemap.xml/`); 
       }
     }
+    
   } catch (error) {
     console.error("Error fetching cities for sitemap:", error);
   }
