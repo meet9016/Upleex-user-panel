@@ -1,4 +1,3 @@
-
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -46,14 +45,6 @@ const nextConfig: NextConfig = {
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/sitemap/:path*',
-        destination: '/sitemap.xml/:path*',
-      },
-    ];
   },
   // Turbopack optimizations
 };

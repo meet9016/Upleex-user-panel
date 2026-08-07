@@ -1,9 +1,5 @@
+import { MetadataRoute } from "next";
 
-import { MetadataRoute } from 'next';
-import axios from 'axios';
-import endPointApi from '@/utils/endPointApi';
-
-export const revalidate = 0;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://www.upleex.com";
   const staticUrls: MetadataRoute.Sitemap = [
@@ -21,44 +17,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let dynamicUrls: MetadataRoute.Sitemap = [];
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://upleex.digitalks.co.in/api/v1';
-    // Fetch first page to get total pages
-    const firstRes = await axios.post(`${apiUrl}/${endPointApi.webAllCityList}`, { page: 1, limit: 100 });
-
-    if (firstRes.status === 200) {
-      const firstData = firstRes.data;
-      const totalPages = firstData?.data?.totalPages || 1;
-      let allCities = firstData?.data?.data || [];
-
-      // Fetch remaining pages in parallel
-      if (totalPages > 1) {
-        const promises = [];
-        for (let i = 2; i <= totalPages; i++) {
-          promises.push(
-            axios.post(`${apiUrl}/${endPointApi.webAllCityList}`, { page: i, limit: 100 })
-              .then(res => res.data)
-              .catch(() => null)
-          );
-        }
-        const results = await Promise.all(promises);
-        results.forEach(data => {
-          if (data?.data?.data) {
-            allCities = allCities.concat(data.data.data);
-          }
-        });
-      }
-
-      if (Array.isArray(allCities)) {
-        dynamicUrls = allCities.map((city: any) => {
+    const apiUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3689/api/v1';
+    const response = await fetch(`${apiUrl}/vendor-india-city-list`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ page: 1, limit: 10000 })
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      const cities = result?.data?.data || [];
+      if (Array.isArray(cities)) {
+        dynamicUrls = cities.map((city: any) => {
           const slug = (city.city_name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
           return {
-            url: `${baseUrl}/sitemap/${slug}`,
+            url: `${baseUrl}/sitemap.xml/${slug}`,
             priority: 0.6,
           };
-        }).filter((item) => item.url !== `${baseUrl}/sitemap/`);
+        }).filter((item) => item.url !== `${baseUrl}/sitemap.xml/`); 
       }
     }
-  } catch (error: any) {
+    
+  } catch (error) {
     console.error("Error fetching cities for sitemap:", error);
   }
 
