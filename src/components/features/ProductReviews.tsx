@@ -56,6 +56,7 @@ export function ProductReviews({ productId, onAuthRequired }: ProductReviewsProp
   const isLoggedIn = () => isAuthenticated;
 
   const fetchReviews = async () => {
+    if (!productId) return;
     try {
       setLoading(true);
 

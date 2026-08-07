@@ -1533,7 +1533,7 @@ export default function ProductDetailsPage() {
             <div className="px-6 lg:px-10 pb-6 lg:pb-10">
               {activeDetailTab === "reviews" ? (
                 <ProductReviews
-                  productId={id}
+                  productId={productDetails?._id || productDetails?.id}
                   onAuthRequired={() => setIsAuthModalOpen(true)}
                 />
               ) : activeDetailTab === "description" ? (
