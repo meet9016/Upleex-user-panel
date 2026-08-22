@@ -35,9 +35,9 @@ export const fetchCart = createAsyncThunk('cart/fetchCart', async (_, { rejectWi
 // Async thunk to add to cart
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
-  async ({ productId, qty }: { productId: string; qty: number }, { dispatch, rejectWithValue }) => {
+  async ({ productId, qty, selectedSize }: { productId: string; qty: number; selectedSize?: string }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await cartService.addToCart(productId, qty);
+      const response = await cartService.addToCart(productId, qty, selectedSize);
       if ((response as any)?.status === 200 || (response as any)?.success === true) {
         toast.success('Successfully added to cart');
         dispatch(fetchCart());
@@ -60,15 +60,15 @@ export const addToCart = createAsyncThunk(
 // Async thunk to update cart item quantity
 export const updateCartItem = createAsyncThunk(
   'cart/updateCartItem',
-  async ({ cartId, qty }: { cartId: string; qty: number }, { dispatch, rejectWithValue }) => {
+  async ({ cartId, qty, note }: { cartId: string; qty: number; note?: string }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await cartService.updateCartItem(cartId, qty);
+      const response = await cartService.updateCartItem(cartId, qty, note);
       if (response.status === 200) {
         dispatch(fetchCart());
         return response.data;
       } else {
-        toast.error(response.message || 'Failed to update quantity');
-        return rejectWithValue(response.message || 'Failed to update quantity');
+        toast.error(response.message || 'Failed to update item');
+        return rejectWithValue(response.message || 'Failed to update item');
       }
     } catch (error: any) {
       if (error?.response?.data?.message) {

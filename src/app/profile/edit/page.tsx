@@ -8,14 +8,18 @@ import { Button } from '@/components/ui/Button';
 import { api } from '@/utils/axiosInstance';
 import endPointApi from '@/utils/endPointApi';
 import { useAppSelector } from '@/redux/hooks';
+import { useAppDispatch } from '@/redux/hooks';
+import { updateUser } from '@/redux/slices/authSlice';
 
 export default function EditProfilePage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     phone: '',
+    gstNumber: '',
   });
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -44,6 +48,7 @@ export default function EditProfilePage() {
           firstName,
           lastName,
           phone: user.phone || '',
+          gstNumber: user.gst_number || '',
         });
       } catch (e) {
         toast.error('Error loading profile');
@@ -62,20 +67,33 @@ export default function EditProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const gstNumber = formData.gstNumber.trim().toUpperCase();
+    if (gstNumber && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstNumber)) {
+      toast.error('Please enter a valid 15-character GSTIN');
+      return;
+    }
     setIsUpdating(true);
 
     try {
       const response = await api.put(endPointApi.updateUserProfile, {
         first_name: formData.firstName,
         last_name: formData.lastName,
+        gst_number: gstNumber,
       });
 
       if (response.data.success) {
+        dispatch(updateUser({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          full_name: `${formData.firstName} ${formData.lastName}`.trim(),
+          gst_number: gstNumber,
+        }));
         const userStr = localStorage.getItem('user');
         if (userStr) {
           const userData = JSON.parse(userStr);
           userData.first_name = formData.firstName;
           userData.last_name = formData.lastName;
+          userData.gst_number = gstNumber;
           userData.full_name = `${formData.firstName} ${formData.lastName}`.trim();
           localStorage.setItem('user', JSON.stringify(userData));
         }
@@ -159,6 +177,24 @@ export default function EditProfilePage() {
                   placeholder="Mobile number cannot be changed"
                 />
                 <p className="text-xs text-gray-500 mt-1">Phone number cannot be updated</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  GST Number (Optional)
+                </label>
+                <input
+                  type="text"
+                  name="gstNumber"
+                  value={formData.gstNumber}
+                  maxLength={15}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev,
+                    gstNumber: e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 15).toUpperCase(),
+                  }))}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                  placeholder="Enter GST number"
+                />
               </div>
 
               <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6">

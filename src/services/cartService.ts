@@ -16,6 +16,9 @@ export interface CartItem {
     product_type_name?: string;
     available_quantity?: number;
     is_out_of_stock?: boolean;
+    note?: string;
+    selected_size?: string;
+    available_sizes?: string[];
 }
 
 export interface CartSummary {
@@ -50,11 +53,12 @@ export interface CartUpdateResponse {
 }
 
 class CartService {
-    async addToCart(productId: string, qty: number): Promise<AddToCartResponse> {
+    async addToCart(productId: string, qty: number, selectedSize?: string): Promise<AddToCartResponse> {
         try {
             const formData = new FormData();
             formData.append('product_id', productId);
             formData.append('qty', qty.toString());
+            if (selectedSize) formData.append('selected_size', selectedSize);
 
             const res = await api.post(endPointApi.webAddToCart, formData);
             return res.data;
@@ -84,11 +88,14 @@ class CartService {
         }
     }
 
-    async updateCartItem(cartId: string, qty: number): Promise<CartUpdateResponse> {
+    async updateCartItem(cartId: string, qty: number, note?: string): Promise<CartUpdateResponse> {
         try {
             const formData = new FormData();
             formData.append('cart_id', cartId);
             formData.append('qty', qty.toString());
+            if (note !== undefined) {
+                formData.append('note', note);
+            }
 
             const res = await api.post(endPointApi.webUpdateCart, formData);
             return res.data;

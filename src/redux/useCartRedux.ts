@@ -9,12 +9,12 @@ export const useCartRedux = () => {
   const totalAmount = summary ? parseFloat(summary.grand_total) : 
                      items.reduce((acc: number, item: any) => acc + parseFloat(item.final_amount), 0);
 
-  const handleAddToCart = async (productId: string, qty: number) => {
-    dispatch(addToCartAction({ productId, qty }));
+  const handleAddToCart = async (productId: string, qty: number, selectedSize?: string) => {
+    dispatch(addToCartAction({ productId, qty, selectedSize }));
   };
 
-  const handleUpdateQuantity = async (cartId: string, qty: number) => {
-    dispatch(updateCartItem({ cartId, qty }));
+  const handleUpdateQuantity = async (cartId: string, qty: number, note?: string) => {
+    dispatch(updateCartItem({ cartId, qty, note }));
   };
 
   const handleRemoveFromCart = async (cartId: string) => {

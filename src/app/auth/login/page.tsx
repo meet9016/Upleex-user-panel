@@ -18,9 +18,10 @@ const LoginPage = () => {
   const router = useRouter();
   const [form, setForm] = useState({
     name: '',
-    email: ''
+    email: '',
+    gst_number: ''
   });
-  const [errors, setErrors] = useState<{ number?: string; otp?: string; name?: string; email?: string }>({});
+  const [errors, setErrors] = useState<{ number?: string; otp?: string; name?: string; email?: string; gst_number?: string }>({});
   
   // References for OTP inputs
   const otpInputs = useRef<(HTMLInputElement | null)[]>([]);
@@ -68,7 +69,7 @@ const LoginPage = () => {
 
   const handleVerifyOtp = async () => {
     const otpString = otp.join('');
-    const newErrors: { otp?: string; name?: string; email?: string } = {};
+    const newErrors: { otp?: string; name?: string; email?: string; gst_number?: string } = {};
     
     if (otpString.length < 6) {
       newErrors.otp = 'Enter the complete 6-digit OTP';
@@ -78,6 +79,9 @@ const LoginPage = () => {
       if (!form.name.trim()) newErrors.name = 'Name is required';
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailPattern.test(form.email.trim())) newErrors.email = 'Enter a valid email';
+      if (form.gst_number && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(form.gst_number)) {
+        newErrors.gst_number = 'Enter a valid 15-character GSTIN';
+      }
     }
     if (Object.keys(newErrors).length > 0) {
       setErrors(prev => ({ ...prev, ...newErrors }));
@@ -90,6 +94,7 @@ const LoginPage = () => {
       country_id: '91',
       name: userType === 'new' ? form.name : undefined,
       email: userType === 'new' ? form.email : undefined,
+      gst_number: userType === 'new' ? form.gst_number || undefined : undefined,
       rememberMe: rememberMe
     }) as any).then((result: any) => {
       if (result.meta.requestStatus === 'fulfilled') {
@@ -365,6 +370,18 @@ const LoginPage = () => {
                     />
                     {errors.email ? (
                       <p className="text-red-600 text-sm -mt-2">{errors.email}</p>
+                    ) : null}
+
+                    <input
+                      placeholder="GST Number (Optional)"
+                      value={form.gst_number}
+                      onChange={(e) => setForm({ ...form, gst_number: e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 15).toUpperCase() })}
+                      maxLength={15}
+                      className={`w-full py-3 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500
+                        ${errors.gst_number ? 'border-red-500' : 'border-gray-300'}`}
+                    />
+                    {errors.gst_number ? (
+                      <p className="text-red-600 text-sm -mt-2">{errors.gst_number}</p>
                     ) : null}
                   </div>
                 )}

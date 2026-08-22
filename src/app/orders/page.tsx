@@ -22,6 +22,7 @@ interface OrderItem {
   price: number;
   quantity: number;
   final_amount: number;
+  selected_size?: string;
 }
 
 interface Order {
@@ -231,6 +232,9 @@ export default function OrdersPage() {
                               {item.product_name}
                             </p>
                             <p className="text-xs text-gray-500 mt-1">Qty: {item.quantity}</p>
+                            {(item as OrderItem & { selected_size?: string }).selected_size && (
+                              <p className="text-xs font-semibold text-blue-700 mt-1">Size: {(item as OrderItem & { selected_size?: string }).selected_size}</p>
+                            )}
                             <div className="mt-1">
                               <span className="font-semibold text-gray-900 text-sm">
                                 ₹{item.final_amount.toLocaleString('en-IN')}

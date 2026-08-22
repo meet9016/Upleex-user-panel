@@ -66,6 +66,7 @@ export default function ProductDetailsPage() {
   const [endTime, setEndTime] = useState("09:00");
   const [selectedDuration, setSelectedDuration] = useState(); // Months
   const [selectedMonthId, setSelectedMonthId] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string>('');
 
   const [selectedImage, setSelectedImage] = useState<string>(""); // For image gallery
   const [productDetails, setProductDetails] = useState<any>(null);
@@ -252,6 +253,11 @@ export default function ProductDetailsPage() {
       return;
     }
 
+    if (productDetails?.sizes?.length && !selectedSize) {
+      toast.error('Please select a size');
+      return;
+    }
+
     // Check stock availability for sell products
     if (isSell && productDetails) {
       const availableStock = productDetails.available_quantity || 0;
@@ -277,7 +283,7 @@ export default function ProductDetailsPage() {
 
     try {
       setIsAddingToCart(true);
-      await addToCart(id, quantity);
+      await addToCart(id, quantity, selectedSize);
     } catch (error) {
       console.error(error);
     } finally {
@@ -747,6 +753,34 @@ export default function ProductDetailsPage() {
                     </span>
                   )}
                 </div>
+
+                {Array.isArray(productDetails?.sizes) && productDetails.sizes.length > 0 && (
+                  <div className="mb-5">
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-sm font-semibold text-slate-900">Select Size</label>
+                      {productDetails.fashion_item_type && (
+                        <span className="text-xs text-slate-500">{productDetails.fashion_item_type}</span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {productDetails.sizes.map((size: string) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => setSelectedSize(size)}
+                          className={clsx(
+                            'min-w-12 px-3 py-2 rounded-lg border text-sm font-semibold transition-colors',
+                            selectedSize === size
+                              ? 'border-blue-600 bg-blue-600 text-white'
+                              : 'border-gray-200 bg-white text-slate-700 hover:border-blue-400'
+                          )}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Rental Type Tabs */}
                 {/* <div className="mb-7">

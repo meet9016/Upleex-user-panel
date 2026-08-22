@@ -53,7 +53,15 @@ export default function ProfilePage() {
           <NavigationButtons />
 
           <div className="mb-10">
-            <h1 className="text-3xl font-black text-gray-900 mb-6">User Dashboard</h1>
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+              <h1 className="text-3xl font-black text-gray-900">User Dashboard</h1>
+              {dashboardData && (dashboardData as any).gst_number && (
+                <div className="mt-2 md:mt-0 text-sm font-semibold text-blue-600 bg-blue-50 border border-blue-200 px-4 py-2 rounded-xl inline-flex items-center gap-2">
+                  <span className="text-gray-500">Your GSTIN:</span>
+                  <span>{(dashboardData as any).gst_number}</span>
+                </div>
+              )}
+            </div>
             <UserDashboard dashboardData={dashboardData} loading={loading} />
           </div>
         </div>

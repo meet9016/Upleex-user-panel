@@ -36,6 +36,7 @@ import endPointApi from '@/utils/endPointApi';
 import { Button } from '@/components/ui/Button';
 import { addressService } from '@/services/addressService';
 import type { UserAddress } from '@/services/addressService';
+import { useAppSelector } from '@/redux/hooks';
 
 // Razorpay types
 declare global {
@@ -129,6 +130,13 @@ export default function CartPage() {
     country: 'India',
     is_default: false
   });
+
+  const [userGstNumber, setUserGstNumber] = useState<string>('');
+  const profileGstNumber = useAppSelector((state) => state.auth.user?.gst_number || '');
+
+  useEffect(() => {
+    setUserGstNumber(profileGstNumber);
+  }, [profileGstNumber]);
 
   useEffect(() => {
     if (isCheckoutModalOpen) {
@@ -264,6 +272,10 @@ export default function CartPage() {
   // Handle payment
   const handlePayment = async () => {
     try {
+      if (userGstNumber && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(userGstNumber.trim().toUpperCase())) {
+        toast.error('Please enter a valid 15-character GSTIN');
+        return;
+      }
       setIsProcessingPayment(true);
 
       // Check if cart is empty
@@ -313,6 +325,7 @@ export default function CartPage() {
         delivery_type: deliveryType,
         address_id: selectedAddressId,
         shipping_charge: shippingCharge,
+        gst_number: userGstNumber.trim() || undefined,
       });
 
       const { data } = orderResponse.data;
@@ -605,6 +618,11 @@ export default function CartPage() {
                                 <ShieldCheck size={16} className="text-green-500" />
                                 Verified Product
                               </div>
+                              {item.selected_size && (
+                                <div className="mt-2 text-sm font-semibold text-blue-700">
+                                  Size: {item.selected_size}
+                                </div>
+                              )}
                             </div>
 
                             <div className="text-right">
@@ -725,6 +743,22 @@ export default function CartPage() {
                                 <div className="font-bold text-slate-900 mt-0.5">{d.value}</div>
                               </div>
                             ))}
+                          </div>
+
+                          {/* Vendor/Product Note */}
+                          <div className="mt-4">
+                            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+                              Add Note for Vendor (Optional)
+                            </label>
+                            <input
+                              type="text"
+                              value={item.note || ''}
+                              onChange={(e) => {
+                                updateQuantity(item.cart_id, parseInt(item.qty), e.target.value);
+                              }}
+                              placeholder="e.g. Please deliver after 5 PM, deliver to reception, etc."
+                              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all bg-slate-50/30"
+                            />
                           </div>
                         </div>
                       </motion.div>
@@ -1393,21 +1427,28 @@ export default function CartPage() {
                           <div className="font-bold text-[11px] text-slate-800">Pay Full Amount</div>
                           <div className="text-[13px] font-extrabold text-blue-600 mt-1">₹{(summary?.dueToday || 0).toLocaleString('en-IN')}</div>
                         </button>
-
-                        {/* <button
-                          onClick={() => setPaymentOption('30_percent')}
-                          className={`p-3.5 rounded-xl border-2 text-left transition-all duration-200 relative ${
-                            paymentOption === '30_percent'
-                              ? 'border-blue-600 bg-blue-50/20'
-                              : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50/50'
-                          }`}
-                        >
-                          <div className="font-bold text-[11px] text-slate-800">Pay 30% Advance</div>
-                          <div className="text-[13px] font-extrabold text-blue-600 mt-1">
-                            ₹{Math.round((summary?.dueToday || 0) * 0.3).toLocaleString('en-IN')}
-                          </div>
-                        </button> */}
                       </div>
+                    </div>
+
+                    {/* GST Number Field */}
+                    <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                      <label htmlFor="checkout-gst" className="block text-xs font-bold text-slate-700">
+                        GST Number (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        id="checkout-gst"
+                        placeholder="Enter GSTIN (e.g. 22AAAAA0000A1Z5)"
+                        value={userGstNumber}
+                        onChange={(e) => setUserGstNumber(e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 15).toUpperCase())}
+                        onBlur={() => {
+                          if (userGstNumber && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(userGstNumber)) {
+                            toast.error('Please enter a valid 15-character GSTIN');
+                          }
+                        }}
+                        disabled={Boolean(profileGstNumber)}
+                        className="w-full px-3.5 py-2.5 text-xs border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                      />
                     </div>
                   </div>
 

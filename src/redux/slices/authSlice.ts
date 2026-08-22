@@ -131,6 +131,14 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    updateUser: (state, action: PayloadAction<Partial<UserData>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(state.user));
+        }
+      }
+    },
     // Set login data directly (used by AuthModal to avoid double API call)
     setLoginData: (state, action: PayloadAction<{ token: string; user: any; rememberMe?: boolean }>) => {
       const { token, user, rememberMe = false } = action.payload;
@@ -148,6 +156,7 @@ const authSlice = createSlice({
         profile_photo: user.profile_photo,
         city_id: user.city_id,
         city_name: user.city_name,
+        gst_number: user.gst_number || '',
       };
       state.isAuthenticated = true;
       setSecureToken(token);
@@ -249,5 +258,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUserType, setStep, logout, clearError, setLoginData } = authSlice.actions;
+export const { setUserType, setStep, logout, clearError, updateUser, setLoginData } = authSlice.actions;
 export default authSlice.reducer;
