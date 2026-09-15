@@ -19,6 +19,24 @@ interface SuccessModalProps {
 }
 
 export const SuccessModal: React.FC<SuccessModalProps> = ({ isOpen, orderDetails, onClose }) => {
+  const hasFiredRef = React.useRef<string | null>(null);
+
+  React.useEffect(() => {
+    if (isOpen && orderDetails && hasFiredRef.current !== orderDetails.orderId) {
+      // @ts-ignore
+      if (typeof window !== 'undefined' && window.gtag) {
+        // @ts-ignore
+        window.gtag('event', 'conversion', {
+          'send_to': 'AW-18261441701/QhodCO6Ao_gcEKX53YNE',
+          'value': orderDetails.amount,
+          'currency': 'INR',
+          'transaction_id': orderDetails.orderId
+        });
+        hasFiredRef.current = orderDetails.orderId;
+      }
+    }
+  }, [isOpen, orderDetails]);
+
   if (!isOpen) return null;
 
   return (
