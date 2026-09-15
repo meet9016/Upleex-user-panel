@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: 'Upleex - Rental Marketplace',
   description: 'Rent premium lifestyle products with ease.',
   verification: {
-    google: "b80QDl5CccDS9J4wmRxVrd3_GDByJS5VazkH4QXiVbA",
+    google: 'b80QDl5CccDS9J4wmRxVrd3_GDByJS5VazkH4QXiVbA',
   },
   icons: {
     icon: '/favicon.png',
@@ -54,7 +54,11 @@ export default function RootLayout({
         />
       </Head>
 
-      <body className={inter.className} suppressHydrationWarning={true}>
+      <body
+        className={inter.className}
+        suppressHydrationWarning={true}
+      >
+        {/* Google Analytics 4 */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-94NZ91DJ18"
           strategy="afterInteractive"
@@ -68,6 +72,14 @@ export default function RootLayout({
             gtag('config', 'G-94NZ91DJ18');
           `}
         </Script>
+
+        {/* Google Ads */}
+        <Script id="google-ads" strategy="afterInteractive">
+          {`
+            gtag('config', 'AW-18261441701');
+          `}
+        </Script>
+
         <ErrorBoundary>
           <Providers>
             {/* <NotificationProvider> */}
@@ -76,19 +88,24 @@ export default function RootLayout({
                 <ProgressBar />
               </Suspense>
               <FCMHandler />
-               <SocketHandler />
-              <Suspense fallback={<div className="h-20 bg-white border-b border-gray-100" />}>
+              <SocketHandler />
+              <Suspense
+                fallback={
+                  <div className="h-20 bg-white border-b border-gray-100" />
+                }
+              >
                 <Navbar />
               </Suspense>
               <ScrollToTop />
               <QuickActions />
-              <main className="flex-1 pb-20 lg:pb-0">{children}</main>
+              <main className="flex-1 pb-20 lg:pb-0">
+                {children}
+              </main>
               <Toaster position="bottom-right" />
               <ReviewReminderPopup />
               <Footer />
               <BottomNav />
             </div>
-            
             {/* </NotificationProvider> */}
           </Providers>
         </ErrorBoundary>
