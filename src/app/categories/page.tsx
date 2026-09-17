@@ -263,9 +263,9 @@ function CategoriesPageContent() {
                           </div>
 
                           <div className="space-y-1">
-                            <h1 className="text-xl font-bold text-slate-900">
+                            <h2 className="text-xl font-bold text-slate-900">
                               {cat.categories_name}
-                            </h1>
+                            </h2>
                             <p className="text-sm text-slate-500">
                               {cat.subcategories.length} Subcategories
                             </p>
