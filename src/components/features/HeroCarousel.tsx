@@ -24,6 +24,7 @@ interface HeroCarouselProps {
 export const HeroCarousel = ({ banners }: HeroCarouselProps) => {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
+  console.log("banners", banners);
 
   useEffect(() => {
     if (banners.length === 0) return;
@@ -125,9 +126,9 @@ export const HeroCarousel = ({ banners }: HeroCarouselProps) => {
                     duration: 0.8,
                     ease: "circOut",
                   }}
-                  style={{ 
+                  style={{
                     willChange: "transform, opacity",
-                    display: isHidden ? 'none' : 'block' 
+                    display: isHidden ? 'none' : 'block'
                   }}
                   onClick={() => {
                     if (isPrev) handlePrev();
@@ -151,13 +152,13 @@ export const HeroCarousel = ({ banners }: HeroCarouselProps) => {
                             {banner.subtitle}
                           </p>
                         )}
-                        <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-6 leading-[1.1] max-w-2xl">
+                        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-6 leading-[1.1] max-w-2xl">
                           {banner.title}
-                        </h2>
+                        </h1>
                         {banner.description && (
-                          <p className="text-gray-200 text-sm sm:text-base lg:text-lg max-w-lg mb-6 sm:mb-10 line-clamp-2 md:line-clamp-3 leading-relaxed">
+                          <h1 className="text-gray-200 text-2xl sm:text-3xl lg:text-5xl max-w-lg mb-6 sm:mb-10 line-clamp-2 md:line-clamp-3 leading-tight font-bold">
                             {banner.description}
-                          </p>
+                          </h1>
                         )}
                       </div>
                     </div>

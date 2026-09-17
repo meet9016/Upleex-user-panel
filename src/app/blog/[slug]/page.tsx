@@ -78,132 +78,132 @@ export default function BlogDetailPage() {
   return (
     <div className="min-h-screen bg-white pt-10 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         <div className="mb-6">
           <BackButton />
         </div>
 
         {/* Breadcrumb / Header Meta */}
         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-medium text-sm">
-                    {blog.blog_date}
-                </span>
-            </div>
-            
-                  <div className="flex items-center">
-          <a
-            href="https://www.facebook.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-full hover:bg-blue-50 text-gray-400 transition-colors"
-          >
-            <FaFacebookF className="w-5 h-5" />
-          </a>
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <span className="bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-medium text-sm">
+              {blog.blog_date}
+            </span>
+          </div>
 
-          <a
-            href="https://www.instagram.com/upleex_official/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
-          >
-            <FaInstagram className="w-5 h-5" />
-          </a>
+          <div className="flex items-center">
+            <a
+              href="https://www.facebook.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full hover:bg-blue-50 text-gray-400 transition-colors"
+            >
+              <FaFacebookF className="w-5 h-5" />
+            </a>
 
-          <a
-            href="https://x.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
-          >
-            <FaTwitter className="w-5 h-5" />
-          </a>
+            <a
+              href="https://www.instagram.com/upleex_official/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
+            >
+              <FaInstagram className="w-5 h-5" />
+            </a>
 
-          <a
-            href="https://www.linkedin.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
-          >
-            <FaLinkedinIn className="w-5 h-5" />
-          </a>
+            <a
+              href="https://x.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
+            >
+              <FaTwitter className="w-5 h-5" />
+            </a>
 
-          <a
-            href="https://www.youtube.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
-          >
-            <TfiYoutube className="w-5 h-5" />
-          </a>
-        </div>
+            <a
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
+            >
+              <FaLinkedinIn className="w-5 h-5" />
+            </a>
+
+            <a
+              href="https://www.youtube.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
+            >
+              <TfiYoutube className="w-5 h-5" />
+            </a>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Main Content */}
-            <div className="lg:col-span-2">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-8 leading-tight">
-                    {blog.title}
-                </h1>
+          {/* Main Content */}
+          <div className="lg:col-span-2">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-8 leading-tight">
+              {blog.title}
+            </h1>
 
-                <div className="rounded-3xl overflow-hidden mb-10 shadow-lg h-[300px] md:h-[500px] w-full">
-                    <img 
-                        src={blog.image} 
-                        alt={blog.title} 
-                        className="w-full h-full object-cover"
-                    />
-                </div>
-
-                <div className="prose prose-lg max-w-none text-slate-600">
-                    <div dangerouslySetInnerHTML={{ __html: blog.long_description }} />
-                </div>
+            <div className="rounded-3xl overflow-hidden mb-10 shadow-lg h-[300px] md:h-[500px] w-full">
+              <img
+                src={blog.image}
+                alt={blog.title}
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            {/* Sidebar */}
-            <div className="lg:col-span-1 space-y-10">
-                {/* Search */}
-                <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6">Search</h3>
-                    <div className="relative">
-                        <input 
-                            type="text" 
-                            placeholder="Type to search..."
-                            className="w-full pl-12 pr-4 py-4 rounded-2xl border-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    </div>
-                </div>
-
-                {/* Recent Posts */}
-                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                    <h3 className="text-xl font-bold text-gray-900 mb-8 border-b border-gray-50 pb-4">Recent Posts</h3>
-                    <div className="space-y-6">
-                        {recentBlogs.map((post) => (
-                            <Link key={post.id} href={`/blog/${post.slug || post.id}`} className="group flex gap-4 items-center">
-                                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
-                                    <img 
-                                        src={post.image} 
-                                        alt={post.title} 
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                    />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2">
-                                        {post.title}
-                                    </h4>
-                                    <span className="text-xs text-gray-400 flex items-center gap-1 mt-1">
-                                        <Calendar className="w-3 h-3" />
-                                        {post.blog_date}
-                                    </span>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-
+            <div className="prose prose-lg max-w-none text-slate-600">
+              <h1 dangerouslySetInnerHTML={{ __html: blog.long_description }} />
             </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1 space-y-10">
+            {/* Search */}
+            <div className="bg-gray-50 p-8 rounded-3xl border border-gray-100">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Search</h3>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Type to search..."
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl border-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              </div>
+            </div>
+
+            {/* Recent Posts */}
+            <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+              <h3 className="text-xl font-bold text-gray-900 mb-8 border-b border-gray-50 pb-4">Recent Posts</h3>
+              <div className="space-y-6">
+                {recentBlogs.map((post) => (
+                  <Link key={post.id} href={`/blog/${post.slug || post.id}`} className="group flex gap-4 items-center">
+                    <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
+                      <img
+                        src={post.image}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                        {post.title}
+                      </h4>
+                      <span className="text-xs text-gray-400 flex items-center gap-1 mt-1">
+                        <Calendar className="w-3 h-3" />
+                        {post.blog_date}
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>

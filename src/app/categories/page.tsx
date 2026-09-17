@@ -263,9 +263,9 @@ function CategoriesPageContent() {
                           </div>
 
                           <div className="space-y-1">
-                            <h2 className="text-xl font-bold text-slate-900">
+                            <h1 className="text-xl font-bold text-slate-900">
                               {cat.categories_name}
-                            </h2>
+                            </h1>
                             <p className="text-sm text-slate-500">
                               {cat.subcategories.length} Subcategories
                             </p>
@@ -308,9 +308,9 @@ function CategoriesPageContent() {
                                   />
                                 )}
                               </div>
-                              <h3 className="text-sm font-bold text-slate-800 text-center group-hover:text-upleex-purple transition-colors">
+                              <h1 className="text-sm font-bold text-slate-800 text-center group-hover:text-upleex-purple transition-colors">
                                 {sub.subcategory_name}
-                              </h3>
+                              </h1>
                             </Link>
                           ))}
                         </div>
