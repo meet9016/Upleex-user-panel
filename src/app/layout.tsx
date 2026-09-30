@@ -20,8 +20,18 @@ import Script from 'next/script';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Upleex - Rental Marketplace',
-  description: 'Rent premium lifestyle products with ease.',
+  title: 'Rental Marketplace | Rent Products Across India',
+  description:
+    'Upleex is a rental marketplace platform in India for online rentals. People can rent products and properties, list rentals, and connect with users.',
+  keywords: ['rental marketplace', 'online rentals', 'rent products across india', 'upleex'],
+  openGraph: {
+    title: 'Rental Marketplace | Rent Products Across India',
+    description:
+      'Upleex is a rental marketplace platform in India for online rentals. People can rent products and properties, list rentals, and connect with users.',
+    url: 'https://www.upleex.com',
+    siteName: 'Upleex',
+    type: 'website',
+  },
   verification: {
     google: 'b80QDl5CccDS9J4wmRxVrd3_GDByJS5VazkH4QXiVbA',
   },
