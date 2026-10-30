@@ -9,7 +9,7 @@ import endPointApi from '@/utils/endPointApi';
 interface Banner {
   id: string | number;
   _id?: string;
-  title: string;
+  title?: string;
   subtitle?: string;
   description?: string;
   image: string;
@@ -138,11 +138,11 @@ export const HeroCarousel = ({ banners }: HeroCarouselProps) => {
                   <div className="relative w-full h-full">
                     <img
                       src={getImageUrl(banner.image)}
-                      alt={banner.title}
+                      alt={banner.title || "Banner"}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
-                    <div className={`absolute inset-0 bg-gradient-to-r ${banner.color || 'bg-blue-900'} opacity-80 mix-blend-multiply`}></div>
+                    <div className={`absolute inset-0 bg-gradient-to-r ${banner.color || ''} opacity-80 mix-blend-multiply`}></div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent"></div>
 
                     <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10 md:p-14 text-white">
@@ -152,9 +152,11 @@ export const HeroCarousel = ({ banners }: HeroCarouselProps) => {
                             {banner.subtitle}
                           </p>
                         )}
-                        <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-6 leading-[1.1] max-w-2xl">
-                          {banner.title}
-                        </h1>
+                        {banner.title && (
+                          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 sm:mb-6 leading-[1.1] max-w-2xl">
+                            {banner.title}
+                          </h1>
+                        )}
                         {banner.description && (
                           <h1 className="text-gray-200 text-2xl sm:text-3xl lg:text-5xl max-w-lg mb-6 sm:mb-10 line-clamp-2 md:line-clamp-3 leading-tight font-bold">
                             {banner.description}
